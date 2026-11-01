@@ -8,6 +8,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Urgent jobs get an estimated deadline.
 - Improved "Customer suspects" detection.
 - Fixed objectives missed when inbox text is read with the email.
+- Choosing the part to replace copies it into "New part", ready to edit.
 
 ## 0.7.0
 - Long emails can be read from several screenshots.

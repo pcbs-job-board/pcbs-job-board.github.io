@@ -83,7 +83,13 @@ document.addEventListener("click", e => {
   else if (a === "toggleSwap") { j.swaps.find(s => s.id === b.dataset.k).done = b.checked; }
   else if (a === "delSwap") { j.swaps = j.swaps.filter(s => s.id !== b.dataset.k); }
   else if (a === "openSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); f.hidden = false; b.hidden = true;
-    f.querySelector('[data-f="old"]').onchange = ev => { const c = j.components[ev.target.value]; f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other"; f.querySelector('[data-f="new"]').focus(); };
+    f.querySelector('[data-f="old"]').onchange = ev => {
+      // copy the chosen part (name + category) into "New part", selected so typing replaces it
+      const c = j.components[ev.target.value], inp = f.querySelector('[data-f="new"]');
+      f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other";
+      inp.value = c ? c.name : "";
+      inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc;
+    };
     f.querySelector('[data-f="new"]').focus(); return; }
   else if (a === "cancelSwap") { render(); return; }
   else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = f.querySelector('[data-f="cat"]').value;

@@ -87,7 +87,7 @@ function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.v
 function initAutocomplete() {
   acEl = $("#ac");
   document.addEventListener("input", e => { if (e.target.matches("[data-ac]")) acShow(e.target); });
-  document.addEventListener("focusin", e => { if (e.target.matches("[data-ac]") && e.target.value.length >= 2) acShow(e.target); });
+  document.addEventListener("focusin", e => { if (e.target.matches("[data-ac]") && !e.target.dataset.noAc && e.target.value.length >= 2) acShow(e.target); });
   document.addEventListener("keydown", e => {
     if (acEl.hidden || e.target !== acInput) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!acItems.length) return; acSel = (acSel + (e.key === "ArrowDown" ? 1 : -1) + acItems.length) % acItems.length; acEl.querySelectorAll("[data-i]").forEach((d, i) => { d.classList.toggle("sel", i === acSel); if (i === acSel) d.scrollIntoView({ block: "nearest" }); }); }
