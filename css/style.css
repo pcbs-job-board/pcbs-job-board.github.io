@@ -173,3 +173,13 @@ ul.mainobj li:hover .x{opacity:1}
 .swap .price.unknown{color:var(--warn);background:#30260e;border-color:#7a5a17}
 .ac .overb span{opacity:.75}
 .ac b.overtag{color:var(--bad);font-weight:700}
+
+/* keyboard shortcuts */
+.job.kbsel{outline:3px solid var(--accent);outline-offset:2px;box-shadow:0 0 0 6px #33b5f022,0 0 22px #33b5f055}
+.keysbtn{font-size:16px;padding:4px 10px}
+body.keys-off .keysbtn{opacity:.4}
+table.keys{width:100%;border-collapse:collapse;font-size:13px}
+table.keys td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:top}
+table.keys td:first-child{white-space:nowrap;width:1%;padding-right:14px}
+kbd{display:inline-block;min-width:20px;text-align:center;font:600 12px/1.6 Consolas,monospace;background:#0e1117;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;color:var(--text)}
+.keyslist summary{margin:6px 0}

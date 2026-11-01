@@ -392,10 +392,11 @@ function renderSettings() {
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
   $("#appVersion").href = changelogUrl();
+  if (typeof keysOn !== "undefined") { $("#keysToggle").checked = keysOn; $("#keysInSettings").innerHTML = keysHelpHtml(); }
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
-$("#dlgSettings").addEventListener("change", e => { const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
+$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
 const rulesToText = r => r.map(x => `${x.task}: ${x.keys.join(", ")}`).join("\n");
 $("#btnRules").onclick = () => { $("#dlgSettings").close(); $("#rulesTxt").value = rulesToText(rules); $("#dlgRules").showModal(); };
 

@@ -12,6 +12,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 - Part swaps with autofill from 2,000+ in-game parts (level and price shown)
 - Settings for game version (hides parts from later updates) and Overclocked Edition DLC
 - 🚩 Report missing parts → GitHub issue
+- ⌨ Keyboard shortcuts – press `?` in the app for the list
 
 ## Privacy
 Everything you create — jobs, rules, settings — is stored **only in your browser** (`localStorage`). Nothing is sent to GitHub or anywhere else. Screen captures are processed locally and never uploaded. The only network requests are loading the page, the parts list, and the OCR engine. Use **Export / Import** for backups or to move to another browser.
@@ -25,6 +26,7 @@ js/util.js                 shared helpers
 js/parser.js               email / PC Stats text parsing, hidden-objective rules
 js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
+js/keys.js                 keyboard shortcuts
 data/parts/*.csv           parts list – one file per category (source of truth)
 data/dlc.csv               DLC / part groups (key, label, group, default on/off)
 data/versions.csv          game versions shown in Settings
