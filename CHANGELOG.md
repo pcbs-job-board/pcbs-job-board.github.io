@@ -2,6 +2,13 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
+## 0.8.0 (not released yet)
+- Hidden objectives rebuilt from the community hint list.
+- Cable colour and type detection combined into one hint.
+- Urgent jobs get an estimated deadline.
+- Improved "Customer suspects" detection.
+- Fixed objectives missed when inbox text is read with the email.
+
 ## 0.7.0
 - Long emails can be read from several screenshots.
 - Fixed objectives not detected when the email box is larger than the email.
