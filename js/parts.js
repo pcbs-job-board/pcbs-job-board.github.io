@@ -24,11 +24,11 @@ function buildIndex() {
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }
 }
-function searchParts(q, cat, limit = 14) {
+function searchParts(q, cat, limit = 14, brands = []) {
   const toks = normP(q).split(" ").filter(Boolean); if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
   return INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)))
-    .map(p => ({ p, s: toks.reduce((s, t) => s + (p.w.includes(t) ? 4 : p.w.some(w => w.startsWith(t)) ? 2 : 1), 0) * 10 - p.n.length / 8 + (p.hist ? 6 : 0) - (p.dlc ? 3 : 0) }))
+    .map(p => ({ p, s: toks.reduce((s, t) => s + (p.w.includes(t) ? 4 : p.w.some(w => w.startsWith(t)) ? 2 : 1), 0) * 10 - p.n.length / 8 + (p.hist ? 6 : 0) - (p.dlc ? 3 : 0) + (brands.some(b => brandMatch(p, b)) ? 15 : 0) }))
     .sort((a, b) => b.s - a.s).slice(0, limit).map(x => x.p);
 }
 // best database match for an OCR'd name (used to clean up PC Stats parts)
@@ -47,6 +47,10 @@ function cablesFor(want) {
   return INDEX.filter(p => p.cat === "Cables" && need.every(w => p.w.includes(w)) && (!plain || !/duo|patterned|striped|rainbow/.test(p.n))
     && (need.includes("dark") || !p.w.includes("dark")) && (need.includes("light") || !p.w.includes("light"))).map(p => p.name);
 }
+// which categories a brand makes (from parts the user has enabled), e.g. NZXT → Case, Motherboard, CPU Cooler…
+const BRAND_SEARCH = { NVIDIA: ["geforce", "nvidia"], AMD: ["radeon", "ryzen", "amd"] };
+const brandMatch = (p, brand) => (BRAND_SEARCH[brand] || [normP(brand)]).some(t => p.n.startsWith(t + " ") || (BRAND_SEARCH[brand] && p.w.includes(t)));
+function brandCategories(brand) { return [...new Set(INDEX.filter(p => !p.hist && brandMatch(p, brand)).map(p => p.cat))]; }
 function rememberPart(name, cat) {
   if (!name || Object.values(window.PARTS_DB || {}).some(rows => rows.some(r => r[0].toLowerCase() === name.toLowerCase()))) return;
   partsHistory = [{ name, cat }, ...partsHistory.filter(p => p.name.toLowerCase() !== name.toLowerCase())].slice(0, 400);
@@ -59,11 +63,12 @@ function acCat(inp) { if (inp.dataset.acCat) return inp.dataset.acCat; const f =
 function acShow(inp) {
   acInput = inp; const q = inp.value.trim(), cat = acCat(inp);
   if (q.length < 2) { acEl.hidden = true; return; }
-  acItems = searchParts(q, cat); acSel = 0;
+  const brands = (inp.closest("[data-brands]")?.dataset.brands || "").split("|").filter(Boolean);
+  acItems = searchParts(q, cat, 14, brands); acSel = 0;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
   const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
-  acEl.innerHTML = acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"}"><span>${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}</small></div>`).join("")
+  acEl.innerHTML = acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"}"><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}</small></div>`).join("")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const r = inp.getBoundingClientRect(); const w = Math.max(r.width, 380);
   Object.assign(acEl.style, { left: Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px", top: (r.bottom + 3) + "px", width: w + "px" });

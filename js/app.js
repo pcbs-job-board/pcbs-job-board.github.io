@@ -33,7 +33,7 @@ function jobCard(j) {
     <div class="sec"><h4>Tasks <span>${j.tasks.filter(t => t.done).length}/${j.tasks.length}</span></h4>${tasks}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}
-      <div class="swapform" data-swapform="${j.id}" hidden>
+      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
@@ -198,6 +198,7 @@ async function runOcr() {
       const p = parseEmail(t.email, rules);
       if (!p.sender && statsOk) { const m = t.stats.match(/PC for\s+(\S+@\S+)/i); if (m) p.sender = m[1]; }
       // suggest matching in-game cable sets for cable colour requests
+      p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
       p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
       Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, components: comps, body: p.body });
       if (!statsOk) $("#ocrState").textContent += " (No PC Stats popup found – fine for new builds; add parts later with 📸 Parts.)";
@@ -241,9 +242,10 @@ function saveReview() {
     else {
       const tasks = [];
       $("#fObj").value.split("\n").map(s => s.trim()).filter(Boolean).filter(s => !/^complete by/i.test(s)).forEach(t => tasks.push({ id: uid(), text: t, src: "obj", done: false }));
-      document.querySelectorAll("#fHidden input:checked").forEach(c => tasks.push({ id: uid(), text: d.hidden[c.dataset.h].task, src: "hid", done: false }));
+      const brands = [];
+      document.querySelectorAll("#fHidden input:checked").forEach(c => { const h = d.hidden[c.dataset.h]; tasks.push({ id: uid(), text: h.task, src: "hid", done: false }); if (h.brand && !h.avoid) brands.push(h.brand); });
       $("#fExtra").value.split("\n").map(s => s.trim()).filter(Boolean).forEach(t => tasks.push({ id: uid(), text: t, src: "add", done: false }));
-      target = { ...fields, table: 0, id: d.id, level: d.level, tasks, swaps: [], created: Date.now() };
+      target = { ...fields, table: 0, id: d.id, level: d.level, tasks, swaps: [], brands, created: Date.now() };
       jobs.push(target);
     }
     if ((target.table || 0) !== table) { if (table) moveToTable(target, table); else target.table = 0; }

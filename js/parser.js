@@ -64,6 +64,38 @@ function parseComponents(text) {
   return parts.map(name => ({ name, cat: categorize(name) }));
 }
 
+// Manufacturers in the game. [display name, regex source, case-sensitive?]
+// Case-sensitive entries are also everyday words (colorful, patriot, arctic).
+const BRANDS_PREF = [
+  ["ADATA", "adata|xpg"], ["AMD", "amd|ryzen|radeon|team red"], ["ARCTIC", "ARCTIC|Arctic", true], ["ASRock", "asrock"],
+  ["ASUS", "asus|rog|republic of gamers"], ["Alphacool", "alphacool"], ["Antec", "antec"], ["CORSAIR", "corsair"],
+  ["Colorful", "Colorful|COLORFUL|iGame", true], ["Cooler Master", "cooler ?master"], ["Cryorig", "cryorig"],
+  ["DFL", "DFL", true], ["Deepcool", "deep ?cool"], ["EKWB", "ekwb|ek water ?blocks"], ["EVGA", "evga"], ["FSP", "FSP", true],
+  ["Fractal Design", "fractal(?: design)?"], ["G.SKILL", "g\\.? ?skill"], ["GIGABYTE", "gigabyte|aorus"], ["GamerStorm", "gamer ?storm"],
+  ["HyperX", "hyper ?x"], ["InWin", "in ?win"], ["Intel", "intel|team blue"], ["Kingston", "kingston"], ["Kolink", "kolink"],
+  ["Lian Li", "lian ?li"], ["MSI", "msi"], ["Mortoni", "mortoni"], ["NVIDIA", "nvidia|geforce|team green"], ["NZXT", "nzxt"],
+  ["Patriot", "Patriot|PATRIOT", true], ["Raijintek", "raijintek"], ["Seagate", "seagate"], ["Shean", "Shean|SHEAN", true],
+  ["SilverStone", "silver ?stone"], ["Team Group", "team ?group|t-?force"], ["Thermaltake", "thermaltake"],
+  ["ZOTAC", "zotac"], ["be quiet!", "be quiet!|bequiet"],
+];
+const BRAND_LIKE = /\b(fan|fanboy|fangirl|love[sd]?|lov(?:e|ing)|adore|like[sd]?|into|bomb|good|great|best|awesome|amazing|brilliant|excellent|top[- ]notch|rocks?|favou?rite|prefer(?:red)?|swear by|recommend(?:ed)?|only (?:use|buy|trust)|big on|obsessed|can'?t get enough|trust|loyal|guy|girl|the business|legit)\b/i;
+const BRAND_DISLIKE = /\b(hate[sd]?|avoid|don'?t (?:like|want|trust)|do not (?:like|want|trust)|can'?t stand|terrible|awful|rubbish|garbage|trash|crap|never again|not a fan|no more|stay away|steer clear|sick of|keep .{0,15} away|anything but|anything except|not (?:any|one single) )\b/i;
+function detectBrands(body) {
+  const out = [];
+  const sentences = String(body || "").replace(/[’`]/g, "'").split(/(?<=[.?;\n])\s+|(?<=!)\s+(?=[A-Z])/);
+  for (const s of sentences) {
+    for (const [brand, src, cs] of BRANDS_PREF) {
+      const re = new RegExp("(^|[^A-Za-z0-9])(?:" + src + ")(?![A-Za-z0-9])", cs ? "" : "i");
+      if (!re.test(s)) continue;
+      const avoid = BRAND_DISLIKE.test(s), like = BRAND_LIKE.test(s);
+      if (!avoid && !like) continue;
+      const quote = s.trim().replace(/\s+/g, " ");
+      out.push({ brand, avoid, quote: quote.length > 90 ? quote.slice(0, 87) + "…" : quote });
+    }
+  }
+  return out;
+}
+
 function parseEmail(text, rules) {
   rules = rules || DEFAULT_RULES;
   const raw = text.replace(/\r/g, "");
@@ -121,9 +153,14 @@ function parseEmail(text, rules) {
     job.hidden = job.hidden.filter(h => !/cables/i.test(h.task));
     job.hidden.unshift({ task: "Replace ALL cables → " + want.join(" / ") + " cables", because: want.map(w => w.toLowerCase()), want });
   }
+  // brand preferences: "I'm a total NZXT fanboy", "MSI parts are the bomb", "not a fan of Corsair"
+  for (const p of detectBrands(job.body)) {
+    if (job.hidden.some(h => h.brand === p.brand && h.avoid === p.avoid)) continue;
+    job.hidden.push({ task: (p.avoid ? "Avoid " : "Use ") + p.brand + " parts" + (p.avoid ? "" : " where possible"), because: [p.quote], brand: p.brand, avoid: p.avoid });
+  }
   const sus = b.match(/(?:it's|its|it is|got to be|must be|probably|sure it's|think it's) (?:got to be )?(?:the )?(cpu|gpu|graphics card|ram|memory|psu|power supply|motherboard|hard drive|ssd|storage|cooler|fan)/);
   if (sus) job.suspect = sus[1].toUpperCase();
   return job;
 }
 
-if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, categorize };
+if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, categorize, detectBrands };

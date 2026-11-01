@@ -124,3 +124,4 @@ h4.sub:first-child{margin-top:0}
 .dlcrow input{margin-top:4px;accent-color:var(--accent)}
 .dlcrow small{color:var(--muted)}
 .dlcrow.off{opacity:.55;cursor:default}
+.ac em.fav{font-style:normal;color:var(--warn)}
