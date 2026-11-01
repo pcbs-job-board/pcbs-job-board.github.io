@@ -2,7 +2,7 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
-## 0.8.0 (not released yet)
+## 0.8.0
 - Hidden objectives rebuilt from the community hint list.
 - Cable colour and type detection combined into one hint.
 - Urgent jobs get an estimated deadline.
