@@ -157,3 +157,19 @@ ul.mainobj li:hover .x{opacity:1}
 #fHidden .hidrow div{color:#fff1d6;font-weight:600}
 #fHidden .hidrow small{font-weight:400;color:#d6b98a}
 .capemail{border-color:var(--accent);color:#9fdcff;margin:0 0 6px}
+
+/* budget meter (parts only, labour not included) */
+.budget{margin:4px 0 8px;padding:7px 10px 6px;border-radius:8px;background:#16301f;border:1px solid #2e6b45}
+.budget .brow{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#9fdcb6;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.budget .brow b{font-size:19px;color:#c9f5da;letter-spacing:0}
+.budget .bar{height:7px;background:#0d1a12;border-radius:5px;overflow:hidden;margin:5px 0 4px}
+.budget .bar i{display:block;height:100%;background:var(--good);border-radius:5px}
+.budget small{font-size:11.5px;color:#8fb59d}
+.budget small .warn{color:var(--warn)}
+.budget.tight{background:#30260e;border-color:#7a5a17}.budget.tight .brow{color:#ffcf7a}.budget.tight .brow b{color:#ffe2a6}.budget.tight .bar i{background:var(--warn)}.budget.tight small{color:#c9ab72}
+.budget.over{background:#3a1416;border:2px solid var(--bad);box-shadow:0 0 14px #ef535040}
+.budget.over .brow{color:#ffb0ae}.budget.over .brow b{color:#ff8a87}.budget.over .bar i{background:var(--bad)}.budget.over small{color:#e3a3a1}
+.swap .price{padding:1px 7px;font-size:12px;font-weight:600;color:#c9f5da;background:#16301f;border-color:#2e6b45;white-space:nowrap}
+.swap .price.unknown{color:var(--warn);background:#30260e;border-color:#7a5a17}
+.ac .overb span{opacity:.75}
+.ac b.overtag{color:var(--bad);font-weight:700}

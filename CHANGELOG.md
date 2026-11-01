@@ -9,6 +9,8 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Improved "Customer suspects" detection.
 - Fixed objectives missed when inbox text is read with the email.
 - Choosing the part to replace copies it into "New part", ready to edit.
+- Remaining budget shown on each job, with a clear over-budget warning.
+- Part prices shown on swaps and flagged in suggestions when over budget.
 
 ## 0.7.0
 - Long emails can be read from several screenshots.
