@@ -1,52 +1,47 @@
 # Changelog
 
-## 2.3.1
-- Fixed: OCR noise from the status bar / "In transit" button was glued onto the last objective.
-- Fixed: "white smoke came out of the case" triggered dust cleaning. Smoke, burning smells and sparks now add **Find the burnt part – check PSU first**; only smokers ("I'm a smoker", cigarettes) count as dust.
-- New: a part named next to fragile / broken / dead / fried… ("Who makes RAM that fragile anyway?!") adds **Check / replace the RAM** and fills *Customer suspects*.
-- More phrases detected: "not much air coming out / blocked / clogged" and "never cleaned it out" → cleaning; "not as quick as it used to be" and "clicked on something bad" → antivirus.
-- "clean" now matches cleaned/cleaning/clean out, except "clean install" (→ OS) and "clean look/build".
-- Keyword rules saved in your browser get the new keywords automatically.
+Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
-## 2.3.0
-- Job cards split into three sections:
-  - **🔍 Hidden objectives** – everything detected from the email (brands, cables, no used parts, dust, viruses…) in a highlighted amber panel with icons, large text and checkboxes; turns green when all are done. Cards show an amber "🔍 N hidden" badge while any are open.
-  - **Objectives** – the ones listed in the email, as a plain list without checkboxes.
-  - **Found while working** – your own tasks, with checkboxes and the "New task found…" box.
-- Hidden objectives also highlighted in the new-job review window.
+## 0.7.0
+- Fixed stray OCR text being added to objectives.
+- Fixed smoke being detected as dust; smoke now points to a burnt part.
+- Detection of parts the customer hints are broken.
+- More phrases detected for cleaning and antivirus.
+- Saved keyword rules update automatically.
 
-## 2.2.1
-- Cable requests understand all in-game style words (Plastic, Braided, Ribbon, Sleeved, Loose, Tight, Duo): "Those Plastic Yellow cables look really nice" → replace all cables with Plastic Yellow (e.g. Ribbon Plastic Yellow). "I love yellow cables" also counts; "the yellow cable is loose" doesn't.
-- New hidden objective: "a cable wouldn't fit so I forced it" → look for a damaged part.
-- Open jobs are sorted by in-game deadline, soonest first; jobs without a deadline go last.
+## 0.6.0
+- Job cards split into hidden objectives, objectives and found tasks.
+- Hidden objectives highlighted, with a counter badge on each card.
 
-## 2.2.0
-- **Capture job reads only the email.** For repair jobs, open PC Stats in-game and press **📸 Add PC parts capture** in the review window – as many times as you need (e.g. after scrolling the parts list). New parts are merged, duplicates skipped, and your edits are kept. Tabs switch between the captured screenshots; a pasted screenshot while the window is open counts as a parts capture.
-- Brand detection now also reads the next sentence: "Have you heard of FSP? They're meant to be pretty good." → use FSP parts.
-- New hidden objectives: "getting a bit hot" → check temps; "random rebooting" / crashes / blue screen → check PSU & temps.
-- Stray bullet characters (») are removed from objectives.
-- Shorter header labels so the toolbar fits on one line.
+## 0.5.1
+- Improved cable style and colour detection.
+- Detection of forced/damaged parts.
+- Open jobs sorted by deadline.
 
-## 2.1.2
-- Settings → **Game version**: pick the update you play; parts added in later updates disappear from suggestions. Every part now carries the version that added it (from the community workbook, PC/Steam numbering).
-- DLC settings now list only DLC that add parts: **Overclocked Edition Content** (4 NZXT cases by Brock Hofer). DLC without parts (workshops, Esports Expansion, Career Power Pack, soundtrack) are listed in a note.
-- Promo cases (Bush Flight Simulator, Good Company, Galaxy) and PC-only parts are separate "other part groups".
-- App version shown in Settings – click it for this changelog.
+## 0.5.0
+- Capture reads the email only; PC parts are added with separate captures.
+- Improved brand detection.
+- New hidden objectives for heat and random reboots.
+- Smaller fixes to objectives and the toolbar.
 
-## 2.1.1
-- Brand preference detection: "I'm a total NZXT fanboy", "MSI parts are the bomb", "Team Group are meant to be good" add a hidden task "Use <brand> parts where possible" listing what that brand makes. Dislikes ("not a fan of Corsair") add "Avoid <brand> parts".
-- The customer's preferred brand is starred and listed first in part-swap suggestions for that job.
+## 0.4.0
+- Game version setting – hides parts from later updates.
+- DLC settings reworked (Overclocked Edition, promo cases, PC-only parts).
+- App version in Settings, links to this changelog.
 
-## 2.1.0
-- Parts database rebuilt from the community workbook (game v1.15.3): 2,138 parts in 11 categories, including PSUs, CPU coolers, case fans, cables and water cooling, all with unlock level and price.
-- Settings → content packs: switch PC-only parts, NZXT art cases and HEM parts on/off. Enabled packs are tagged in suggestions.
-- "Report missing part" (header button or from the suggestion list) opens a pre-filled GitHub issue.
-- Cable requests now suggest matching in-game cable sets.
-- Project split into separate files; parts data kept as editable CSV.
+## 0.3.1
+- Brand preference detection; preferred brands listed first in suggestions.
 
-## 2.0.0
-- Three workbenches with one job each, open jobs below in a responsive grid.
-- Stop-capture button, cable colour detection, parts autofill.
+## 0.3.0
+- Parts database with 2,000+ parts, levels and prices.
+- Content pack settings.
+- Report missing parts via GitHub.
+- Cable suggestions for cable requests.
+- Project split into separate files.
 
-## 1.0.0
+## 0.2.0
+- New layout: three workbenches, open jobs in a grid below.
+- Stop capture button, cable colour detection, parts autofill.
+
+## 0.1.0
 - First version: capture, OCR, hidden objectives, tables, part swaps.
