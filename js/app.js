@@ -11,6 +11,10 @@ const save = () => LS.set("pcbs.jobs", jobs);
 const TCOL = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)"];
 
 // ================= board =================
+function hidIcon(t) {
+  const s = t.toLowerCase();
+  return /^avoid/.test(s) ? "⛔" : /cable/.test(s) ? "🔌" : /parts where possible/.test(s) ? "★" : /new parts only/.test(s) ? "✨" : /dust|clean/.test(s) ? "💨" : /antivirus|virus/.test(s) ? "🛡️" : /temp|thermal|psu/.test(s) ? "🌡️" : /damaged/.test(s) ? "🔧" : /os\b|operating/.test(s) ? "💿" : /storage|drive/.test(s) ? "💾" : /overclock/.test(s) ? "⚡" : /rgb|light/.test(s) ? "🌈" : /water/.test(s) ? "💧" : /fan|noise/.test(s) ? "🌀" : "❗";
+}
 function deadlineValue(s) { const m = String(s || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : Infinity; }
 function render() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
@@ -25,14 +29,19 @@ function render() {
 }
 function jobCard(j) {
   const busy = n => jobs.some(o => o.table === n && o !== j);
-  const tasks = j.tasks.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}<em class="src ${k.src}">${{ obj: "objective", hid: "hidden", add: "found" }[k.src]}</em></span><button class="ghost x" data-act="delTask" data-id="${j.id}" data-k="${k.id}" title="Remove">✕</button></div>`).join("");
+  const hid = j.tasks.filter(k => k.src === "hid"), main = j.tasks.filter(k => k.src === "obj"), found = j.tasks.filter(k => k.src === "add");
+  const del = k => `<button class="ghost x" data-act="delTask" data-id="${j.id}" data-k="${k.id}" title="Remove">✕</button>`;
+  const hidHtml = hid.length ? `<div class="hidbox ${hid.every(k => k.done) ? "alldone" : ""}"><div class="hidhead">🔍 Hidden objectives <span>${hid.filter(k => k.done).length}/${hid.length}</span></div>${hid.map(k => { const [, t, d] = k.text.match(/^(.*?)\s*(\((?:makes|e\.g\.)[^)]*\))?$/) || [, k.text]; return `<label class="hid ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span class="ico">${hidIcon(k.text)}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d.slice(1, -1))}</small>` : ""}</span>${del(k)}</label>`; }).join("")}</div>` : "";
+  const mainHtml = main.length ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li>${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>` : "";
+  const foundHtml = found.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}</span>${del(k)}</div>`).join("");
   const swaps = j.swaps.map(s => `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span></div><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`).join("");
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
   return `<article class="job" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
-    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.budget != null ? `<span class="chip">Budget $${j.budget}</span>` : ""}${j.deadline ? `<span class="chip dl">⏰ by ${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}</div>
+    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.budget != null ? `<span class="chip">Budget $${j.budget}</span>` : ""}${j.deadline ? `<span class="chip dl">⏰ by ${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
-    <div class="sec"><h4>Tasks <span>${j.tasks.filter(t => t.done).length}/${j.tasks.length}</span></h4>${tasks}
+    ${hidHtml}${mainHtml}
+    <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" hidden>

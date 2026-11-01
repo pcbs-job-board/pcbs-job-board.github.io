@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0
+- Job cards split into three sections:
+  - **🔍 Hidden objectives** – everything detected from the email (brands, cables, no used parts, dust, viruses…) in a highlighted amber panel with icons, large text and checkboxes; turns green when all are done. Cards show an amber "🔍 N hidden" badge while any are open.
+  - **Objectives** – the ones listed in the email, as a plain list without checkboxes.
+  - **Found while working** – your own tasks, with checkboxes and the "New task found…" box.
+- Hidden objectives also highlighted in the new-job review window.
+
 ## 2.2.1
 - Cable requests understand all in-game style words (Plastic, Braided, Ribbon, Sleeved, Loose, Tight, Duo): "Those Plastic Yellow cables look really nice" → replace all cables with Plastic Yellow (e.g. Ribbon Plastic Yellow). "I love yellow cables" also counts; "the yellow cable is loose" doesn't.
 - New hidden objective: "a cable wouldn't fit so I forced it" → look for a damaged part.
