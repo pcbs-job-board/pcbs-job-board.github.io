@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1
+- Cable requests understand all in-game style words (Plastic, Braided, Ribbon, Sleeved, Loose, Tight, Duo): "Those Plastic Yellow cables look really nice" → replace all cables with Plastic Yellow (e.g. Ribbon Plastic Yellow). "I love yellow cables" also counts; "the yellow cable is loose" doesn't.
+- New hidden objective: "a cable wouldn't fit so I forced it" → look for a damaged part.
+- Open jobs are sorted by in-game deadline, soonest first; jobs without a deadline go last.
+
 ## 2.2.0
 - **Capture job reads only the email.** For repair jobs, open PC Stats in-game and press **📸 Add PC parts capture** in the review window – as many times as you need (e.g. after scrolling the parts list). New parts are merged, duplicates skipped, and your edits are kept. Tabs switch between the captured screenshots; a pasted screenshot while the window is open counts as a parts capture.
 - Brand detection now also reads the next sentence: "Have you heard of FSP? They're meant to be pretty good." → use FSP parts.

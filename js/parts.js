@@ -52,7 +52,7 @@ function matchPart(name) {
 function cablesFor(want) {
   const t = normP(want).split(" "), plain = t.includes("plain");
   const need = t.filter(w => w !== "plain" && w !== "sleeved");
-  return INDEX.filter(p => p.cat === "Cables" && need.every(w => p.w.includes(w)) && (!plain || !/duo|patterned|striped|rainbow/.test(p.n))
+  return INDEX.filter(p => p.cat === "Cables" && need.every(w => p.w.includes(w)) && (!plain || !/duo|patterned|striped|rainbow/.test(p.n)) && ['duo', 'patterned', 'striped', 'rainbow'].every(w => need.includes(w) || !p.w.includes(w))
     && (need.includes("dark") || !p.w.includes("dark")) && (need.includes("light") || !p.w.includes("light"))).map(p => p.name);
 }
 // which categories a brand makes (from parts the user has enabled), e.g. NZXT → Case, Motherboard, CPU Cooler…

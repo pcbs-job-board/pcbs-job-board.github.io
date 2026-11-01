@@ -6,6 +6,7 @@ const DEFAULT_RULES = [
   { task: "Install custom cables (check PC Bay)", keys: ["pc bay", "sleeved cable", "custom cable", "cablemod"] },
   { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "getting hot", "bit hot", "running hot", "very hot", "so hot", "burning", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
   { task: "Check PSU & temps (random reboots / shutdowns)", keys: ["reboot", "restarting", "restarts", "random restart", "keeps restarting", "blue screen", "bsod", "crashes", "crashing"] },
+  { task: "Look for a damaged part (something was forced in)", keys: ["forced it", "forced in", "wouldn't fit", "didn't fit", "jammed it", "pushed really hard", "bent a pin", "bent pins", "snapped"] },
   { task: "Check fans (noise)", keys: ["noisy", "loud", "noise", "rattl", "whir", "buzz"] },
   { task: "Check / install OS", keys: ["operating system", "windows", "os ", "reinstall", "wiped", "format"] },
   { task: "Check storage drive", keys: ["hard drive", "storage", "files", "photos", "lost my", "won't boot", "doesn't boot"] },
@@ -152,8 +153,15 @@ function parseEmail(text, rules) {
   if (cab) { job.hidden = job.hidden.filter(h => !/cables/i.test(h.task)); job.hidden.unshift({ task: "Install " + cab[1].trim() + " cables (from PC Bay)", because: ["saw … cables on PC Bay"] }); }
   // "plain red", "braided dark gray" … → replace ALL cables
   const COL = "red|blue|green|yellow|orange|purple|pink|white|black|gray|grey|silver|gold|cyan|teal|brown|lime|magenta|violet|navy|beige|turquoise|aqua|rainbow";
-  const cre = new RegExp("\\b(plain|braided|sleeved)\\s+((?:(?:light|dark|bright|pale|deep|neon|matte|sky|baby|royal|hot)\\s+)?(?:" + COL + "))\\b", "gi");
-  const want = [...new Set([...b.matchAll(cre)].map(m => (m[1] + " " + m[2]).replace(/\b\w/g, c => c.toUpperCase()).replace(/Gray/g, "Grey")))];
+  // style words as in the game's cable names: Loose/Ribbon/Sleeved/Tight, Plastic/Braided, Plain/Duo…
+  const STYLE = "(?:(?:plain|braided|sleeved|plastic|ribbon|loose|tight|duo)\\s+)+";
+  const SHADE = "(?:(?:light|dark|bright|pale|deep|neon|matte|sky|baby|royal|hot)\\s+)?";
+  const cre = new RegExp("\\b(" + STYLE + ")(" + SHADE + "(?:" + COL + "))\\b", "gi");
+  const want = [...b.matchAll(cre)].map(m => (m[1].trim() + " " + m[2]));
+  // "those yellow cables look really nice" – colour + cables, only when the customer likes / wants them
+  const cre2 = new RegExp("\\b(" + SHADE + "(?:" + COL + "))\\s+(?:cables?|wires?|cabling)\\b", "gi");
+  for (const s of b.split(/[.!?]/)) if (/\b(like|love|nice|want|would like|cool|awesome|great|prefer|lovely|pretty|amazing)\b/.test(s)) for (const m of s.matchAll(cre2)) if (!want.some(w => w.endsWith(m[1]))) want.push(m[1]);
+  want.splice(0, want.length, ...new Set(want.map(w => w.replace(/\s+/g, " ").replace(/\b\w/g, c => c.toUpperCase()).replace(/Gray/g, "Grey"))));
   if (want.length) {
     job.hidden = job.hidden.filter(h => !/cables/i.test(h.task));
     job.hidden.unshift({ task: "Replace ALL cables → " + want.join(" / ") + " cables", because: want.map(w => w.toLowerCase()), want });

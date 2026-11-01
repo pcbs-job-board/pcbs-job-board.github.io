@@ -11,13 +11,15 @@ const save = () => LS.set("pcbs.jobs", jobs);
 const TCOL = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)"];
 
 // ================= board =================
+function deadlineValue(s) { const m = String(s || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : Infinity; }
 function render() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
     const j = jobs.find(j => j.table === n);
     return `<section class="slot" style="--c:${TCOL[n]}" data-table="${n}"><h2>Table ${n}<small>${j ? "in progress" : "free"}</small></h2>
       <div class="body">${j ? jobCard(j) : `<div class="free">Free – drag a job here or press T${n} on a job</div>`}</div></section>`;
   }).join("");
-  const q = jobs.filter(j => !j.table);
+  // soonest in-game deadline first; jobs without a deadline keep their order at the end
+  const q = jobs.filter(j => !j.table).map((j, i) => ({ j, i, d: deadlineValue(j.deadline) })).sort((a, b) => a.d - b.d || a.i - b.i).map(x => x.j);
   $("#qCount").textContent = q.length ? `(${q.length})` : "";
   $("#queue").innerHTML = q.length ? q.map(jobCard).join("") : `<div class="empty">No open jobs. Press <b>📸 Capture job</b> or <b>＋ Manual job</b>.</div>`;
 }
