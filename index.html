@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PCBS Job Board</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <h1>PCBS <span>Job Board</span></h1>
+  <button id="btnShare">🖥️ Connect screen</button>
+  <button id="btnStop" class="danger" hidden>⏹ Stop capture</button>
+  <div class="status"><div class="dot" id="dot"></div><span id="statusTxt">Not connected</span></div>
+  <canvas id="live" width="160" height="90" title="Live preview of the shared screen" hidden style="border:1px solid var(--line);border-radius:4px;background:#000;height:45px;width:80px"></canvas>
+  <button class="primary big" id="btnCapture">📸 Capture job</button>
+  <button id="btnManual">＋ Manual job</button>
+  <div class="spacer"></div>
+  <button id="btnReport" title="Tell us about a part that is missing from the suggestions">🚩 Report missing part</button>
+  <button id="btnSettings">⚙️ Settings</button>
+  <button id="btnExport">⬇ Export</button>
+  <button id="btnImport">⬆ Import</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+</header>
+
+<main>
+  <section>
+    <p class="row-title"><b>Workbenches</b> one job per table</p>
+    <div id="tables"></div>
+  </section>
+  <section>
+    <p class="row-title"><b>Open jobs</b> accepted, not started <span id="qCount"></span></p>
+    <div id="queue"></div>
+  </section>
+</main>
+
+<video id="video" autoplay muted playsinline style="position:fixed;left:0;bottom:0;width:4px;height:4px;opacity:0.01;pointer-events:none"></video>
+<div id="drop">Drop screenshot to create a job</div>
+<div id="toast"><span id="toastTxt"></span><button id="toastBtn">Undo</button></div>
+<div class="ac" id="ac" hidden></div>
+
+<!-- Review dialog -->
+<dialog id="dlgReview">
+  <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <div class="review">
+      <div>
+        <div class="ctrls">
+          <span class="hint" style="margin:0">Area to edit:</span>
+          <div class="seg"><button data-mode="email" class="sel">Email area</button><button data-mode="stats">PC Stats area</button></div>
+          <button id="btnLock">🔒 Locked</button><button id="btnResetCrop">↺ Reset areas</button><button id="btnReOcr">↻ Read again</button>
+        </div>
+        <p class="hint">Blue box = email text, budget and objectives. Orange box = the <b>PC Stats</b> popup (open it in-game before capturing). Click <b>🔒 Locked</b> to unlock before drawing new boxes.</p>
+        <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
+        <div id="shotWrap"><img id="shot" alt="capture"><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
+        <div class="progress"><div id="prog"></div></div>
+        <div class="hint" id="ocrState"></div>
+        <details><summary>Raw text read from screen</summary><div class="rawtxt" id="rawTxt"></div></details>
+      </div>
+      <div class="form" id="revForm"></div>
+    </div>
+  </div>
+</dialog>
+
+<!-- Settings dialog -->
+<dialog id="dlgSettings" style="max-width:640px">
+  <div class="dlg-h"><h3>Settings</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <h4 class="sub">Content packs in your game</h4>
+    <p class="hint">Parts from packs you switch off never show up in suggestions. Enabled packs show a tag next to their parts.</p>
+    <div id="dlcList"></div>
+    <p class="hint" id="dbInfo"></p>
+    <h4 class="sub">Hidden objectives</h4>
+    <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
+    <button id="btnRules">Edit keyword rules…</button>
+  </div>
+</dialog>
+
+<!-- Report dialog -->
+<dialog id="dlgReport" style="max-width:560px">
+  <div class="dlg-h"><h3>🚩 Report a missing part</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b form">
+    <label>Exact part name (as shown in the game)</label><input id="rName" placeholder="e.g. Corsair RM850x">
+    <div class="grid2"><div><label>Category</label><select id="rCat"><option value="">— choose —</option><option>CPU</option><option>CPU Cooler</option><option>Motherboard</option><option>RAM</option><option>GPU</option><option>Storage</option><option>PSU</option><option>Case</option><option>Case Fan</option><option>Cables</option><option>Water Cooling</option><option>Other</option></select></div><div><label>From</label><select id="rDlc"></select></div></div>
+    <div class="grid2"><div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1"></div><div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0"></div></div>
+    <label>Notes</label><textarea id="rNotes" rows="3" placeholder="Where did you see it? Shop, PC Bay, customer PC…"></textarea>
+    <p class="hint" id="rRepoHint"></p>
+    <div style="display:flex;gap:8px"><button class="primary" id="rSend" style="flex:1">Open report on GitHub</button><button id="rCopy">Copy report</button></div>
+  </div>
+</dialog>
+
+<!-- Rules dialog -->
+<dialog id="dlgRules" style="max-width:760px">
+  <div class="dlg-h"><h3>Hidden-objective keyword rules</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <p class="hint">One rule per line: <code>Task to add: keyword, keyword, keyword</code>. If any keyword appears in the email text (not case-sensitive), the task is suggested. Cable colour requests (“plain red”, “braided dark gray”) and “saw … cables on PC Bay” are detected automatically and don't need a rule.</p>
+    <textarea class="rules" id="rulesTxt"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="primary" id="rulesSave">Save rules</button><button id="rulesReset">Reset to defaults</button></div>
+  </div>
+</dialog>
+
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="data/parts-db.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/parts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

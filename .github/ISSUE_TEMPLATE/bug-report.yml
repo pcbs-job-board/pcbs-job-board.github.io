@@ -1,0 +1,21 @@
+name: Bug report
+description: Something in the job board doesn't work
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Chrome 130 / Edge / Firefox
+  - type: dropdown
+    id: hosting
+    attributes:
+      label: How do you open the app?
+      options: [GitHub Pages link, index.html from my disk]

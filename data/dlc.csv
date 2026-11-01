@@ -1,0 +1,4 @@
+key,label,default_on,note
+pc_only,PC-only parts (later PC updates),0,"Marked 'Platform Lock: PC' in the community workbook - usually missing from console versions. Turn on if you see them in your game."
+dlc_cases,NZXT art cases (DLC/promo),0,"NZXT H500/H700i special editions (Galaxy, Re-Animator, Split, Organ Collector...)"
+hem,Hardware Expansion Mod (PC mod),0,"Community mod parts - PC only"

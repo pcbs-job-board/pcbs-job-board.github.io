@@ -1,0 +1,49 @@
+name: Missing part
+description: A part from PC Building Simulator is missing from the job board suggestions
+title: "[Missing part] "
+labels: ["missing-part"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks! Reports opened from the app are pre-filled. Please check the name is spelled exactly like in the game.
+  - type: input
+    id: part_name
+    attributes:
+      label: Exact part name
+      placeholder: e.g. CORSAIR RM850x
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options: [CPU, CPU Cooler, Motherboard, RAM, GPU, Storage, PSU, Case, Case Fan, Cables, Water Cooling, Other]
+    validations:
+      required: true
+  - type: input
+    id: content
+    attributes:
+      label: Base game or DLC / content pack
+      placeholder: Base game
+  - type: input
+    id: level
+    attributes:
+      label: Unlock level (if known)
+  - type: input
+    id: price
+    attributes:
+      label: Shop price in $ (if known)
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: PC / PS4 / PS5 / Xbox / Switch
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Where you saw it (shop, PC Bay, customer PC…). Screenshots welcome.
+  - type: input
+    id: app_version
+    attributes:
+      label: App / database version

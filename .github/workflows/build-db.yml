@@ -1,0 +1,25 @@
+# Rebuilds data/parts-db.js whenever the part CSV files change.
+name: Build parts database
+on:
+  push:
+    paths: ["data/parts/**", "data/dlc.csv", "tools/build_db.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python tools/build_db.py
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet data/parts-db.js; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898237+github-actions[bot]@users.noreply.github.com"
+            git add data/parts-db.js
+            git commit -m "Rebuild parts database"
+            git push
+          fi
