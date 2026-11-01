@@ -206,27 +206,13 @@ function cropCanvas(img, r) {
   const c = document.createElement("canvas"); c.width = sw * scale; c.height = sh * scale;
   const g = c.getContext("2d"); g.imageSmoothingQuality = "high"; g.filter = "grayscale(1) contrast(1.15)"; g.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height); return c;
 }
+let lastConf = null;
 async function ocr(img, kind) {
   const w = await getWorker();
   $("#ocrState").textContent = `Reading ${kind === "email" ? "email" : "PC Stats"}…`; $("#prog").style.width = "0";
-  const text = (await w.recognize(cropCanvas(img, crops[kind === "parts" ? "stats" : kind]))).data.text;
-  $("#prog").style.width = "100%"; return text;
-}
-// tidy OCR'd part names using the parts database
-// long emails: join several screenshots, dropping the lines that overlap
-function mergeTexts(texts) {
-  const key = l => l.toLowerCase().replace(/[^a-z0-9]/g, "");
-  let acc = [];
-  for (const t of texts) {
-    const ls = t.split("\n").map(s => s.trim()).filter(Boolean);
-    if (!acc.length) { acc = ls; continue; }
-    let k = Math.min(acc.length, ls.length);
-    for (; k > 0; k--) { let ok = true; for (let i = 0; i < k; i++) if (key(acc[acc.length - k + i]) !== key(ls[i])) { ok = false; break; } if (ok) break; }
-    let rest = ls.slice(k);
-    if (!k) { const seen = new Set(acc.map(key)); let last = -1; ls.forEach((l, i) => { if (key(l).length > 8 && seen.has(key(l))) last = i; }); rest = ls.slice(last + 1); }
-    acc = acc.concat(rest);
-  }
-  return acc.join("\n");
+  const d = (await w.recognize(cropCanvas(img, crops[kind === "parts" ? "stats" : kind]))).data;
+  lastConf = (d.lines || []).map(l => [l.text.trim(), l.confidence]); // per-line certainty, used when joining screenshots
+  $("#prog").style.width = "100%"; return d.text;
 }
 
 // ================= review dialog =================
@@ -287,7 +273,7 @@ async function runOcr() {
       const t = await ocr($("#shot"), "parts");
       sh.kind = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; showShot(rev.cur, false);
     }
-    const text = await ocr($("#shot"), sh.kind); sh.text = text; $("#rawTxt").textContent = text;
+    const text = await ocr($("#shot"), sh.kind); sh.text = text; sh.conf = lastConf; $("#rawTxt").textContent = text;
     if (sh.kind === "parts") {
       const ok = /components|pc for|benchmark/i.test(text);
       sh.parts = ok ? resolvePCStats(text) : null;
@@ -298,7 +284,7 @@ async function runOcr() {
       return;
     }
     syncComps();
-    const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => s.text);
+    const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => ({ text: s.text, conf: s.conf }));
     const keep = { extra: $("#fExtra")?.value, table: $("#fTable")?.value };
     const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules);
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });

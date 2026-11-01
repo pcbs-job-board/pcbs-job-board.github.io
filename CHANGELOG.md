@@ -2,6 +2,10 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
+## 0.8.1 (not released yet)
+- Fixed email and subject missing when screenshots are taken bottom-first.
+- Fixed duplicated objectives from words cut off at the edge of a screenshot.
+
 ## 0.8.0
 - Hidden objectives rebuilt from the community hint list.
 - Cable colour and type detection combined into one hint.
