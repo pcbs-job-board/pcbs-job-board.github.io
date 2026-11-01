@@ -64,12 +64,17 @@
 </dialog>
 
 <!-- Settings dialog -->
-<dialog id="dlgSettings" style="max-width:640px">
-  <div class="dlg-h"><h3>Settings</h3><button class="ghost" data-close>✕</button></div>
+<dialog id="dlgSettings" style="max-width:660px">
+  <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
-    <h4 class="sub">Content packs in your game</h4>
-    <p class="hint">Parts from packs you switch off never show up in suggestions. Enabled packs show a tag next to their parts.</p>
+    <h4 class="sub">Game version</h4>
+    <select id="gameVersion" style="width:100%"></select>
+    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version and use <b>PC-only parts</b> below instead.</p>
+    <h4 class="sub">DLC with extra parts</h4>
     <div id="dlcList"></div>
+    <p class="hint" id="dlcOther"></p>
+    <h4 class="sub">Other part groups</h4>
+    <div id="groupList"></div>
     <p class="hint" id="dbInfo"></p>
     <h4 class="sub">Hidden objectives</h4>
     <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>

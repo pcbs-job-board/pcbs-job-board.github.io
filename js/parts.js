@@ -7,6 +7,14 @@ const DLC_LABEL = Object.fromEntries(DLCS.map(d => [d.key, d.label]));
 let dlcOn = Object.assign(Object.fromEntries(DLCS.map(d => [d.key, d.on])), LS.get("pcbs.dlc", {}));
 const dlcEnabled = k => !k || !!dlcOn[k];
 function setDlc(k, v) { dlcOn[k] = v; LS.set("pcbs.dlc", dlcOn); buildIndex(); }
+// game version the user plays (PC/Steam numbering); parts added later are hidden
+const VERSIONS = window.PARTS_VERSIONS || [];
+const verNum = v => { const [a, b] = String(v || "0").split("."); return (+a || 0) * 1000 + (+b || 0); };
+const LATEST = VERSIONS.length ? VERSIONS[VERSIONS.length - 1].v : "";
+let gameVersion = LS.get("pcbs.gameVersion", "") || LATEST;
+if (!VERSIONS.some(v => v.v === gameVersion)) gameVersion = LATEST;
+function setGameVersion(v) { gameVersion = v; LS.set("pcbs.gameVersion", v === LATEST ? "" : v); buildIndex(); }
+const versionOk = v => !v || !gameVersion || verNum(v) <= verNum(gameVersion);
 const dlcCount = k => Object.values(window.PARTS_DB || {}).reduce((n, rows) => n + rows.filter(r => r[4] === k).length, 0);
 
 // parts the user typed that are not in the database
@@ -17,9 +25,9 @@ let INDEX = [];
 function buildIndex() {
   INDEX = [];
   const db = window.PARTS_DB || {};
-  for (const cat in db) for (const [name, lvl, price, spec, dlc] of db[cat]) {
-    if (!dlcEnabled(dlc)) continue;
-    const n = normP(name); INDEX.push({ cat, name, lvl, price, spec, dlc, n, c: n.replace(/ /g, ""), w: n.split(" ") });
+  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver] of db[cat]) {
+    if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
+    const n = normP(name); INDEX.push({ cat, name, lvl, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }

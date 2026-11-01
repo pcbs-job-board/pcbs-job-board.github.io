@@ -10,7 +10,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 - Hidden-objective detection with editable keyword rules, cable colour requests and brand preferences ("total NZXT fanboy")
 - Three workbenches (one job each) + open-jobs queue, drag & drop
 - Part swaps with autofill from 2,000+ in-game parts (level and price shown)
-- Content-pack settings: PC-only parts, DLC cases, HEM mod
+- Settings for game version (hides parts from later updates), Overclocked Edition DLC, PC-only parts
 - 🚩 Report missing parts → GitHub issue
 
 ## Privacy
@@ -26,7 +26,8 @@ js/parser.js               email / PC Stats text parsing, hidden-objective rules
 js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
 data/parts/*.csv           parts list – one file per category (source of truth)
-data/dlc.csv               content packs (key, label, default on/off)
+data/dlc.csv               DLC / part groups (key, label, group, default on/off)
+data/versions.csv          game versions shown in Settings
 data/parts-db.js           GENERATED from the CSVs – don't edit by hand
 tools/build_db.py          CSV → data/parts-db.js
 tools/import_xlsx.py       community workbook → CSVs
@@ -35,7 +36,7 @@ tools/import_xlsx.py       community workbook → CSVs
 ```
 
 ## Adding / fixing parts
-1. Edit the right CSV in `data/parts/` (columns: `name, level, price, spec, dlc, source`). For a reported part, put `report #<issue number>` in `source`.
+1. Edit the right CSV in `data/parts/` (columns: `name, level, price, spec, dlc, version, source`). For a reported part, put `report #<issue number>` in `source`.
 2. Commit. The **Build parts database** workflow regenerates `data/parts-db.js` automatically (or run `python tools/build_db.py` yourself).
 3. Close the issue.
 

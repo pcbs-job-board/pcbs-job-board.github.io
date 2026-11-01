@@ -5,7 +5,8 @@ into data/parts/*.csv, then run tools/build_db.py.
 Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
 
 * Parts with "Platform Lock" = PC (added in PC updates, usually missing on console)
-  get dlc = "pc_only".  Parts with "Is DLC" = Y get dlc = "dlc_cases".
+  get dlc = "pc_only". The 4 Overclocked Edition cases get "overclocked", other
+  "Is DLC" = Y cases get "promo_cases". "Steam Version" goes to the version column.
   Parts flagged "HEM" get dlc = "hem".
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
@@ -17,13 +18,22 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "price", "spec", "dlc", "source"]
+FIELDS = ["name", "level", "price", "spec", "dlc", "version", "source"]
+
+# paid DLC with its own parts (names checked against the store pages)
+OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
 
 def s(v):
     if v is None or (isinstance(v, float) and pd.isna(v)):
         return ""
     if isinstance(v, float) and v.is_integer():
         v = int(v)
+    return str(v).strip()
+
+def sv(v):
+    """Steam version cell: keep '1.0' / '1.15' as written (no int conversion)."""
+    if v is None or (isinstance(v, float) and pd.isna(v)):
+        return ""
     return str(v).strip()
 
 # sheet -> (csv file, spec builder)
@@ -63,15 +73,17 @@ def main():
             dlc = ""
             if s(r.get("HEM")) == "Y":
                 dlc = "hem"
+            elif name in OVERCLOCKED:
+                dlc = "overclocked"
             elif s(r.get("Is DLC")) == "Y":
-                dlc = "dlc_cases"
+                dlc = "promo_cases"
             elif s(r.get("Platform Lock")).startswith("PC"):
                 dlc = "pc_only"
             note = "" if s(r.get("In Shop")) == "Y" else "not in shop"
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

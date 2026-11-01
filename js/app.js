@@ -271,13 +271,23 @@ document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.close
 $("#dlgReview").addEventListener("close", () => { acEl.hidden = true; document.body.append(acEl); });
 
 // ================= settings: content packs (DLC) + rules =================
+// DLC that only add workshops, modes or music – listed for information, no parts to filter
+const DLC_NO_PARTS = ["Career Power Pack", "Esports Expansion", "NZXT Workshop", "Republic of Gamers Workshop", "Fractal Design Workshop", "AORUS Workshop", "EVGA Workshop", "Overclockers UK Workshop", "Razer Workshop", "PC Building Simulator Soundtrack"];
+function changelogUrl() { const r = reportRepo(); return r ? `https://github.com/${r}/blob/main/CHANGELOG.md` : "CHANGELOG.md"; }
 function renderSettings() {
   const m = window.PARTS_META || {};
-  $("#dlcList").innerHTML = DLCS.length ? DLCS.map(d => { const n = dlcCount(d.key); return `<label class="dlcrow ${n ? "" : "off"}"><input type="checkbox" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""} ${n ? "" : "disabled"}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}${n ? "" : " – no parts in the database yet"}</small></span></label>`; }).join("") : `<p class="hint">No content packs defined.</p>`;
+  const row = d => { const n = dlcCount(d.key); return `<label class="dlcrow"><input type="checkbox" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}</small></span></label>`; };
+  const withParts = DLCS.filter(d => dlcCount(d.key) > 0);
+  $("#dlcList").innerHTML = withParts.filter(d => d.group === "dlc").map(row).join("") || `<p class="hint">None.</p>`;
+  $("#groupList").innerHTML = withParts.filter(d => d.group !== "dlc").map(row).join("");
+  $("#dlcOther").textContent = "No extra parts (workshops, game modes, music – nothing to switch): " + DLC_NO_PARTS.join(", ") + ".";
+  $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
+  $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
+  $("#appVersion").href = changelogUrl();
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
-$("#dlcList").addEventListener("change", e => { const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } });
+$("#dlgSettings").addEventListener("change", e => { const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
 const rulesToText = r => r.map(x => `${x.task}: ${x.keys.join(", ")}`).join("\n");
 $("#btnRules").onclick = () => { $("#dlgSettings").close(); $("#rulesTxt").value = rulesToText(rules); $("#dlgRules").showModal(); };
 
@@ -313,7 +323,7 @@ $("#rulesSave").onclick = () => {
 $("#rulesReset").onclick = () => { $("#rulesTxt").value = rulesToText(DEFAULT_RULES); };
 
 // ================= export / import =================
-$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, crops, partsHistory }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
+$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
 $("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.crops) crops = d.crops; if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 

@@ -1,343 +1,343 @@
-name,level,price,spec,dlc,source
-ADATA Premier Series 4 GB 2133 MHz,2,35,DDR4,,xlsx v1.15.3
-ADATA Premier Series 8 GB 2133 MHz,2,60,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D40 RGB 8 GB 4000 MHz,24,150,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D40 RGB 8 GB 4133 MHz,24,170,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D40 RGB 8 GB 4266 MHz,24,190,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D40 RGB 8 GB 4400 MHz,24,230,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D41 RGB (Red) 8 GB 3000 MHz,19,110,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D41 RGB (Red) 8 GB 3200 MHz,19,120,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D41 RGB (Red) 8 GB 3600 MHz,19,130,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 16 GB 3000 MHz,19,200,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 16 GB 3200 MHz,19,220,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 8 GB 3000 MHz,19,110,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 8 GB 3200 MHz,19,120,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 8 GB 3600 MHz,19,130,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D60G RGB 8 GB 4133 MHz,19,170,DDR4,pc_only,xlsx v1.15.3
-ADATA SPECTRIX D80 RGB 8 GB 3000 MHz,23,110,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D80 RGB 8 GB 3200 MHz,23,120,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D80 RGB 8 GB 3600 MHz,23,130,DDR4,,xlsx v1.15.3
-ADATA SPECTRIX D80 RGB 8 GB 4133 MHz,23,170,DDR4,,xlsx v1.15.3
-ADATA XPG Dazzle (Red LED) 16 GB 2400 MHz,6,135,DDR4,,xlsx v1.15.3
-ADATA XPG Dazzle (Red LED) 16 GB 3000 MHz,6,195,DDR4,,xlsx v1.15.3
-ADATA XPG Dazzle (Red LED) 8 GB 2400 MHz,6,75,DDR4,,xlsx v1.15.3
-ADATA XPG Dazzle (Red LED) 8 GB 3000 MHz,6,105,DDR4,,xlsx v1.15.3
-ADATA XPG Flame 16 GB 3000 MHz,13,190,DDR4,,xlsx v1.15.3
-ADATA XPG Flame 8 GB 2666 MHz,13,80,DDR4,,xlsx v1.15.3
-ADATA XPG Flame 8 GB 3000 MHz,13,100,DDR4,,xlsx v1.15.3
-ADATA XPG GAMMIX D10 4 GB 2400 MHz,5,40,DDR4,,xlsx v1.15.3
-ADATA XPG GAMMIX D10 4 GB 2666 MHz,5,45,DDR4,,xlsx v1.15.3
-ADATA XPG GAMMIX D10 8 GB 2400 MHz,5,70,DDR4,,xlsx v1.15.3
-ADATA XPG GAMMIX D10 8 GB 2666 MHz,5,80,DDR4,,xlsx v1.15.3
-ADATA XPG Z1 8 GB 4000 MHz,14,140,DDR4,,xlsx v1.15.3
-ADATA XPG Z1 8 GB 4133 MHz,17,160,DDR4,,xlsx v1.15.3
-ADATA XPG Z1 8 GB 4266 MHz,22,180,DDR4,,xlsx v1.15.3
-ADATA XPG Z1 8 GB 4400 MHz,24,220,DDR4,,xlsx v1.15.3
-ADATA XPG Z1 8 GB 4600 MHz,28,280,DDR4,,xlsx v1.15.3
-Colorful CVN Guardian DDR4 16 GB 3200 MHz,31,220,DDR4,pc_only,xlsx v1.15.3
-Colorful CVN Guardian DDR4 8 GB 2666 MHz,31,90,DDR4,pc_only,xlsx v1.15.3
-Colorful CVN Guardian DDR4 8 GB 3200 MHz,31,120,DDR4,pc_only,xlsx v1.15.3
-Colorful iGame Vulcan DDR4 8 GB 3600 MHz,31,130,DDR4,pc_only,xlsx v1.15.3
-Colorful iGame Vulcan DDR4 8 GB 4266 MHz,31,190,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum 16 GB 2400 MHz,8,135,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 16 GB 2666 MHz,6,155,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 16 GB 2800 MHz,6,175,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 16 GB 3000 MHz,6,195,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 16 GB 3200 MHz,8,215,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 4 GB 2666 MHz,6,50,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 4 GB 3000 MHz,6,60,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 4 GB 3200 MHz,8,65,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 4 GB 4000 MHz,14,80,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 2400 MHz,6,75,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 2666 MHz,6,85,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 2800 MHz,6,95,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 3000 MHz,6,105,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 3200 MHz,8,115,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 3600 MHz,10,125,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum 8 GB 3733 MHz,12,135,DDR4,,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 16 GB 3200 MHz,28,220,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 16 GB 3600 MHz,28,240,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 16 GB 4000 MHz,28,280,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 16 GB 4800 MHz,28,840,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 8 GB 3200 MHz,28,120,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 8 GB 3600 MHz,28,130,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 8 GB 4000 MHz,28,150,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (Black) 8 GB 4800 MHz,28,430,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 16 GB 3200 MHz,28,220,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 16 GB 3600 MHz,28,240,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 16 GB 4000 MHz,28,280,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 16 GB 4800 MHz,28,840,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 8 GB 3200 MHz,28,120,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 8 GB 3600 MHz,28,130,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 8 GB 4000 MHz,28,150,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum RGB (White) 8 GB 4800 MHz,28,430,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Dominator Platinum Special Edition CONTRAST 8 GB 3466 MHz,28,123,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 16 GB 2400 MHz,28,130,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 16 GB 2666 MHz,28,150,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 16 GB 3200 MHz,28,210,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 16 GB 3600 MHz,28,230,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 32 GB 2666 MHz,28,285,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 32 GB 3200 MHz,28,405,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 32 GB 3600 MHz,28,445,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 4 GB 2133 MHz,28,35,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 4 GB 2400 MHz,28,40,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 4 GB 2666 MHz,28,45,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 2400 MHz,28,70,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 2666 MHz,28,80,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 2933 MHz,28,96,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 3200 MHz,28,110,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 3600 MHz,28,120,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 4000 MHz,28,140,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Black) 8 GB 4333 MHz,28,200,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 4 GB 2133 MHz,28,35,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 4 GB 2400 MHz,28,40,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 4 GB 2666 MHz,28,45,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 4 GB 2800 MHz,28,50,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 4 GB 3000 MHz,28,55,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 8 GB 2400 MHz,28,70,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 8 GB 2666 MHz,28,80,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Blue) 8 GB 3000 MHz,28,100,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Cool Gray) 16 GB 3000 MHz,28,190,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Cool Gray) 16 GB 3200 MHz,28,210,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Cool Gray) 8 GB 3000 MHz,28,100,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Cool Gray) 8 GB 3200 MHz,28,110,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 16 GB 2400 MHz,28,130,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 16 GB 2666 MHz,28,150,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 16 GB 3200 MHz,28,210,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 16 GB 3600 MHz,28,230,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 32 GB 2666 MHz,28,285,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 32 GB 3200 MHz,28,405,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 32 GB 3600 MHz,28,445,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 32 GB 3600 MHz,28,445,"DDR4, not in shop",pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 4 GB 2133 MHz,28,35,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 4 GB 2400 MHz,28,40,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 4 GB 2666 MHz,28,45,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 2400 MHz,28,70,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 2666 MHz,28,80,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 2933 MHz,28,96,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 3200 MHz,28,110,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 3600 MHz,28,120,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 4000 MHz,28,140,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (Red) 8 GB 4333 MHz,28,200,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 16 GB 2666 MHz,28,150,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 16 GB 3000 MHz,28,190,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 16 GB 3200 MHz,28,210,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 8 GB 2666 MHz,28,80,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 8 GB 3000 MHz,28,100,DDR4,pc_only,xlsx v1.15.3
-CORSAIR Vengeance LPX (White) 8 GB 3200 MHz,28,110,DDR4,pc_only,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (Black) 8 GB 3600 MHz,22,130,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4000 MHz,22,150,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4266 MHz,22,190,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4700 MHz,29,370,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (White) 8 GB 2666 MHz,22,90,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (White) 8 GB 3000 MHz,22,110,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (White) 8 GB 3200 MHz,22,120,DDR4,,xlsx v1.15.3
-CORSAIR VENGEANCE RGB PRO (White) 8 GB 3600 MHz,22,130,DDR4,,xlsx v1.15.3
-DFL MOTIV8OR 4 GB 2400 MHz,1,40,DDR4,,xlsx v1.15.3
-DFL MOTIV8OR 8 GB 2400 MHz,1,70,DDR4,,xlsx v1.15.3
-G.SKILL Flare X 8 GB 2400 MHz,2,70,DDR4,,xlsx v1.15.3
-G.SKILL Flare X 8 GB 3200 MHz,7,110,DDR4,,xlsx v1.15.3
-G.SKILL FORTIS 8 GB 2133 MHz,2,60,DDR4,,xlsx v1.15.3
-G.SKILL FORTIS 8 GB 2400 MHz,2,70,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws 4 (Black) 8 GB 2800 MHz,4,90,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws 4 (Black) 8 GB 3200 MHz,7,110,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws 4 (Blue) 8 GB 3000 MHz,7,100,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws 4 (Red) 8 GB 3000 MHz,7,100,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Black) 16 GB 3200 MHz,7,210,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Black) 16 GB 3400 MHz,9,222,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Black) 8 GB 3200 MHz,7,110,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Black) 8 GB 3600 MHz,11,120,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Red) 16 GB 3400 MHz,9,222,DDR4,,xlsx v1.15.3
-G.SKILL Ripjaws V (Red) 8 GB 3600 MHz,11,120,DDR4,,xlsx v1.15.3
-G.SKILL Sniper X (Black) 8 GB 3400 MHz,9,116,DDR4,,xlsx v1.15.3
-G.SKILL Sniper X (Black) 8 GB 3600 MHz,11,120,DDR4,,xlsx v1.15.3
-G.SKILL Sniper X (Silver) 8 GB 3200 MHz,7,110,DDR4,,xlsx v1.15.3
-G.SKILL Sniper X (Silver) 8 GB 3600 MHz,11,120,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Black) 16 GB 4000 MHz,15,270,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Black) 8 GB 4400 MHz,25,220,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Black) 8 GB 4500 MHz,27,252,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Silver) 16 GB 4000 MHz,15,270,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Silver) 8 GB 4000 MHz,15,140,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z (Silver) 8 GB 4500 MHz,27,252,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Neo 16 GB 3200 MHz,10,220,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Neo 32 GB 3200 MHz,10,415,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Neo 8 GB 3200 MHz,10,120,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 16 GB 3200 MHz,14,220,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 16 GB 3866 MHz,13,272,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 3000 MHz,14,110,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 3200 MHz,14,120,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 3600 MHz,14,130,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 4000 MHz,15,150,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 4400 MHz,25,230,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z RGB 8 GB 4800 MHz,30,430,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Gold) 16 GB 3200 MHz,10,220,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Gold) 16 GB 4266 MHz,25,360,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Gold) 32 GB 3200 MHz,10,415,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Gold) 8 GB 3200 MHz,10,120,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Silver) 16 GB 3200 MHz,10,220,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Silver) 16 GB 4266 MHz,25,360,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Silver) 32 GB 3200 MHz,10,415,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal (Silver) 8 GB 3200 MHz,10,120,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 3600 MHz,34,240,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4000 MHz,34,280,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4266 MHz,34,360,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4800 MHz,34,840,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 32 GB 4266 MHz,34,695,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 8 GB 3600 MHz,34,130,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Gold 8 GB 4000 MHz,34,150,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 3600 MHz,34,240,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4000 MHz,34,280,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4266 MHz,34,360,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4800 MHz,34,840,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 32 GB 4266 MHz,34,695,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 8 GB 3600 MHz,34,130,DDR4,,xlsx v1.15.3
-G.SKILL Trident Z Royal Elite DDR4 Silver 8 GB 4000 MHz,34,150,DDR4,,xlsx v1.15.3
-GIGABYTE AORUS RGB 8 GB 3200 MHz,14,120,DDR4,,xlsx v1.15.3
-GIGABYTE Memory 8 GB 2666 MHz,14,80,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 2400 MHz,12,140,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 2666 MHz,12,160,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 3000 MHz,12,200,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 3200 MHz,12,220,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 3466 MHz,12,236,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 3600 MHz,12,240,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 16 GB 3733 MHz,12,260,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 2400 MHz,12,255,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 2666 MHz,12,295,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 3000 MHz,12,375,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 3200 MHz,12,415,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 3466 MHz,12,447,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 32 GB 3600 MHz,12,455,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 2400 MHz,12,80,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 2666 MHz,12,90,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 3000 MHz,12,110,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 3200 MHz,12,120,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 3466 MHz,12,128,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 3600 MHz,12,130,DDR4,pc_only,xlsx v1.15.3
-HyperX Fury DDR4 RGB 8 GB 3733 MHz,12,140,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 16 GB 3000 MHz,15,200,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 16 GB 3200 MHz,15,220,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 8 GB 2933 MHz,15,106,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 8 GB 3000 MHz,15,110,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 8 GB 3200 MHz,15,120,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 8 GB 3600 MHz,15,130,DDR4,pc_only,xlsx v1.15.3
-HyperX Predator DDR4 8 GB 4000 MHz,15,150,DDR4,pc_only,xlsx v1.15.3
-Mortoni Value Supreme 2 GB 2133 MHz,1,20,DDR4,,xlsx v1.15.3
-Mortoni Value Supreme 4 GB 2133 MHz,1,35,DDR4,,xlsx v1.15.3
-Patriot Viper LED (Red LED) 4 GB 3000 MHz,21,60,DDR4,,xlsx v1.15.3
-Patriot Viper LED (Red LED) 8 GB 2400 MHz,21,75,DDR4,,xlsx v1.15.3
-Patriot Viper LED (Red LED) 8 GB 2666 MHz,21,85,DDR4,,xlsx v1.15.3
-Patriot Viper LED (Red LED) 8 GB 3000 MHz,21,105,DDR4,,xlsx v1.15.3
-Patriot Viper LED (White LED) 8 GB 2400 MHz,21,75,DDR4,,xlsx v1.15.3
-Patriot Viper LED (White LED) 8 GB 3200 MHz,21,115,DDR4,,xlsx v1.15.3
-Patriot Viper LED (White LED) 8 GB 3600 MHz,21,125,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (Black) 8 GB 2666 MHz,21,90,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (Black) 8 GB 3000 MHz,21,110,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (Black) 8 GB 3200 MHz,21,120,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (Black) 8 GB 3600 MHz,21,130,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (Black) 8 GB 4133 MHz,21,170,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (White) 8 GB 2666 MHz,21,90,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (White) 8 GB 3000 MHz,21,110,DDR4,,xlsx v1.15.3
-Patriot Viper RGB (White) 8 GB 3200 MHz,21,120,DDR4,,xlsx v1.15.3
-Patriot Viper Steel RGB 16 GB 3200 MHz,32,220,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel RGB 16 GB 3600 MHz,32,240,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel RGB 32 GB 3200 MHz,32,415,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel RGB 32 GB 3600 MHz,32,455,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel RGB 8 GB 3200 MHz,32,120,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel RGB 8 GB 3600 MHz,32,130,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 16 GB 3000 MHz,26,190,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 16 GB 3200 MHz,26,210,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 4 GB 3200 MHz,26,60,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3000 MHz,26,100,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3200 MHz,26,110,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3400 MHz,26,116,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3600 MHz,26,120,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3733 MHz,26,130,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 3866 MHz,26,136,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 4000 MHz,26,140,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 4133 MHz,26,160,DDR4,pc_only,xlsx v1.15.3
-Patriot Viper Steel Series 8 GB 4400 MHz,26,220,DDR4,pc_only,xlsx v1.15.3
-Shean TITAN 2 GB 2133 MHz,1,20,DDR4,,xlsx v1.15.3
-Shean TITAN 4 GB 2133 MHz,1,35,DDR4,,xlsx v1.15.3
-Shean TITAN XL 8 GB 2133 MHz,1,60,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 4 GB 3000 MHz,31,55,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 4 GB 3200 MHz,31,60,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 4 GB 3333 MHz,31,62,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 8 GB 3000 MHz,31,100,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 8 GB 3200 MHz,31,110,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 8 GB 3333 MHz,31,114,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 (Red) 8 GB 3466 MHz,31,118,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 4 GB 3000 MHz,31,55,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 4 GB 3200 MHz,31,60,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 4 GB 3333 MHz,31,62,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 8 GB 3000 MHz,31,100,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 8 GB 3200 MHz,31,110,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 8 GB 3333 MHz,31,114,DDR4,,xlsx v1.15.3
-Team Group DARK PRO DDR4 8 GB 3466 MHz,31,118,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 16 GB 2400 MHz,2,130,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 16 GB 3000 MHz,6,190,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 4 GB 2400 MHz,2,40,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 4 GB 2666 MHz,2,45,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 4 GB 2800 MHz,4,50,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 8 GB 2400 MHz,2,70,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 8 GB 2666 MHz,2,80,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Red) 8 GB 3000 MHz,6,100,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 16 GB 2666 MHz,2,150,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 16 GB 2800 MHz,4,170,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 16 GB 3000 MHz,6,190,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 4 GB 2400 MHz,2,40,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 4 GB 3000 MHz,6,55,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 8 GB 2400 MHz,2,70,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 8 GB 2666 MHz,2,80,DDR4,,xlsx v1.15.3
-Team Group T-Force DARK (Silver) 8 GB 3000 MHz,6,100,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz,14,50,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (Black) 4 GB 3000 MHz,14,65,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (Black) 8 GB 2400 MHz,14,80,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (Black) 8 GB 3000 MHz,14,110,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (White) 4 GB 2400 MHz,14,50,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (White) 8 GB 2400 MHz,14,80,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (White) 8 GB 2666 MHz,14,90,DDR4,,xlsx v1.15.3
-Team Group T-Force Delta II RGB Series (White) 8 GB 3000 MHz,14,110,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Blue LED) 16 GB 3000 MHz,11,195,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Blue LED) 16 GB 3200 MHz,12,215,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Blue LED) 8 GB 3000 MHz,11,105,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Blue LED) 8 GB 3200 MHz,12,115,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Red LED) 16 GB 3000 MHz,11,195,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Red LED) 16 GB 3200 MHz,12,215,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Red LED) 8 GB 3000 MHz,11,105,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (Red LED) 8 GB 3200 MHz,12,115,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (White LED) 16 GB 3000 MHz,11,195,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (White LED) 16 GB 3200 MHz,12,215,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (White LED) 8 GB 3000 MHz,11,105,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk (White LED) 8 GB 3200 MHz,12,115,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk RGB (Black) 8 GB 3000 MHz,15,110,DDR4,,xlsx v1.15.3
-Team Group T-Force Night Hawk RGB (White) 8 GB 3000 MHz,15,110,DDR4,,xlsx v1.15.3
-Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 3200 MHz,28,120,DDR4,,xlsx v1.15.3
-Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 3600 MHz,28,130,DDR4,,xlsx v1.15.3
-Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 4000 MHz,28,150,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 16 GB 3200 MHz,31,220,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 16 GB 3600 MHz,31,240,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 16 GB 4000 MHz,31,280,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 32 GB 3200 MHz,31,415,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 32 GB 3600 MHz,31,455,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 32 GB 4000 MHz,31,535,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 8 GB 3200 MHz,31,120,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 8 GB 3600 MHz,31,130,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 8 GB 4000 MHz,31,150,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 3200 MHz,31,220,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 3600 MHz,31,240,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 4000 MHz,31,280,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 3200 MHz,31,415,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 3600 MHz,31,455,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 4000 MHz,31,535,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 3200 MHz,31,120,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 3600 MHz,31,130,DDR4,,xlsx v1.15.3
-Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 4000 MHz,31,150,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 16 GB 2666 MHz,31,150,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 16 GB 3000 MHz,31,190,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 16 GB 3200 MHz,31,210,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 32 GB 2666 MHz,31,285,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 32 GB 3000 MHz,31,365,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 32 GB 3200 MHz,31,405,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 8 GB 2666 MHz,31,80,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 8 GB 3000 MHz,31,100,DDR4,,xlsx v1.15.3
-Team Group ZEUS DDR4 GAMING 8 GB 3200 MHz,31,110,DDR4,,xlsx v1.15.3
+name,level,price,spec,dlc,version,source
+ADATA Premier Series 4 GB 2133 MHz,2,35,DDR4,,1.0,xlsx v1.15.3
+ADATA Premier Series 8 GB 2133 MHz,2,60,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D40 RGB 8 GB 4000 MHz,24,150,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D40 RGB 8 GB 4133 MHz,24,170,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D40 RGB 8 GB 4266 MHz,24,190,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D40 RGB 8 GB 4400 MHz,24,230,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D41 RGB (Red) 8 GB 3000 MHz,19,110,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D41 RGB (Red) 8 GB 3200 MHz,19,120,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D41 RGB (Red) 8 GB 3600 MHz,19,130,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 16 GB 3000 MHz,19,200,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 16 GB 3200 MHz,19,220,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 8 GB 3000 MHz,19,110,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 8 GB 3200 MHz,19,120,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 8 GB 3600 MHz,19,130,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D60G RGB 8 GB 4133 MHz,19,170,DDR4,pc_only,1.6,xlsx v1.15.3
+ADATA SPECTRIX D80 RGB 8 GB 3000 MHz,23,110,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D80 RGB 8 GB 3200 MHz,23,120,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D80 RGB 8 GB 3600 MHz,23,130,DDR4,,1.0,xlsx v1.15.3
+ADATA SPECTRIX D80 RGB 8 GB 4133 MHz,23,170,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Dazzle (Red LED) 16 GB 2400 MHz,6,135,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Dazzle (Red LED) 16 GB 3000 MHz,6,195,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Dazzle (Red LED) 8 GB 2400 MHz,6,75,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Dazzle (Red LED) 8 GB 3000 MHz,6,105,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Flame 16 GB 3000 MHz,13,190,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Flame 8 GB 2666 MHz,13,80,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Flame 8 GB 3000 MHz,13,100,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG GAMMIX D10 4 GB 2400 MHz,5,40,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG GAMMIX D10 4 GB 2666 MHz,5,45,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG GAMMIX D10 8 GB 2400 MHz,5,70,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG GAMMIX D10 8 GB 2666 MHz,5,80,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Z1 8 GB 4000 MHz,14,140,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Z1 8 GB 4133 MHz,17,160,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Z1 8 GB 4266 MHz,22,180,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Z1 8 GB 4400 MHz,24,220,DDR4,,1.0,xlsx v1.15.3
+ADATA XPG Z1 8 GB 4600 MHz,28,280,DDR4,,1.0,xlsx v1.15.3
+Colorful CVN Guardian DDR4 16 GB 3200 MHz,31,220,DDR4,pc_only,1.13,xlsx v1.15.3
+Colorful CVN Guardian DDR4 8 GB 2666 MHz,31,90,DDR4,pc_only,1.13,xlsx v1.15.3
+Colorful CVN Guardian DDR4 8 GB 3200 MHz,31,120,DDR4,pc_only,1.13,xlsx v1.15.3
+Colorful iGame Vulcan DDR4 8 GB 3600 MHz,31,130,DDR4,pc_only,1.13,xlsx v1.15.3
+Colorful iGame Vulcan DDR4 8 GB 4266 MHz,31,190,DDR4,pc_only,1.13,xlsx v1.15.3
+CORSAIR Dominator Platinum 16 GB 2400 MHz,8,135,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 16 GB 2666 MHz,6,155,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 16 GB 2800 MHz,6,175,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 16 GB 3000 MHz,6,195,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 16 GB 3200 MHz,8,215,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 4 GB 2666 MHz,6,50,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 4 GB 3000 MHz,6,60,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 4 GB 3200 MHz,8,65,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 4 GB 4000 MHz,14,80,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 2400 MHz,6,75,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 2666 MHz,6,85,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 2800 MHz,6,95,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 3000 MHz,6,105,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 3200 MHz,8,115,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 3600 MHz,10,125,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum 8 GB 3733 MHz,12,135,DDR4,,1.0,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 16 GB 3200 MHz,28,220,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 16 GB 3600 MHz,28,240,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 16 GB 4000 MHz,28,280,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 16 GB 4800 MHz,28,840,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 8 GB 3200 MHz,28,120,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 8 GB 3600 MHz,28,130,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 8 GB 4000 MHz,28,150,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (Black) 8 GB 4800 MHz,28,430,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 16 GB 3200 MHz,28,220,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 16 GB 3600 MHz,28,240,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 16 GB 4000 MHz,28,280,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 16 GB 4800 MHz,28,840,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 8 GB 3200 MHz,28,120,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 8 GB 3600 MHz,28,130,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 8 GB 4000 MHz,28,150,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum RGB (White) 8 GB 4800 MHz,28,430,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Dominator Platinum Special Edition CONTRAST 8 GB 3466 MHz,28,123,DDR4,pc_only,1.9,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 16 GB 2400 MHz,28,130,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 16 GB 2666 MHz,28,150,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 16 GB 3200 MHz,28,210,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 16 GB 3600 MHz,28,230,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 32 GB 2666 MHz,28,285,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 32 GB 3200 MHz,28,405,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 32 GB 3600 MHz,28,445,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 4 GB 2133 MHz,28,35,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 4 GB 2400 MHz,28,40,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 4 GB 2666 MHz,28,45,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 2400 MHz,28,70,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 2666 MHz,28,80,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 2933 MHz,28,96,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 3200 MHz,28,110,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 3600 MHz,28,120,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 4000 MHz,28,140,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Black) 8 GB 4333 MHz,28,200,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 4 GB 2133 MHz,28,35,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 4 GB 2400 MHz,28,40,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 4 GB 2666 MHz,28,45,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 4 GB 2800 MHz,28,50,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 4 GB 3000 MHz,28,55,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 8 GB 2400 MHz,28,70,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 8 GB 2666 MHz,28,80,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Blue) 8 GB 3000 MHz,28,100,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Cool Gray) 16 GB 3000 MHz,28,190,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Cool Gray) 16 GB 3200 MHz,28,210,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Cool Gray) 8 GB 3000 MHz,28,100,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Cool Gray) 8 GB 3200 MHz,28,110,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 16 GB 2400 MHz,28,130,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 16 GB 2666 MHz,28,150,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 16 GB 3200 MHz,28,210,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 16 GB 3600 MHz,28,230,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 32 GB 2666 MHz,28,285,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 32 GB 3200 MHz,28,405,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 32 GB 3600 MHz,28,445,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 32 GB 3600 MHz,28,445,"DDR4, not in shop",pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 4 GB 2133 MHz,28,35,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 4 GB 2400 MHz,28,40,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 4 GB 2666 MHz,28,45,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 2400 MHz,28,70,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 2666 MHz,28,80,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 2933 MHz,28,96,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 3200 MHz,28,110,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 3600 MHz,28,120,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 4000 MHz,28,140,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (Red) 8 GB 4333 MHz,28,200,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 16 GB 2666 MHz,28,150,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 16 GB 3000 MHz,28,190,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 16 GB 3200 MHz,28,210,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 8 GB 2666 MHz,28,80,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 8 GB 3000 MHz,28,100,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR Vengeance LPX (White) 8 GB 3200 MHz,28,110,DDR4,pc_only,1.15,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (Black) 8 GB 3600 MHz,22,130,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4000 MHz,22,150,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4266 MHz,22,190,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (Black) 8 GB 4700 MHz,29,370,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (White) 8 GB 2666 MHz,22,90,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (White) 8 GB 3000 MHz,22,110,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (White) 8 GB 3200 MHz,22,120,DDR4,,1.0,xlsx v1.15.3
+CORSAIR VENGEANCE RGB PRO (White) 8 GB 3600 MHz,22,130,DDR4,,1.0,xlsx v1.15.3
+DFL MOTIV8OR 4 GB 2400 MHz,1,40,DDR4,,1.0,xlsx v1.15.3
+DFL MOTIV8OR 8 GB 2400 MHz,1,70,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Flare X 8 GB 2400 MHz,2,70,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Flare X 8 GB 3200 MHz,7,110,DDR4,,1.0,xlsx v1.15.3
+G.SKILL FORTIS 8 GB 2133 MHz,2,60,DDR4,,1.0,xlsx v1.15.3
+G.SKILL FORTIS 8 GB 2400 MHz,2,70,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws 4 (Black) 8 GB 2800 MHz,4,90,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws 4 (Black) 8 GB 3200 MHz,7,110,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws 4 (Blue) 8 GB 3000 MHz,7,100,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws 4 (Red) 8 GB 3000 MHz,7,100,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Black) 16 GB 3200 MHz,7,210,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Black) 16 GB 3400 MHz,9,222,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Black) 8 GB 3200 MHz,7,110,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Black) 8 GB 3600 MHz,11,120,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Red) 16 GB 3400 MHz,9,222,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Ripjaws V (Red) 8 GB 3600 MHz,11,120,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Sniper X (Black) 8 GB 3400 MHz,9,116,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Sniper X (Black) 8 GB 3600 MHz,11,120,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Sniper X (Silver) 8 GB 3200 MHz,7,110,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Sniper X (Silver) 8 GB 3600 MHz,11,120,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Black) 16 GB 4000 MHz,15,270,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Black) 8 GB 4400 MHz,25,220,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Black) 8 GB 4500 MHz,27,252,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Silver) 16 GB 4000 MHz,15,270,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Silver) 8 GB 4000 MHz,15,140,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z (Silver) 8 GB 4500 MHz,27,252,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z Neo 16 GB 3200 MHz,10,220,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Neo 32 GB 3200 MHz,10,415,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Neo 8 GB 3200 MHz,10,120,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z RGB 16 GB 3200 MHz,14,220,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 16 GB 3866 MHz,13,272,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 3000 MHz,14,110,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 3200 MHz,14,120,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 3600 MHz,14,130,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 4000 MHz,15,150,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 4400 MHz,25,230,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z RGB 8 GB 4800 MHz,30,430,DDR4,,1.0,xlsx v1.15.3
+G.SKILL Trident Z Royal (Gold) 16 GB 3200 MHz,10,220,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal (Gold) 16 GB 4266 MHz,25,360,DDR4,,1.14,xlsx v1.15.3
+G.SKILL Trident Z Royal (Gold) 32 GB 3200 MHz,10,415,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal (Gold) 8 GB 3200 MHz,10,120,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal (Silver) 16 GB 3200 MHz,10,220,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal (Silver) 16 GB 4266 MHz,25,360,DDR4,,1.14,xlsx v1.15.3
+G.SKILL Trident Z Royal (Silver) 32 GB 3200 MHz,10,415,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal (Silver) 8 GB 3200 MHz,10,120,DDR4,,1.7,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 3600 MHz,34,240,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4000 MHz,34,280,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4266 MHz,34,360,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 16 GB 4800 MHz,34,840,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 32 GB 4266 MHz,34,695,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 8 GB 3600 MHz,34,130,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Gold 8 GB 4000 MHz,34,150,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 3600 MHz,34,240,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4000 MHz,34,280,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4266 MHz,34,360,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 16 GB 4800 MHz,34,840,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 32 GB 4266 MHz,34,695,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 8 GB 3600 MHz,34,130,DDR4,,1.15,xlsx v1.15.3
+G.SKILL Trident Z Royal Elite DDR4 Silver 8 GB 4000 MHz,34,150,DDR4,,1.15,xlsx v1.15.3
+GIGABYTE AORUS RGB 8 GB 3200 MHz,14,120,DDR4,,1.0,xlsx v1.15.3
+GIGABYTE Memory 8 GB 2666 MHz,14,80,DDR4,pc_only,1.6,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 2400 MHz,12,140,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 2666 MHz,12,160,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 3000 MHz,12,200,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 3200 MHz,12,220,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 3466 MHz,12,236,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 3600 MHz,12,240,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 16 GB 3733 MHz,12,260,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 2400 MHz,12,255,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 2666 MHz,12,295,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 3000 MHz,12,375,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 3200 MHz,12,415,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 3466 MHz,12,447,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 32 GB 3600 MHz,12,455,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 2400 MHz,12,80,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 2666 MHz,12,90,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 3000 MHz,12,110,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 3200 MHz,12,120,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 3466 MHz,12,128,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 3600 MHz,12,130,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Fury DDR4 RGB 8 GB 3733 MHz,12,140,DDR4,pc_only,1.9,xlsx v1.15.3
+HyperX Predator DDR4 16 GB 3000 MHz,15,200,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 16 GB 3200 MHz,15,220,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 8 GB 2933 MHz,15,106,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 8 GB 3000 MHz,15,110,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 8 GB 3200 MHz,15,120,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 8 GB 3600 MHz,15,130,DDR4,pc_only,1.5,xlsx v1.15.3
+HyperX Predator DDR4 8 GB 4000 MHz,15,150,DDR4,pc_only,1.5,xlsx v1.15.3
+Mortoni Value Supreme 2 GB 2133 MHz,1,20,DDR4,,1.0,xlsx v1.15.3
+Mortoni Value Supreme 4 GB 2133 MHz,1,35,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (Red LED) 4 GB 3000 MHz,21,60,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (Red LED) 8 GB 2400 MHz,21,75,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (Red LED) 8 GB 2666 MHz,21,85,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (Red LED) 8 GB 3000 MHz,21,105,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (White LED) 8 GB 2400 MHz,21,75,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (White LED) 8 GB 3200 MHz,21,115,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper LED (White LED) 8 GB 3600 MHz,21,125,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (Black) 8 GB 2666 MHz,21,90,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (Black) 8 GB 3000 MHz,21,110,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (Black) 8 GB 3200 MHz,21,120,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (Black) 8 GB 3600 MHz,21,130,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (Black) 8 GB 4133 MHz,21,170,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (White) 8 GB 2666 MHz,21,90,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (White) 8 GB 3000 MHz,21,110,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper RGB (White) 8 GB 3200 MHz,21,120,DDR4,,1.0,xlsx v1.15.3
+Patriot Viper Steel RGB 16 GB 3200 MHz,32,220,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel RGB 16 GB 3600 MHz,32,240,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel RGB 32 GB 3200 MHz,32,415,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel RGB 32 GB 3600 MHz,32,455,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel RGB 8 GB 3200 MHz,32,120,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel RGB 8 GB 3600 MHz,32,130,DDR4,pc_only,1.15,xlsx v1.15.3
+Patriot Viper Steel Series 16 GB 3000 MHz,26,190,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 16 GB 3200 MHz,26,210,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 4 GB 3200 MHz,26,60,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3000 MHz,26,100,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3200 MHz,26,110,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3400 MHz,26,116,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3600 MHz,26,120,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3733 MHz,26,130,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 3866 MHz,26,136,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 4000 MHz,26,140,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 4133 MHz,26,160,DDR4,pc_only,1.6,xlsx v1.15.3
+Patriot Viper Steel Series 8 GB 4400 MHz,26,220,DDR4,pc_only,1.6,xlsx v1.15.3
+Shean TITAN 2 GB 2133 MHz,1,20,DDR4,,1.0,xlsx v1.15.3
+Shean TITAN 4 GB 2133 MHz,1,35,DDR4,,1.0,xlsx v1.15.3
+Shean TITAN XL 8 GB 2133 MHz,1,60,DDR4,,1.0,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 4 GB 3000 MHz,31,55,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 4 GB 3200 MHz,31,60,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 4 GB 3333 MHz,31,62,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 8 GB 3000 MHz,31,100,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 8 GB 3200 MHz,31,110,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 8 GB 3333 MHz,31,114,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 (Red) 8 GB 3466 MHz,31,118,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 4 GB 3000 MHz,31,55,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 4 GB 3200 MHz,31,60,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 4 GB 3333 MHz,31,62,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 8 GB 3000 MHz,31,100,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 8 GB 3200 MHz,31,110,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 8 GB 3333 MHz,31,114,DDR4,,1.14,xlsx v1.15.3
+Team Group DARK PRO DDR4 8 GB 3466 MHz,31,118,DDR4,,1.14,xlsx v1.15.3
+Team Group T-Force DARK (Red) 16 GB 2400 MHz,2,130,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 16 GB 3000 MHz,6,190,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 4 GB 2400 MHz,2,40,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 4 GB 2666 MHz,2,45,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 4 GB 2800 MHz,4,50,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 8 GB 2400 MHz,2,70,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 8 GB 2666 MHz,2,80,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Red) 8 GB 3000 MHz,6,100,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 16 GB 2666 MHz,2,150,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 16 GB 2800 MHz,4,170,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 16 GB 3000 MHz,6,190,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 4 GB 2400 MHz,2,40,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 4 GB 3000 MHz,6,55,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 8 GB 2400 MHz,2,70,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 8 GB 2666 MHz,2,80,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force DARK (Silver) 8 GB 3000 MHz,6,100,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz,14,50,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (Black) 4 GB 3000 MHz,14,65,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (Black) 8 GB 2400 MHz,14,80,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (Black) 8 GB 3000 MHz,14,110,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (White) 4 GB 2400 MHz,14,50,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (White) 8 GB 2400 MHz,14,80,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (White) 8 GB 2666 MHz,14,90,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Delta II RGB Series (White) 8 GB 3000 MHz,14,110,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Blue LED) 16 GB 3000 MHz,11,195,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Blue LED) 16 GB 3200 MHz,12,215,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Blue LED) 8 GB 3000 MHz,11,105,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Blue LED) 8 GB 3200 MHz,12,115,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Red LED) 16 GB 3000 MHz,11,195,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Red LED) 16 GB 3200 MHz,12,215,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Red LED) 8 GB 3000 MHz,11,105,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (Red LED) 8 GB 3200 MHz,12,115,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (White LED) 16 GB 3000 MHz,11,195,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (White LED) 16 GB 3200 MHz,12,215,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (White LED) 8 GB 3000 MHz,11,105,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk (White LED) 8 GB 3200 MHz,12,115,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk RGB (Black) 8 GB 3000 MHz,15,110,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Night Hawk RGB (White) 8 GB 3000 MHz,15,110,DDR4,,1.0,xlsx v1.15.3
+Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 3200 MHz,28,120,DDR4,,1.8,xlsx v1.15.3
+Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 3600 MHz,28,130,DDR4,,1.8,xlsx v1.15.3
+Team Group T-Force Xtreem ARGB DDR4 GAMING 8 GB 4000 MHz,28,150,DDR4,,1.8,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 16 GB 3200 MHz,31,220,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 16 GB 3600 MHz,31,240,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 16 GB 4000 MHz,31,280,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 32 GB 3200 MHz,31,415,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 32 GB 3600 MHz,31,455,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 32 GB 4000 MHz,31,535,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 8 GB 3200 MHz,31,120,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 8 GB 3600 MHz,31,130,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 8 GB 4000 MHz,31,150,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 3200 MHz,31,220,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 3600 MHz,31,240,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 16 GB 4000 MHz,31,280,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 3200 MHz,31,415,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 3600 MHz,31,455,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 32 GB 4000 MHz,31,535,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 3200 MHz,31,120,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 3600 MHz,31,130,DDR4,,1.15,xlsx v1.15.3
+Team Group XCALIBUR RGB DDR4 Special Edition 8 GB 4000 MHz,31,150,DDR4,,1.15,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 16 GB 2666 MHz,31,150,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 16 GB 3000 MHz,31,190,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 16 GB 3200 MHz,31,210,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 32 GB 2666 MHz,31,285,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 32 GB 3000 MHz,31,365,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 32 GB 3200 MHz,31,405,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 8 GB 2666 MHz,31,80,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 8 GB 3000 MHz,31,100,DDR4,,1.14,xlsx v1.15.3
+Team Group ZEUS DDR4 GAMING 8 GB 3200 MHz,31,110,DDR4,,1.14,xlsx v1.15.3

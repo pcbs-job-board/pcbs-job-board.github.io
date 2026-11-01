@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+- Settings → **Game version**: pick the update you play; parts added in later updates disappear from suggestions. Every part now carries the version that added it (from the community workbook, PC/Steam numbering).
+- DLC settings now list only DLC that add parts: **Overclocked Edition Content** (4 NZXT cases by Brock Hofer). DLC without parts (workshops, Esports Expansion, Career Power Pack, soundtrack) are listed in a note.
+- Promo cases (Bush Flight Simulator, Good Company, Galaxy) and PC-only parts are separate "other part groups".
+- App version shown in Settings – click it for this changelog.
+
 ## 2.1.1
 - Brand preference detection: "I'm a total NZXT fanboy", "MSI parts are the bomb", "Team Group are meant to be good" add a hidden task "Use <brand> parts where possible" listing what that brand makes. Dislikes ("not a fan of Corsair") add "Avoid <brand> parts".
 - The customer's preferred brand is starred and listed first in part-swap suggestions for that job.
