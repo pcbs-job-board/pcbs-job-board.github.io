@@ -1,7 +1,18 @@
 /* PCBS Job Board – main app (board, capture, OCR review, settings). */
 // ================= state =================
 let jobs = LS.get("pcbs.jobs", []);
-let rules = LS.get("pcbs.rules", DEFAULT_RULES);
+let rules = LS.get("pcbs.rules", null);
+// saved rules from an older version: add new default keywords/rules, drop retired ones
+if (rules && LS.get("pcbs.rulesVer", 1) < RULES_VERSION) {
+  for (const d of DEFAULT_RULES) {
+    const r = rules.find(x => x.task === d.task);
+    if (r) r.keys = [...new Set([...r.keys.filter(k => !(RULES_REMOVED[d.task] || []).includes(k)), ...d.keys])];
+    else rules.push(structuredClone(d));
+  }
+  LS.set("pcbs.rules", rules);
+}
+LS.set("pcbs.rulesVer", RULES_VERSION);
+if (!rules) rules = DEFAULT_RULES;
 const DEFAULT_CROPS = { email: { x: .5, y: .14, w: .42, h: .68 }, stats: { x: .015, y: .1, w: .265, h: .76 } };
 let crops = LS.get("pcbs.crops", structuredClone(DEFAULT_CROPS));
 let cropLocked = true;
@@ -13,7 +24,7 @@ const TCOL = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)"];
 // ================= board =================
 function hidIcon(t) {
   const s = t.toLowerCase();
-  return /^avoid/.test(s) ? "⛔" : /cable/.test(s) ? "🔌" : /parts where possible/.test(s) ? "★" : /new parts only/.test(s) ? "✨" : /dust|clean/.test(s) ? "💨" : /antivirus|virus/.test(s) ? "🛡️" : /temp|thermal|psu/.test(s) ? "🌡️" : /damaged/.test(s) ? "🔧" : /os\b|operating/.test(s) ? "💿" : /storage|drive/.test(s) ? "💾" : /overclock/.test(s) ? "⚡" : /rgb|light/.test(s) ? "🌈" : /water/.test(s) ? "💧" : /fan|noise/.test(s) ? "🌀" : "❗";
+  return /^avoid/.test(s) ? "⛔" : /burnt|smoke/.test(s) ? "🔥" : /^check \/ replace the/.test(s) ? "🔁" : /cable/.test(s) ? "🔌" : /parts where possible/.test(s) ? "★" : /new parts only/.test(s) ? "✨" : /dust|clean/.test(s) ? "💨" : /antivirus|virus/.test(s) ? "🛡️" : /temp|thermal|psu/.test(s) ? "🌡️" : /damaged/.test(s) ? "🔧" : /os\b|operating/.test(s) ? "💿" : /storage|drive/.test(s) ? "💾" : /overclock/.test(s) ? "⚡" : /rgb|light/.test(s) ? "🌈" : /water/.test(s) ? "💧" : /fan|noise/.test(s) ? "🌀" : "❗";
 }
 function deadlineValue(s) { const m = String(s || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : Infinity; }
 function render() {

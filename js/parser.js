@@ -1,19 +1,51 @@
 // ===== PCBS job parser (pure functions, no DOM) =====
+// One rule = task + keywords. A keyword starting with "-" is an exception: that phrase is
+// ignored before matching (e.g. "-clean install" so "clean" still catches "never cleaned it").
+const RULES_VERSION = 2;
 const DEFAULT_RULES = [
-  { task: "Clean dust with compressed air", keys: ["dusty", "dust", "on the floor", "lives on the floor", "a bit of a clean", "need a clean", "needs a clean", "cleaning", "dirty", "filthy", "pet hair", "cat hair", "dog hair", "my cat", "my dog", "smoke", "smoker", "cobweb", "grimy"] },
-  { task: "Run antivirus scan", keys: ["dodgy site", "dodgy website", "virus", "viruses", "malware", "pop-up", "pop up", "popups", "popup", "adverts", "ads keep", "slow", "sluggish", "weird", "strange things", "acting up", "hacked", "downloaded something", "clicked a link", "dodgy"] },
+  { task: "Clean dust with compressed air", keys: ["dusty", "dust", "on the floor", "lives on the floor", "clean", "dirty", "filthy", "grimy", "cobweb", "pet hair", "cat hair", "dog hair", "my cat", "my dog", "smoker", "smokes", "cigarette", "not much air", "no air", "air coming out", "airflow", "air flow", "blocked", "clogged", "weak air", "-clean install", "-clean copy", "-clean windows", "-clean os", "-clean look", "-clean build", "-clean cable", "-cleanly"] },
+  { task: "Run antivirus scan", keys: ["dodgy site", "dodgy website", "dodgy link", "virus", "malware", "pop-up", "pop up", "popup", "adverts", "ads keep", "slow", "sluggish", "not as quick", "not as fast", "quick as it used", "fast as it used", "weird", "strange things", "acting up", "hacked", "downloaded something", "clicked a link", "clicked on something", "clicked something", "something bad", "bad link", "suspicious", "dodgy"] },
   { task: "NEW parts only – no used/PC Bay parts", keys: ["used parts", "don't do that", "shiny new", "new components", "new parts", "brand new", "second hand", "second-hand", "like new things", "only new", "nothing used"] },
   { task: "Install custom cables (check PC Bay)", keys: ["pc bay", "sleeved cable", "custom cable", "cablemod"] },
-  { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "getting hot", "bit hot", "running hot", "very hot", "so hot", "burning", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
+  { task: "Find the burnt part (smoke) – check PSU first", keys: ["smoke came", "smoke coming", "white smoke", "black smoke", "some smoke", "of smoke", "burning smell", "smells burnt", "smell of burning", "burnt smell", "sparks", "loud bang", "went bang"] },
+  { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "getting hot", "bit hot", "running hot", "very hot", "so hot", "burning hot", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
   { task: "Check PSU & temps (random reboots / shutdowns)", keys: ["reboot", "restarting", "restarts", "random restart", "keeps restarting", "blue screen", "bsod", "crashes", "crashing"] },
-  { task: "Look for a damaged part (something was forced in)", keys: ["forced it", "forced in", "wouldn't fit", "didn't fit", "jammed it", "pushed really hard", "bent a pin", "bent pins", "snapped"] },
-  { task: "Check fans (noise)", keys: ["noisy", "loud", "noise", "rattl", "whir", "buzz"] },
-  { task: "Check / install OS", keys: ["operating system", "windows", "os ", "reinstall", "wiped", "format"] },
+  { task: "Look for a damaged part (something was forced in)", keys: ["forced it", "forced in", "wouldn't fit", "didn't fit", "jammed it", "pushed really hard", "bent a pin", "bent pins"] },
+  { task: "Check fans (noise)", keys: ["noisy", "loud", "noise", "rattl", "whir", "buzz", "-loud bang"] },
+  { task: "Check / install OS", keys: ["operating system", "windows", "os ", "reinstall", "wiped", "format", "clean install"] },
   { task: "Check storage drive", keys: ["hard drive", "storage", "files", "photos", "lost my", "won't boot", "doesn't boot"] },
   { task: "Overclock", keys: ["overclock", "faster than stock", "push it further"] },
   { task: "Lighting / RGB requested", keys: ["rgb", "lights", "lighting", "glow", "colourful", "colorful"] },
   { task: "Water cooling requested", keys: ["water cool", "liquid cool", "custom loop", "aio"] },
 ];
+// keywords taken out of the defaults in a later version (removed from saved rules too)
+const RULES_REMOVED = { "Clean dust with compressed air": ["smoke", "cleaning", "a bit of a clean", "need a clean", "needs a clean"], "Check temps / reapply thermal paste / cooler": ["burning"], "Look for a damaged part (something was forced in)": ["snapped"], "Run antivirus scan": ["viruses", "popups"] };
+function ruleHits(rule, text) {
+  let t = text;
+  for (const k of rule.keys) if (k.startsWith("-") && k.length > 1) t = t.split(k.slice(1).toLowerCase()).join(" ");
+  return rule.keys.filter(k => k && !k.startsWith("-") && t.includes(k.toLowerCase()));
+}
+// "Who makes RAM that fragile anyway?!" → the RAM is probably broken
+const BLAME_PARTS = [["RAM", "ram|memory|ram sticks?"], ["GPU", "gpu|graphics card|video card|graphics"], ["CPU", "cpu|processor"], ["PSU", "psu|power supply"], ["Storage", "hard drive|hdd|ssd|m\\.2"], ["Motherboard", "motherboard|mobo|main board"], ["CPU Cooler", "cpu cooler|cooler|cpu fan"], ["Case fans", "case fans?|fans"]];
+const BLAME_WORDS = /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn't working|doesn't work|gave up|packed in|crap|junk)\b/i;
+function detectBlamedParts(body) {
+  const out = [];
+  for (const s of String(body || "").split(/(?<=[.?!;])\s+/)) {
+    if (!BLAME_WORDS.test(s)) continue;
+    for (const [part, src] of BLAME_PARTS) {
+      if (new RegExp("\\b(?:" + src + ")\\b", "i").test(s) && !out.some(o => o.part === part)) out.push({ part, quote: s.trim().slice(0, 110) });
+    }
+  }
+  return out;
+}
+// OCR noise (status bar, buttons) must not be glued onto an objective
+function looksLikeText(l) {
+  const w = l.split(/\s+/).filter(Boolean); if (!w.length || w.length > 12) return false;
+  if (/\d/.test(l.replace(/\d{1,2}\/\d{1,2}\/\d{4}|\(\d+ days?\)/g, ""))) return false;
+  const short = w.filter(x => x.replace(/[^a-z]/gi, "").length <= 2).length;
+  const odd = w.filter(x => /[a-z][A-Z]|^[A-Z]{2,}$/.test(x)).length;
+  return short / w.length <= 0.25 && odd <= 1;
+}
 
 const BRANDS = ["EVGA","NZXT","Intel","AMD","Cryorig","SilverStone","G.SKILL","ASUS","ASRock","Seagate","Corsair","Cooler Master","MSI","Gigabyte","GIGABYTE","AORUS","ZOTAC","Sapphire","XFX","PowerColor","Western Digital","WD","Samsung","Crucial","Kingston","HyperX","Thermaltake","Fractal","Phanteks","be quiet!","Noctua","Deepcool","Raijintek","In Win","InWin","Lian Li","Antec","Razer","Patriot","Team","Toshiba","Adata","ADATA","Arctic","Ballistix","Biostar","Enermax","Inno3D","PNY","Palit","Zalman","Scythe","Bitfenix","BitFenix","Rosewill","Seasonic","SuperFlower","Super Flower","Kolink","Xigmatek","Mushkin","OCZ","Intel Optane","Optane","Gamdias","Hyte","Cougar","Cryorig","Alphacool","EK","Bykski","Barrow","Geil","GeIL","Galax","KFA2","Gainward","Colorful","EKWB","Generic","GALAX","Asus","Msi","Kingston"];
 const OCR_FIX = [[/^[©@®Cc6]\.?\s?SKILL/i, "G.SKILL"], [/^G\s?\.\s?SKILL/i, "G.SKILL"], [/^lntel/, "Intel"], [/^1ntel/, "Intel"], [/^NZXT/i, "NZXT"]];
@@ -126,7 +158,7 @@ function parseEmail(text, rules) {
       if (/^(reject|accept|pc status|pc stats)/i.test(l)) break;
       const m = l.match(/^[•*+·°o»\-]\s*(.+)/);
       if (m) job.objectives.push(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, "").trim());
-      else if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3) job.objectives[job.objectives.length - 1] += " " + l;
+      else if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) job.objectives[job.objectives.length - 1] += " " + l;
       else break;
     }
   }
@@ -141,7 +173,7 @@ function parseEmail(text, rules) {
   const b = " " + job.body.toLowerCase().replace(/[’`]/g, "'") + " ";
 
   for (const r of rules) {
-    const hits = r.keys.filter(k => k && b.includes(k.toLowerCase()));
+    const hits = ruleHits(r, b);
     if (hits.length) {
       const already = job.objectives.some(o => o.toLowerCase().includes(r.task.toLowerCase().slice(0, 12)));
       if (!already) job.hidden.push({ task: r.task, because: hits.slice(0, 3) });
@@ -171,9 +203,13 @@ function parseEmail(text, rules) {
     if (job.hidden.some(h => h.brand === p.brand && h.avoid === p.avoid)) continue;
     job.hidden.push({ task: (p.avoid ? "Avoid " : "Use ") + p.brand + " parts" + (p.avoid ? "" : " where possible"), because: [p.quote], brand: p.brand, avoid: p.avoid });
   }
+  for (const bp of detectBlamedParts(job.body)) {
+    job.hidden.push({ task: `Check / replace the ${bp.part} – customer hints it's broken`, because: [bp.quote], part: bp.part });
+    if (!job.suspect) job.suspect = bp.part;
+  }
   const sus = b.match(/(?:it's|its|it is|got to be|must be|probably|sure it's|think it's) (?:got to be )?(?:the )?(cpu|gpu|graphics card|ram|memory|psu|power supply|motherboard|hard drive|ssd|storage|cooler|fan)/);
   if (sus) job.suspect = sus[1].toUpperCase();
   return job;
 }
 
-if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, categorize, detectBrands };
+if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, RULES_VERSION, RULES_REMOVED, categorize, detectBrands, detectBlamedParts, looksLikeText };

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.1
+- Fixed: OCR noise from the status bar / "In transit" button was glued onto the last objective.
+- Fixed: "white smoke came out of the case" triggered dust cleaning. Smoke, burning smells and sparks now add **Find the burnt part – check PSU first**; only smokers ("I'm a smoker", cigarettes) count as dust.
+- New: a part named next to fragile / broken / dead / fried… ("Who makes RAM that fragile anyway?!") adds **Check / replace the RAM** and fills *Customer suspects*.
+- More phrases detected: "not much air coming out / blocked / clogged" and "never cleaned it out" → cleaning; "not as quick as it used to be" and "clicked on something bad" → antivirus.
+- "clean" now matches cleaned/cleaning/clean out, except "clean install" (→ OS) and "clean look/build".
+- Keyword rules saved in your browser get the new keywords automatically.
+
 ## 2.3.0
 - Job cards split into three sections:
   - **🔍 Hidden objectives** – everything detected from the email (brands, cables, no used parts, dust, viruses…) in a highlighted amber panel with icons, large text and checkboxes; turns green when all are done. Cards show an amber "🔍 N hidden" badge while any are open.
