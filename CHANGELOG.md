@@ -9,6 +9,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Keyboard movement inside a job card: ↑ ↓ lines, ← → items, Space / Enter to tick or press.
 - Fixed hidden objectives triggered by parts of words (e.g. “led” in “failed”).
 - Improved "Customer suspects" – only the part the customer blames is listed.
+- Note in the capture window: English game only, always double-check the results.
 
 ## 0.8.0
 - Hidden objectives rebuilt from the community hint list.

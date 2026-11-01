@@ -4,6 +4,8 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 
 **Use it:** open the GitHub Pages link of this repository, or download it and open `index.html` in Chrome/Edge.
 
+> Works with the **English** version of the game only. Text is read automatically (OCR), so mistakes can happen – always double-check what it found.
+
 ## Features
 - 📸 Capture screen 1 (screen sharing, works with PS Remote Play / chiaki-ng), or paste/drop a screenshot
 - OCR of the job email, plus one or more captures of the **PC Stats** parts list (runs in your browser with Tesseract.js)
