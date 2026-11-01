@@ -7,6 +7,8 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Fixed duplicated objectives from words cut off at the edge of a screenshot.
 - Part suggestions show 5 at a time with a visible scrollbar and a “more” count, and open upwards near the bottom of the page.
 - Keyboard movement inside a job card: ↑ ↓ lines, ← → items, Space / Enter to tick or press.
+- Fixed hidden objectives triggered by parts of words (e.g. “led” in “failed”).
+- Improved "Customer suspects" – only the part the customer blames is listed.
 
 ## 0.8.0
 - Hidden objectives rebuilt from the community hint list.

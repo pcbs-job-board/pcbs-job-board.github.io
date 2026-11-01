@@ -29,23 +29,40 @@ const OLD_DEFAULT_TASKS = ["Clean dust with compressed air", "Run antivirus scan
 function ruleHits(rule, text) {
   let t = text;
   for (const k of rule.keys) if (k.startsWith("-") && k.length > 1) t = t.split(k.slice(1).toLowerCase()).join(" ");
-  return rule.keys.filter(k => k && !k.startsWith("-") && t.includes(k.toLowerCase()));
+  // a keyword must start a word ("led" is not in "failed"); very short ones must be the whole word
+  return rule.keys.filter(k => {
+    if (!k || k.startsWith("-")) return false;
+    const kk = k.toLowerCase(), e = kk.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp("(?<![a-z0-9])" + e + (kk.length <= 3 ? "(?![a-z0-9])" : ""), "i").test(t);
+  });
 }
 // ---- Customer suspects: "Who makes RAM that fragile anyway?!", "It has to be CPU, right?" ----
-const SUSPECT_PARTS = [["RAM", "ram|memory|ram sticks?|dimms?"], ["GPU", "gpu|graphics ?cards?|video ?cards?|graphics"], ["CPU", "cpu|processor"], ["PSU", "psu|power ?supply|power unit"],
-  ["Storage", "hard ?drives?|hdd|ssd|m\\.2|storage|disk"], ["Motherboard", "motherboard|mobo|main ?board"], ["CPU Cooler", "cpu cooler|cpu fan|heat ?sink|cooler"], ["Case fans", "case fans?|fans"]];
+// more specific names first: once "CPU cooler" is found, its "CPU" is not counted again
+const SUSPECT_PARTS = [["CPU Cooler", "cpu coolers?|cpu fans?|heat ?sinks?|coolers?"], ["Case fans", "case fans?|fans"], ["RAM", "ram|memory|ram sticks?|dimms?"], ["GPU", "gpu|graphics ?cards?|video ?cards?|graphics"], ["CPU", "cpu|processor"], ["PSU", "psu|power ?supply|power unit"],
+  ["Storage", "hard ?drives?|hdd|ssd|m\\.2|storage|disk"], ["Motherboard", "motherboard|mobo|main ?board"]];
 const BLAME_WORDS = /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust)\b/i;
 const SUSPECT_WORDS = /\b(has to be|have to be|had to be|got to be|gotta be|must be|must have|sure it'?s|sure the|certain|bet it'?s|bet the|i think|i reckon|reckon|probably|maybe|might be|could it be|could be|is it the|guess|suspect|blame|it'?s the|it is the|sure it is|definitely|obviously|surely)\b|\bi(?:'?m| am) (?:\d+ ?% |pretty |quite |fairly |really |very |absolutely |100% )?sure\b|,\s*right\s*\?|\bright\?/i;
 const NOT_SUSPECT = /\b(upgrade|install|add|want|need|buy|new|faster|better|two|dual|more)\b/i;
+function partsIn(s) {
+  const found = []; let t = s;
+  for (const [part, src] of SUSPECT_PARTS) {
+    const re = new RegExp("\\b(?:" + src + ")\\b", "ig");
+    if (re.test(t)) { found.push(part); t = t.replace(re, " "); }
+  }
+  return found;
+}
 function detectSuspects(body) {
   const out = [];
   for (const s of String(body || "").replace(/[’`]/g, "'").split(/(?<=[.?!;])\s+/)) {
     const broken = BLAME_WORDS.test(s), guess = SUSPECT_WORDS.test(s);
     if (!broken && !guess) continue;
     if (!broken && NOT_SUSPECT.test(s) && !/\b(has|got|must) to be|must be|sure|reckon|blame|right\s*\?/i.test(s)) continue; // "maybe add more RAM" is a wish, not a suspect
-    for (const [part, src] of SUSPECT_PARTS) {
-      if (new RegExp("\\b(?:" + src + ")\\b", "i").test(s) && !out.some(o => o.part === part)) out.push({ part, broken, quote: s.trim().slice(0, 110) });
-    }
+    // "I was putting in a new CPU cooler and I think I broke some RAM": only the part in the
+    // same clause as the blame counts. Without such a clause, the whole sentence is used.
+    const clauses = s.split(/\s+(?:and|but|so|while|when|because|then)\s+|\s+[-–—]\s+|,\s*(?!right\b)/i);
+    const hot = clauses.filter(c => (BLAME_WORDS.test(c) || SUSPECT_WORDS.test(c)) && partsIn(c).length);
+    const parts = hot.length ? [...new Set(hot.flatMap(partsIn))] : partsIn(s);
+    for (const part of parts) if (!out.some(o => o.part === part)) out.push({ part, broken, quote: s.trim().slice(0, 110) });
   }
   // "cooler" also matches inside "CPU cooler" – keep the more specific entry only once
   return out;
