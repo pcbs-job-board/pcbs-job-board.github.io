@@ -4,7 +4,8 @@ const DEFAULT_RULES = [
   { task: "Run antivirus scan", keys: ["dodgy site", "dodgy website", "virus", "viruses", "malware", "pop-up", "pop up", "popups", "popup", "adverts", "ads keep", "slow", "sluggish", "weird", "strange things", "acting up", "hacked", "downloaded something", "clicked a link", "dodgy"] },
   { task: "NEW parts only – no used/PC Bay parts", keys: ["used parts", "don't do that", "shiny new", "new components", "new parts", "brand new", "second hand", "second-hand", "like new things", "only new", "nothing used"] },
   { task: "Install custom cables (check PC Bay)", keys: ["pc bay", "sleeved cable", "custom cable", "cablemod"] },
-  { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
+  { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "getting hot", "bit hot", "running hot", "very hot", "so hot", "burning", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
+  { task: "Check PSU & temps (random reboots / shutdowns)", keys: ["reboot", "restarting", "restarts", "random restart", "keeps restarting", "blue screen", "bsod", "crashes", "crashing"] },
   { task: "Check fans (noise)", keys: ["noisy", "loud", "noise", "rattl", "whir", "buzz"] },
   { task: "Check / install OS", keys: ["operating system", "windows", "os ", "reinstall", "wiped", "format"] },
   { task: "Check storage drive", keys: ["hard drive", "storage", "files", "photos", "lost my", "won't boot", "doesn't boot"] },
@@ -83,16 +84,20 @@ const BRAND_DISLIKE = /\b(hate[sd]?|avoid|don'?t (?:like|want|trust)|do not (?:l
 function detectBrands(body) {
   const out = [];
   const sentences = String(body || "").replace(/[’`]/g, "'").split(/(?<=[.?;\n])\s+|(?<=!)\s+(?=[A-Z])/);
-  for (const s of sentences) {
+  sentences.forEach((s, i) => {
+    // "Have you heard of FSP? They're meant to be pretty good." – the follow-up sentence counts too
+    const next = sentences[i + 1] || "";
+    const follow = /^\s*(they|they're|theyre|their|them|it|it's|its|those|these|apparently|i hear|i've heard|supposedly)\b/i.test(next) ? " " + next : "";
+    const ctx = s + follow;
     for (const [brand, src, cs] of BRANDS_PREF) {
       const re = new RegExp("(^|[^A-Za-z0-9])(?:" + src + ")(?![A-Za-z0-9])", cs ? "" : "i");
       if (!re.test(s)) continue;
-      const avoid = BRAND_DISLIKE.test(s), like = BRAND_LIKE.test(s);
+      const avoid = BRAND_DISLIKE.test(ctx), like = BRAND_LIKE.test(ctx);
       if (!avoid && !like) continue;
-      const quote = s.trim().replace(/\s+/g, " ");
-      out.push({ brand, avoid, quote: quote.length > 90 ? quote.slice(0, 87) + "…" : quote });
+      const quote = ctx.trim().replace(/\s+/g, " ");
+      out.push({ brand, avoid, quote: quote.length > 110 ? quote.slice(0, 107) + "…" : quote });
     }
-  }
+  });
   return out;
 }
 
@@ -119,7 +124,7 @@ function parseEmail(text, rules) {
       const l = lines[i];
       if (/^(reject|accept|pc status|pc stats)/i.test(l)) break;
       const m = l.match(/^[•*+·°o»\-]\s*(.+)/);
-      if (m) job.objectives.push(m[1].replace(/\s+PC Stats$/i, "").trim());
+      if (m) job.objectives.push(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, "").trim());
       else if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3) job.objectives[job.objectives.length - 1] += " " + l;
       else break;
     }

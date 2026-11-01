@@ -6,7 +6,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 
 ## Features
 - 📸 Capture screen 1 (screen sharing, works with PS Remote Play / chiaki-ng), or paste/drop a screenshot
-- OCR of the job email and the **PC Stats** parts list (runs in your browser with Tesseract.js)
+- OCR of the job email, plus one or more captures of the **PC Stats** parts list (runs in your browser with Tesseract.js)
 - Hidden-objective detection with editable keyword rules, cable colour requests and brand preferences ("total NZXT fanboy")
 - Three workbenches (one job each) + open-jobs queue, drag & drop
 - Part swaps with autofill from 2,000+ in-game parts (level and price shown)

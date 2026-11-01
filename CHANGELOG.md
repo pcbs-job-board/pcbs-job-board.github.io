@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.0
+- **Capture job reads only the email.** For repair jobs, open PC Stats in-game and press **📸 Add PC parts capture** in the review window – as many times as you need (e.g. after scrolling the parts list). New parts are merged, duplicates skipped, and your edits are kept. Tabs switch between the captured screenshots; a pasted screenshot while the window is open counts as a parts capture.
+- Brand detection now also reads the next sentence: "Have you heard of FSP? They're meant to be pretty good." → use FSP parts.
+- New hidden objectives: "getting a bit hot" → check temps; "random rebooting" / crashes / blue screen → check PSU & temps.
+- Stray bullet characters (») are removed from objectives.
+- Shorter header labels so the toolbar fits on one line.
+
 ## 2.1.2
 - Settings → **Game version**: pick the update you play; parts added in later updates disappear from suggestions. Every part now carries the version that added it (from the community workbook, PC/Steam numbering).
 - DLC settings now list only DLC that add parts: **Overclocked Edition Content** (4 NZXT cases by Brock Hofer). DLC without parts (workshops, Esports Expansion, Career Power Pack, soundtrack) are listed in a note.

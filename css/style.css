@@ -127,3 +127,9 @@ h4.sub:first-child{margin-top:0}
 .ac em.fav{font-style:normal;color:var(--warn)}
 .verlink{font-size:12px;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:2px 10px}
 .verlink:hover{border-color:var(--accent)}
+.capparts{width:100%;margin-top:6px;border-style:dashed;border-color:var(--warn);color:#ffd08a;text-align:left}
+.capparts small{color:var(--muted);margin-left:6px}
+#shotTabs button{font-size:12.5px}
+.ctrls .spacer{flex:1}
+header button{white-space:nowrap}
+@media(max-width:1500px){header{gap:7px}header h1{margin-right:4px}header button{padding:6px 9px}header .big{font-size:15px;padding:9px 14px}}

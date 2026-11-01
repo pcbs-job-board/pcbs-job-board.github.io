@@ -17,10 +17,10 @@
   <button class="primary big" id="btnCapture">📸 Capture job</button>
   <button id="btnManual">＋ Manual job</button>
   <div class="spacer"></div>
-  <button id="btnReport" title="Tell us about a part that is missing from the suggestions">🚩 Report missing part</button>
+  <button id="btnReport" title="Tell us about a part that is missing from the suggestions">🚩 Report part</button>
   <button id="btnSettings">⚙️ Settings</button>
-  <button id="btnExport">⬇ Export</button>
-  <button id="btnImport">⬆ Import</button>
+  <button id="btnExport" title="Save a backup file of all jobs and settings">⬇ Export</button>
+  <button id="btnImport" title="Load a backup file">⬆ Import</button>
   <input type="file" id="importFile" accept=".json" hidden>
 </header>
 
@@ -45,13 +45,13 @@
   <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
     <div class="review">
-      <div>
+      <div id="shotPane">
         <div class="ctrls">
-          <span class="hint" style="margin:0">Area to edit:</span>
-          <div class="seg"><button data-mode="email" class="sel">Email area</button><button data-mode="stats">PC Stats area</button></div>
+          <div class="seg" id="shotTabs"></div>
+          <span class="spacer"></span>
           <button id="btnLock">🔒 Locked</button><button id="btnResetCrop">↺ Reset areas</button><button id="btnReOcr">↻ Read again</button>
         </div>
-        <p class="hint">Blue box = email text, budget and objectives. Orange box = the <b>PC Stats</b> popup (open it in-game before capturing). Click <b>🔒 Locked</b> to unlock before drawing new boxes.</p>
+        <p class="hint"><span id="areaHint"></span> Click <b>🔒 Locked</b> to unlock before drawing a new box.</p>
         <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
         <div id="shotWrap"><img id="shot" alt="capture"><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
         <div class="progress"><div id="prog"></div></div>
