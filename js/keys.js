@@ -9,8 +9,11 @@ const KEYMAP = [
   { group: "Selected job", keys: [
     ["1 / 2 / 3", "Put on Table 1 / 2 / 3 (again = back to open jobs)"], ["0", "Back to open jobs"],
     ["H", "Tick the next hidden objective"], ["N", "Type a new task"], ["R", "Add part replacement"],
-    ["P", "📸 Capture PC parts for this job"], ["E", "Edit job"], ["Enter", "Go into the card (then Tab / Space)"],
+    ["P", "📸 Capture PC parts for this job"], ["E", "Edit job"], ["Enter", "Go into the card"],
     ["D", "Job completed (Undo stays available)"]] },
+  { group: "Inside a card", keys: [
+    ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
+    ["Space / Enter", "Tick the box · press the button"], ["Esc", "Back to choosing jobs"]] },
   { group: "New job window", keys: [
     ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"]] },
 ];
@@ -49,6 +52,80 @@ function moveSel(dir) {
 const clickIn = (sel) => { const el = document.querySelector(`.job[data-job="${selJob}"] ${sel}`); if (el) { el.click(); return el; } };
 const typing = el => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) && !(el.tagName === "INPUT" && /checkbox|radio|button/.test(el.type));
 
+// ---- moving inside a card: the card is split into lines (rows), each with one or more controls ----
+const ROW_SEL = ".top, .tables, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
+const CTRL_SEL = "input, select, button, summary";
+const shown = el => !el.closest("[hidden]") && el.getClientRects().length > 0;
+function cardRows(card) {
+  return [...card.querySelectorAll(ROW_SEL)].filter(shown).map(r => r.matches(CTRL_SEL) ? [r] : [...r.querySelectorAll(CTRL_SEL)].filter(shown)).filter(r => r.length);
+}
+function posOf(el) {
+  const card = el?.closest?.(".job"); if (!card) return null;
+  const rows = cardRows(card);
+  for (let r = 0; r < rows.length; r++) { const c = rows[r].indexOf(el); if (c >= 0) return { card, rows, r, c }; }
+  return null;
+}
+function focusCtrl(el) {
+  if (!el) return;
+  el.focus({ preventScroll: true }); el.scrollIntoView({ block: "nearest" });
+  document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow"));
+  (el.closest(ROW_SEL.replace(/, \[data-act='openSwap'\]|, details > summary/g, "")) || el).classList.add("kbrow");
+}
+function enterCard(card) {
+  const rows = cardRows(card); if (!rows.length) return;
+  const hid = card.querySelector("label.hid input:not(:checked)");
+  focusCtrl(hid || rows[0][0]);
+}
+// how to find the same control again after the board is redrawn
+function ctrlId(el) {
+  const d = el.dataset;
+  if (d.act === "saveSwap" || d.act === "cancelSwap") return `[data-act="openSwap"]`; // ready to add the next one
+  if (d.act && d.k) return `[data-act="${d.act}"][data-k="${d.k}"]`;
+  if (d.act === "table") return `[data-act="table"][data-n="${d.n}"]`;
+  if (d.act) return `[data-act="${d.act}"]`;
+  if (d.input) return `[data-input="${d.input}"]`;
+  if (d.f) return `[data-f="${d.f}"]`;
+  return null;
+}
+let restore = null;
+function rememberFocus() {
+  const p = posOf(document.activeElement);
+  restore = p ? { job: p.card.dataset.job, id: ctrlId(document.activeElement), r: p.r, c: p.c } : null;
+}
+function restoreFocus() {
+  if (!restore) return; const f = restore; restore = null;
+  const card = document.querySelector(`.job[data-job="${f.job}"]`); if (!card) return;
+  const el = f.id && card.querySelector(f.id);
+  if (el && shown(el)) return focusCtrl(el);
+  const rows = cardRows(card); if (!rows.length) return;
+  const row = rows[Math.min(f.r, rows.length - 1)]; focusCtrl(row[Math.min(f.c, row.length - 1)]);
+}
+// keys while a control inside a card has focus; returns true when handled
+function inCardKey(e) {
+  const t = e.target, p = posOf(t); if (!p) return false;
+  const text = t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && !/checkbox|radio|button/.test(t.type));
+  const go = (r, c) => { e.preventDefault(); const row = p.rows[r]; if (row) focusCtrl(row[Math.max(0, Math.min(c, row.length - 1))]); };
+  // up / down land on the line's text field if it has one, otherwise on its first item
+  const vert = r => { e.preventDefault(); const row = p.rows[r]; if (!row) return; const f = row.findIndex(x => x.tagName === "INPUT" && !/checkbox|radio|button/.test(x.type)); go(r, f >= 0 ? f : 0); };
+  switch (e.key) {
+    case "ArrowDown": if (p.r < p.rows.length - 1) vert(p.r + 1); else e.preventDefault(); return true;
+    case "ArrowUp": if (p.r > 0) vert(p.r - 1); else e.preventDefault(); return true;
+    case "ArrowLeft": case "ArrowRight": {
+      const d = e.key === "ArrowRight" ? 1 : -1;
+      if (t.tagName === "SELECT" && p.rows[p.r].length === 1) { // dropdown alone on its line: change it without opening it
+        e.preventDefault(); const i = t.selectedIndex + d;
+        if (i >= 0 && i < t.options.length) { t.selectedIndex = i; t.dataset.kb = "1"; t.dispatchEvent(new Event("change", { bubbles: true })); delete t.dataset.kb; }
+        return true;
+      }
+      if (text && t.value && !(d < 0 ? t.selectionStart === 0 && t.selectionEnd === 0 : t.selectionStart === t.value.length)) return true; // move the caret
+      go(p.r, p.c + d); return true;
+    }
+    case "Enter": if (t.type === "checkbox") { e.preventDefault(); t.click(); } return true;
+    case "Escape": e.preventDefault(); t.blur(); document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow")); selectCard(p.card); return true;
+  }
+  return false;
+}
+
 document.addEventListener("keydown", e => {
   if (!keysOn || e.defaultPrevented) return;
   const t = e.target, review = $("#dlgReview").open, anyDlg = [...document.querySelectorAll("dialog")].some(d => d.open);
@@ -60,6 +137,7 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (anyDlg) return;
+  if (!e.ctrlKey && !e.metaKey && !e.altKey && inCardKey(e)) return;
   if (typing(t)) {
     if (e.key === "Escape" && !document.querySelector("#ac:not([hidden])")) { const card = t.closest(".job"); t.blur(); if (card) selectCard(card); }
     return;
@@ -91,9 +169,18 @@ document.addEventListener("keydown", e => {
     case k === "p": return act(() => clickIn('[data-act="addParts"]'));
     case k === "e": return act(() => clickIn('[data-act="edit"]'));
     case k === "d": return act(() => clickIn('[data-act="complete"]'));
-    case k === "Enter": return act(() => { const c = document.querySelector(`.job[data-job="${selJob}"]`); (c?.querySelector('.hid input:not(:checked)') || c?.querySelector("[data-input='task']"))?.focus(); });
+    case k === "Enter": return act(() => { const c = document.querySelector(`.job[data-job="${selJob}"]`); if (c) enterCard(c); });
   }
 });
+let viaKeys = false; // highlight the line only when the keyboard is being used
+document.addEventListener("keydown", () => { viaKeys = true; }, true);
+document.addEventListener("mousedown", () => { viaKeys = false; }, true);
+document.addEventListener("focusin", e => {
+  const c = e.target.closest?.(".job"); if (!c || !keysOn) return;
+  if (selJob !== c.dataset.job) { selJob = c.dataset.job; markSel(); }
+  if (viaKeys && !e.target.closest(".kbrow") && posOf(e.target)) focusCtrl(e.target);
+});
+document.addEventListener("focusout", e => { if (e.target.closest?.(".job")) setTimeout(() => { if (!document.activeElement?.closest?.(".job")) document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow")); }, 0); });
 // clicking a card selects it, so the keyboard continues from there
 document.addEventListener("mousedown", e => { const c = e.target.closest?.(".job"); if (c && keysOn) { selJob = c.dataset.job; markSel(); } });
 
@@ -102,6 +189,6 @@ function setKeys(v) { keysOn = v; LS.set("pcbs.keys", v); document.body.classLis
 
 // re-apply the selection after every board re-render
 const _renderBoard = render;
-render = function () { _renderBoard(); markSel(); };
+render = function () { rememberFocus(); _renderBoard(); markSel(); restoreFocus(); };
 $("#btnKeys").onclick = openKeysHelp;
 setKeys(keysOn);

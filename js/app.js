@@ -100,6 +100,7 @@ document.addEventListener("click", e => {
       const c = j.components[ev.target.value], inp = f.querySelector('[data-f="new"]');
       f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other";
       inp.value = c ? c.name : "";
+      if (ev.target.dataset.kb) return; // changed with ← → : stay on the dropdown
       inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc;
     };
     f.querySelector('[data-f="new"]').focus(); return; }

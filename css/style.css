@@ -78,6 +78,13 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px}
 .ac{position:fixed;z-index:100;background:#0f131a;border:1px solid var(--accent);border-radius:7px;overflow:hidden;box-shadow:0 10px 30px #000a;font-size:12.5px;display:flex;flex-direction:column}
 .ac[hidden]{display:none}
 .ac .aclist,.ac .aclist:hover{display:block;padding:0;background:none;cursor:default;position:relative;overflow-y:auto;overscroll-behavior:contain}
+.ac .aclist.scrolls{border-right:1px solid var(--line)}
+@supports (-moz-appearance:none){.ac .aclist{scrollbar-width:thin;scrollbar-color:var(--accent) #1a2130}}
+.ac .aclist::-webkit-scrollbar{width:9px}
+.ac .aclist::-webkit-scrollbar-track{background:#1a2130}
+.ac .aclist::-webkit-scrollbar-thumb{background:var(--accent);border-radius:5px;border:2px solid #1a2130}
+.ac .acmore,.ac .acmore:hover{display:block;text-align:center;font-size:11.5px;color:var(--accent);background:#14202c;padding:3px;border-top:1px solid var(--line);cursor:pointer}
+.ac.up .acmore{order:-1;border-top:0;border-bottom:1px solid var(--line)}
 .ac.up{flex-direction:column-reverse;box-shadow:0 -10px 30px #000a}
 .ac.up .report{border-top:0;border-bottom:1px solid var(--line)}
 .ac div{padding:6px 9px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
@@ -187,3 +194,8 @@ table.keys td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:to
 table.keys td:first-child{white-space:nowrap;width:1%;padding-right:14px}
 kbd{display:inline-block;min-width:20px;text-align:center;font:600 12px/1.6 Consolas,monospace;background:#0e1117;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;color:var(--text)}
 .keyslist summary{margin:6px 0}
+
+/* keyboard movement inside a card */
+.job .kbrow{outline:1px dashed #33b5f099;outline-offset:2px;border-radius:5px}
+.job :is(button,input[type=checkbox],summary,select):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.job .x:focus-visible,.job .kbrow .x{opacity:1}

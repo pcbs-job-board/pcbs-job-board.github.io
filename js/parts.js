@@ -78,13 +78,13 @@ function acShow(inp) {
   const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
-  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div>`
+  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const host = inp.closest("dialog") || document.body; if (acEl.parentNode !== host) host.append(acEl);
   acEl.hidden = false; acPlace();
 }
-// show 3 parts at a time (scroll for more) and open upwards when there is no room below
-const AC_ROWS = 3;
+// show 5 parts at a time (scroll for more) and open upwards when there is no room below
+const AC_ROWS = 5;
 function acPlace() {
   if (!acInput || acEl.hidden) return;
   const r = acInput.getBoundingClientRect(), w = Math.max(r.width, 380), list = acEl.querySelector(".aclist");
@@ -97,6 +97,15 @@ function acPlace() {
   const room = (up ? above : below) - 3;
   if (h > room) list.style.maxHeight = Math.max(40, room - (h - list.offsetHeight)) + "px"; // tiny window: shrink further
   acEl.classList.toggle("up", up);
+  acMore();
+}
+// "▼ 9 more" line, so it is obvious at once that the list goes on
+function acMore() {
+  const list = acEl.querySelector(".aclist"), more = acEl.querySelector("[data-more]"); if (!list || !more) return;
+  const rows = [...list.children], bottom = list.scrollTop + list.clientHeight;
+  const below = rows.filter(d => d.offsetTop + d.offsetHeight / 2 > bottom).length;
+  list.classList.toggle("scrolls", list.scrollHeight > list.clientHeight + 1);
+  more.hidden = !below; more.textContent = `▼ ${below} more – scroll or use ↓`;
 }
 function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.value = p.name; const f = acInput.closest("[data-swapform]"); if (f && p.cat && CATS.includes(p.cat)) f.querySelector('[data-f="cat"]').value = p.cat; acEl.hidden = true; acInput.focus(); }
 function initAutocomplete() {
@@ -105,11 +114,13 @@ function initAutocomplete() {
   document.addEventListener("focusin", e => { if (e.target.matches("[data-ac]") && !e.target.dataset.noAc && e.target.value.length >= 2) acShow(e.target); });
   document.addEventListener("keydown", e => {
     if (acEl.hidden || e.target !== acInput) return;
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!acItems.length) return; acSel = (acSel + (e.key === "ArrowDown" ? 1 : -1) + acItems.length) % acItems.length; acEl.querySelectorAll("[data-i]").forEach((d, i) => { d.classList.toggle("sel", i === acSel); if (i === acSel) { const L = d.parentNode; if (d.offsetTop < L.scrollTop) L.scrollTop = d.offsetTop; else if (d.offsetTop + d.offsetHeight > L.scrollTop + L.clientHeight) L.scrollTop = d.offsetTop + d.offsetHeight - L.clientHeight; } }); }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!acItems.length) return; acSel = (acSel + (e.key === "ArrowDown" ? 1 : -1) + acItems.length) % acItems.length; acEl.querySelectorAll("[data-i]").forEach((d, i) => { d.classList.toggle("sel", i === acSel); if (i === acSel) { const L = d.parentNode; if (d.offsetTop < L.scrollTop) L.scrollTop = d.offsetTop; else if (d.offsetTop + d.offsetHeight > L.scrollTop + L.clientHeight) L.scrollTop = d.offsetTop + d.offsetHeight - L.clientHeight; } acMore(); }); }
     else if ((e.key === "Enter" || e.key === "Tab") && acItems.length) { e.preventDefault(); e.stopPropagation(); acPick(acSel); }
     else if (e.key === "Escape") { acEl.hidden = true; }
   }, true);
+  acEl.addEventListener("scroll", acMore, true);
   acEl.addEventListener("mousedown", e => {
+    if (e.target.closest("[data-more]")) { e.preventDefault(); const L = acEl.querySelector(".aclist"); L.scrollBy({ top: L.clientHeight - 20, behavior: "smooth" }); return; }
     if (e.target.closest("[data-report]")) { e.preventDefault(); const q = acInput.value.trim(), cat = acCat(acInput); acEl.hidden = true; openReport({ name: q, cat }); return; }
     const d = e.target.closest("[data-i]"); if (d) { e.preventDefault(); acPick(+d.dataset.i); }
   });
