@@ -2,7 +2,7 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
-## 0.7.0
+## 0.6.1
 - Fixed stray OCR text being added to objectives.
 - Fixed smoke being detected as dust; smoke now points to a burnt part.
 - Detection of parts the customer hints are broken.

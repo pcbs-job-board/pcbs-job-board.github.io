@@ -5,5 +5,5 @@
    want the report button to go to your repository. */
 window.PCBS_CONFIG = {
   repo: "mariusz-przeczek/pcbs-job-board",
-  version: "0.7.0",
+  version: "0.6.1",
 };
