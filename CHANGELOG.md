@@ -2,7 +2,7 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
-## 0.8.1 (not released yet)
+## 0.8.1
 - Fixed email and subject missing when screenshots are taken bottom-first.
 - Fixed duplicated objectives from words cut off at the edge of a screenshot.
 - Part suggestions show 5 at a time with a visible scrollbar and a “more” count, and open upwards near the bottom of the page.
