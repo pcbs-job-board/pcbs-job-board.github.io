@@ -38,6 +38,12 @@ function detectBlamedParts(body) {
   }
   return out;
 }
+// strip OCR crumbs at the end of a line: "Diagnose and fix ls", "Diagnose and fix ‘S", "help plz G"
+function trimJunk(s) {
+  let w = String(s).trim().split(/\s+/);
+  while (w.length > 1 && /^(?:[^A-Za-z0-9(]+|[^A-Za-z0-9(]*[a-z]{1,2}[^A-Za-z0-9)]*|[‘'`|;:,.~_][A-Za-z]{1,2})$/.test(w[w.length - 1]) && !/^(it|up|on|in|me|my|pc|os|ok)$/i.test(w[w.length - 1])) w.pop();
+  return w.join(" ");
+}
 // OCR noise (status bar, buttons) must not be glued onto an objective
 function looksLikeText(l) {
   const w = l.split(/\s+/).filter(Boolean); if (!w.length || w.length > 12) return false;
@@ -47,7 +53,7 @@ function looksLikeText(l) {
   return short / w.length <= 0.25 && odd <= 1;
 }
 
-const BRANDS = ["EVGA","NZXT","Intel","AMD","Cryorig","SilverStone","G.SKILL","ASUS","ASRock","Seagate","Corsair","Cooler Master","MSI","Gigabyte","GIGABYTE","AORUS","ZOTAC","Sapphire","XFX","PowerColor","Western Digital","WD","Samsung","Crucial","Kingston","HyperX","Thermaltake","Fractal","Phanteks","be quiet!","Noctua","Deepcool","Raijintek","In Win","InWin","Lian Li","Antec","Razer","Patriot","Team","Toshiba","Adata","ADATA","Arctic","Ballistix","Biostar","Enermax","Inno3D","PNY","Palit","Zalman","Scythe","Bitfenix","BitFenix","Rosewill","Seasonic","SuperFlower","Super Flower","Kolink","Xigmatek","Mushkin","OCZ","Intel Optane","Optane","Gamdias","Hyte","Cougar","Cryorig","Alphacool","EK","Bykski","Barrow","Geil","GeIL","Galax","KFA2","Gainward","Colorful","EKWB","Generic","GALAX","Asus","Msi","Kingston"];
+const BRANDS = ["Mortoni","Shean","DFL","FSP","GamerStorm","Kolink","Open Benchtable","Fractal Design","Team Group","EVGA","NZXT","Intel","AMD","Cryorig","SilverStone","G.SKILL","ASUS","ASRock","Seagate","Corsair","Cooler Master","MSI","Gigabyte","GIGABYTE","AORUS","ZOTAC","Sapphire","XFX","PowerColor","Western Digital","WD","Samsung","Crucial","Kingston","HyperX","Thermaltake","Fractal","Phanteks","be quiet!","Noctua","Deepcool","Raijintek","In Win","InWin","Lian Li","Antec","Razer","Patriot","Team","Toshiba","Adata","ADATA","Arctic","Ballistix","Biostar","Enermax","Inno3D","PNY","Palit","Zalman","Scythe","Bitfenix","BitFenix","Rosewill","Seasonic","SuperFlower","Super Flower","Kolink","Xigmatek","Mushkin","OCZ","Intel Optane","Optane","Gamdias","Hyte","Cougar","Cryorig","Alphacool","EK","Bykski","Barrow","Geil","GeIL","Galax","KFA2","Gainward","Colorful","EKWB","Generic","GALAX","Asus","Msi","Kingston"];
 const OCR_FIX = [[/^[©@®Cc6]\.?\s?SKILL/i, "G.SKILL"], [/^G\s?\.\s?SKILL/i, "G.SKILL"], [/^lntel/, "Intel"], [/^1ntel/, "Intel"], [/^NZXT/i, "NZXT"]];
 
 function categorize(name) {
@@ -79,6 +85,20 @@ function cleanPartLine(line) {
   return { text: best >= 0 ? l.slice(best).trim() : l, branded: best >= 0 };
 }
 
+// raw candidate lines of the PC Stats list ({text, branded}); joining is done later against the parts database
+function componentLines(text) {
+  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const start = lines.findIndex(l => /components/i.test(l));
+  const out = [];
+  for (const raw of start >= 0 ? lines.slice(start + 1) : lines) {
+    if (/^\W*(ok|pc status|benchmark|invoiceable)\b/i.test(raw)) continue;
+    const { text: t, branded } = cleanPartLine(raw);
+    const txt = branded ? t : t.replace(/^[^A-Za-z0-9(]+/, "").replace(/^(?:[a-z]{1,2}|[^A-Za-z0-9\s]+)\s+(?=[A-Z0-9])/, "").replace(/\s+[^A-Za-z0-9)]{1,2}$/, "").trim();
+    if ((txt.match(/[A-Za-z0-9]/g) || []).length < 4) continue;
+    out.push({ text: txt, branded });
+  }
+  return out;
+}
 function parseComponents(text) {
   const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
   const start = lines.findIndex(l => /components/i.test(l));
@@ -137,13 +157,17 @@ function detectBrands(body) {
 function parseEmail(text, rules) {
   rules = rules || DEFAULT_RULES;
   const raw = text.replace(/\r/g, "");
-  const lines = raw.split("\n").map(s => s.trim()).filter(Boolean);
+  // a box wider than the email also catches the inbox's date column: "6/12/2018 I hate using…"
+  const lines = raw.split("\n").map(s => s.trim().replace(/^\d{1,2}\/\d{1,2}\/\d{4}\s*(?=\S{3}|$)/, "").trim()).filter(Boolean);
   const job = { sender: "", subject: "", labour: null, budget: null, level: null, deadline: "", objectives: [], hidden: [], suspect: "", body: "", components: [] };
-  const emailLineIdx = lines.findIndex(l => /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(l) && !/^pc for/i.test(l));
+  // sender = the last address above the greeting (inbox entries come first when the box is too big)
+  const startB0 = lines.findIndex(l => /you work with computers|^(hi|hello|hey|dear|good (day|morning|afternoon|evening))\b/i.test(l));
+  const mailIdx = lines.map((l, i) => /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(l) && !/^pc for/i.test(l) ? i : -1).filter(i => i >= 0);
+  const emailLineIdx = startB0 > 0 ? (mailIdx.filter(i => i < startB0).pop() ?? mailIdx[0] ?? -1) : (mailIdx[0] ?? -1);
   if (emailLineIdx >= 0) {
     job.sender = lines[emailLineIdx].match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/i)[0];
     const nxt = lines[emailLineIdx + 1];
-    if (nxt && !/you work with|labour|objectives/i.test(nxt)) job.subject = nxt.replace(/^Ineed/, "I need").replace(/\s+\S{1,2}$/, "").trim();
+    if (nxt && !/you work with|labour|objectives|@/i.test(nxt) && emailLineIdx + 1 !== startB0) job.subject = trimJunk(nxt.replace(/^Ineed/, "I need"));
   }
   const pcFor = raw.match(/PC for\s+([\w.+-]+@[\w-]+(\.[\w-]+)+)/i);
   if (!job.sender && pcFor) job.sender = pcFor[1];
@@ -151,22 +175,24 @@ function parseEmail(text, rules) {
   const bud = raw.match(/Budget[:;]?\s*\$?\s*([\d,]+)/i); if (bud) job.budget = +bud[1].replace(/,/g, "");
   const lev = raw.match(/Level\s*(\d+)/i); if (lev) job.level = +lev[1];
 
-  const oi = lines.findIndex(l => /^objectives/i.test(l));
+  // objectives: bullet lines after the header; junk lines in between are skipped, not fatal
+  const oi = lines.findIndex(l => /^\W{0,3}objectives\b/i.test(l));
   if (oi >= 0) {
-    for (let i = oi + 1; i < lines.length; i++) {
+    let junk = 0;
+    for (let i = oi + 1; i < lines.length && junk < 4; i++) {
       const l = lines[i];
-      if (/^(reject|accept|pc status|pc stats)/i.test(l)) break;
-      const m = l.match(/^[•*+·°o»\-]\s*(.+)/);
-      if (m) job.objectives.push(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, "").trim());
-      else if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) job.objectives[job.objectives.length - 1] += " " + l;
-      else break;
+      if (/^\W{0,3}(reject|accept|pc status|pc stats|in transit|go to pc|quit|labou?r)\b/i.test(l)) break;
+      const m = l.match(/^\W{0,3}?[•*+·°»«©¢®\-–]\s*(.+)/) || l.match(/^[oe]\s+([A-Z0-9].+)/);
+      if (m) { const o = trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, "")); if (o.length > 2) { job.objectives.push(o); junk = 0; continue; } }
+      if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) { job.objectives[job.objectives.length - 1] += " " + trimJunk(l); continue; }
+      junk++;
     }
   }
   const dl = raw.match(/Complete by[^\n]*?(\d{1,2}\/\d{1,2}\/\d{4})/i) || raw.match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*\(?(Tomorrow|Today)/i);
   if (dl) job.deadline = dl[1];
 
   // body = text between greeting and money panel
-  const startB = lines.findIndex(l => /you work with computers|^hi\b|^hello|^hey/i.test(l));
+  const startB = startB0;
   const endB = lines.findIndex(l => /labou?r|budget/i.test(l));
   const bodyLines = lines.slice(startB >= 0 ? startB : emailLineIdx + 2, endB > 0 ? endB : undefined);
   job.body = bodyLines.join(" ").replace(/\s+/g, " ").trim();

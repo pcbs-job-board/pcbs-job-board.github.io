@@ -77,8 +77,6 @@ def main():
                 dlc = "overclocked"
             elif s(r.get("Is DLC")) == "Y":
                 dlc = "promo_cases"
-            elif s(r.get("Platform Lock")).startswith("PC"):
-                dlc = "pc_only"
             note = "" if s(r.get("In Shop")) == "Y" else "not in shop"
             sp = spec(r)
             out.setdefault(fn, []).append({

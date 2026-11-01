@@ -1,7 +1,7 @@
 name,level,price,spec,dlc,version,source
-ADATA XPG Core Reactor 650W,28,80,650W Modular ATX,pc_only,1.8,xlsx v1.15.3
-ADATA XPG Core Reactor 750W,28,100,750W Modular ATX,pc_only,1.8,xlsx v1.15.3
-ADATA XPG Core Reactor 850W,28,120,850W Modular ATX,pc_only,1.8,xlsx v1.15.3
+ADATA XPG Core Reactor 650W,28,80,650W Modular ATX,,1.8,xlsx v1.15.3
+ADATA XPG Core Reactor 750W,28,100,750W Modular ATX,,1.8,xlsx v1.15.3
+ADATA XPG Core Reactor 850W,28,120,850W Modular ATX,,1.8,xlsx v1.15.3
 ADATA XPG Pylon 450W,28,100,450W Non-Modular ATX,,1.11,xlsx v1.15.3
 ADATA XPG Pylon 550W,28,115,550W Non-Modular ATX,,1.11,xlsx v1.15.3
 ADATA XPG Pylon 650W,28,130,650W Non-Modular ATX,,1.11,xlsx v1.15.3
@@ -9,56 +9,56 @@ ADATA XPG Pylon 750W,28,145,750W Non-Modular ATX,,1.11,xlsx v1.15.3
 Antec High Current Gamer 650W,27,100,650W Modular ATX,,1.0,xlsx v1.15.3
 Antec High Current Gamer 750W,27,125,750W Modular ATX,,1.0,xlsx v1.15.3
 Antec High Current Gamer 850W,27,150,850W Modular ATX,,1.2,xlsx v1.15.3
-Antec High Current Gamer Extreme Series 1000W,27,250,1000W Modular ATX,pc_only,1.8,xlsx v1.15.3
-Antec High Current Gamer Extreme Series 850W,27,200,850W Modular ATX,pc_only,1.8,xlsx v1.15.3
-Antec SIGNATURE 1000 PLATINUM,32,365,1000W Modular ATX,pc_only,1.12,xlsx v1.15.3
-Antec SIGNATURE 1000 TITANIUM,32,405,1000W Modular ATX,pc_only,1.12,xlsx v1.15.3
-Antec SIGNATURE 1300 PLATINUM,32,490,1300W Modular ATX,pc_only,1.12,xlsx v1.15.3
+Antec High Current Gamer Extreme Series 1000W,27,250,1000W Modular ATX,,1.8,xlsx v1.15.3
+Antec High Current Gamer Extreme Series 850W,27,200,850W Modular ATX,,1.8,xlsx v1.15.3
+Antec SIGNATURE 1000 PLATINUM,32,365,1000W Modular ATX,,1.12,xlsx v1.15.3
+Antec SIGNATURE 1000 TITANIUM,32,405,1000W Modular ATX,,1.12,xlsx v1.15.3
+Antec SIGNATURE 1300 PLATINUM,32,490,1300W Modular ATX,,1.12,xlsx v1.15.3
 Cooler Master MasterWatt Maker 1200 MIJ,23,999,1200W Modular ATX,,1.0,xlsx v1.15.3
-Cooler Master MWE 450 Bronze - V2,22,50,450W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 450 White - V2,22,55,450W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 500 Bronze - V2,22,55,500W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 550 Bronze - V2,22,60,550W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 550 White - V2,22,65,550W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 600 Bronze - V2,22,65,600W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 650 Bronze - V2,22,70,650W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 650 White - V2,22,75,650W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 700 Bronze - V2,22,80,700W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 750 Bronze - V2,22,90,750W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master MWE 750 White - V2,22,95,750W Non-Modular ATX,pc_only,1.6,xlsx v1.15.3
+Cooler Master MWE 450 Bronze - V2,22,50,450W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 450 White - V2,22,55,450W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 500 Bronze - V2,22,55,500W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 550 Bronze - V2,22,60,550W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 550 White - V2,22,65,550W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 600 Bronze - V2,22,65,600W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 650 Bronze - V2,22,70,650W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 650 White - V2,22,75,650W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 700 Bronze - V2,22,80,700W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 750 Bronze - V2,22,90,750W Non-Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master MWE 750 White - V2,22,95,750W Non-Modular ATX,,1.6,xlsx v1.15.3
 Cooler Master MWE Bronze 450,4,50,450W Non-Modular ATX,,1.0,xlsx v1.15.3
 Cooler Master MWE Bronze 500,4,55,500W Non-Modular ATX,,1.0,xlsx v1.15.3
 Cooler Master MWE Bronze 550,4,60,550W Non-Modular ATX,,1.0,xlsx v1.15.3
 Cooler Master MWE Bronze 600,10,65,600W Non-Modular ATX,,1.0,xlsx v1.15.3
 Cooler Master MWE Bronze 650,12,70,650W Non-Modular ATX,,1.0,xlsx v1.15.3
-Cooler Master V1300 Platinum,33,500,1300W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V550 GOLD,25,110,550W Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master V550 Gold V2,33,120,550W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V550 Gold V2 White,33,120,550W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V550 SFX Gold,33,120,550W Modular SFX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V650 GOLD,25,130,650W Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master V650 Gold V2,33,130,650W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V650 Gold V2 White,33,130,650W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V650 SFX Gold,33,130,650W Modular SFX,pc_only,1.15,xlsx v1.15.3
+Cooler Master V1300 Platinum,33,500,1300W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V550 GOLD,25,110,550W Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master V550 Gold V2,33,120,550W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V550 Gold V2 White,33,120,550W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V550 SFX Gold,33,120,550W Modular SFX,,1.15,xlsx v1.15.3
+Cooler Master V650 GOLD,25,130,650W Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master V650 Gold V2,33,130,650W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V650 Gold V2 White,33,130,650W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V650 SFX Gold,33,130,650W Modular SFX,,1.15,xlsx v1.15.3
 Cooler Master V750,15,140,750W Modular ATX,,1.0,xlsx v1.15.3
-Cooler Master V750 GOLD,25,150,750W Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master V750 Gold V2,33,140,750W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V750 Gold V2 White,33,140,750W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V750 SFX Gold,33,140,750W Modular SFX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V850 GOLD,25,170,850W Modular ATX,pc_only,1.6,xlsx v1.15.3
-Cooler Master V850 Gold V2,33,150,850W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V850 Gold V2 White,33,150,850W Modular ATX,pc_only,1.15,xlsx v1.15.3
-Cooler Master V850 SFX Gold,33,150,850W Modular SFX,pc_only,1.15,xlsx v1.15.3
+Cooler Master V750 GOLD,25,150,750W Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master V750 Gold V2,33,140,750W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V750 Gold V2 White,33,140,750W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V750 SFX Gold,33,140,750W Modular SFX,,1.15,xlsx v1.15.3
+Cooler Master V850 GOLD,25,170,850W Modular ATX,,1.6,xlsx v1.15.3
+Cooler Master V850 Gold V2,33,150,850W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V850 Gold V2 White,33,150,850W Modular ATX,,1.15,xlsx v1.15.3
+Cooler Master V850 SFX Gold,33,150,850W Modular SFX,,1.15,xlsx v1.15.3
 CORSAIR AX1600i,26,450,1600W Modular ATX,,1.0,xlsx v1.15.3
 CORSAIR HX1000,29,180,1000W Modular ATX,,1.0,xlsx v1.15.3
-CORSAIR RM1000x,21,500,1000W Modular ATX,pc_only,1.6,xlsx v1.15.3
-CORSAIR RM550x,21,130,550W Modular ATX,pc_only,1.6,xlsx v1.15.3
-CORSAIR RM650,21,140,650W Modular ATX,pc_only,1.6,xlsx v1.15.3
-CORSAIR RM650x,21,160,650W Modular ATX,pc_only,1.6,xlsx v1.15.3
-CORSAIR RM750,21,170,750W Modular ATX,pc_only,1.6,xlsx v1.15.3
+CORSAIR RM1000x,21,500,1000W Modular ATX,,1.6,xlsx v1.15.3
+CORSAIR RM550x,21,130,550W Modular ATX,,1.6,xlsx v1.15.3
+CORSAIR RM650,21,140,650W Modular ATX,,1.6,xlsx v1.15.3
+CORSAIR RM650x,21,160,650W Modular ATX,,1.6,xlsx v1.15.3
+CORSAIR RM750,21,170,750W Modular ATX,,1.6,xlsx v1.15.3
 CORSAIR RM750i,13,120,750W Modular ATX,,1.0,xlsx v1.15.3
-CORSAIR RM750x,21,190,750W Modular ATX,pc_only,1.6,xlsx v1.15.3
-CORSAIR RM850,21,200,850W Modular ATX,pc_only,1.6,xlsx v1.15.3
+CORSAIR RM750x,21,190,750W Modular ATX,,1.6,xlsx v1.15.3
+CORSAIR RM850,21,200,850W Modular ATX,,1.6,xlsx v1.15.3
 CORSAIR RM850x,13,140,850W Modular ATX,,1.0,xlsx v1.15.3
 CORSAIR TX550M,5,80,550W Semi-Modular ATX,,1.0,xlsx v1.15.3
 CORSAIR TX650M,13,90,650W Semi-Modular ATX,,1.0,xlsx v1.15.3
@@ -76,23 +76,23 @@ EVGA SuperNOVA 550 G3,9,100,550W Modular ATX,,1.0,xlsx v1.15.3
 EVGA SuperNOVA 650 P2,12,130,650W Modular ATX,,1.0,xlsx v1.15.3
 EVGA SuperNOVA 750 T2,17,150,750W Modular ATX,,1.0,xlsx v1.15.3
 EVGA SuperNOVA 850 T2,19,230,850W Modular ATX,,1.0,xlsx v1.15.3
-Fractal Design Ion SFX-L Gold 500W,26,100,500W Modular SFX,pc_only,1.9,xlsx v1.15.3
-Fractal Design Ion SFX-L Gold 650W,26,115,650W Modular SFX,pc_only,1.9,xlsx v1.15.3
-Fractal Design Ion+ Platinum 560W,26,100,560W Modular ATX,pc_only,1.9,xlsx v1.15.3
-Fractal Design Ion+ Platinum 660W,26,120,660W Modular ATX,pc_only,1.9,xlsx v1.15.3
-Fractal Design Ion+ Platinum 760W,26,130,760W Modular ATX,pc_only,1.9,xlsx v1.15.3
-Fractal Design Ion+ Platinum 860W,26,140,860W Modular ATX,pc_only,1.9,xlsx v1.15.3
-FSP Dagger Pro 550W,6,115,550W Modular SFX,pc_only,1.4,xlsx v1.15.3
-FSP Dagger Pro 650W,6,115,650W Modular SFX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro G 650,13,100,650W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro G 750,13,120,750W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro G 850,13,140,850W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro PTM 550W,8,110,550W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro PTM 550W (Red),8,110,550W Modular ATX,pc_only,1.6,xlsx v1.15.3
-FSP Hydro PTM 650W,8,125,650W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro PTM 650W (Red),8,125,650W Modular ATX,pc_only,1.6,xlsx v1.15.3
-FSP Hydro PTM 750W,8,140,750W Modular ATX,pc_only,1.4,xlsx v1.15.3
-FSP Hydro PTM 750W (Red),8,140,750W Modular ATX,pc_only,1.6,xlsx v1.15.3
+Fractal Design Ion SFX-L Gold 500W,26,100,500W Modular SFX,,1.9,xlsx v1.15.3
+Fractal Design Ion SFX-L Gold 650W,26,115,650W Modular SFX,,1.9,xlsx v1.15.3
+Fractal Design Ion+ Platinum 560W,26,100,560W Modular ATX,,1.9,xlsx v1.15.3
+Fractal Design Ion+ Platinum 660W,26,120,660W Modular ATX,,1.9,xlsx v1.15.3
+Fractal Design Ion+ Platinum 760W,26,130,760W Modular ATX,,1.9,xlsx v1.15.3
+Fractal Design Ion+ Platinum 860W,26,140,860W Modular ATX,,1.9,xlsx v1.15.3
+FSP Dagger Pro 550W,6,115,550W Modular SFX,,1.4,xlsx v1.15.3
+FSP Dagger Pro 650W,6,115,650W Modular SFX,,1.4,xlsx v1.15.3
+FSP Hydro G 650,13,100,650W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro G 750,13,120,750W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro G 850,13,140,850W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro PTM 550W,8,110,550W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro PTM 550W (Red),8,110,550W Modular ATX,,1.6,xlsx v1.15.3
+FSP Hydro PTM 650W,8,125,650W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro PTM 650W (Red),8,125,650W Modular ATX,,1.6,xlsx v1.15.3
+FSP Hydro PTM 750W,8,140,750W Modular ATX,,1.4,xlsx v1.15.3
+FSP Hydro PTM 750W (Red),8,140,750W Modular ATX,,1.6,xlsx v1.15.3
 GamerStorm DQ650-M,24,100,650W Modular ATX,,1.0,xlsx v1.15.3
 GamerStorm DQ750-M,24,120,750W Modular ATX,,1.0,xlsx v1.15.3
 GamerStorm DQ850-M,24,150,850W Modular ATX,,1.0,xlsx v1.15.3
@@ -107,10 +107,10 @@ SilverStone ET550-B,2,55,550W Non-Modular ATX,,1.0,xlsx v1.15.3
 SilverStone ET550-G,7,75,550W Non-Modular ATX,,1.0,xlsx v1.15.3
 SilverStone ET650-B,11,60,650W Non-Modular ATX,,1.0,xlsx v1.15.3
 SilverStone ET650-G,13,85,650W Non-Modular ATX,,1.0,xlsx v1.15.3
-SilverStone ET700-MG,21,90,700W Modular ATX,pc_only,1.8,xlsx v1.15.3
+SilverStone ET700-MG,21,90,700W Modular ATX,,1.8,xlsx v1.15.3
 SilverStone ET750-G,17,95,750W Non-Modular ATX,,1.0,xlsx v1.15.3
 SilverStone NJ520,7,140,520W Modular ATX,,1.0,xlsx v1.15.3
-SilverStone NJ700,34,320,700W Modular ATX,pc_only,1.15,xlsx v1.15.3
+SilverStone NJ700,34,320,700W Modular ATX,,1.15,xlsx v1.15.3
 SilverStone ST1000-PT,20,205,1000W Modular ATX,,1.0,xlsx v1.15.3
 SilverStone ST1100-TI,21,280,1100W Modular ATX,,1.0,xlsx v1.15.3
 SilverStone ST1200-PT,22,260,1200W Modular ATX,,1.0,xlsx v1.15.3

@@ -156,3 +156,4 @@ ul.mainobj li:hover .x{opacity:1}
 #fHidden{border:2px solid var(--warn);border-radius:8px;padding:6px 10px;background:linear-gradient(160deg,#3d2a0c,#2a1d0b 70%)}
 #fHidden .hidrow div{color:#fff1d6;font-weight:600}
 #fHidden .hidrow small{font-weight:400;color:#d6b98a}
+.capemail{border-color:var(--accent);color:#9fdcff;margin:0 0 6px}

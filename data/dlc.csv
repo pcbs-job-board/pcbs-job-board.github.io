@@ -1,5 +1,4 @@
 key,label,group,default_on,note
 overclocked,Overclocked Edition Content,dlc,0,"4 NZXT cases designed by Brock Hofer: H700i Extinction Wars / Organ Collector, H500 Re-Animator / Split"
 promo_cases,Promo & store-exclusive cases,other,0,"NZXT H700i Bush Flight Simulator, Good Company and Galaxy Edition (GOG) - giveaways, not sold as DLC"
-pc_only,PC-only parts,other,0,"'Platform Lock: PC' in the community workbook - added in later PC updates, usually missing on console. Turn on if you see them in your game."
 hem,Hardware Expansion Mod,other,0,"Community mod for the PC version"

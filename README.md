@@ -10,7 +10,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 - Hidden-objective detection with editable keyword rules, cable colour requests and brand preferences ("total NZXT fanboy")
 - Three workbenches (one job each) + open-jobs queue, drag & drop
 - Part swaps with autofill from 2,000+ in-game parts (level and price shown)
-- Settings for game version (hides parts from later updates), Overclocked Edition DLC, PC-only parts
+- Settings for game version (hides parts from later updates) and Overclocked Edition DLC
 - 🚩 Report missing parts → GitHub issue
 
 ## Privacy

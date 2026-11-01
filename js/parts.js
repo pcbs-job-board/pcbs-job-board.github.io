@@ -101,3 +101,80 @@ function initAutocomplete() {
   document.addEventListener("focusout", e => { if (e.target === acInput) setTimeout(() => { if (document.activeElement !== acInput) acEl.hidden = true; }, 120); });
   window.addEventListener("scroll", () => { if (!acEl.hidden) acEl.hidden = true; }, true);
 }
+
+// ---- PC Stats parts list: closest database match + category limits ----
+// order in which the game lists parts in PC Stats, and how many of each a PC can have
+const PC_ORDER = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU", "RAM", "GPU", "Storage", "Case Fan", "Water Cooling"];
+const PC_MAX = { Case: 1, Motherboard: 1, CPU: 1, "CPU Cooler": 1, PSU: 1, RAM: 4, GPU: 2 };
+let FULL = null; // every part, ignoring DLC/version filters – the customer's PC can contain anything
+const trigrams = s => { const t = new Set(), x = "  " + s + " "; for (let i = 0; i < x.length - 2; i++) t.add(x.slice(i, i + 3)); return t; };
+const dice = (a, b) => { let c = 0; for (const g of a) if (b.has(g)) c++; return 2 * c / (a.size + b.size); };
+function fullIndex() {
+  if (FULL) return FULL;
+  FULL = [];
+  for (const cat in window.PARTS_DB || {}) for (const [name] of window.PARTS_DB[cat]) { const n = normP(name); FULL.push({ cat, name, n, w: n.split(" "), tri: trigrams(n) }); }
+  return FULL;
+}
+// remove prices and other screen text that is not part of the name ("$120", "Sell", "Used")
+const cleanOcrPart = s => String(s).replace(/[$£€]\s?[\d,.]+/g, " ").replace(/\b(price|sell|used|new|installed|broken)\b:?/gi, " ").replace(/\s{2,}/g, " ").trim();
+function bestPartMatch(raw, onlyCat, min = 0.5) {
+  const s = normP(cleanOcrPart(raw)); const w = s.split(" ").filter(x => x.length > 1);
+  if (s.replace(/ /g, "").length < 4 || !w.length) return null;
+  const tri = trigrams(s); let best = null, bs = 0;
+  for (const p of fullIndex()) {
+    if (onlyCat && p.cat !== onlyCat) continue;
+    const tok = w.filter(x => p.w.includes(x)).length / w.length;
+    const sc = 0.6 * dice(tri, p.tri) + 0.4 * tok;
+    if (sc > bs) { bs = sc; best = p; }
+  }
+  return bs >= min ? { name: best.name, cat: best.cat, score: bs } : null;
+}
+// one screenshot → list of {name, cat}: match each line, fill unknown categories from the list order,
+// drop extras beyond the limits (a duplicate Case/CPU/PSU… is an OCR repeat, not a second part)
+// join wrapped names ("ASUS ROG Strix RX" + "VEGA64 OC Edition") only when the database agrees
+function joinPCStatsLines(lines) {
+  const items = []; let cur = null;
+  const sc = t => (bestPartMatch(t) || { score: 0 }).score;
+  for (const l of lines) {
+    if (!cur) { cur = l.text; continue; }
+    if (l.branded) { items.push(cur); cur = l.text; continue; }
+    const joined = cur + " " + l.text, sj = sc(joined), sCur = sc(cur), sLine = sc(l.text);
+    if (sj >= sCur - 0.02 && sj >= sLine) cur = joined; else { items.push(cur); cur = l.text; }
+  }
+  if (cur) items.push(cur);
+  return items.map(name => ({ name }));
+}
+function resolvePCStats(items) {
+  if (typeof items === "string") items = joinPCStatsLines(componentLines(items));
+  const out = [], count = {};
+  let lastIdx = -1;
+  for (const it of items) {
+    const m = bestPartMatch(it.name);
+    let cat = m ? m.cat : categorize(cleanOcrPart(it.name)), name = m ? m.name : cleanOcrPart(it.name);
+    const full = c => PC_MAX[c] && (count[c] || 0) >= PC_MAX[c];
+    if (!m && (cat === "Other" || full(cat))) {
+      // not recognised: next category in the PC Stats order that still has room
+      const cand = PC_ORDER.slice(Math.max(lastIdx, 0)).find(c => !full(c));
+      if (cand) cat = cand;
+      // category known from the position → a looser match inside that category is good enough
+      const m2 = cand && bestPartMatch(it.name, cand, 0.35);
+      if (m2) { name = m2.name; }
+    }
+    if (full(cat)) continue;
+    if (m && PC_MAX[cat] === 1 && out.some(o => o.name === name)) continue;
+    count[cat] = (count[cat] || 0) + 1; lastIdx = Math.max(lastIdx, PC_ORDER.indexOf(cat));
+    out.push({ name, cat, sure: !!m });
+  }
+  return out;
+}
+// several screenshots → one list: for every category take the screenshot that shows most of them,
+// so the same RAM stick seen on two screenshots is not counted twice
+function mergePCStats(lists) {
+  const res = [];
+  for (const cat of [...PC_ORDER, ...new Set(lists.flat().map(p => p.cat).filter(c => !PC_ORDER.includes(c)))]) {
+    let best = [];
+    for (const l of lists) { const here = l.filter(p => p.cat === cat); if (here.length > best.length) best = here; }
+    res.push(...best.slice(0, PC_MAX[cat] || 99));
+  }
+  return res;
+}

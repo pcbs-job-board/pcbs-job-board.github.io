@@ -2,6 +2,14 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
+## 0.7.0
+- Long emails can be read from several screenshots.
+- Fixed objectives not detected when the email box is larger than the email.
+- PC Stats parts matched to the parts database, with per-category limits.
+- Fixed duplicated and wrongly categorised parts.
+- All parts shown by default, with a note about console editions.
+- "Add part replacement" opens with "Other" selected and the name field focused.
+
 ## 0.6.1
 - Fixed stray OCR text being added to objectives.
 - Fixed smoke being detected as dust; smoke now points to a burnt part.

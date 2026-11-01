@@ -80,7 +80,7 @@ MSI GeForce GTX 1080 GAMING+ 8G,13,690,8GB,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 Founders Edition,13,690,8GB,,1.0,xlsx v1.15.3
 ZOTAC GeForce GTX 1080 AMP Extreme,13,720,8GB,,1.0,xlsx v1.15.3
 ZOTAC GeForce GTX 1080 Mini,13,665,8GB,,1.0,xlsx v1.15.3
-NVIDIA GeForce GTX 1080 | Alphacool NexXxoS GPX M10,23,805,8GB water,pc_only,1.4,xlsx v1.15.3
+NVIDIA GeForce GTX 1080 | Alphacool NexXxoS GPX M10,23,805,8GB water,,1.4,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 | EKWB EK-FC Acetal,16,805,8GB water,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 | EKWB EK-FC Plexi,16,805,8GB water,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 | EKWB EK-FC Plexi RGB,23,855,8GB water,,1.0,xlsx v1.15.3
@@ -97,131 +97,131 @@ ZOTAC GeForce GTX 1080 Ti Mini,21,840,11GB,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 Ti | EKWB EK-FC Acetal,21,955,11GB water,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 Ti | EKWB EK-FC Plexi,21,955,11GB water,,1.0,xlsx v1.15.3
 NVIDIA GeForce GTX 1080 Ti | EKWB EK-FC Plexi RGB,23,1005,11GB water,,1.0,xlsx v1.15.3
-EVGA GeForce GTX 1650 XC ULTRA BLACK GAMING,29,210,4GB,pc_only,1.10,xlsx v1.15.3
-EVGA GeForce GTX 1660 SUPER SC ULTRA BLACK GAMING,29,420,6GB,pc_only,1.10,xlsx v1.15.3
-EVGA GeForce GTX 1660 Ti XC,29,475,6GB,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce GTX 1660 Ti XC ULTRA GAMING,29,480,6GB,pc_only,1.10,xlsx v1.15.3
-ZOTAC GeForce GTX 1660 Ti AMP,29,540,6GB,pc_only,1.6,xlsx v1.15.3
-Colorful iGame GeForce RTX 2060 Ultra,22,595,6GB,pc_only,1.11,xlsx v1.15.3
-Colorful iGame GeForce RTX 2060 Ultra OC-V,22,605,6GB,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce RTX 2060 SC ULTRA GAMING,22,605,6GB,pc_only,1.9,xlsx v1.15.3
-NVIDIA GeForce RTX 2060 Founders Edition,22,590,6GB,pc_only,1.4,xlsx v1.15.3
-ASUS ROG STRIX GeForce RTX 2060 SUPER Series,28,750,8GB,pc_only,1.6,xlsx v1.15.3
-Colorful iGame GeForce RTX 2060 SUPER Ultra-V,28,630,8GB,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce RTX 2060 SUPER XC BLACK GAMING,28,630,8GB,pc_only,1.7,xlsx v1.15.3
-GIGABYTE AORUS GeForce RTX 2060 SUPER 8G,28,740,8GB,pc_only,1.7,xlsx v1.15.3
-GIGABYTE GeForce RTX 2060 SUPER WINDFORCE OC 8G,28,680,8GB,pc_only,1.7,xlsx v1.15.3
-MSI GeForce RTX 2060 SUPER ARMOR OC,28,615,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2060 SUPER GAMING X,28,620,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2060 SUPER Ventus GP OC,28,610,8GB,pc_only,1.9,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2060 SUPER Amp Extreme,28,650,8GB,pc_only,1.7,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2060 SUPER Mini,28,615,8GB,pc_only,1.7,xlsx v1.15.3
-Colorful iGame GeForce RTX 2070 Ultra OC-V,23,710,8GB,pc_only,1.11,xlsx v1.15.3
-Colorful iGame GeForce RTX 2070 Vulcan X OC-V,23,760,8GB,pc_only,1.11,xlsx v1.15.3
+EVGA GeForce GTX 1650 XC ULTRA BLACK GAMING,29,210,4GB,,1.10,xlsx v1.15.3
+EVGA GeForce GTX 1660 SUPER SC ULTRA BLACK GAMING,29,420,6GB,,1.10,xlsx v1.15.3
+EVGA GeForce GTX 1660 Ti XC,29,475,6GB,,1.11,xlsx v1.15.3
+EVGA GeForce GTX 1660 Ti XC ULTRA GAMING,29,480,6GB,,1.10,xlsx v1.15.3
+ZOTAC GeForce GTX 1660 Ti AMP,29,540,6GB,,1.6,xlsx v1.15.3
+Colorful iGame GeForce RTX 2060 Ultra,22,595,6GB,,1.11,xlsx v1.15.3
+Colorful iGame GeForce RTX 2060 Ultra OC-V,22,605,6GB,,1.11,xlsx v1.15.3
+EVGA GeForce RTX 2060 SC ULTRA GAMING,22,605,6GB,,1.9,xlsx v1.15.3
+NVIDIA GeForce RTX 2060 Founders Edition,22,590,6GB,,1.4,xlsx v1.15.3
+ASUS ROG STRIX GeForce RTX 2060 SUPER Series,28,750,8GB,,1.6,xlsx v1.15.3
+Colorful iGame GeForce RTX 2060 SUPER Ultra-V,28,630,8GB,,1.11,xlsx v1.15.3
+EVGA GeForce RTX 2060 SUPER XC BLACK GAMING,28,630,8GB,,1.7,xlsx v1.15.3
+GIGABYTE AORUS GeForce RTX 2060 SUPER 8G,28,740,8GB,,1.7,xlsx v1.15.3
+GIGABYTE GeForce RTX 2060 SUPER WINDFORCE OC 8G,28,680,8GB,,1.7,xlsx v1.15.3
+MSI GeForce RTX 2060 SUPER ARMOR OC,28,615,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2060 SUPER GAMING X,28,620,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2060 SUPER Ventus GP OC,28,610,8GB,,1.9,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2060 SUPER Amp Extreme,28,650,8GB,,1.7,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2060 SUPER Mini,28,615,8GB,,1.7,xlsx v1.15.3
+Colorful iGame GeForce RTX 2070 Ultra OC-V,23,710,8GB,,1.11,xlsx v1.15.3
+Colorful iGame GeForce RTX 2070 Vulcan X OC-V,23,760,8GB,,1.11,xlsx v1.15.3
 EVGA GeForce RTX 2070 FTW3 ULTRA GAMING,23,825,8GB,,1.1,xlsx v1.15.3
 GIGABYTE AORUS GeForce RTX 2070 XTREME 8G,23,830,8GB,,1.1,xlsx v1.15.3
 NVIDIA GeForce RTX 2070 Founders Edition,23,730,8GB,,1.0,xlsx v1.15.3
-ASUS ROG STRIX GeForce RTX 2070 SUPER Series,28,950,8GB,pc_only,1.6,xlsx v1.15.3
-Colorful iGame GeForce RTX 2070 SUPER Vulcan OC-V,28,845,8GB,pc_only,1.11,xlsx v1.15.3
-Colorful iGame GeForce RTX 2070 SUPER Vulcan X OC-V,28,890,8GB,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce RTX 2070 SUPER FTW3 ULTRA+,28,805,8GB,pc_only,1.9,xlsx v1.15.3
-EVGA GeForce RTX 2070 SUPER XC ULTRA,28,840,8GB,pc_only,1.7,xlsx v1.15.3
-GIGABYTE AORUS GeForce RTX 2070 SUPER 8G,28,950,8GB,pc_only,1.7,xlsx v1.15.3
-GIGABYTE GeForce RTX 2070 SUPER GAMING OC WHITE 8G,28,950,8GB,pc_only,1.6,xlsx v1.15.3
-MSI GeForce RTX 2070 SUPER GAMING X,28,800,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2070 SUPER GAMING X Trio,28,800,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2070 SUPER Ventus GP OC,28,790,8GB,pc_only,1.9,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2070 SUPER Mini,28,740,8GB,pc_only,1.7,xlsx v1.15.3
-Colorful iGame GeForce RTX 2080 Advanced-V,25,860,8GB,pc_only,1.9,xlsx v1.15.3
+ASUS ROG STRIX GeForce RTX 2070 SUPER Series,28,950,8GB,,1.6,xlsx v1.15.3
+Colorful iGame GeForce RTX 2070 SUPER Vulcan OC-V,28,845,8GB,,1.11,xlsx v1.15.3
+Colorful iGame GeForce RTX 2070 SUPER Vulcan X OC-V,28,890,8GB,,1.11,xlsx v1.15.3
+EVGA GeForce RTX 2070 SUPER FTW3 ULTRA+,28,805,8GB,,1.9,xlsx v1.15.3
+EVGA GeForce RTX 2070 SUPER XC ULTRA,28,840,8GB,,1.7,xlsx v1.15.3
+GIGABYTE AORUS GeForce RTX 2070 SUPER 8G,28,950,8GB,,1.7,xlsx v1.15.3
+GIGABYTE GeForce RTX 2070 SUPER GAMING OC WHITE 8G,28,950,8GB,,1.6,xlsx v1.15.3
+MSI GeForce RTX 2070 SUPER GAMING X,28,800,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2070 SUPER GAMING X Trio,28,800,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2070 SUPER Ventus GP OC,28,790,8GB,,1.9,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2070 SUPER Mini,28,740,8GB,,1.7,xlsx v1.15.3
+Colorful iGame GeForce RTX 2080 Advanced-V,25,860,8GB,,1.9,xlsx v1.15.3
 EVGA GeForce RTX 2080 FTW3 ULTRA GAMING,25,1030,8GB,,1.1,xlsx v1.15.3
 GIGABYTE AORUS GeForce RTX 2080 XTREME 8G,25,1050,8GB,,1.1,xlsx v1.15.3
 NVIDIA GeForce RTX 2080 Founders Edition,25,950,8GB,,1.0,xlsx v1.15.3
-ASUS ROG STRIX GeForce RTX 2080 SUPER Series,28,1050,8GB,pc_only,1.6,xlsx v1.15.3
-Colorful iGame GeForce RTX 2080 SUPER Advanced OC-V,28,935,8GB,pc_only,1.9,xlsx v1.15.3
-Colorful iGame GeForce RTX 2080 SUPER Vulcan X OC,28,950,8GB,pc_only,1.9,xlsx v1.15.3
-EVGA GeForce RTX 2080 SUPER BLACK GAMING,28,960,8GB,pc_only,1.7,xlsx v1.15.3
-GIGABYTE AORUS GeForce RTX 2080 SUPER 8G,28,1050,8GB,pc_only,1.6,xlsx v1.15.3
-GIGABYTE GeForce RTX 2080 SUPER GAMING OC 8G,28,980,8GB,pc_only,1.7,xlsx v1.15.3
-MSI GeForce RTX 2080 SUPER GAMING X Trio,28,935,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2080 SUPER Ventus XS OC,28,925,8GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX 2080 SUPER™ AERO,28,960,8GB,pc_only,1.13,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 SUPER Amp,28,980,8GB,pc_only,1.7,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 SUPER Amp Extreme,28,1000,8GB,pc_only,1.7,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 SUPER Twin Fan,28,950,8GB,pc_only,1.7,xlsx v1.15.3
-EVGA GeForce RTX 2080 SUPER FTW3 HYDRO COPPER GAMING,26,1350,8GB water,pc_only,1.9,xlsx v1.15.3
-GIGABYTE AORUS GeForce RTX 2080 SUPER WATERFORCE WB 8G,29,1400,8GB water,pc_only,1.6,xlsx v1.15.3
-ASUS ROG Strix Geforce RTX 2080 Ti 11GB Gaming,28,1030,11GB,pc_only,1.8,xlsx v1.15.3
-Colorful iGame GeForce RTX 2080 Ti Advanced OC,28,1200,11GB,pc_only,1.5,xlsx v1.15.3
-Colorful iGame GeForce RTX 2080 Ti Vulcan X OC,28,1320,11GB,pc_only,1.5,xlsx v1.15.3
+ASUS ROG STRIX GeForce RTX 2080 SUPER Series,28,1050,8GB,,1.6,xlsx v1.15.3
+Colorful iGame GeForce RTX 2080 SUPER Advanced OC-V,28,935,8GB,,1.9,xlsx v1.15.3
+Colorful iGame GeForce RTX 2080 SUPER Vulcan X OC,28,950,8GB,,1.9,xlsx v1.15.3
+EVGA GeForce RTX 2080 SUPER BLACK GAMING,28,960,8GB,,1.7,xlsx v1.15.3
+GIGABYTE AORUS GeForce RTX 2080 SUPER 8G,28,1050,8GB,,1.6,xlsx v1.15.3
+GIGABYTE GeForce RTX 2080 SUPER GAMING OC 8G,28,980,8GB,,1.7,xlsx v1.15.3
+MSI GeForce RTX 2080 SUPER GAMING X Trio,28,935,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2080 SUPER Ventus XS OC,28,925,8GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX 2080 SUPER™ AERO,28,960,8GB,,1.13,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 SUPER Amp,28,980,8GB,,1.7,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 SUPER Amp Extreme,28,1000,8GB,,1.7,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 SUPER Twin Fan,28,950,8GB,,1.7,xlsx v1.15.3
+EVGA GeForce RTX 2080 SUPER FTW3 HYDRO COPPER GAMING,26,1350,8GB water,,1.9,xlsx v1.15.3
+GIGABYTE AORUS GeForce RTX 2080 SUPER WATERFORCE WB 8G,29,1400,8GB water,,1.6,xlsx v1.15.3
+ASUS ROG Strix Geforce RTX 2080 Ti 11GB Gaming,28,1030,11GB,,1.8,xlsx v1.15.3
+Colorful iGame GeForce RTX 2080 Ti Advanced OC,28,1200,11GB,,1.5,xlsx v1.15.3
+Colorful iGame GeForce RTX 2080 Ti Vulcan X OC,28,1320,11GB,,1.5,xlsx v1.15.3
 EVGA GeForce RTX 2080 Ti FTW3 ULTRA GAMING,27,1240,11GB,,1.1,xlsx v1.15.3
-EVGA GeForce RTX 2080Ti XC BLACK EDITION GAMING,27,1080,11GB,pc_only,1.7,xlsx v1.15.3
+EVGA GeForce RTX 2080Ti XC BLACK EDITION GAMING,27,1080,11GB,,1.7,xlsx v1.15.3
 GIGABYTE AORUS GeForce RTX 2080 Ti XTREME 11G,27,1310,11GB,,1.1,xlsx v1.15.3
 NVIDIA GeForce RTX 2080 Ti Founders Edition,27,1130,11GB,,1.0,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 Ti Amp,27,1150,11GB,pc_only,1.7,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 Ti Amp Extreme,27,1300,11GB,pc_only,1.6,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 Ti Amp MAXX,27,1150,11GB,pc_only,1.7,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 2080 Ti Blower,27,1050,11GB,pc_only,1.7,xlsx v1.15.3
-EVGA GeForce RTX 2080 Ti FTW3 ULTRA HYDRO COPPER GAMING,28,1500,11GB water,pc_only,1.7,xlsx v1.15.3
-EVGA GeForce RTX 2080 Ti XC HYDRO COPPER GAMING,28,1350,11GB water,pc_only,1.9,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 Ti Amp,27,1150,11GB,,1.7,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 Ti Amp Extreme,27,1300,11GB,,1.6,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 Ti Amp MAXX,27,1150,11GB,,1.7,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 2080 Ti Blower,27,1050,11GB,,1.7,xlsx v1.15.3
+EVGA GeForce RTX 2080 Ti FTW3 ULTRA HYDRO COPPER GAMING,28,1500,11GB water,,1.7,xlsx v1.15.3
+EVGA GeForce RTX 2080 Ti XC HYDRO COPPER GAMING,28,1350,11GB water,,1.9,xlsx v1.15.3
 GIGABYTE AORUS GeForce RTX 2080 Ti XTREME WATERFORCE WB 11G,27,1550,11GB water,,1.1,xlsx v1.15.3
-NVIDIA GeForce RTX 2080Ti | Alphacool Eisblock GPX-N Acetal M02,27,1550,11GB water,pc_only,1.4,xlsx v1.15.3
-NVIDIA GeForce RTX 2080Ti | Alphacool Eisblock GPX-N Plexi M02,27,1550,11GB water,pc_only,1.4,xlsx v1.15.3
-ZOTAC ZOTAC GAMING GeForce RTX 2080 Ti ArcticStorm,27,1550,11GB water,pc_only,1.6,xlsx v1.15.3
-Colorful iGame GeForce RTX 3060 bilibili E-sports Edition OC 12G-V,31,715,12GB,pc_only,1.14,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3060 AMP White Edition,32,760,12GB,pc_only,1.15,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3060 Twin Edge OC,32,745,12GB,pc_only,1.15,xlsx v1.15.3
-Colorful iGame GeForce RTX 3060 Ti bilibili E-sports Edition OC LHR-V,31,970,8GB,pc_only,1.14,xlsx v1.15.3
-MSI GeForce RTX™ 3060Ti GAMING X TRIO,31,1060,8GB,pc_only,1.10.5,xlsx v1.15.3
-NVIDIA GeForce RTX 3060 Ti Founders Edition,32,1005,8GB,pc_only,1.14,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3060 Ti Twin Edge OC,34,1015,8GB,pc_only,1.14,xlsx v1.15.3
-ASUS GeForce RTX 3070 OC Edition 8GB GDDR6,31,1185,8GB,pc_only,1.10,xlsx v1.15.3
-Colorful iGame GeForce RTX 3070 bilibili E-sports Edition OC LHR-V,31,1195,8GB,pc_only,1.14,xlsx v1.15.3
-Colorful iGame GeForce RTX 3070 Ultra W OC-V,31,1185,8GB,pc_only,1.13,xlsx v1.15.3
-MSI GeForce RTX™ 3070 VENTUS 2X,31,1160,8GB,pc_only,1.12,xlsx v1.15.3
-NVIDIA GeForce RTX 3070,31,1160,8GB,pc_only,1.10,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3070 AMP Holo,32,1195,8GB,pc_only,1.15,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3070 Twin Edge OC,31,1125,8GB,pc_only,1.13,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3070 Twin Edge OC White Edition,31,1125,8GB,pc_only,1.13,xlsx v1.15.3
+NVIDIA GeForce RTX 2080Ti | Alphacool Eisblock GPX-N Acetal M02,27,1550,11GB water,,1.4,xlsx v1.15.3
+NVIDIA GeForce RTX 2080Ti | Alphacool Eisblock GPX-N Plexi M02,27,1550,11GB water,,1.4,xlsx v1.15.3
+ZOTAC ZOTAC GAMING GeForce RTX 2080 Ti ArcticStorm,27,1550,11GB water,,1.6,xlsx v1.15.3
+Colorful iGame GeForce RTX 3060 bilibili E-sports Edition OC 12G-V,31,715,12GB,,1.14,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3060 AMP White Edition,32,760,12GB,,1.15,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3060 Twin Edge OC,32,745,12GB,,1.15,xlsx v1.15.3
+Colorful iGame GeForce RTX 3060 Ti bilibili E-sports Edition OC LHR-V,31,970,8GB,,1.14,xlsx v1.15.3
+MSI GeForce RTX™ 3060Ti GAMING X TRIO,31,1060,8GB,,1.10.5,xlsx v1.15.3
+NVIDIA GeForce RTX 3060 Ti Founders Edition,32,1005,8GB,,1.14,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3060 Ti Twin Edge OC,34,1015,8GB,,1.14,xlsx v1.15.3
+ASUS GeForce RTX 3070 OC Edition 8GB GDDR6,31,1185,8GB,,1.10,xlsx v1.15.3
+Colorful iGame GeForce RTX 3070 bilibili E-sports Edition OC LHR-V,31,1195,8GB,,1.14,xlsx v1.15.3
+Colorful iGame GeForce RTX 3070 Ultra W OC-V,31,1185,8GB,,1.13,xlsx v1.15.3
+MSI GeForce RTX™ 3070 VENTUS 2X,31,1160,8GB,,1.12,xlsx v1.15.3
+NVIDIA GeForce RTX 3070,31,1160,8GB,,1.10,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3070 AMP Holo,32,1195,8GB,,1.15,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3070 Twin Edge OC,31,1125,8GB,,1.13,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3070 Twin Edge OC White Edition,31,1125,8GB,,1.13,xlsx v1.15.3
 CORSAIR GeForce RTX 3070 | Corsair Hydro X Series XG7 STRIX RGB,31,1450,8GB water,,1.11,xlsx v1.15.3
-NVIDIA GeForce RTX 3070 Ti Founders Edition,32,1160,8GB,pc_only,1.14,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3070 Ti AMP Holo,34,1265,8GB,pc_only,1.14,xlsx v1.15.3
-ASUS TUF Gaming GeForce RTX 3080 O10G,31,1445,10GB,pc_only,1.10,xlsx v1.15.3
-Colorful GeForce RTX 3080 NB 10G-V,31,1335,10GB,pc_only,1.11,xlsx v1.15.3
-Colorful iGame GeForce RTX 3080 Advanced 10G-V,31,1335,10GB,pc_only,1.10,xlsx v1.15.3
-Colorful iGame GeForce RTX 3080 Ultra OC 10G-V,31,1355,10GB,pc_only,1.10,xlsx v1.15.3
-Colorful iGame GeForce RTX 3080 Vulcan OC 10G-V,31,1370,10GB,pc_only,1.10,xlsx v1.15.3
+NVIDIA GeForce RTX 3070 Ti Founders Edition,32,1160,8GB,,1.14,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3070 Ti AMP Holo,34,1265,8GB,,1.14,xlsx v1.15.3
+ASUS TUF Gaming GeForce RTX 3080 O10G,31,1445,10GB,,1.10,xlsx v1.15.3
+Colorful GeForce RTX 3080 NB 10G-V,31,1335,10GB,,1.11,xlsx v1.15.3
+Colorful iGame GeForce RTX 3080 Advanced 10G-V,31,1335,10GB,,1.10,xlsx v1.15.3
+Colorful iGame GeForce RTX 3080 Ultra OC 10G-V,31,1355,10GB,,1.10,xlsx v1.15.3
+Colorful iGame GeForce RTX 3080 Vulcan OC 10G-V,31,1370,10GB,,1.10,xlsx v1.15.3
 EVGA GeForce RTX 3080 FTW3 ULTRA GAMING,31,1310,10GB,,1.10,xlsx v1.15.3
 EVGA GeForce RTX 3080 XC3 ULTRA GAMING,31,1295,10GB,,1.10,xlsx v1.15.3
-MSI GeForce RTX™ 3080 SUPRIM X 10G,31,1565,10GB,pc_only,1.10.5,xlsx v1.15.3
-NVIDIA GeForce RTX 3080,31,1275,10GB,pc_only,1.10,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3080 Trinity,32,1400,10GB,pc_only,1.15,xlsx v1.15.3
+MSI GeForce RTX™ 3080 SUPRIM X 10G,31,1565,10GB,,1.10.5,xlsx v1.15.3
+NVIDIA GeForce RTX 3080,31,1275,10GB,,1.10,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3080 Trinity,32,1400,10GB,,1.15,xlsx v1.15.3
 CORSAIR GeForce RTX 3080 | Corsair Hydro X Series XG7 REFERENCE RGB,31,1700,10GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3080 | Corsair Hydro X Series XG7 STRIX RGB,31,1700,10GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3080 | Corsair Hydro X Series XG7 VENTUS RGB,31,1700,10GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3080 FE | Corsair Hydro X Series XG7 RGB,31,1700,10GB water,,1.11,xlsx v1.15.3
-EVGA GeForce RTX 3080 FTW3 ULTRA HYDRO COPPER GAMING,31,1800,10GB water,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce RTX 3080 XC3 ULTRA HYDRO COPPER GAMING,31,1750,10GB water,pc_only,1.11,xlsx v1.15.3
-NVIDIA GeForce RTX 3080 Ti Founders Edition,32,1555,12GB,pc_only,1.14,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3080 Ti AMP Holo,34,1805,12GB,pc_only,1.14,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3080 Ti Trinity OC,34,1725,12GB,pc_only,1.13,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3080 Trinity OC White Edition,31,1410,10GB,pc_only,1.13,xlsx v1.15.3
+EVGA GeForce RTX 3080 FTW3 ULTRA HYDRO COPPER GAMING,31,1800,10GB water,,1.11,xlsx v1.15.3
+EVGA GeForce RTX 3080 XC3 ULTRA HYDRO COPPER GAMING,31,1750,10GB water,,1.11,xlsx v1.15.3
+NVIDIA GeForce RTX 3080 Ti Founders Edition,32,1555,12GB,,1.14,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3080 Ti AMP Holo,34,1805,12GB,,1.14,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3080 Ti Trinity OC,34,1725,12GB,,1.13,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3080 Trinity OC White Edition,31,1410,10GB,,1.13,xlsx v1.15.3
 ASUS ROG Strix GeForce RTX 3090 O24G,32,1700,24GB,,1.10,xlsx v1.15.3
-Colorful GeForce RTX 3090 NB-V,32,1805,24GB,pc_only,1.11,xlsx v1.15.3
-Colorful iGame GeForce RTX 3090 Advanced OC-V,32,1825,24GB,pc_only,1.11,xlsx v1.15.3
+Colorful GeForce RTX 3090 NB-V,32,1805,24GB,,1.11,xlsx v1.15.3
+Colorful iGame GeForce RTX 3090 Advanced OC-V,32,1825,24GB,,1.11,xlsx v1.15.3
 EVGA GeForce RTX 3090 FTW3 ULTRA GAMING,32,1605,24GB,,1.10,xlsx v1.15.3
 EVGA GeForce RTX 3090 XC3 ULTRA GAMING,32,1580,24GB,,1.10,xlsx v1.15.3
-MSI GeForce RTX™ 3090 GAMING X TRIO 24G,32,1840,24GB,pc_only,1.9,xlsx v1.15.3
-MSI GeForce RTX™ 3090 SUPRIM X 24G,32,1870,24GB,pc_only,1.10.5,xlsx v1.15.3
-MSI GeForce RTX™ 3090 VENTUS 3X 24G OC,32,1815,24GB,pc_only,1.9,xlsx v1.15.3
-NVIDIA GeForce RTX 3090,32,1570,24GB,pc_only,1.10,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3090 AMP Core Holo,34,1825,24GB,pc_only,1.14,xlsx v1.15.3
+MSI GeForce RTX™ 3090 GAMING X TRIO 24G,32,1840,24GB,,1.9,xlsx v1.15.3
+MSI GeForce RTX™ 3090 SUPRIM X 24G,32,1870,24GB,,1.10.5,xlsx v1.15.3
+MSI GeForce RTX™ 3090 VENTUS 3X 24G OC,32,1815,24GB,,1.9,xlsx v1.15.3
+NVIDIA GeForce RTX 3090,32,1570,24GB,,1.10,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3090 AMP Core Holo,34,1825,24GB,,1.14,xlsx v1.15.3
 CORSAIR GeForce RTX 3090 | Corsair Hydro X Series XG7 REFERENCE RGB,32,1900,24GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3090 | Corsair Hydro X Series XG7 STRIX RGB,32,1900,24GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3090 | Corsair Hydro X Series XG7 VENTUS RGB,32,1900,24GB water,,1.11,xlsx v1.15.3
 CORSAIR GeForce RTX 3090 FE | Corsair Hydro X Series XG7 RGB,32,1900,24GB water,,1.11,xlsx v1.15.3
-EVGA GeForce RTX 3090 FTW3 ULTRA HYDRO COPPER GAMING,32,2000,24GB water,pc_only,1.11,xlsx v1.15.3
-EVGA GeForce RTX 3090 XC3 ULTRA HYDRO COPPER GAMING,32,1950,24GB water,pc_only,1.11,xlsx v1.15.3
-ZOTAC GAMING GeForce RTX 3090 ArcticStorm,32,1900,24GB water,pc_only,1.13,xlsx v1.15.3
+EVGA GeForce RTX 3090 FTW3 ULTRA HYDRO COPPER GAMING,32,2000,24GB water,,1.11,xlsx v1.15.3
+EVGA GeForce RTX 3090 XC3 ULTRA HYDRO COPPER GAMING,32,1950,24GB water,,1.11,xlsx v1.15.3
+ZOTAC GAMING GeForce RTX 3090 ArcticStorm,32,1900,24GB water,,1.13,xlsx v1.15.3
 DFL Radeon R9 280 GR8 3G,1,160,3GB,,1.0,xlsx v1.15.3
 MSI Radeon R9 280 GAMING 3G,3,170,3GB,,1.0,xlsx v1.15.3
 MSI Radeon R9 280 GAMING 3G LE,3,165,3GB,,1.0,xlsx v1.15.3
@@ -243,20 +243,20 @@ MSI Radeon RX 480 GAMING 4G,10,340,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 480 GAMING 8G,10,350,8GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 480 GAMING X 4G,10,345,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 480 GAMING X 8G,10,355,8GB,,1.0,xlsx v1.15.3
-ASRock Phantom Gaming Radeon RX560 4G,2,155,4GB,pc_only,1.5,xlsx v1.15.3
+ASRock Phantom Gaming Radeon RX560 4G,2,155,4GB,,1.5,xlsx v1.15.3
 ASUS Radeon RX 560,2,160,4GB,,1.0,xlsx v1.15.3
 ASUS ROG Strix Radeon RX 560 OC Edition,2,165,4GB,,1.0,xlsx v1.15.3
 ASUS Expedition Radeon RX 570 OC Edition,8,320,4GB,,1.0,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 570 8G,21,320,8GB,pc_only,1.8,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 570 8G OC Edition,21,330,8GB,pc_only,1.8,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 570 8G,21,320,8GB,,1.8,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 570 8G OC Edition,21,330,8GB,,1.8,xlsx v1.15.3
 ASUS ROG Strix Radeon RX 570 OC Edition,8,330,4GB,,1.0,xlsx v1.15.3
 GIGABYTE AORUS Radeon RX570 4G,8,325,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 570 GAMING 4G,8,320,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 570 GAMING 8G,8,320,8GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 570 GAMING X 4G,8,325,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 570 GAMING X 8G,8,325,8GB,,1.0,xlsx v1.15.3
-ASRock Phantom Gaming D Radeon RX580 8G OC,14,390,8GB,pc_only,1.5,xlsx v1.15.3
-ASRock Phantom Gaming X Radeon RX580 8G OC,14,395,8GB,pc_only,1.5,xlsx v1.15.3
+ASRock Phantom Gaming D Radeon RX580 8G OC,14,390,8GB,,1.5,xlsx v1.15.3
+ASRock Phantom Gaming X Radeon RX580 8G OC,14,395,8GB,,1.5,xlsx v1.15.3
 ASUS AREZ Strix Radeon RX 580,14,385,8GB,,1.0,xlsx v1.15.3
 ASUS Dual Series Radeon RX 580 OC Edition,14,390,8GB,,1.0,xlsx v1.15.3
 GIGABYTE AORUS Radeon RX580 4G,16,390,4GB,,1.0,xlsx v1.15.3
@@ -267,9 +267,9 @@ MSI Radeon RX 580 GAMING X 4G,16,390,4GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 580 GAMING X 8G,14,395,8GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 580 GAMING X+ 8G,14,405,8GB,,1.0,xlsx v1.15.3
 MSI Radeon RX 580 GAMING+ 8G,14,405,8GB,,1.0,xlsx v1.15.3
-ASRock Phantom Gaming X Radeon RX590 8G OC,15,400,8GB,pc_only,1.5,xlsx v1.15.3
+ASRock Phantom Gaming X Radeon RX590 8G OC,15,400,8GB,,1.5,xlsx v1.15.3
 AMD Radeon RX Vega 56,16,580,8GB,,1.0,xlsx v1.15.3
-ASRock Phantom Gaming X Radeon RX VEGA 56 8G,16,605,8GB,pc_only,1.5,xlsx v1.15.3
+ASRock Phantom Gaming X Radeon RX VEGA 56 8G,16,605,8GB,,1.5,xlsx v1.15.3
 ASUS AREZ Strix Radeon RX VEGA 56 OC Edition,16,615,8GB,,1.0,xlsx v1.15.3
 AMD Radeon Vega 56 | EKWB EK-FC Acetal,16,730,8GB water,,1.0,xlsx v1.15.3
 AMD Radeon Vega 56 | EKWB EK-FC Plexi,16,730,8GB water,,1.0,xlsx v1.15.3
@@ -279,39 +279,39 @@ ASUS ROG Strix RX VEGA64 OC Edition,17,665,8GB,,1.0,xlsx v1.15.3
 AMD Radeon Vega 64 | EKWB EK-FC Acetal,17,810,8GB water,,1.0,xlsx v1.15.3
 AMD Radeon Vega 64 | EKWB EK-FC Plexi,17,810,8GB water,,1.0,xlsx v1.15.3
 AMD Radeon Vega 64 | EKWB EK-FC Plexi RGB,23,960,8GB water,,1.0,xlsx v1.15.3
-AMD Radeon VII,24,840,16GB,pc_only,1.3,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 5500 XT 8GB Gaming,26,400,8GB,pc_only,1.8,xlsx v1.15.3
-GIGABYTE Radeon RX 5500 XT GAMING OC 8G,26,390,8GB,pc_only,1.8,xlsx v1.15.3
-GIGABYTE Radeon RX 5500 XT OC 8G,26,365,8GB,pc_only,1.9,xlsx v1.15.3
-MSI Radeon RX 5500 XT GAMING X 8G,26,380,8GB,pc_only,1.10,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 5600 XT OC Edition 6GB,26,650,6GB,pc_only,1.8,xlsx v1.15.3
-GIGABYTE Radeon RX 5600 XT GAMING OC 6G,26,570,6GB,pc_only,1.9,xlsx v1.15.3
-GIGABYTE Radeon RX 5600 XT WINDFORCE OC 6G,26,570,6GB,pc_only,1.9,xlsx v1.15.3
-MSI Radeon RX 5600 XT GAMING X,26,585,6GB,pc_only,1.10,xlsx v1.15.3
-AMD Radeon RX 5700,26,750,8GB,pc_only,1.5,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 5700 OC Edition 8GB,26,720,8GB,pc_only,1.8,xlsx v1.15.3
-GIGABYTE Radeon RX 5700 GAMING OC 8G,26,685,8GB,pc_only,1.9,xlsx v1.15.3
-MSI Radeon RX 5700 EVOKE GP OC,26,685,8GB,pc_only,1.10,xlsx v1.15.3
-MSI Radeon RX 5700 GAMING X,26,750,8GB,pc_only,1.12,xlsx v1.15.3
-AMD Radeon RX 5700 XT,26,830,8GB,pc_only,1.5,xlsx v1.15.3
-ASUS ROG Strix Radeon RX 5700 XT OC Edition 8GB,26,840,8GB,pc_only,1.8,xlsx v1.15.3
-GIGABYTE AORUS Radeon RX 5700 XT 8G,26,800,8GB,pc_only,1.9,xlsx v1.15.3
-GIGABYTE Radeon RX 5700 XT GAMING OC 8G,26,795,8GB,pc_only,1.9,xlsx v1.15.3
+AMD Radeon VII,24,840,16GB,,1.3,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 5500 XT 8GB Gaming,26,400,8GB,,1.8,xlsx v1.15.3
+GIGABYTE Radeon RX 5500 XT GAMING OC 8G,26,390,8GB,,1.8,xlsx v1.15.3
+GIGABYTE Radeon RX 5500 XT OC 8G,26,365,8GB,,1.9,xlsx v1.15.3
+MSI Radeon RX 5500 XT GAMING X 8G,26,380,8GB,,1.10,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 5600 XT OC Edition 6GB,26,650,6GB,,1.8,xlsx v1.15.3
+GIGABYTE Radeon RX 5600 XT GAMING OC 6G,26,570,6GB,,1.9,xlsx v1.15.3
+GIGABYTE Radeon RX 5600 XT WINDFORCE OC 6G,26,570,6GB,,1.9,xlsx v1.15.3
+MSI Radeon RX 5600 XT GAMING X,26,585,6GB,,1.10,xlsx v1.15.3
+AMD Radeon RX 5700,26,750,8GB,,1.5,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 5700 OC Edition 8GB,26,720,8GB,,1.8,xlsx v1.15.3
+GIGABYTE Radeon RX 5700 GAMING OC 8G,26,685,8GB,,1.9,xlsx v1.15.3
+MSI Radeon RX 5700 EVOKE GP OC,26,685,8GB,,1.10,xlsx v1.15.3
+MSI Radeon RX 5700 GAMING X,26,750,8GB,,1.12,xlsx v1.15.3
+AMD Radeon RX 5700 XT,26,830,8GB,,1.5,xlsx v1.15.3
+ASUS ROG Strix Radeon RX 5700 XT OC Edition 8GB,26,840,8GB,,1.8,xlsx v1.15.3
+GIGABYTE AORUS Radeon RX 5700 XT 8G,26,800,8GB,,1.9,xlsx v1.15.3
+GIGABYTE Radeon RX 5700 XT GAMING OC 8G,26,795,8GB,,1.9,xlsx v1.15.3
 MSI Radeon RX 5700 XT GAMING X,26,830,8GB,,1.8,xlsx v1.15.3
 MSI Radeon RX 5700 XT Mech OC,26,830,8GB,,1.8,xlsx v1.15.3
-ASRock Radeon RX 6700 XT Phantom Gaming D 12GB OC,33,1085,12GB,pc_only,1.13,xlsx v1.15.3
-AMD Radeon RX 6800,33,1315,16GB,pc_only,1.10.5,xlsx v1.15.3
-ASRock Radeon RX 6800 Phantom Gaming D 16G OC,33,1190,16GB,pc_only,1.13,xlsx v1.15.3
-MSI Radeon RX 6800 GAMING TRIO 16G,33,1245,16GB,pc_only,1.11,xlsx v1.15.3
-MSI Radeon RX 6800 GAMING X TRIO 16G,33,1290,16GB,pc_only,1.11,xlsx v1.15.3
-AMD Radeon RX 6800 XT,33,1575,16GB,pc_only,1.10.5,xlsx v1.15.3
-ASRock Radeon RX 6800 XT Phantom Gaming D 16G OC,33,1470,16GB,pc_only,1.13,xlsx v1.15.3
-ASRock Radeon RX 6800 XT Taichi X 16G OC,33,1590,16GB,pc_only,1.13,xlsx v1.15.3
-MSI Radeon RX 6800 XT GAMING TRIO 16G,33,1540,16GB,pc_only,1.11,xlsx v1.15.3
-MSI Radeon RX 6800 XT GAMING X TRIO 16G,33,1550,16GB,pc_only,1.11,xlsx v1.15.3
+ASRock Radeon RX 6700 XT Phantom Gaming D 12GB OC,33,1085,12GB,,1.13,xlsx v1.15.3
+AMD Radeon RX 6800,33,1315,16GB,,1.10.5,xlsx v1.15.3
+ASRock Radeon RX 6800 Phantom Gaming D 16G OC,33,1190,16GB,,1.13,xlsx v1.15.3
+MSI Radeon RX 6800 GAMING TRIO 16G,33,1245,16GB,,1.11,xlsx v1.15.3
+MSI Radeon RX 6800 GAMING X TRIO 16G,33,1290,16GB,,1.11,xlsx v1.15.3
+AMD Radeon RX 6800 XT,33,1575,16GB,,1.10.5,xlsx v1.15.3
+ASRock Radeon RX 6800 XT Phantom Gaming D 16G OC,33,1470,16GB,,1.13,xlsx v1.15.3
+ASRock Radeon RX 6800 XT Taichi X 16G OC,33,1590,16GB,,1.13,xlsx v1.15.3
+MSI Radeon RX 6800 XT GAMING TRIO 16G,33,1540,16GB,,1.11,xlsx v1.15.3
+MSI Radeon RX 6800 XT GAMING X TRIO 16G,33,1550,16GB,,1.11,xlsx v1.15.3
 CORSAIR Radeon RX 6800 XT | Corsair Hydro Series XG7 RGB,33,1600,16GB water,,1.11,xlsx v1.15.3
-AMD Radeon RX 6900 XT,33,1695,16GB,pc_only,1.10.5,xlsx v1.15.3
-ASRock Radeon RX 6900 XT Phantom Gaming D 16G OC,33,1540,16GB,pc_only,1.13,xlsx v1.15.3
-MSI Radeon RX 6900 XT GAMING TRIO 16G,33,1695,16GB,pc_only,1.11,xlsx v1.15.3
-MSI Radeon RX 6900 XT GAMING X TRIO 16G,33,1730,16GB,pc_only,1.11,xlsx v1.15.3
+AMD Radeon RX 6900 XT,33,1695,16GB,,1.10.5,xlsx v1.15.3
+ASRock Radeon RX 6900 XT Phantom Gaming D 16G OC,33,1540,16GB,,1.13,xlsx v1.15.3
+MSI Radeon RX 6900 XT GAMING TRIO 16G,33,1695,16GB,,1.11,xlsx v1.15.3
+MSI Radeon RX 6900 XT GAMING X TRIO 16G,33,1730,16GB,,1.11,xlsx v1.15.3
 CORSAIR Radeon RX 6900 XT | Corsair Hydro Series XG7 RGB,33,1700,16GB water,,1.11,xlsx v1.15.3

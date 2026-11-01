@@ -57,7 +57,7 @@ function jobCard(j) {
     <div class="sec"><h4>Part swaps</h4>${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
-        <div class="grid2"><select data-f="cat">${CATS.map(c => `<option>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
+        <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
       </div>
       <button data-act="openSwap" data-id="${j.id}" style="width:100%;margin-top:4px">⇄ Add part replacement</button></div>
@@ -83,8 +83,8 @@ document.addEventListener("click", e => {
   else if (a === "toggleSwap") { j.swaps.find(s => s.id === b.dataset.k).done = b.checked; }
   else if (a === "delSwap") { j.swaps = j.swaps.filter(s => s.id !== b.dataset.k); }
   else if (a === "openSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); f.hidden = false; b.hidden = true;
-    f.querySelector('[data-f="old"]').onchange = ev => { const c = j.components[ev.target.value]; if (c) f.querySelector('[data-f="cat"]').value = CATS.includes(c.cat) ? c.cat : "Other"; f.querySelector('[data-f="new"]').focus(); };
-    f.querySelector('[data-f="old"]').focus(); return; }
+    f.querySelector('[data-f="old"]').onchange = ev => { const c = j.components[ev.target.value]; f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other"; f.querySelector('[data-f="new"]').focus(); };
+    f.querySelector('[data-f="new"]').focus(); return; }
   else if (a === "cancelSwap") { render(); return; }
   else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = f.querySelector('[data-f="cat"]').value;
     if (!nw) { f.querySelector('[data-f="new"]').focus(); return; }
@@ -171,7 +171,7 @@ window.addEventListener("dragenter", e => { if (e.dataTransfer.types.includes("F
 window.addEventListener("dragleave", e => { if (e.dataTransfer.types.includes("Files") && --dragDepth <= 0) { dragDepth = 0; $("#drop").style.display = "none"; } });
 window.addEventListener("dragover", e => { if (e.dataTransfer.types.includes("Files")) e.preventDefault(); });
 window.addEventListener("drop", e => { if (!e.dataTransfer.files.length) return; e.preventDefault(); dragDepth = 0; $("#drop").style.display = "none"; const f = [...e.dataTransfer.files].find(f => f.type.startsWith("image/")); if (f) readImg(f); });
-function readImg(f) { const r = new FileReader(); r.onload = () => { if ($("#dlgReview").open && rev) addShot(r.result, "parts"); else openReview(r.result, null); }; r.readAsDataURL(f); }
+function readImg(f) { const r = new FileReader(); r.onload = () => { if ($("#dlgReview").open && rev) addShot(r.result, rev.forJob ? "parts" : "auto"); else openReview(r.result, null); }; r.readAsDataURL(f); }
 
 // ================= OCR =================
 let worker = null;
@@ -195,7 +195,21 @@ async function ocr(img, kind) {
   $("#prog").style.width = "100%"; return text;
 }
 // tidy OCR'd part names using the parts database
-function canonParts(list) { return list.map(c => { const m = matchPart(c.name); return m ? { name: m.name, cat: m.cat } : c; }); }
+// long emails: join several screenshots, dropping the lines that overlap
+function mergeTexts(texts) {
+  const key = l => l.toLowerCase().replace(/[^a-z0-9]/g, "");
+  let acc = [];
+  for (const t of texts) {
+    const ls = t.split("\n").map(s => s.trim()).filter(Boolean);
+    if (!acc.length) { acc = ls; continue; }
+    let k = Math.min(acc.length, ls.length);
+    for (; k > 0; k--) { let ok = true; for (let i = 0; i < k; i++) if (key(acc[acc.length - k + i]) !== key(ls[i])) { ok = false; break; } if (ok) break; }
+    let rest = ls.slice(k);
+    if (!k) { const seen = new Set(acc.map(key)); let last = -1; ls.forEach((l, i) => { if (key(l).length > 8 && seen.has(key(l))) last = i; }); rest = ls.slice(last + 1); }
+    acc = acc.concat(rest);
+  }
+  return acc.join("\n");
+}
 
 // ================= review dialog =================
 // rev.shots: [{url, kind: "email"|"parts", text}] – the email is read first; each
@@ -204,7 +218,7 @@ let rev = null;
 function openReview(dataUrl, editJob, forJob) {
   const dlg = $("#dlgReview");
   rev = { editJob, forJob, shots: [], cur: -1, draft: editJob ? structuredClone(editJob) : blankDraft() };
-  if (forJob) rev.draft.components = [];
+  if (forJob) { rev.draft.components = structuredClone(forJob.components || []); rev.autoNames = new Set(); }
   $("#revTitle").textContent = editJob ? "Edit job" : forJob ? "Add parts from PC Stats" : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
   renderForm(); setLock(true); showBlack(false); renderShots(); dlg.showModal();
@@ -222,58 +236,74 @@ function renderShots() {
   const has = rev && rev.shots.length; const dlg = $("#dlgReview");
   dlg.querySelector(".review").style.gridTemplateColumns = has ? "" : "1fr";
   $("#shotPane").hidden = !has;
-  $("#shotTabs").innerHTML = has ? rev.shots.map((sh, i) => { const n = rev.shots.slice(0, i + 1).filter(x => x.kind === "parts").length; return `<button class="${i === rev.cur ? "sel" : ""}" data-shot="${i}">${sh.kind === "email" ? "✉ Email" : "🧩 Parts " + n}</button>`; }).join("") : "";
+  $("#shotTabs").innerHTML = has ? rev.shots.map((sh, i) => { const n = rev.shots.slice(0, i + 1).filter(x => x.kind === "parts").length; const e = rev.shots.slice(0, i + 1).filter(x => x.kind === "email").length; return `<button class="${i === rev.cur ? "sel" : ""}" data-shot="${i}">${sh.kind === "email" ? "✉ Email " + e : "🧩 Parts " + n}</button>`; }).join("") : "";
   const k = rev && rev.cur >= 0 ? rev.shots[rev.cur].kind : "email";
   $("#cropEmail").hidden = k !== "email"; $("#cropStats").hidden = k !== "parts";
   $("#areaHint").innerHTML = k === "email" ? "Blue box = the email text, budget and objectives." : "Orange box = the <b>PC Stats</b> popup (Components list). Scroll it in-game and capture again for more parts.";
 }
 $("#shotTabs").addEventListener("click", e => { const b = e.target.closest("[data-shot]"); if (b) showShot(+b.dataset.shot, false); });
-async function capParts() {
+async function capture(kind) {
   syncComps();
   if (!stream) { toast("No screen connected – connect screen 1, or paste a screenshot (Ctrl+V) while this window is open."); return; }
-  const f = await grabFrame(); addShot(f.url, "parts"); showBlack(f.black);
+  const f = await grabFrame(); addShot(f.url, kind); showBlack(f.black);
 }
+const capParts = () => capture("parts"), capEmail = () => capture("email");
 // keep what the user typed in the parts box before anything re-renders the form
 function syncComps() { const ta = $("#fComps"); if (ta && rev) rev.draft.components = parseCompText(ta.value); }
-function mergeParts(found) {
-  syncComps(); const have = rev.draft.components; let added = 0;
-  for (const c of found) if (!have.some(x => x.name.toLowerCase() === c.name.toLowerCase())) { have.push(c); added++; }
-  const ta = $("#fComps"); if (ta) ta.value = have.map(c => c.cat + ": " + c.name).join("\n");
-  return added;
+// parts list = best of all PC Stats screenshots + anything the user typed in themselves
+function rebuildParts() {
+  syncComps();
+  const prevAuto = rev.autoNames || new Set();
+  const auto = mergePCStats(rev.shots.filter(s => s.kind === "parts" && s.parts).map(s => s.parts));
+  rev.autoNames = new Set(auto.map(p => p.name.toLowerCase()));
+  const manual = rev.draft.components.filter(c => !prevAuto.has(c.name.toLowerCase()) && !rev.autoNames.has(c.name.toLowerCase()));
+  rev.draft.components = [...auto.map(({ name, cat }) => ({ name, cat })), ...manual];
+  const ta = $("#fComps"); if (ta) ta.value = rev.draft.components.map(c => c.cat + ": " + c.name).join("\n");
+  return auto;
 }
 async function runOcr() {
   if (!rev || rev.cur < 0) return;
   const sh = rev.shots[rev.cur];
   try {
+    if (sh.kind === "auto") { // pasted screenshot: PC Stats popup or more of the email?
+      const t = await ocr($("#shot"), "parts");
+      sh.kind = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; showShot(rev.cur, false);
+    }
     const text = await ocr($("#shot"), sh.kind); sh.text = text; $("#rawTxt").textContent = text;
     if (sh.kind === "parts") {
       const ok = /components|pc for|benchmark/i.test(text);
-      const found = ok ? canonParts(parseComponents(text)) : [];
-      const added = mergeParts(found);
+      sh.parts = ok ? resolvePCStats(text) : null;
+      const total = rebuildParts();
       if (!rev.forJob && !rev.draft.sender) { const m = text.match(/PC for\s+(\S+@\S+)/i); if (m && $("#fSender") && !$("#fSender").value) $("#fSender").value = m[1]; }
-      $("#ocrState").textContent = ok ? `Read ${found.length} parts, ${added} new added to the list. Scroll the list in-game and capture again if some are missing.` : "No PC Stats popup found in the orange box – open it in-game (PC Stats button) and capture again, or adjust the box.";
+      const unsure = (sh.parts || []).filter(p => !p.sure).length;
+      $("#ocrState").textContent = ok ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.` : "No PC Stats popup found in the orange box – open it in-game (PC Stats button) and capture again, or adjust the box.";
       return;
     }
     syncComps();
-    const p = parseEmail(text, rules);
+    const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => s.text);
+    const keep = { extra: $("#fExtra")?.value, table: $("#fTable")?.value };
+    const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules);
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
     Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body });
     renderForm();
-    $("#ocrState").textContent = "Done – check the fields. Repair job? Open PC Stats in-game and press “📸 Add PC parts capture”.";
+    if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;
+    if (keep.table && $("#fTable")) $("#fTable").value = keep.table;
+    $("#ocrState").textContent = (emails.length > 1 ? `Joined ${emails.length} email screenshots. ` : "") + "Check the fields. Long email? Scroll it in-game and press “📸 Add email capture”. Repair job? Open PC Stats and press “📸 Add PC parts capture”.";
   } catch (err) { $("#ocrState").textContent = "⚠ " + err.message; }
 }
 function renderForm() {
   const d = rev.draft, f = $("#revForm");
   const partAdder = `<div class="addrow"><input id="fPartAdd" data-ac data-ac-cat="" placeholder="Add a part – type to search (e.g. 8700, Vega 64)" autocomplete="off"><button id="fPartAddBtn">＋</button></div>
     <button id="btnCapParts" class="capparts">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small></button>`;
+  const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small></button>`;
   if (rev.forJob) {
-    f.innerHTML = `<label>Parts found (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
-      <p class="hint">Found parts are added to the job's list (duplicates skipped).</p><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Add parts to job</button>`;
+    f.innerHTML = `<label>Parts of this PC (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
+      <p class="hint">Captured parts replace earlier captured ones; lines you typed yourself are kept.</p><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
-    f.innerHTML = `<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
+    f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
       ${isEdit ? "" : `<label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
@@ -287,13 +317,14 @@ function renderForm() {
   const addPart = () => { const v = $("#fPartAdd").value.trim(); if (!v) return; const m = INDEX.find(p => p.name === v) || matchPart(v); const line = (m ? m.cat + ": " + m.name : categorize(v) + ": " + v); const ta = $("#fComps"); ta.value = (ta.value.trim() ? ta.value.trim() + "\n" : "") + line; $("#fPartAdd").value = ""; };
   $("#fPartAddBtn").onclick = addPart;
   $("#btnCapParts").onclick = capParts;
+  if ($("#btnCapEmail")) $("#btnCapEmail").onclick = capEmail;
   $("#fPartAdd").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPart(); } });
 }
 function parseCompText(txt) { return txt.split("\n").map(s => s.trim()).filter(Boolean).map(s => { const m = s.match(/^([^:]{2,15}):\s*(.+)$/); return m && CATS.includes(m[1].trim()) ? { cat: m[1].trim(), name: m[2].trim() } : { cat: categorize(s), name: s }; }); }
 function saveReview() {
   const d = rev.draft, comps = parseCompText($("#fComps").value);
   comps.forEach(c => rememberPart(c.name, c.cat));
-  if (rev.forJob) { const j = job(rev.forJob.id); comps.forEach(c => { if (!j.components.some(x => x.name.toLowerCase() === c.name.toLowerCase())) j.components.push(c); }); }
+  if (rev.forJob) { job(rev.forJob.id).components = comps; }
   else {
     const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), suspect: $("#fSuspect").value.trim(), components: comps };
     const table = +$("#fTable").value;
