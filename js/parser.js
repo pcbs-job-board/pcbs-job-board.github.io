@@ -1,41 +1,53 @@
 // ===== PCBS job parser (pure functions, no DOM) =====
 // One rule = task + keywords. A keyword starting with "-" is an exception: that phrase is
 // ignored before matching (e.g. "-clean install" so "clean" still catches "never cleaned it").
-const RULES_VERSION = 2;
+const RULES_VERSION = 3;
+// Hints from the PCBS community list – one rule per solution (hints with the same solution are merged).
 const DEFAULT_RULES = [
-  { task: "Clean dust with compressed air", keys: ["dusty", "dust", "on the floor", "lives on the floor", "clean", "dirty", "filthy", "grimy", "cobweb", "pet hair", "cat hair", "dog hair", "my cat", "my dog", "smoker", "smokes", "cigarette", "not much air", "no air", "air coming out", "airflow", "air flow", "blocked", "clogged", "weak air", "-clean install", "-clean copy", "-clean windows", "-clean os", "-clean look", "-clean build", "-clean cable", "-cleanly"] },
-  { task: "Run antivirus scan", keys: ["dodgy site", "dodgy website", "dodgy link", "virus", "malware", "pop-up", "pop up", "popup", "adverts", "ads keep", "slow", "sluggish", "not as quick", "not as fast", "quick as it used", "fast as it used", "weird", "strange things", "acting up", "hacked", "downloaded something", "clicked a link", "clicked on something", "clicked something", "something bad", "bad link", "suspicious", "dodgy"] },
-  { task: "NEW parts only – no used/PC Bay parts", keys: ["used parts", "don't do that", "shiny new", "new components", "new parts", "brand new", "second hand", "second-hand", "like new things", "only new", "nothing used"] },
-  { task: "Install custom cables (check PC Bay)", keys: ["pc bay", "sleeved cable", "custom cable", "cablemod"] },
-  { task: "Find the burnt part (smoke) – check PSU first", keys: ["smoke came", "smoke coming", "white smoke", "black smoke", "some smoke", "of smoke", "burning smell", "smells burnt", "smell of burning", "burnt smell", "sparks", "loud bang", "went bang"] },
-  { task: "Check temps / reapply thermal paste / cooler", keys: ["overheat", "too hot", "really hot", "gets hot", "getting hot", "bit hot", "running hot", "very hot", "so hot", "burning hot", "thermal", "shuts down", "shuts off", "turns off by itself", "turns itself off"] },
-  { task: "Check PSU & temps (random reboots / shutdowns)", keys: ["reboot", "restarting", "restarts", "random restart", "keeps restarting", "blue screen", "bsod", "crashes", "crashing"] },
-  { task: "Look for a damaged part (something was forced in)", keys: ["forced it", "forced in", "wouldn't fit", "didn't fit", "jammed it", "pushed really hard", "bent a pin", "bent pins"] },
-  { task: "Check fans (noise)", keys: ["noisy", "loud", "noise", "rattl", "whir", "buzz", "-loud bang"] },
-  { task: "Check / install OS", keys: ["operating system", "windows", "os ", "reinstall", "wiped", "format", "clean install"] },
-  { task: "Check storage drive", keys: ["hard drive", "storage", "files", "photos", "lost my", "won't boot", "doesn't boot"] },
-  { task: "Overclock", keys: ["overclock", "faster than stock", "push it further"] },
-  { task: "Lighting / RGB requested", keys: ["rgb", "lights", "lighting", "glow", "colourful", "colorful"] },
-  { task: "Water cooling requested", keys: ["water cool", "liquid cool", "custom loop", "aio"] },
+  { task: "Run the virus scanner and remove viruses", keys: [
+    "slow", "sluggish", "takes ages", "takes forever", "laggy", "lagging", "not as quick", "not as fast", "quick as it used", "fast as it used",
+    "strange", "weird", "acting up", "behaving", "infected", "virus", "malware", "hacked",
+    "pop-up", "pop up", "popup", "adverts", "ads keep", "suspicious", "dodgy", "shady", "sketchy", "unsafe", "clicked on", "clicked a", "clicked something", "something bad", "downloaded something", "torrent",
+    "my kid", "my son", "my daughter", "my child", "children", "the kids", "grandkid", "grandson", "granddaughter", "little brother", "little sister", "nephew", "niece",
+    "-not slow", "-strangely enough"] },
+  { task: "Clean with compressed air", keys: [
+    "dust", "dirty", "filthy", "grimy", "grubby", "cobweb", "clean", "on the floor", "on the carpet", "vents", "clogged", "blocked", "not much air", "no air", "airflow", "air flow",
+    "pet hair", "cat hair", "dog hair", "fur", "smoker", "cigarette",
+    "-clean install", "-clean copy", "-clean windows", "-clean os", "-clean look", "-clean build", "-clean cable", "-cleanly"] },
+  { task: "Use new parts only – no used parts", keys: [
+    "used parts", "used components", "used hardware", "second hand", "second-hand", "secondhand", "pre-owned", "preowned", "refurbished", "brand new", "new parts", "new components", "shiny new", "only new", "nothing used", "anything used"] },
+  { task: "Run 3DMark after the build (again after any change)", keys: [
+    "3dmark", "3d mark", "benchmark", "stability test", "stress test", "performance test", "test the performance", "test it properly", "run some tests"] },
+  { task: "Urgent – finish ASAP (aim for 2 days)", keys: [
+    "urgent", "asap", "a.s.a.p", "priority", "as soon as possible", "as quick as possible", "as fast as possible", "as quickly as possible", "in a hurry", "hurry", "rush",
+    "need it fast", "need this fast", "need it quick", "need this quick", "need it back fast", "need it back quick", "need it soon", "need this soon", "need it back soon", "right away", "straight away", "pretty soon"] },
+  { task: "Add RGB lighting", keys: ["rgb", "lights", "lighting", "glow", "colourful", "colorful", "led", "-lights turn on", "-lights come on", "-lights are on", "-power light", "-lights on the"] },
+  { task: "Water cooling requested", keys: ["water cool", "watercool", "water-cool", "liquid cool", "custom loop", "aio", "radiator"] },
 ];
-// keywords taken out of the defaults in a later version (removed from saved rules too)
-const RULES_REMOVED = { "Clean dust with compressed air": ["smoke", "cleaning", "a bit of a clean", "need a clean", "needs a clean"], "Check temps / reapply thermal paste / cooler": ["burning"], "Look for a damaged part (something was forced in)": ["snapped"], "Run antivirus scan": ["viruses", "popups"] };
+// task names of earlier default rule sets – replaced when a saved rule list is upgraded
+const OLD_DEFAULT_TASKS = ["Clean dust with compressed air", "Run antivirus scan", "NEW parts only – no used/PC Bay parts", "Install custom cables (check PC Bay)", "Find the burnt part (smoke) – check PSU first", "Check temps / reapply thermal paste / cooler", "Check PSU & temps (random reboots / shutdowns)", "Look for a damaged part (something was forced in)", "Check fans (noise)", "Check / install OS", "Check storage drive", "Overclock", "Lighting / RGB requested", "Water cooling requested"];
 function ruleHits(rule, text) {
   let t = text;
   for (const k of rule.keys) if (k.startsWith("-") && k.length > 1) t = t.split(k.slice(1).toLowerCase()).join(" ");
   return rule.keys.filter(k => k && !k.startsWith("-") && t.includes(k.toLowerCase()));
 }
-// "Who makes RAM that fragile anyway?!" → the RAM is probably broken
-const BLAME_PARTS = [["RAM", "ram|memory|ram sticks?"], ["GPU", "gpu|graphics card|video card|graphics"], ["CPU", "cpu|processor"], ["PSU", "psu|power supply"], ["Storage", "hard drive|hdd|ssd|m\\.2"], ["Motherboard", "motherboard|mobo|main board"], ["CPU Cooler", "cpu cooler|cooler|cpu fan"], ["Case fans", "case fans?|fans"]];
-const BLAME_WORDS = /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn't working|doesn't work|gave up|packed in|crap|junk)\b/i;
-function detectBlamedParts(body) {
+// ---- Customer suspects: "Who makes RAM that fragile anyway?!", "It has to be CPU, right?" ----
+const SUSPECT_PARTS = [["RAM", "ram|memory|ram sticks?|dimms?"], ["GPU", "gpu|graphics ?cards?|video ?cards?|graphics"], ["CPU", "cpu|processor"], ["PSU", "psu|power ?supply|power unit"],
+  ["Storage", "hard ?drives?|hdd|ssd|m\\.2|storage|disk"], ["Motherboard", "motherboard|mobo|main ?board"], ["CPU Cooler", "cpu cooler|cpu fan|heat ?sink|cooler"], ["Case fans", "case fans?|fans"]];
+const BLAME_WORDS = /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust)\b/i;
+const SUSPECT_WORDS = /\b(has to be|have to be|had to be|got to be|gotta be|must be|must have|sure it'?s|sure the|certain|bet it'?s|bet the|i think|i reckon|reckon|probably|maybe|might be|could it be|could be|is it the|guess|suspect|blame|it'?s the|it is the|sure it is|definitely|obviously|surely)\b|\bi(?:'?m| am) (?:\d+ ?% |pretty |quite |fairly |really |very |absolutely |100% )?sure\b|,\s*right\s*\?|\bright\?/i;
+const NOT_SUSPECT = /\b(upgrade|install|add|want|need|buy|new|faster|better|two|dual|more)\b/i;
+function detectSuspects(body) {
   const out = [];
-  for (const s of String(body || "").split(/(?<=[.?!;])\s+/)) {
-    if (!BLAME_WORDS.test(s)) continue;
-    for (const [part, src] of BLAME_PARTS) {
-      if (new RegExp("\\b(?:" + src + ")\\b", "i").test(s) && !out.some(o => o.part === part)) out.push({ part, quote: s.trim().slice(0, 110) });
+  for (const s of String(body || "").replace(/[’`]/g, "'").split(/(?<=[.?!;])\s+/)) {
+    const broken = BLAME_WORDS.test(s), guess = SUSPECT_WORDS.test(s);
+    if (!broken && !guess) continue;
+    if (!broken && NOT_SUSPECT.test(s) && !/\b(has|got|must) to be|must be|sure|reckon|blame|right\s*\?/i.test(s)) continue; // "maybe add more RAM" is a wish, not a suspect
+    for (const [part, src] of SUSPECT_PARTS) {
+      if (new RegExp("\\b(?:" + src + ")\\b", "i").test(s) && !out.some(o => o.part === part)) out.push({ part, broken, quote: s.trim().slice(0, 110) });
     }
   }
+  // "cooler" also matches inside "CPU cooler" – keep the more specific entry only once
   return out;
 }
 // strip OCR crumbs at the end of a line: "Diagnose and fix ls", "Diagnose and fix ‘S", "help plz G"
@@ -47,8 +59,8 @@ function trimJunk(s) {
 // OCR noise (status bar, buttons) must not be glued onto an objective
 function looksLikeText(l) {
   const w = l.split(/\s+/).filter(Boolean); if (!w.length || w.length > 12) return false;
-  if (/\d/.test(l.replace(/\d{1,2}\/\d{1,2}\/\d{4}|\(\d+ days?\)/g, ""))) return false;
-  const short = w.filter(x => x.replace(/[^a-z]/gi, "").length <= 2).length;
+  if (w.some(x => /^\W*\d+\W*$/.test(x) && !/^\(?\d+ days?\)?$/.test(x)) && !/\(\d+ days?\)/.test(l)) return false; // bare numbers = OCR noise ("4k", "1080p" are fine)
+  const short = w.filter(x => !/\d/.test(x) && x.replace(/[^a-z]/gi, "").length <= 2).length;
   const odd = w.filter(x => /[a-z][A-Z]|^[A-Z]{2,}$/.test(x)).length;
   return short / w.length <= 0.25 && odd <= 1;
 }
@@ -132,6 +144,7 @@ const BRANDS_PREF = [
   ["SilverStone", "silver ?stone"], ["Team Group", "team ?group|t-?force"], ["Thermaltake", "thermaltake"],
   ["ZOTAC", "zotac"], ["be quiet!", "be quiet!|bequiet"],
 ];
+const BRAND_KNOWN = /\b(my|our)\s+(brother|sister|mate|mates|friend|friends|buddy|pal|dad|father|mum|mom|mother|son|daughter|cousin|uncle|aunt|colleague|coworker|boss|girlfriend|boyfriend|wife|husband|partner|kid|kids|neighbou?r|flatmate|roommate|teacher|grandad|grandpa|gran|grandma)\b|\b(heard|uses|using|use|has|had|got|recommend(?:s|ed)?|said|says|told me|swears)\b/i;
 const BRAND_LIKE = /\b(fan|fanboy|fangirl|love[sd]?|lov(?:e|ing)|adore|like[sd]?|into|bomb|good|great|best|awesome|amazing|brilliant|excellent|top[- ]notch|rocks?|favou?rite|prefer(?:red)?|swear by|recommend(?:ed)?|only (?:use|buy|trust)|big on|obsessed|can'?t get enough|trust|loyal|guy|girl|the business|legit)\b/i;
 const BRAND_DISLIKE = /\b(hate[sd]?|avoid|don'?t (?:like|want|trust)|do not (?:like|want|trust)|can'?t stand|terrible|awful|rubbish|garbage|trash|crap|never again|not a fan|no more|stay away|steer clear|sick of|keep .{0,15} away|anything but|anything except|not (?:any|one single) )\b/i;
 function detectBrands(body) {
@@ -145,20 +158,48 @@ function detectBrands(body) {
     for (const [brand, src, cs] of BRANDS_PREF) {
       const re = new RegExp("(^|[^A-Za-z0-9])(?:" + src + ")(?![A-Za-z0-9])", cs ? "" : "i");
       if (!re.test(s)) continue;
-      const avoid = BRAND_DISLIKE.test(ctx), like = BRAND_LIKE.test(ctx);
-      if (!avoid && !like) continue;
+      if (BRAND_DISLIKE.test(ctx) || BLAME_WORDS.test(s)) continue; // "not a fan of X", "my X card broke" – no brand request
+      if (!BRAND_LIKE.test(ctx) && !BRAND_KNOWN.test(ctx)) continue;
+      if (out.some(o => o.brand === brand)) continue;
       const quote = ctx.trim().replace(/\s+/g, " ");
-      out.push({ brand, avoid, quote: quote.length > 110 ? quote.slice(0, 107) + "…" : quote });
+      out.push({ brand, quote: quote.length > 110 ? quote.slice(0, 107) + "…" : quote });
     }
   });
   return out;
+}
+
+// ---- Cables: colour and/or type ("Plastic Yellow", "plain red", "braided cables", "I love yellow cables") ----
+const CABLE_COL = "red|blue|green|yellow|orange|purple|pink|white|black|gray|grey|silver|gold|cyan|teal|brown|lime|magenta|violet|navy|beige|turquoise|aqua|rainbow";
+const CABLE_SHADE = "(?:(?:light|dark|bright|pale|deep|neon|sky|baby|royal|hot)\\s+)?";
+const CABLE_TYPE = "plastic|braided|plain|sleeved|ribbon|duo|loose|tight";
+function detectCables(body) {
+  const b = " " + String(body || "").toLowerCase().replace(/[’`]/g, "'") + " ";
+  const types = new Set(), cols = [], quotes = [];
+  const add = (t, c, q) => { if (t) t.split(/\s+/).filter(Boolean).forEach(x => types.add(x)); if (c && !cols.includes(c)) cols.push(c); if (q) quotes.push(q.trim()); };
+  // type + colour, in either order: "plastic yellow", "braided dark grey", "yellow braided"
+  for (const m of b.matchAll(new RegExp("\\b((?:(?:" + CABLE_TYPE + ")\\s+)+)(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\b", "g"))) add(m[1].trim(), m[2], m[0]);
+  for (const m of b.matchAll(new RegExp("\\b(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\s+((?:plastic|braided|sleeved|ribbon)\\b)", "g"))) add(m[2], m[1], m[0]);
+  // only with the word cable(s) and a wish in the sentence: "I love yellow cables", "braided cables please"
+  for (const s of b.split(/[.!?]/)) {
+    if (!/\b(cables?|wires?|cabling)\b/.test(s)) continue;
+    const wish = /\b(like|love|nice|want|would like|prefer|please|cool|awesome|great|lovely|pretty|amazing|fan of|into|fancy|go for|use|need)\b|on pc ?bay/.test(s);
+    if (!wish) continue;
+    for (const m of s.matchAll(new RegExp("\\b(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\s+(?:(?:" + CABLE_TYPE + ")\\s+)?(?:cables?|wires?|cabling)\\b", "g"))) add("", m[1], m[0]);
+    for (const m of s.matchAll(/\b(plastic|braided|sleeved|ribbon)\s+(?:cables?|wires?|cabling)\b/g)) add(m[1], "", m[0]);
+  }
+  const pcbay = /saw (?:some |these |those |the |a set of )?[a-z0-9 .+\-]{0,40}?cables? on pc ?bay/.test(b);
+  if (!types.size && !cols.length && !pcbay) return null;
+  const cap = s => s.replace(/\b\w/g, c => c.toUpperCase()).replace(/Gray/g, "Grey");
+  const typeTxt = [...types].filter(t => t !== "plain" || types.size === 1).map(cap).join(" ");
+  const want = cols.length ? cols.map(c => (typeTxt + " " + cap(c)).trim()) : [typeTxt].filter(Boolean);
+  return { want, label: want.length ? want.join(" / ") : "the cables seen on PC Bay", quotes: [...new Set(quotes)].slice(0, 3), pcbay };
 }
 
 function parseEmail(text, rules) {
   rules = rules || DEFAULT_RULES;
   const raw = text.replace(/\r/g, "");
   // a box wider than the email also catches the inbox's date column: "6/12/2018 I hate using…"
-  const lines = raw.split("\n").map(s => s.trim().replace(/^\d{1,2}\/\d{1,2}\/\d{4}\s*(?=\S{3}|$)/, "").trim()).filter(Boolean);
+  const lines = raw.split("\n").map(s => s.trim().replace(/^\d{1,2}\/\d{1,2}\/\d{4}\s*(?=\S{3}|$)/, "").replace(/^\d{1,4}\s*[|]?\s+(?=\S)/, "").replace(/^[|=]\s*/, "").trim()).filter(Boolean);
   const job = { sender: "", subject: "", labour: null, budget: null, level: null, deadline: "", objectives: [], hidden: [], suspect: "", body: "", components: [] };
   // sender = the last address above the greeting (inbox entries come first when the box is too big)
   const startB0 = lines.findIndex(l => /you work with computers|^(hi|hello|hey|dear|good (day|morning|afternoon|evening))\b/i.test(l));
@@ -169,6 +210,7 @@ function parseEmail(text, rules) {
     const nxt = lines[emailLineIdx + 1];
     if (nxt && !/you work with|labour|objectives|@/i.test(nxt) && emailLineIdx + 1 !== startB0) job.subject = trimJunk(nxt.replace(/^Ineed/, "I need"));
   }
+  const emailDate = (emailLineIdx >= 0 && (lines[emailLineIdx].match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/) || (lines[emailLineIdx + 1] || "").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) || raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   const pcFor = raw.match(/PC for\s+([\w.+-]+@[\w-]+(\.[\w-]+)+)/i);
   if (!job.sender && pcFor) job.sender = pcFor[1];
   const lab = raw.match(/Labou?r[:;]?\s*\$?\s*([\d,]+)/i); if (lab) job.labour = +lab[1].replace(/,/g, "");
@@ -205,37 +247,26 @@ function parseEmail(text, rules) {
       if (!already) job.hidden.push({ task: r.task, because: hits.slice(0, 3) });
     }
   }
-  // "used parts" rule only if customer objects (not "used parts are fine")
-  if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used/.test(b)) job.hidden = job.hidden.filter(h => !/no used/i.test(h.task));
-  const cab = b.match(/saw (?:some |these |those |the |a set of )?([a-z0-9 .+\-]{2,40}?) cables? on pc ?bay/);
-  if (cab) { job.hidden = job.hidden.filter(h => !/cables/i.test(h.task)); job.hidden.unshift({ task: "Install " + cab[1].trim() + " cables (from PC Bay)", because: ["saw … cables on PC Bay"] }); }
-  // "plain red", "braided dark gray" … → replace ALL cables
-  const COL = "red|blue|green|yellow|orange|purple|pink|white|black|gray|grey|silver|gold|cyan|teal|brown|lime|magenta|violet|navy|beige|turquoise|aqua|rainbow";
-  // style words as in the game's cable names: Loose/Ribbon/Sleeved/Tight, Plastic/Braided, Plain/Duo…
-  const STYLE = "(?:(?:plain|braided|sleeved|plastic|ribbon|loose|tight|duo)\\s+)+";
-  const SHADE = "(?:(?:light|dark|bright|pale|deep|neon|matte|sky|baby|royal|hot)\\s+)?";
-  const cre = new RegExp("\\b(" + STYLE + ")(" + SHADE + "(?:" + COL + "))\\b", "gi");
-  const want = [...b.matchAll(cre)].map(m => (m[1].trim() + " " + m[2]));
-  // "those yellow cables look really nice" – colour + cables, only when the customer likes / wants them
-  const cre2 = new RegExp("\\b(" + SHADE + "(?:" + COL + "))\\s+(?:cables?|wires?|cabling)\\b", "gi");
-  for (const s of b.split(/[.!?]/)) if (/\b(like|love|nice|want|would like|cool|awesome|great|prefer|lovely|pretty|amazing)\b/.test(s)) for (const m of s.matchAll(cre2)) if (!want.some(w => w.endsWith(m[1]))) want.push(m[1]);
-  want.splice(0, want.length, ...new Set(want.map(w => w.replace(/\s+/g, " ").replace(/\b\w/g, c => c.toUpperCase()).replace(/Gray/g, "Grey"))));
-  if (want.length) {
-    job.hidden = job.hidden.filter(h => !/cables/i.test(h.task));
-    job.hidden.unshift({ task: "Replace ALL cables → " + want.join(" / ") + " cables", because: want.map(w => w.toLowerCase()), want });
+  // "used parts are fine" cancels the new-parts rule
+  if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used|used is fine/.test(b)) job.hidden = job.hidden.filter(h => !/new parts only/i.test(h.task));
+  // 3DMark already in the listed objectives → no extra hint
+  if (job.objectives.some(o => /3d ?mark|benchmark/i.test(o))) job.hidden = job.hidden.filter(h => !/3dmark/i.test(h.task));
+  // urgent without an explicit deadline → soft deadline 2 days after the email date
+  const urg = job.hidden.find(h => /^urgent/i.test(h.task));
+  if (urg) {
+    if (job.deadline) job.hidden = job.hidden.filter(h => h !== urg);
+    else { const d = emailDate; if (d) { const t = new Date(Date.UTC(+d[3], +d[1] - 1, +d[2] + 2)); job.deadline = `${t.getUTCMonth() + 1}/${t.getUTCDate()}/${t.getUTCFullYear()}`; job.softDeadline = true; urg.task += ` – by ${job.deadline}`; } }
   }
-  // brand preferences: "I'm a total NZXT fanboy", "MSI parts are the bomb", "not a fan of Corsair"
-  for (const p of detectBrands(job.body)) {
-    if (job.hidden.some(h => h.brand === p.brand && h.avoid === p.avoid)) continue;
-    job.hidden.push({ task: (p.avoid ? "Avoid " : "Use ") + p.brand + " parts" + (p.avoid ? "" : " where possible"), because: [p.quote], brand: p.brand, avoid: p.avoid });
-  }
-  for (const bp of detectBlamedParts(job.body)) {
-    job.hidden.push({ task: `Check / replace the ${bp.part} – customer hints it's broken`, because: [bp.quote], part: bp.part });
-    if (!job.suspect) job.suspect = bp.part;
-  }
-  const sus = b.match(/(?:it's|its|it is|got to be|must be|probably|sure it's|think it's) (?:got to be )?(?:the )?(cpu|gpu|graphics card|ram|memory|psu|power supply|motherboard|hard drive|ssd|storage|cooler|fan)/);
-  if (sus) job.suspect = sus[1].toUpperCase();
+  // cables: colour and/or type, all in one task
+  const cab = detectCables(job.body);
+  if (cab) job.hidden.unshift({ task: "Change all cables → " + cab.label, because: cab.quotes.length ? cab.quotes : ["cables on PC Bay"], want: cab.want });
+  // brand: "I'm a total NZXT fanboy", "my brother swears by MSI", "Have you heard of FSP?"
+  for (const p of detectBrands(job.body)) job.hidden.push({ task: `Use ${p.brand} for as many parts as possible`, because: [p.quote], brand: p.brand });
+  // customer suspects: broken-sounding parts become a task, all guesses fill the field
+  const sus = detectSuspects(job.body);
+  for (const s of sus.filter(s => s.broken)) job.hidden.push({ task: `Check / replace the ${s.part} – customer hints it's broken`, because: [s.quote], part: s.part });
+  if (sus.length) job.suspect = sus.map(s => s.part).join(", ");
   return job;
 }
 
-if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, RULES_VERSION, RULES_REMOVED, categorize, detectBrands, detectBlamedParts, looksLikeText };
+if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, RULES_VERSION, OLD_DEFAULT_TASKS, categorize, detectBrands, detectSuspects, detectCables, looksLikeText };

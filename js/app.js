@@ -2,13 +2,11 @@
 // ================= state =================
 let jobs = LS.get("pcbs.jobs", []);
 let rules = LS.get("pcbs.rules", null);
-// saved rules from an older version: add new default keywords/rules, drop retired ones
+// saved rules from an older version: the default rules are replaced by the current set,
+// rules the user added themselves are kept
 if (rules && LS.get("pcbs.rulesVer", 1) < RULES_VERSION) {
-  for (const d of DEFAULT_RULES) {
-    const r = rules.find(x => x.task === d.task);
-    if (r) r.keys = [...new Set([...r.keys.filter(k => !(RULES_REMOVED[d.task] || []).includes(k)), ...d.keys])];
-    else rules.push(structuredClone(d));
-  }
+  const defaults = new Set([...OLD_DEFAULT_TASKS, ...DEFAULT_RULES.map(d => d.task)]);
+  rules = [...structuredClone(DEFAULT_RULES), ...rules.filter(r => !defaults.has(r.task))];
   LS.set("pcbs.rules", rules);
 }
 LS.set("pcbs.rulesVer", RULES_VERSION);
@@ -24,8 +22,10 @@ const TCOL = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)"];
 // ================= board =================
 function hidIcon(t) {
   const s = t.toLowerCase();
-  return /^avoid/.test(s) ? "⛔" : /burnt|smoke/.test(s) ? "🔥" : /^check \/ replace the/.test(s) ? "🔁" : /cable/.test(s) ? "🔌" : /parts where possible/.test(s) ? "★" : /new parts only/.test(s) ? "✨" : /dust|clean/.test(s) ? "💨" : /antivirus|virus/.test(s) ? "🛡️" : /temp|thermal|psu/.test(s) ? "🌡️" : /damaged/.test(s) ? "🔧" : /os\b|operating/.test(s) ? "💿" : /storage|drive/.test(s) ? "💾" : /overclock/.test(s) ? "⚡" : /rgb|light/.test(s) ? "🌈" : /water/.test(s) ? "💧" : /fan|noise/.test(s) ? "🌀" : "❗";
+  return /cables/.test(s) ? "🔌" : /^use .* for as many/.test(s) ? "★" : /^check \/ replace the/.test(s) ? "🔁" : /new parts only/.test(s) ? "✨" : /compressed air/.test(s) ? "💨"
+    : /virus/.test(s) ? "🛡️" : /3dmark/.test(s) ? "📊" : /^urgent/.test(s) ? "⏰" : /rgb|light/.test(s) ? "🌈" : /water/.test(s) ? "💧" : "❗";
 }
+
 function deadlineValue(s) { const m = String(s || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : Infinity; }
 function render() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
@@ -45,17 +45,28 @@ function jobCard(j) {
   const hidHtml = hid.length ? `<div class="hidbox ${hid.every(k => k.done) ? "alldone" : ""}"><div class="hidhead">🔍 Hidden objectives <span>${hid.filter(k => k.done).length}/${hid.length}</span></div>${hid.map(k => { const [, t, d] = k.text.match(/^(.*?)\s*(\((?:makes|e\.g\.)[^)]*\))?$/) || [, k.text]; return `<label class="hid ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span class="ico">${hidIcon(k.text)}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d.slice(1, -1))}</small>` : ""}</span>${del(k)}</label>`; }).join("")}</div>` : "";
   const mainHtml = main.length ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li>${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>` : "";
   const foundHtml = found.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}</span>${del(k)}</div>`).join("");
-  const swaps = j.swaps.map(s => `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span></div><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`).join("");
+  const swapPrice = s => s.price ?? priceOf(s.new);
+  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span></div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
+  // budget = what the customer pays for parts; labour is not part of it
+  let budgetHtml = "";
+  if (j.budget != null) {
+    const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0), noPrice = j.swaps.filter(s => swapPrice(s) == null).length;
+    const left = j.budget - spent, over = left < 0, pct = j.budget > 0 ? Math.min(100, spent / j.budget * 100) : (spent > 0 ? 100 : 0);
+    budgetHtml = `<div class="budget ${over ? "over" : pct >= 85 ? "tight" : ""}">
+      <div class="brow"><span>${over ? "⚠️ Over budget" : "💰 Budget left"}</span><b>${over ? "−$" + (-left).toLocaleString() : "$" + left.toLocaleString()}</b></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <small>$${spent.toLocaleString()} of $${j.budget.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}${noPrice ? ` · <span class="warn">${noPrice} without price</span>` : ""}</small></div>`;
+  }
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
   return `<article class="job" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
-    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.budget != null ? `<span class="chip">Budget $${j.budget}</span>` : ""}${j.deadline ? `<span class="chip dl">⏰ by ${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
+    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>${budgetHtml}
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
     ${hidHtml}${mainHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}
-      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" hidden>
+      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
@@ -81,9 +92,16 @@ document.addEventListener("click", e => {
   else if (a === "delTask") { j.tasks = j.tasks.filter(t => t.id !== b.dataset.k); }
   else if (a === "addTask") { const inp = document.querySelector(`[data-input="task"][data-id="${j.id}"]`); if (!inp.value.trim()) return; j.tasks.push({ id: uid(), text: inp.value.trim(), src: "add", done: false }); }
   else if (a === "toggleSwap") { j.swaps.find(s => s.id === b.dataset.k).done = b.checked; }
+  else if (a === "setPrice") { const s = j.swaps.find(s => s.id === b.dataset.k); const cur = s.price ?? priceOf(s.new); const v = prompt(`Price of ${s.new} in $ (leave empty to use the shop price):`, cur ?? ""); if (v === null) return; s.price = v.trim() === "" ? undefined : Math.max(0, Math.round(+v.replace(/[^\d.]/g, "")) || 0); if (s.price === undefined) delete s.price; }
   else if (a === "delSwap") { j.swaps = j.swaps.filter(s => s.id !== b.dataset.k); }
   else if (a === "openSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); f.hidden = false; b.hidden = true;
-    f.querySelector('[data-f="old"]').onchange = ev => { const c = j.components[ev.target.value]; f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other"; f.querySelector('[data-f="new"]').focus(); };
+    f.querySelector('[data-f="old"]').onchange = ev => {
+      // copy the chosen part (name + category) into "New part", selected so typing replaces it
+      const c = j.components[ev.target.value], inp = f.querySelector('[data-f="new"]');
+      f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other";
+      inp.value = c ? c.name : "";
+      inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc;
+    };
     f.querySelector('[data-f="new"]').focus(); return; }
   else if (a === "cancelSwap") { render(); return; }
   else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = f.querySelector('[data-f="cat"]').value;
@@ -286,7 +304,7 @@ async function runOcr() {
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
-    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body });
+    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body });
     renderForm();
     if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;
     if (keep.table && $("#fTable")) $("#fTable").value = keep.table;
@@ -326,7 +344,7 @@ function saveReview() {
   comps.forEach(c => rememberPart(c.name, c.cat));
   if (rev.forJob) { job(rev.forJob.id).components = comps; }
   else {
-    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), suspect: $("#fSuspect").value.trim(), components: comps };
+    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps };
     const table = +$("#fTable").value;
     let target;
     if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }
@@ -374,10 +392,11 @@ function renderSettings() {
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
   $("#appVersion").href = changelogUrl();
+  if (typeof keysOn !== "undefined") { $("#keysToggle").checked = keysOn; $("#keysInSettings").innerHTML = keysHelpHtml(); }
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
-$("#dlgSettings").addEventListener("change", e => { const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
+$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
 const rulesToText = r => r.map(x => `${x.task}: ${x.keys.join(", ")}`).join("\n");
 $("#btnRules").onclick = () => { $("#dlgSettings").close(); $("#rulesTxt").value = rulesToText(rules); $("#dlgRules").showModal(); };
 

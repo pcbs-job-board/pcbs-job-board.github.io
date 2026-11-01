@@ -2,6 +2,17 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
+## 0.8.0
+- Hidden objectives rebuilt from the community hint list.
+- Cable colour and type detection combined into one hint.
+- Urgent jobs get an estimated deadline.
+- Improved "Customer suspects" detection.
+- Fixed objectives missed when inbox text is read with the email.
+- Choosing the part to replace copies it into "New part", ready to edit.
+- Remaining budget shown on each job, with a clear over-budget warning.
+- Part prices shown on swaps and flagged in suggestions when over budget.
+- Keyboard shortcuts (on by default, can be turned off in Settings).
+
 ## 0.7.0
 - Long emails can be read from several screenshots.
 - Fixed objectives not detected when the email box is larger than the email.

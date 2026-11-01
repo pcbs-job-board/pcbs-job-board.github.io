@@ -76,7 +76,9 @@ function acShow(inp) {
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
   const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
-  acEl.innerHTML = acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"}"><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}</small></div>`).join("")
+  const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
+  const overB = p => left != null && p.price != null && p.price > left;
+  acEl.innerHTML = acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const r = inp.getBoundingClientRect(); const w = Math.max(r.width, 380);
   Object.assign(acEl.style, { left: Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px", top: (r.bottom + 3) + "px", width: w + "px" });
@@ -87,7 +89,7 @@ function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.v
 function initAutocomplete() {
   acEl = $("#ac");
   document.addEventListener("input", e => { if (e.target.matches("[data-ac]")) acShow(e.target); });
-  document.addEventListener("focusin", e => { if (e.target.matches("[data-ac]") && e.target.value.length >= 2) acShow(e.target); });
+  document.addEventListener("focusin", e => { if (e.target.matches("[data-ac]") && !e.target.dataset.noAc && e.target.value.length >= 2) acShow(e.target); });
   document.addEventListener("keydown", e => {
     if (acEl.hidden || e.target !== acInput) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (!acItems.length) return; acSel = (acSel + (e.key === "ArrowDown" ? 1 : -1) + acItems.length) % acItems.length; acEl.querySelectorAll("[data-i]").forEach((d, i) => { d.classList.toggle("sel", i === acSel); if (i === acSel) d.scrollIntoView({ block: "nearest" }); }); }
@@ -177,4 +179,11 @@ function mergePCStats(lists) {
     res.push(...best.slice(0, PC_MAX[cat] || 99));
   }
   return res;
+}
+
+// shop price of a part by its exact name (any DLC / version – it's for budget maths)
+let PRICE = null;
+function priceOf(name) {
+  if (!PRICE) { PRICE = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[2] != null) PRICE.set(r[0].toLowerCase(), r[2]); }
+  return PRICE.get(String(name || "").trim().toLowerCase()) ?? null;
 }
