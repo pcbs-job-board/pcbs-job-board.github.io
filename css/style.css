@@ -75,7 +75,11 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px}
 .foot{display:flex;gap:6px;margin-top:10px}
 .foot .good{flex:1}
 /* autocomplete */
-.ac{position:fixed;z-index:100;background:#0f131a;border:1px solid var(--accent);border-radius:7px;max-height:300px;overflow:auto;box-shadow:0 10px 30px #000a;font-size:12.5px}
+.ac{position:fixed;z-index:100;background:#0f131a;border:1px solid var(--accent);border-radius:7px;overflow:hidden;box-shadow:0 10px 30px #000a;font-size:12.5px;display:flex;flex-direction:column}
+.ac[hidden]{display:none}
+.ac .aclist,.ac .aclist:hover{display:block;padding:0;background:none;cursor:default;position:relative;overflow-y:auto;overscroll-behavior:contain}
+.ac.up{flex-direction:column-reverse;box-shadow:0 -10px 30px #000a}
+.ac.up .report{border-top:0;border-bottom:1px solid var(--line)}
 .ac div{padding:6px 9px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
 .ac div.sel,.ac div:hover{background:#1d3a4d}
 .ac div span{flex:1}
