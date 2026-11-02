@@ -222,13 +222,22 @@ function cropCanvas(img, r) {
   const c = document.createElement("canvas"); c.width = sw * scale; c.height = sh * scale;
   const g = c.getContext("2d"); g.imageSmoothingQuality = "high"; g.filter = "grayscale(1) contrast(1.15)"; g.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height); return c;
 }
+// text + every line with its certainty (0–100). Since tesseract.js 6 only the plain text comes back
+// unless more is asked for, so the lines are taken from the "blocks" output (block → paragraph → line).
+async function readText(canvas) {
+  const w = await getWorker();
+  const d = (await w.recognize(canvas, {}, { text: true, blocks: true })).data;
+  const lines = [];
+  for (const b of d.blocks || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) lines.push([String(l.text || "").trim(), l.confidence]);
+  return { text: d.text || "", lines };
+}
 let lastConf = null;
 async function ocr(img, kind) {
-  const w = await getWorker();
+  await getWorker();
   $("#ocrState").textContent = `Reading ${kind === "email" ? "email" : "PC Stats"}…`; $("#prog").style.width = "0";
-  const d = (await w.recognize(cropCanvas(img, crops[kind === "parts" ? "stats" : kind]))).data;
-  lastConf = (d.lines || []).map(l => [l.text.trim(), l.confidence]); // per-line certainty, used when joining screenshots
-  $("#prog").style.width = "100%"; return d.text;
+  const r = await readText(cropCanvas(img, crops[kind === "parts" ? "stats" : kind]));
+  lastConf = r.lines; // per-line certainty, used when joining screenshots
+  $("#prog").style.width = "100%"; return r.text;
 }
 
 // ================= review dialog =================

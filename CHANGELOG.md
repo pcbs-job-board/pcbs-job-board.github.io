@@ -3,6 +3,10 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.10.0
+- Text reader updated to Tesseract.js 7 – screenshots are read about 20 % faster.
+- Uses less memory in long sessions.
+
 ## 0.9.1
 - PC Stats: half-cut first line no longer added as a junk or wrong part.
 - PC Stats: model numbers with look-alike letters recognised ("ST55F" read as "STSSF").
