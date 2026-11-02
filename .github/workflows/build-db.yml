@@ -2,7 +2,7 @@
 name: Build parts database
 on:
   push:
-    paths: ["data/parts/**", "data/dlc.csv", "tools/build_db.py"]
+    paths: ["data/parts/**", "data/dlc.csv", "data/versions.csv", "data/story-jobs.csv", "tools/build_db.py"]
   workflow_dispatch:
 permissions:
   contents: write

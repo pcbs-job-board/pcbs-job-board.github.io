@@ -1,7 +1,7 @@
 // ===== PCBS job parser (pure functions, no DOM) =====
 // One rule = task + keywords. A keyword starting with "-" is an exception: that phrase is
 // ignored before matching (e.g. "-clean install" so "clean" still catches "never cleaned it").
-const RULES_VERSION = 3;
+const RULES_VERSION = 4;
 // Hints from the PCBS community list – one rule per solution (hints with the same solution are merged).
 const DEFAULT_RULES = [
   { task: "Run the virus scanner and remove viruses", keys: [
@@ -20,7 +20,9 @@ const DEFAULT_RULES = [
     "3dmark", "3d mark", "benchmark", "stability test", "stress test", "performance test", "test the performance", "test it properly", "run some tests"] },
   { task: "Urgent – finish ASAP (aim for 2 days)", keys: [
     "urgent", "asap", "a.s.a.p", "priority", "as soon as possible", "as quick as possible", "as fast as possible", "as quickly as possible", "in a hurry", "hurry", "rush",
-    "need it fast", "need this fast", "need it quick", "need this quick", "need it back fast", "need it back quick", "need it soon", "need this soon", "need it back soon", "right away", "straight away", "pretty soon"] },
+    "need it fast", "need this fast", "need it quick", "need this quick", "need it back fast", "need it back quick", "need it soon", "need this soon", "need it back soon", "right away", "straight away", "pretty soon",
+    "quickly", "done quick", "done fast", "done soon", "quick as you can", "fast as you can", "soon as you can", "quick turnaround", "in a rush", "no time to lose",
+    "-boots quickly", "-boots up quickly", "-boot quickly", "-starts quickly", "-starts up quickly", "-loads quickly", "-runs quickly", "-ran quickly", "-more quickly", "-so quickly", "-too quickly", "-heats up quickly", "-gets hot quickly", "-dies quickly", "-crashes quickly"] },
   { task: "Add RGB lighting", keys: ["rgb", "lights", "lighting", "glow", "colourful", "colorful", "led", "-lights turn on", "-lights come on", "-lights are on", "-power light", "-lights on the"] },
   { task: "Water cooling requested", keys: ["water cool", "watercool", "water-cool", "liquid cool", "custom loop", "aio", "radiator"] },
 ];
@@ -292,7 +294,7 @@ function mergeTexts(shots) {
   return (acc || []).map(e => e.t).join("\n");
 }
 
-function parseEmail(text, rules) {
+function parseEmail(text, rules, smart) {
   rules = rules || DEFAULT_RULES;
   const raw = text.replace(/\r/g, "");
   // a box wider than the email also catches the inbox's date column: "6/12/2018 I hate using…"
@@ -342,35 +344,84 @@ function parseEmail(text, rules) {
   const endB = lines.findIndex(l => /labou?r|budget/i.test(l));
   const bodyLines = lines.slice(startB >= 0 ? startB : emailLineIdx + 2, endB > 0 ? endB : undefined);
   job.body = bodyLines.join(" ").replace(/\s+/g, " ").trim();
-  const b = " " + job.body.toLowerCase().replace(/[’`]/g, "'") + " ";
+  // story-job signals: the name the email is signed with, no star requirement in the blue band, a long text
+  job.signature = bodyLines.slice(-3).map(l => l.replace(/^[-–—~\s]+/, "").replace(/[,.!]+$/, "").trim()).filter(l => l && l.split(/\s+/).length <= 4 && !/regards|thanks|cheers|best|sincerely/i.test(l));
+  job.words = job.body ? job.body.split(/\s+/).length : 0;
+  const band = /labou?r/i.test(raw) && /budget/i.test(raw);
+  job.noStars = band ? /Re[qga]\s*[:;.]?\s*Level/i.test(raw) && (raw.match(/\bRe[qga]\s*[:;.]/gi) || []).length < 2 : null; // OCR reads "Req" as "Rea" too
 
-  for (const r of rules) {
-    const hits = ruleHits(r, b);
-    if (hits.length) {
-      const already = job.objectives.some(o => o.toLowerCase().includes(r.task.toLowerCase().slice(0, 12)));
-      if (!already) job.hidden.push({ task: r.task, because: hits.slice(0, 3) });
-    }
-  }
-  // "used parts are fine" cancels the new-parts rule
-  if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used|used is fine/.test(b)) job.hidden = job.hidden.filter(h => !/new parts only/i.test(h.task));
-  // 3DMark already in the listed objectives → no extra hint
-  if (job.objectives.some(o => /3d ?mark|benchmark/i.test(o))) job.hidden = job.hidden.filter(h => !/3dmark/i.test(h.task));
-  // urgent without an explicit deadline → soft deadline 2 days after the email date
-  const urg = job.hidden.find(h => /^urgent/i.test(h.task));
-  if (urg) {
-    if (job.deadline) job.hidden = job.hidden.filter(h => h !== urg);
-    else { const d = emailDate; if (d) { const t = new Date(Date.UTC(+d[3], +d[1] - 1, +d[2] + 2)); job.deadline = `${t.getUTCMonth() + 1}/${t.getUTCDate()}/${t.getUTCFullYear()}`; job.softDeadline = true; urg.task += ` – by ${job.deadline}`; } }
-  }
-  // cables: colour and/or type, all in one task
-  const cab = detectCables(job.body);
-  if (cab) job.hidden.unshift({ task: "Change all cables → " + cab.label, because: cab.quotes.length ? cab.quotes : ["cables on PC Bay"], want: cab.want });
-  // brand: "I'm a total NZXT fanboy", "my brother swears by MSI", "Have you heard of FSP?"
-  for (const p of detectBrands(job.body)) job.hidden.push({ task: `Use ${p.brand} for as many parts as possible`, because: [p.quote], brand: p.brand });
-  // customer suspects: broken-sounding parts become a task, all guesses fill the field
-  const sus = detectSuspects(job.body);
-  for (const s of sus.filter(s => s.broken)) job.hidden.push({ task: `Check / replace the ${s.part} – customer hints it's broken`, because: [s.quote], part: s.part });
-  if (sus.length) job.suspect = sus.map(s => s.part).join(", ");
+  const det = detectHidden(job.body, rules, smart, job.objectives, emailDate, !!job.deadline);
+  job.hidden = det.hidden; job.suspect = det.suspect;
+  if (det.softDeadline) { job.deadline = det.softDeadline; job.softDeadline = true; }
   return job;
 }
 
-if (typeof module !== "undefined") module.exports = { parseEmail, parseComponents, DEFAULT_RULES, RULES_VERSION, OLD_DEFAULT_TASKS, categorize, detectBrands, detectSuspects, detectCables, looksLikeText };
+// ---- story jobs (career story customers): known ones from data/story-jobs.csv, others by their look ----
+const normStory = s => String(s || "").toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9@.' ]+/g, " ").replace(/\s+/g, " ").trim();
+// which list entry this email belongs to, and what matched. A name alone only counts when the email also
+// looks like a story job – random customers sign with first names too.
+function storyMatch(job, list) {
+  const e = normStory(job.sender), sub = normStory(job.subject), sig = (job.signature || []).map(normStory);
+  for (const st of list || []) {
+    if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
+    if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
+  }
+  const looks = storyLooks(job).looks;
+  for (const st of list || []) if (looks && st.sender_name && sig.includes(normStory(st.sender_name))) return { entry: st, by: "name" };
+  return null;
+}
+// unknown story job? no star requirement (random jobs always have one) or a very long email without a deadline
+function storyLooks(job) {
+  const long = (job.words || 0) >= 100;
+  const why = [];
+  if (job.noStars) why.push("no star requirement");
+  if (long) why.push("long, story-like email");
+  return { looks: !!job.noStars || (long && !job.deadline), why };
+}
+// story job with the budget written in the objectives → the budget does count
+const budgetInObjectives = objs => (objs || []).some(o => /budget|\$\s?\d/i.test(typeof o === "string" ? o : o.text));
+
+// Built-in ("smart") detections that can be switched off in the rules window
+const SMART_DEFAULT = { cables: true, brands: true, broken: true };
+// hidden objectives for an email body – also used by the "Try it" box in the rules window
+function detectHidden(body, rules, smart, objectives, emailDate, hasDeadline) {
+  rules = rules || DEFAULT_RULES; smart = Object.assign({}, SMART_DEFAULT, smart); objectives = objectives || [];
+  let hidden = []; const out = { hidden, suspect: "", softDeadline: "" };
+  const b = " " + String(body || "").toLowerCase().replace(/[’`]/g, "'") + " ";
+  for (const r of rules) {
+    if (r.off) continue;
+    const hits = ruleHits(r, b);
+    if (hits.length) {
+      const already = objectives.some(o => o.toLowerCase().includes(r.task.toLowerCase().slice(0, 12)));
+      if (!already) hidden.push({ task: r.task, because: hits.slice(0, 3) });
+    }
+  }
+  // "used parts are fine" cancels the new-parts rule
+  if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used|used is fine/.test(b)) hidden = hidden.filter(h => !/new parts only/i.test(h.task));
+  // 3DMark already in the listed objectives → no extra hint
+  if (objectives.some(o => /3d ?mark|benchmark/i.test(o))) hidden = hidden.filter(h => !/3dmark/i.test(h.task));
+  // urgent without an explicit deadline → soft deadline 2 days after the email date
+  const urg = hidden.find(h => /^urgent/i.test(h.task));
+  if (urg) {
+    if (hasDeadline) hidden = hidden.filter(h => h !== urg);
+    else if (emailDate) { const d = emailDate, t = new Date(Date.UTC(+d[3], +d[1] - 1, +d[2] + 2)); out.softDeadline = `${t.getUTCMonth() + 1}/${t.getUTCDate()}/${t.getUTCFullYear()}`; urg.task += ` – by ${out.softDeadline}`; }
+  }
+  // cables: colour and/or type, all in one task
+  const cab = smart.cables && detectCables(body);
+  if (cab) hidden.unshift({ task: "Change all cables → " + cab.label, because: cab.quotes.length ? cab.quotes : ["cables on PC Bay"], want: cab.want, smart: "cables" });
+  // brand: "I'm a total NZXT fanboy", "my brother swears by MSI", "Have you heard of FSP?"
+  if (smart.brands) for (const p of detectBrands(body)) hidden.push({ task: `Use ${p.brand} for as many parts as possible`, because: [p.quote], brand: p.brand, smart: "brands" });
+  // customer suspects: broken-sounding parts become a task, all guesses fill the field
+  const sus = detectSuspects(body);
+  if (smart.broken) for (const s of sus.filter(s => s.broken)) hidden.push({ task: `Check / replace the ${s.part} – customer hints it's broken`, because: [s.quote], part: s.part, smart: "broken" });
+  if (sus.length) out.suspect = sus.map(s => s.part).join(", ");
+  out.hidden = hidden;
+  return out;
+}
+
+// tidy a keyword typed in the rules window: lower case, one kind of apostrophe, single spaces
+function normKeyword(k) { return String(k || "").toLowerCase().replace(/[’`´]/g, "'").replace(/\s+/g, " ").trim(); }
+// keywords this short match too much ("it", "ok") – the rules window warns about them
+const tooShort = k => k.replace(/[^a-z0-9]/g, "").length < 3;
+
+if (typeof module !== "undefined") module.exports = { parseEmail, detectHidden, storyMatch, storyLooks, budgetInObjectives, SMART_DEFAULT, normKeyword, parseComponents, DEFAULT_RULES, RULES_VERSION, OLD_DEFAULT_TASKS, categorize, detectBrands, detectSuspects, detectCables, looksLikeText };

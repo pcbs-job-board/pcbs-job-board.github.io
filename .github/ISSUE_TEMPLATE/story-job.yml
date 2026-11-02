@@ -1,0 +1,31 @@
+name: Story job
+description: A career story job (customer who comes back with a story) that the job board doesn't recognise yet
+title: "Story Quest Report: "
+labels: ["story-job"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks! Reports opened from the app are pre-filled with what was read from the email. Please check the sender and subject are spelled exactly like in the game.
+  - type: input
+    id: email
+    attributes:
+      label: Sender's email address
+      placeholder: e.g. robernator445@alaprofa.net
+  - type: input
+    id: subject
+    attributes:
+      label: Email subject
+      placeholder: e.g. Computer has gone crazy?!
+  - type: input
+    id: sender_name
+    attributes:
+      label: Name the email is signed with
+      placeholder: e.g. Rob
+  - type: textarea
+    id: details
+    attributes:
+      label: Email text, objectives, labour / budget / level
+  - type: input
+    id: app_version
+    attributes:
+      label: App version

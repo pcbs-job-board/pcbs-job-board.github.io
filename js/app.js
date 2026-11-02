@@ -2,18 +2,26 @@
 // ================= state =================
 let jobs = LS.get("pcbs.jobs", []);
 let rules = LS.get("pcbs.rules", null);
-// saved rules from an older version: the default rules are replaced by the current set,
-// rules the user added themselves are kept
+// saved rules from an older version
 if (rules && LS.get("pcbs.rulesVer", 1) < RULES_VERSION) {
-  const defaults = new Set([...OLD_DEFAULT_TASKS, ...DEFAULT_RULES.map(d => d.task)]);
-  rules = [...structuredClone(DEFAULT_RULES), ...rules.filter(r => !defaults.has(r.task))];
+  if (LS.get("pcbs.rulesVer", 1) < 3) {
+    // before the rules table (v3): the old default rules are replaced by the current set, own rules kept
+    const defaults = new Set([...OLD_DEFAULT_TASKS, ...DEFAULT_RULES.map(d => d.task)]);
+    rules = [...structuredClone(DEFAULT_RULES), ...rules.filter(r => !defaults.has(r.task))];
+  } else {
+    // since the rules table the user may have edited the defaults: only add the new words to them
+    for (const d of DEFAULT_RULES) {
+      const r = rules.find(x => x.task === d.task); if (!r) continue; // deleted on purpose → stays deleted
+      for (const k of d.keys) if (!r.keys.includes(k)) r.keys.push(k);
+    }
+  }
   LS.set("pcbs.rules", rules);
 }
 LS.set("pcbs.rulesVer", RULES_VERSION);
 if (!rules) rules = DEFAULT_RULES;
+let smart = Object.assign({}, SMART_DEFAULT, LS.get("pcbs.smart", {})); // built-in detections on/off
 const DEFAULT_CROPS = { email: { x: .5, y: .14, w: .42, h: .68 }, stats: { x: .015, y: .1, w: .265, h: .76 } };
 let crops = LS.get("pcbs.crops", structuredClone(DEFAULT_CROPS));
-let cropLocked = true;
 // v1 → v2 migration: tables can hold only one job each
 (() => { const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); })();
 const save = () => LS.set("pcbs.jobs", jobs);
@@ -49,7 +57,13 @@ function jobCard(j) {
   const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span></div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "";
-  if (j.budget != null) {
+  const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
+  if (j.budget != null && loose) {
+    const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0);
+    budgetHtml = `<div class="budget loose" title="Story job – you can go over the budget and still get full marks">
+      <div class="brow"><span>💰 Budget <small>(story job – can go over)</small></span><b>$${j.budget.toLocaleString()}</b></div>
+      <small>$${spent.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}</small></div>`;
+  } else if (j.budget != null) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0), noPrice = j.swaps.filter(s => swapPrice(s) == null).length;
     const left = j.budget - spent, over = left < 0, pct = j.budget > 0 ? Math.min(100, spent / j.budget * 100) : (spent > 0 ? 100 : 0);
     budgetHtml = `<div class="budget ${over ? "over" : pct >= 85 ? "tight" : ""}">
@@ -58,7 +72,8 @@ function jobCard(j) {
       <small>$${spent.toLocaleString()} of $${j.budget.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}${noPrice ? ` · <span class="warn">${noPrice} without price</span>` : ""}</small></div>`;
   }
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
-  return `<article class="job" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+  return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+    ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>${budgetHtml}
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
@@ -66,7 +81,7 @@ function jobCard(j) {
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}
-      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
+      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
@@ -127,7 +142,7 @@ document.addEventListener("dragend", () => document.querySelectorAll(".drop").fo
 document.addEventListener("drop", e => { const id = e.dataTransfer.getData("job"); const t = dropTarget(e.target); document.querySelectorAll(".drop").forEach(c => c.classList.remove("drop")); if (!t || !id) return; e.preventDefault(); const j = job(id); const n = t.id === "queue" ? 0 : +t.dataset.table; if (n) { if (j.table !== n) moveToTable(j, n); } else j.table = 0; save(); render(); });
 
 let toastTimer;
-function toast(msg, undo) { $("#toastTxt").textContent = msg; $("#toast").style.display = "flex"; $("#toastBtn").style.display = undo ? "" : "none"; $("#toastBtn").onclick = () => { undo(); $("#toast").style.display = "none"; }; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").style.display = "none", 7000); }
+function toast(msg, undo) { const host = [...document.querySelectorAll("dialog")].find(d => d.open) || document.body; if ($("#toast").parentNode !== host) host.append($("#toast")); $("#toastTxt").textContent = msg; $("#toast").style.display = "flex"; $("#toastBtn").style.display = undo ? "" : "none"; $("#toastBtn").onclick = () => { undo(); $("#toast").style.display = "none"; }; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").style.display = "none", 7000); }
 
 // ================= screen capture =================
 let stream = null;
@@ -226,9 +241,11 @@ function openReview(dataUrl, editJob, forJob) {
   if (forJob) { rev.draft.components = structuredClone(forJob.components || []); rev.autoNames = new Set(); }
   $("#revTitle").textContent = editJob ? "Edit job" : forJob ? "Add parts from PC Stats" : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
-  renderForm(); setLock(true); showBlack(false); renderShots(); dlg.showModal();
+  renderForm(); showBlack(false); renderShots(); dlg.showModal();
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
 }
+// a warning under the screenshot with a shortcut to the set-up window – nothing is changed automatically
+function areaWarn(msg) { $("#ocrState").innerHTML = `<div class="areawarn">⚠ ${esc(msg)} <button id="warnAdjust">🎯 Adjust areas</button></div>`; $("#warnAdjust").onclick = adjustArea; }
 function blankDraft() { return { id: uid(), sender: "", subject: "", labour: null, budget: null, level: null, deadline: "", suspect: "", table: 0, tasks: [], swaps: [], components: [], hidden: [], objectives: [] }; }
 function addShot(url, kind) { rev.shots.push({ url, kind, text: "" }); showShot(rev.shots.length - 1, true); }
 function showShot(i, read) {
@@ -270,32 +287,47 @@ async function runOcr() {
   if (!rev || rev.cur < 0) return;
   const sh = rev.shots[rev.cur];
   try {
-    if (sh.kind === "auto") { // pasted screenshot: PC Stats popup or more of the email?
-      const t = await ocr($("#shot"), "parts");
-      sh.kind = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; showShot(rev.cur, false);
+    if (sh.kind === "auto") { // pasted screenshot: PC Stats popup or more of the email? (by colour first – fast)
+      let k = null; try { const im = areaImage($("#shot")); k = detectArea(im, "stats") ? "parts" : detectArea(im, "email") ? "email" : null; } catch { }
+      if (!k) { const t = await ocr($("#shot"), "parts"); k = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; }
+      sh.kind = k; showShot(rev.cur, false);
     }
+    // first capture of this kind: set up the area in the big window first, then read
+    const ak = sh.kind === "parts" ? "stats" : "email";
+    lastFrame[ak] = sh.url;
+    if (!areasSet[ak] && !sh.areaAsked) { sh.areaAsked = true; openAreas(ak, $("#shot"), () => runOcr()); return; }
     const text = await ocr($("#shot"), sh.kind); sh.text = text; sh.conf = lastConf; $("#rawTxt").textContent = text;
+    // career level / % from the HUD – only after the main reading is done, never waited for, errors ignored
+    if (!sh.careerDone) { sh.careerDone = true; setTimeout(() => autoCareer(sh.url).catch(() => { }), 0); }
     if (sh.kind === "parts") {
       const ok = /components|pc for|benchmark/i.test(text);
       sh.parts = ok ? resolvePCStats(text) : null;
       const total = rebuildParts();
       if (!rev.forJob && !rev.draft.sender) { const m = text.match(/PC for\s+(\S+@\S+)/i); if (m && $("#fSender") && !$("#fSender").value) $("#fSender").value = m[1]; }
       const unsure = (sh.parts || []).filter(p => !p.sure).length;
-      $("#ocrState").textContent = ok ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.` : "No PC Stats popup found in the orange box – open it in-game (PC Stats button) and capture again, or adjust the box.";
+      $("#ocrState").textContent = ok ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.` : "";
+      if (!ok) areaWarn("This doesn't look like the PC Stats window. Is it open in-game (PC Stats button)? If it is, the box may be in the wrong place.");
       return;
     }
     syncComps();
     const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => ({ text: s.text, conf: s.conf }));
     const keep = { extra: $("#fExtra")?.value, table: $("#fTable")?.value };
-    const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules);
+    const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules, smart);
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
-    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body });
+    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body, signature: p.signature, noStars: p.noStars, words: p.words });
+    // story job? known from the list (sender email / subject / name) or looks like one (no star requirement, long text)
+    const sm = storyMatch(p, window.STORY_JOBS || []), sl = storyLooks(p);
+    rev.draft.storyKnown = sm ? (sm.entry.story || sm.entry.sender_name || "known story job") : "";
+    rev.draft.storyWhy = sm ? "" : sl.why.join(" · ");
+    if (!rev.storyTouched) rev.draft.story = !!sm || sl.looks;
     renderForm();
     if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;
     if (keep.table && $("#fTable")) $("#fTable").value = keep.table;
     $("#ocrState").textContent = (emails.length > 1 ? `Joined ${emails.length} email screenshots. ` : "") + "Check the fields. Long email? Scroll it in-game and press “📸 Add email capture”. Repair job? Open PC Stats and press “📸 Add PC parts capture”.";
+    // gentle warning: none of the words every job email has
+    if (!/labou?r|budget|objectives|[\w.]+@[\w-]+\.|regards|thanks/i.test(text)) areaWarn("This doesn't look like a job email. Is an email open in-game? If it is, the box may be in the wrong place.");
   } catch (err) { $("#ocrState").textContent = "⚠ " + err.message; }
 }
 function renderForm() {
@@ -310,15 +342,20 @@ function renderForm() {
     const isEdit = !!rev.editJob;
     f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
+      <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
       ${isEdit ? "" : `<label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
-      <label>Hidden objectives found in email</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" checked data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
+      ${storyBanner(d)}
+      <label>Hidden objectives found in email${d.story ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${d.story ? "" : "checked"} data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
       <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}
       <label>Current parts (one per line, “Category: name”)</label><textarea id="fComps" rows="7">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
       ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
       <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
   }
   $("#fSave").onclick = saveReview;
+  // switching "Story job" unticks / ticks the hidden objectives in one go
+  $("#fStory")?.addEventListener("change", e => { rev.storyTouched = true; rev.draft.story = e.target.checked; document.querySelectorAll("#fHidden input").forEach(c => c.checked = !e.target.checked); const b = $("#storyBanner"); if (b) b.outerHTML = storyBanner(rev.draft); bindStoryBanner(); });
+  bindStoryBanner();
   const addPart = () => { const v = $("#fPartAdd").value.trim(); if (!v) return; const m = INDEX.find(p => p.name === v) || matchPart(v); const line = (m ? m.cat + ": " + m.name : categorize(v) + ": " + v); const ta = $("#fComps"); ta.value = (ta.value.trim() ? ta.value.trim() + "\n" : "") + line; $("#fPartAdd").value = ""; };
   $("#fPartAddBtn").onclick = addPart;
   $("#btnCapParts").onclick = capParts;
@@ -331,7 +368,7 @@ function saveReview() {
   comps.forEach(c => rememberPart(c.name, c.cat));
   if (rev.forJob) { job(rev.forJob.id).components = comps; }
   else {
-    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps };
+    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, story: !!$("#fStory")?.checked };
     const table = +$("#fTable").value;
     let target;
     if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }
@@ -351,17 +388,10 @@ function saveReview() {
 // crop drawing
 let mode = "email"; // which crop box the current screenshot uses
 function drawCrops() { for (const k of ["email", "stats"]) { const el = $(k === "email" ? "#cropEmail" : "#cropStats"), r = crops[k]; Object.assign(el.style, { left: r.x * 100 + "%", top: r.y * 100 + "%", width: r.w * 100 + "%", height: r.h * 100 + "%" }); } }
-(() => {
-  const wrap = $("#shotWrap"); let st = null;
-  const pos = e => { const b = wrap.getBoundingClientRect(); return { x: Math.min(1, Math.max(0, (e.clientX - b.left) / b.width)), y: Math.min(1, Math.max(0, (e.clientY - b.top) / b.height)) }; };
-  wrap.addEventListener("pointerdown", e => { if (cropLocked) return; st = pos(e); wrap.setPointerCapture(e.pointerId); e.preventDefault(); });
-  wrap.addEventListener("pointermove", e => { if (!st) return; const p = pos(e); crops[mode] = { x: Math.min(st.x, p.x), y: Math.min(st.y, p.y), w: Math.abs(p.x - st.x), h: Math.abs(p.y - st.y) }; drawCrops(); });
-  wrap.addEventListener("pointerup", () => { if (!st) return; st = null; if (crops[mode].w < .03 || crops[mode].h < .03) { crops = LS.get("pcbs.crops", crops); drawCrops(); return; } LS.set("pcbs.crops", crops); });
-})();
 $("#btnReOcr").onclick = runOcr;
-function setLock(v) { cropLocked = v; $("#btnLock").textContent = v ? "🔒 Locked" : "🔓 Unlocked – drag to set"; $("#shotWrap").classList.toggle("unlocked", !v); }
-$("#btnLock").onclick = () => setLock(!cropLocked);
-$("#btnResetCrop").onclick = () => { if (!confirm("Reset both areas to the default positions?")) return; crops = structuredClone(DEFAULT_CROPS); LS.set("pcbs.crops", crops); drawCrops(); setLock(true); if (rev?.shots.length) runOcr(); };
+// 🎯 Adjust areas: the big set-up window for the screenshot being looked at, then read it again
+function adjustArea() { if (!rev || rev.cur < 0) return; const k = rev.shots[rev.cur].kind === "parts" ? "stats" : "email"; openAreas(k, $("#shot"), ok => { if (ok) runOcr(); }); }
+$("#btnAdjust").onclick = adjustArea;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest("dialog").close());
 $("#dlgReview").addEventListener("close", () => { acEl.hidden = true; document.body.append(acEl); });
 
@@ -371,21 +401,42 @@ const DLC_NO_PARTS = ["Career Power Pack", "Esports Expansion", "NZXT Workshop",
 function changelogUrl() { const r = reportRepo(); return r ? `https://github.com/${r}/blob/main/CHANGELOG.md` : "CHANGELOG.md"; }
 function renderSettings() {
   const m = window.PARTS_META || {};
-  const row = d => { const n = dlcCount(d.key); return `<label class="dlcrow"><input type="checkbox" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}</small></span></label>`; };
+  const row = d => { const n = dlcCount(d.key); return `<label class="dlcrow"><input type="checkbox" class="switch" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}</small></span></label>`; };
   const withParts = DLCS.filter(d => dlcCount(d.key) > 0);
-  $("#dlcList").innerHTML = withParts.filter(d => d.group === "dlc").map(row).join("") || `<p class="hint">None.</p>`;
-  $("#groupList").innerHTML = withParts.filter(d => d.group !== "dlc").map(row).join("");
+  $("#dlcList").innerHTML = withParts.map(row).join("") || `<p class="hint">None.</p>`;
   $("#dlcOther").textContent = "No extra parts (workshops, game modes, music – nothing to switch): " + DLC_NO_PARTS.join(", ") + ".";
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
   $("#appVersion").href = changelogUrl();
-  if (typeof keysOn !== "undefined") { $("#keysToggle").checked = keysOn; $("#keysInSettings").innerHTML = keysHelpHtml(); }
+  if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
-$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
-const rulesToText = r => r.map(x => `${x.task}: ${x.keys.join(", ")}`).join("\n");
-$("#btnRules").onclick = () => { $("#dlgSettings").close(); $("#rulesTxt").value = rulesToText(rules); $("#dlgRules").showModal(); };
+$("#btnKeysFromSettings").onclick = () => { $("#dlgSettings").close(); openKeysHelp(); };
+// career level + % in the top bar; the tooltip says what it does and how many parts are unlocked
+function careerInfo() {
+  const n = INDEX.filter(p => !p.hist).length, ok = INDEX.filter(p => !p.hist && unlocked(p)).length;
+  $("#careerBar").title = "Your career level and % through it (in-game, top right under the stars). Part-swap suggestions only show parts you have unlocked.\n"
+    + (career.level == null ? "Not set – every part is suggested." : `${ok} of ${n} parts unlocked.`);
+  $("#careerBar").classList.toggle("set", career.level != null);
+}
+function showCareer() { $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct; careerInfo(); }
+// typing a level / % saves straight away; empty level = not set
+["#careerLevel", "#careerPct"].forEach(id => $(id).addEventListener("input", () => { setCareer($("#careerLevel").value, $("#careerPct").value); careerInfo(); }));
+// tidy the fields when leaving them (e.g. 150 % → 100), empty % = 0
+$("#careerLevel").addEventListener("change", () => { $("#careerLevel").value = career.level ?? ""; });
+$("#careerPct").addEventListener("change", () => { $("#careerPct").value = career.pct ? career.pct : ""; });
+// factory reset: every saved key of this tool, the screen share, then a fresh start
+$("#btnResetAll").onclick = () => { $("#resetSure").checked = false; $("#resetGo").disabled = true; $("#dlgSettings").close(); $("#dlgReset").showModal(); };
+$("#resetSure").onchange = e => { $("#resetGo").disabled = !e.target.checked; };
+$("#resetGo").onclick = () => {
+  if (!$("#resetSure").checked) return;
+  try { if (stream) stream.getTracks().forEach(t => t.stop()); } catch { }
+  Object.keys(localStorage).filter(k => k.startsWith("pcbs.")).forEach(k => localStorage.removeItem(k));
+  LS.set("pcbs.seenVersion", (window.PCBS_CONFIG || {}).version || ""); // no "what's new" right after a reset
+  location.reload();
+};
+$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); careerInfo(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); careerInfo(); } });
 
 // ================= missing-part reports → GitHub issues =================
 function reportRepo() {
@@ -397,12 +448,13 @@ function openReport(pre = {}) {
   $("#rName").value = pre.name || ""; $("#rCat").value = CATS.includes(pre.cat) && pre.cat !== "Other" ? pre.cat : "";
   $("#rDlc").innerHTML = `<option value="Base game">Base game</option>` + DLCS.map(d => `<option>${esc(d.label)}</option>`).join("") + `<option>Other / not sure</option>`;
   ["#rLevel", "#rPrice", "#rNotes"].forEach(id => $(id).value = "");
-  $("#rRepoHint").textContent = reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
+  const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
+  $("#rDirect").hidden = !direct; $("#rSend").hidden = direct; $("#rCopy").hidden = direct;
+  $("#rRepoHint").textContent = direct ? "" : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
   $("#dlgReport").showModal(); $("#rName").focus();
 }
 function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }
 function reportText(r) { return `Missing part: ${r.name}\nCategory: ${r.cat || "?"}\nContent: ${r.dlc}\nUnlock level: ${r.level || "?"}\nPrice: ${r.price ? "$" + r.price : "?"}\nNotes: ${r.notes || "-"}\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""}, database ${(window.PARTS_META || {}).built || "?"})`; }
-$("#btnReport").onclick = () => openReport();
 $("#rSend").onclick = () => {
   const r = reportData(); if (!r.name) { $("#rName").focus(); return; }
   const repo = reportRepo(); if (!repo) { $("#rCopy").click(); return; }
@@ -411,17 +463,16 @@ $("#rSend").onclick = () => {
   const log = LS.get("pcbs.reports", []); log.unshift({ ...r, at: Date.now() }); LS.set("pcbs.reports", log.slice(0, 100));
   $("#dlgReport").close(); toast("Report opened on GitHub – press “Create” there to submit");
 };
-$("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#rName").focus(); return; } try { await navigator.clipboard.writeText(reportText(r)); toast("Report copied to clipboard"); } catch { prompt("Copy this report:", reportText(r)); } };
-$("#rulesSave").onclick = () => {
-  rules = $("#rulesTxt").value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const i = l.lastIndexOf(":"); return i > 0 ? { task: l.slice(0, i).trim(), keys: l.slice(i + 1).split(",").map(s => s.trim()).filter(Boolean) } : null; }).filter(Boolean);
-  LS.set("pcbs.rules", rules); $("#dlgRules").close(); toast("Rules saved");
+$("#rDirect").onclick = async () => {
+  const r = reportData(); if (!r.name) { $("#rName").focus(); return; }
+  if (await sendReport("part", r, "#rDirect")) { const log = LS.get("pcbs.reports", []); log.unshift({ ...r, at: Date.now() }); LS.set("pcbs.reports", log.slice(0, 100)); $("#dlgReport").close(); }
 };
-$("#rulesReset").onclick = () => { $("#rulesTxt").value = rulesToText(DEFAULT_RULES); };
+$("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#rName").focus(); return; } try { await navigator.clipboard.writeText(reportText(r)); toast("Report copied to clipboard"); } catch { prompt("Copy this report:", reportText(r)); } };
 
 // ================= export / import =================
-$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
+$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion, career }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
-$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.crops) crops = d.crops; if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
+$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.career) { setCareer(d.career.level, d.career.pct); showCareer(); } if (d.dlc) { dlcOn = Object.assign(dlcOn, d.dlc); LS.set("pcbs.dlc", dlcOn); } if (d.gameVersion && typeof setGameVersion === "function") setGameVersion(d.gameVersion); if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); if ($("#dlgSettings").open) renderSettings(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 
 if (!window.PARTS_DB) toast("parts-db.js not found next to this page – part suggestions limited to names you've typed.");
-buildIndex(); initAutocomplete(); render(); setStatus();
+buildIndex(); initAutocomplete(); render(); setStatus(); showCareer();

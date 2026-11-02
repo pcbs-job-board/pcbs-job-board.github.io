@@ -15,6 +15,15 @@ let gameVersion = LS.get("pcbs.gameVersion", "") || LATEST;
 if (!VERSIONS.some(v => v.v === gameVersion)) gameVersion = LATEST;
 function setGameVersion(v) { gameVersion = v; LS.set("pcbs.gameVersion", v === LATEST ? "" : v); buildIndex(); }
 const versionOk = v => !v || !gameVersion || verNum(v) <= verNum(gameVersion);
+// the player's career progress: level + % through it (level null = not set → every part is shown)
+let career = Object.assign({ level: null, pct: 0 }, LS.get("pcbs.career", {}));
+function setCareer(level, pct) {
+  const l = parseInt(level, 10), p = parseInt(pct, 10);
+  career = { level: Number.isFinite(l) && l > 0 ? Math.min(99, l) : null, pct: Number.isFinite(p) ? Math.max(0, Math.min(100, p)) : 0 };
+  LS.set("pcbs.career", career);
+}
+// unlocked at the player's progress? Parts listed at 0–1 % unlock right at the level-up.
+const unlocked = p => career.level == null || p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct);
 const dlcCount = k => Object.values(window.PARTS_DB || {}).reduce((n, rows) => n + rows.filter(r => r[4] === k).length, 0);
 
 // parts the user typed that are not in the database
@@ -25,17 +34,22 @@ let INDEX = [];
 function buildIndex() {
   INDEX = [];
   const db = window.PARTS_DB || {};
-  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver] of db[cat]) {
+  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct] of db[cat]) {
     if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
-    const n = normP(name); INDEX.push({ cat, name, lvl, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
+    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }
 }
-function searchParts(q, cat, limit = 14, brands = []) {
-  const toks = normP(q).split(" ").filter(Boolean); if (!toks.length) return [];
+// buyable = only parts unlocked at the player's career progress (parts to buy for a swap);
+// searchParts.hidden tells how many matches were left out because of that
+function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
+  const toks = normP(q).split(" ").filter(Boolean); searchParts.hidden = 0; if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
-  return INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)))
+  const all = INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
+  const ok = buyable ? all.filter(p => p.hist || unlocked(p)) : all;
+  searchParts.hidden = all.length - ok.length;
+  return ok
     .map(p => ({ p, s: toks.reduce((s, t) => s + (p.w.includes(t) ? 4 : p.w.some(w => w.startsWith(t)) ? 2 : 1), 0) * 10 - p.n.length / 8 + (p.hist ? 6 : 0) - (p.dlc ? 3 : 0) + (brands.some(b => brandMatch(p, b)) ? 15 : 0) }))
     .sort((a, b) => b.s - a.s).slice(0, limit).map(x => x.p);
 }
@@ -62,7 +76,7 @@ function brandCategories(brand) { return [...new Set(INDEX.filter(p => !p.hist &
 function rememberPart(name, cat) {
   if (!name || Object.values(window.PARTS_DB || {}).some(rows => rows.some(r => r[0].toLowerCase() === name.toLowerCase()))) return;
   partsHistory = [{ name, cat }, ...partsHistory.filter(p => p.name.toLowerCase() !== name.toLowerCase())].slice(0, 400);
-  LS.set("pcbs.partsHistory", partsHistory); buildIndex();
+  LS.set("pcbs.partsHistory", partsHistory); buildIndex(); VOCAB = null;
 }
 
 // ---- autocomplete dropdown (any input with data-ac) ----
@@ -72,13 +86,16 @@ function acShow(inp) {
   acInput = inp; const q = inp.value.trim(), cat = acCat(inp);
   if (q.length < 2) { acEl.hidden = true; return; }
   const brands = (inp.closest("[data-brands]")?.dataset.brands || "").split("|").filter(Boolean);
-  acItems = searchParts(q, cat, 14, brands); acSel = 0;
+  const buy = !!inp.closest("[data-swapform]"); // a part to buy → only what the player has unlocked
+  acItems = searchParts(q, cat, 14, brands, buy); acSel = 0;
+  const lockedN = searchParts.hidden;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
-  const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
+  const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl + (p.pct > 1 ? " · " + p.pct + "%" : "") : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
   acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
+    + (lockedN ? `<div class="aclocked">🔒 ${lockedN} more need a higher career level (Lv ${career.level}${career.pct ? " · " + career.pct + "%" : ""} – change it in Settings)</div>` : "")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const host = inp.closest("dialog") || document.body; if (acEl.parentNode !== host) host.append(acEl);
   acEl.hidden = false; acPlace();
@@ -166,14 +183,61 @@ function joinPCStatsLines(lines) {
   for (const l of lines) {
     if (!cur) { cur = l.text; continue; }
     if (l.branded) { items.push(cur); cur = l.text; continue; }
+    if (/^\(/.test(l.text)) { cur += " " + l.text; continue; }   // "(Silver) 16 GB 2800 MHz" continues the name above
     const joined = cur + " " + l.text, sj = sc(joined), sCur = sc(cur), sLine = sc(l.text);
     if (sj >= sCur - 0.02 && sj >= sLine) cur = joined; else { items.push(cur); cur = l.text; }
   }
   if (cur) items.push(cur);
   return items.map(name => ({ name }));
 }
+// The pictures next to each part in PC Stats are read as junk ("oF ae", "4, pov RA nwt mm) PTO").
+// Every word is checked against the words used in real part names (one OCR slip allowed, e.g. "MS!"):
+// junk at the start / end of a line is cut off, lines that are mostly junk are dropped.
+let VOCAB = null;
+function partVocab() {
+  if (VOCAB) return VOCAB;
+  VOCAB = new Set();
+  const names = [...Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => r[0])), ...partsHistory.map(p => p.name)];
+  for (const name of names) for (const t of normP(name).split(" ")) if (t.length >= 2) VOCAB.add(t);
+  return VOCAB;
+}
+const near1 = (a, b) => { // edit distance ≤ 1
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, e = 0;
+  while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++e > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+  return e + (a.length - i) + (b.length - j) <= 1;
+};
+function wordOk(tok) {
+  const t = normP(tok).replace(/ /g, ""), v = partVocab();
+  if (!t) return false;
+  if (v.has(t)) return true;
+  if (/\d/.test(t) && /[a-z0-9]{3,}/.test(t)) return true;           // model numbers: 1500X, 2370-PRO, i7-8086K
+  // one OCR slip: words of 4+ letters, or short ones with a symbol in them ("MS!" → MSI) – not "pto" → "pro"
+  if (t.length >= 4 || (t.length === 3 && /[^a-z0-9]/.test(t))) for (const w of v) if (w.length >= 3 && near1(t, w)) return true;
+  return false;
+}
+// sizes read with letters for digits: "SOOGB" → 500GB, "1TB", "I6 GB"
+const fixSize = t => /^[\dOoSsIl]{1,5}(gb|tb|mhz|mm|w)$/i.test(t) && /\d/.test(t.replace(/[Ss]/g, "5").replace(/[Oo]/g, "0")) ? t.replace(/^[\dOoSsIl]+/, m => m.replace(/[Oo]/g, "0").replace(/[Ss]/g, "5").replace(/[Il]/g, "1")) : t;
+function denoisePartLines(lines) {
+  const out = [];
+  for (const l of lines) {
+    const toks = l.text.split(/\s+/).filter(Boolean).map(fixSize), good = toks.map(wordOk);
+    // at the ends, 1–2 letter bits ("Se", "a") are picture crumbs even when they happen to be real words
+    const edgeOk = i => good[i] && !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
+    let a = 0, z = toks.length - 1;
+    while (a <= z && !edgeOk(a)) a++;
+    while (z >= a && !edgeOk(z) && !/^\(?[a-z]+\)$/i.test(toks[z]) && !/^logo\)?$/i.test(toks[z])) z--;
+    if (a > z) continue;
+    const keep = toks.slice(a, z + 1), kg = good.slice(a, z + 1), n = kg.filter(Boolean).length;
+    if (n / keep.length < 0.6) continue;
+    // a line of bare numbers ("109°)") is picture noise; a wrapped model number like "1500X" mixes letters and digits
+    if (!keep.some(t => /[a-z]{2,}/i.test(t) || (/\d/.test(t) && /[a-z]/i.test(t)))) continue;
+    out.push({ ...l, text: keep.join(" ") });
+  }
+  return out;
+}
 function resolvePCStats(items) {
-  if (typeof items === "string") items = joinPCStatsLines(componentLines(items));
+  if (typeof items === "string") items = joinPCStatsLines(denoisePartLines(componentLines(items)));
   const out = [], count = {};
   let lastIdx = -1;
   for (const it of items) {

@@ -17,7 +17,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 - ⌨ Keyboard shortcuts – press `?` in the app for the list
 
 ## Privacy
-Everything you create — jobs, rules, settings — is stored **only in your browser** (`localStorage`). Nothing is sent to GitHub or anywhere else. Screen captures are processed locally and never uploaded. The only network requests are loading the page, the parts list, and the OCR engine. Use **Export / Import** for backups or to move to another browser.
+Everything you create — jobs, rules, settings — is stored **only in your browser** (`localStorage`). Nothing is sent to GitHub or anywhere else. Screen captures are processed locally and never uploaded. The only network requests are loading the page, the parts list, and the OCR engine. Use **Settings → Export / Import backup** for backups or to move to another browser.
 
 ## Repository layout
 ```
@@ -28,23 +28,36 @@ js/util.js                 shared helpers
 js/parser.js               email / PC Stats text parsing, hidden-objective rules
 js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
+js/rules.js                hidden-objective rules window
+js/areas.js                finds the email / PC Stats windows, screen-area set-up
+js/story.js                story jobs: banner in the new-job window, story job reports
+js/notify.js               🔔 update notifications (new version / what's new)
 js/keys.js                 keyboard shortcuts
 data/parts/*.csv           parts list – one file per category (source of truth)
 data/dlc.csv               DLC / part groups (key, label, group, default on/off)
 data/versions.csv          game versions shown in Settings
+data/story-jobs.csv        known career story jobs (sender, email, subject)
 data/parts-db.js           GENERATED from the CSVs – don't edit by hand
 tools/build_db.py          CSV → data/parts-db.js
 tools/import_xlsx.py       community workbook → CSVs
+tools/bump_version.py      sets the version in js/config.js and the ?v= tags in index.html
+tools/report-endpoint.gs   Google Apps Script that receives reports (Sheet + email)
 .github/ISSUE_TEMPLATE/    missing-part and bug report forms
 .github/workflows/         rebuilds parts-db.js when CSVs change
 ```
 
 ## Adding / fixing parts
-1. Edit the right CSV in `data/parts/` (columns: `name, level, price, spec, dlc, version, source`). For a reported part, put `report #<issue number>` in `source`.
+1. Edit the right CSV in `data/parts/` (columns: `name, level, level_pct, price, spec, dlc, version, source` – `level_pct` is how far into that career level the part unlocks). For a reported part, put `report #<issue number>` in `source`.
 2. Commit. The **Build parts database** workflow regenerates `data/parts-db.js` automatically (or run `python tools/build_db.py` yourself).
 3. Close the issue.
 
 New content pack: add a row to `data/dlc.csv` and use its `key` in the `dlc` column.
+
+## Adding story jobs
+Career story customers (long emails, no star requirement, no hidden objectives) are listed in `data/story-jobs.csv` – columns `sender_name, email, subject, story, note, source`. Any one of sender email or subject marks a job as a story job; the name only counts when the email also looks like a story job (random customers sign with first names too). Reports arrive through the report inbox (below) or as GitHub issues labelled `story-job`.
+
+## Report inbox (no account needed for players)
+`tools/report-endpoint.gs` is a small Google Apps Script: it adds every story job / missing part report to a Google Sheet and emails the owner "Story Quest Report #N" / "Missing Part Report #N". The set-up steps are at the top of the file; put the web app URL in `js/config.js` → `reportEndpoint`. The owner's email address is never part of the website. Commit the CSV and the workflow rebuilds `data/parts-db.js`.
 
 Updating from a newer community workbook:
 ```

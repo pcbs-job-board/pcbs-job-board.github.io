@@ -4,10 +4,10 @@ into data/parts/*.csv, then run tools/build_db.py.
 
 Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
 
-* Parts with "Platform Lock" = PC (added in PC updates, usually missing on console)
-  get dlc = "pc_only". The 4 Overclocked Edition cases get "overclocked", other
-  "Is DLC" = Y cases get "promo_cases". "Steam Version" goes to the version column.
-  Parts flagged "HEM" get dlc = "hem".
+* The 4 Overclocked Edition cases get dlc = "overclocked", other "Is DLC" = Y cases get
+  "promo_cases", parts flagged "HEM" get "hem". "Steam Version" goes to the version column.
+* "Level" and "Level %" (how far into that career level the part unlocks) go to
+  level / level_pct.
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
 
@@ -18,7 +18,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "price", "spec", "dlc", "version", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -80,7 +80,7 @@ def main():
             note = "" if s(r.get("In Shop")) == "Y" else "not in shop"
             sp = spec(r)
             out.setdefault(fn, []).append({
-                "name": name, "level": s(r.get("Level")), "price": s(r.get("Price")),
+                "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
                 "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():

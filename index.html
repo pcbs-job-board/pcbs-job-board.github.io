@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PCBS Job Board</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0.9.0">
 </head>
 <body>
 <header>
@@ -17,12 +17,18 @@
   <button class="primary big" id="btnCapture">📸 Capture job</button>
   <button id="btnManual">＋ Manual job</button>
   <div class="spacer"></div>
-  <button id="btnReport" title="Tell us about a part that is missing from the suggestions">🚩 Report part</button>
+  <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
+  <div class="careerbar" id="careerBar">
+    <span class="cbl">Career</span>
+    <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level"></label>
+    <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level">%</label>
+  </div>
+  <div class="notify" id="notify" hidden>
+    <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
+    <div class="notipanel" id="notiPanel" hidden></div>
+  </div>
   <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
   <button id="btnSettings">⚙️ Settings</button>
-  <button id="btnExport" title="Save a backup file of all jobs and settings">⬇ Export</button>
-  <button id="btnImport" title="Load a backup file">⬆ Import</button>
-  <input type="file" id="importFile" accept=".json" hidden>
 </header>
 
 <main>
@@ -50,9 +56,9 @@
         <div class="ctrls">
           <div class="seg" id="shotTabs"></div>
           <span class="spacer"></span>
-          <button id="btnLock">🔒 Locked</button><button id="btnResetCrop">↺ Reset areas</button><button id="btnReOcr">↻ Read again</button>
+          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button><button id="btnReOcr">↻ Read again</button>
         </div>
-        <p class="hint"><span id="areaHint"></span> Click <b>🔒 Locked</b> to unlock before drawing a new box.</p>
+        <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
         <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
         <div id="shotWrap"><img id="shot" alt="capture"><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
         <div class="progress"><div id="prog"></div></div>
@@ -69,22 +75,54 @@
 <dialog id="dlgSettings" style="max-width:660px">
   <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
-    <h4 class="sub">Game version</h4>
-    <select id="gameVersion" style="width:100%"></select>
-    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
-    <h4 class="sub">DLC with extra parts</h4>
-    <div id="dlcList"></div>
-    <p class="hint" id="dlcOther"></p>
-    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
-    <h4 class="sub">Other part groups</h4>
-    <div id="groupList"></div>
-    <p class="hint" id="dbInfo"></p>
-    <h4 class="sub">Keyboard</h4>
-    <label class="dlcrow"><input type="checkbox" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
-    <details class="keyslist"><summary>Show all shortcuts</summary><div id="keysInSettings"></div></details>
     <h4 class="sub">Hidden objectives</h4>
     <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
     <button id="btnRules">Edit keyword rules…</button>
+    <h4 class="sub">Screen areas</h4>
+    <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
+    <div id="areaStatus" class="areastatus"></div>
+    <h4 class="sub">Keyboard</h4>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
+    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+    <h4 class="sub">DLC &amp; promo parts</h4>
+    <div id="dlcList"></div>
+    <p class="hint" id="dlcOther"></p>
+    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
+    <h4 class="sub">Game version</h4>
+    <select id="gameVersion" style="width:100%"></select>
+    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
+    <p class="hint" id="dbInfo"></p>
+    <h4 class="sub">Backup</h4>
+    <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
+    <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
+    <input type="file" id="importFile" accept=".json" hidden>
+    <h4 class="sub danger">Reset</h4>
+    <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
+    <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
+  </div>
+</dialog>
+
+<!-- Story job report -->
+<dialog id="dlgStory" style="max-width:600px">
+  <div class="dlg-h"><h3>📖 Report a story job</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b form">
+    <p class="hint">Story jobs come from career story customers – they come back, write long emails and have no hidden objectives. Reported ones are added to the list, so the board recognises them for everyone. Any one of these is enough:</p>
+    <label>Sender's email address</label><input id="sEmail" placeholder="e.g. robernator445@alaprofa.net">
+    <div class="grid2"><div><label>Email subject</label><input id="sSubject" placeholder="e.g. Computer has gone crazy?!"></div><div><label>Signed with the name</label><input id="sName" placeholder="e.g. Rob"></div></div>
+    <label>Email text, objectives, labour / budget (optional)</label><textarea id="sDetails" rows="6"></textarea>
+    <p class="hint" id="sRepoHint"></p>
+    <div class="btnrow"><button class="primary" id="sDirect">📨 Send report</button><button class="primary" id="sGitHub">Open report on GitHub</button><button id="sCopy">Copy report</button></div>
+  </div>
+</dialog>
+
+<!-- Reset confirmation -->
+<dialog id="dlgReset" style="max-width:460px">
+  <div class="dlg-h"><h3>🗑 Reset all data?</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <p>This deletes <b>all jobs</b>, your keyword rules and every setting, forgets the screen areas and disconnects the screen.</p>
+    <p class="warnbox">It can't be undone. If you might want your jobs back, press <b>Export backup</b> first.</p>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="resetSure"><span><b>Yes, I want to delete everything</b></span></label>
+    <div class="btnrow"><button class="danger solid" id="resetGo" disabled>Delete everything</button><span class="spacer"></span><button data-close autofocus>Cancel</button></div>
   </div>
 </dialog>
 
@@ -97,7 +135,7 @@
     <div class="grid2"><div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1"></div><div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0"></div></div>
     <label>Notes</label><textarea id="rNotes" rows="3" placeholder="Where did you see it? Shop, PC Bay, customer PC…"></textarea>
     <p class="hint" id="rRepoHint"></p>
-    <div style="display:flex;gap:8px"><button class="primary" id="rSend" style="flex:1">Open report on GitHub</button><button id="rCopy">Copy report</button></div>
+    <div class="btnrow"><button class="primary" id="rDirect">📨 Send report</button><button class="primary" id="rSend">Open report on GitHub</button><button id="rCopy">Copy report</button></div>
   </div>
 </dialog>
 
@@ -107,22 +145,42 @@
   <div class="dlg-b" id="keysBody"></div>
 </dialog>
 
-<!-- Rules dialog -->
-<dialog id="dlgRules" style="max-width:760px">
-  <div class="dlg-h"><h3>Hidden-objective keyword rules</h3><button class="ghost" data-close>✕</button></div>
+<!-- Screen area set-up -->
+<dialog id="dlgAreas" class="areasdlg">
+  <div class="dlg-h"><h3 id="areaTitle">🎯 Set up screen area</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
-    <p class="hint">One rule per line: <code>Task to add: keyword, keyword, keyword</code>. If any keyword appears in the email text (not case-sensitive), the task is suggested. Cable colour requests (“plain red”, “braided dark gray”) and “saw … cables on PC Bay” are detected automatically and don't need a rule.</p>
-    <textarea class="rules" id="rulesTxt"></textarea>
-    <div style="display:flex;gap:8px;margin-top:10px"><button class="primary" id="rulesSave">Save rules</button><button id="rulesReset">Reset to defaults</button></div>
+    <div id="areaMsg" class="areamsg"></div>
+    <div id="areaWrap"><img id="areaImg" alt="screenshot"><div id="areaBox" hidden><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i><i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i></div></div>
+    <p class="hint">Drag the box to move it, drag its corners or edges to resize it, or drag anywhere else on the picture to draw a new one.</p>
+    <div class="areabtns"><button class="primary big" id="areaUse">✓ Use this area</button><button id="areaRedetect">↻ Detect again</button><button id="areaDraw">✎ Draw it myself</button><span class="spacer"></span><button data-close>Skip for now</button></div>
   </div>
 </dialog>
 
-<script src="js/config.js"></script>
-<script src="js/util.js"></script>
-<script src="data/parts-db.js"></script>
-<script src="js/parser.js"></script>
-<script src="js/parts.js"></script>
-<script src="js/app.js"></script>
-<script src="js/keys.js"></script>
+<!-- Rules dialog -->
+<dialog id="dlgRules" class="rulesdlg">
+  <div class="dlg-h"><h3>🔍 Hidden objectives – when to suggest them</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <p class="hint">When an email contains one of the words in the green column, the objective on the left is suggested. Words in the red column stop that (e.g. <i>clean install</i> is not about dust). Type a word and press <kbd>Enter</kbd> to add it, click <b>×</b> to remove it. Changes are saved straight away.</p>
+    <div class="rtable" id="rulesTable"></div>
+    <div class="rbtns"><button class="primary" id="ruleAdd">＋ Add objective</button><span class="spacer"></span><button id="rulesReset">↺ Reset all to defaults</button></div>
+    <h4 class="sub">Automatic detections</h4>
+    <div id="smartList" class="smartlist"></div>
+    <h4 class="sub">🔎 Try it</h4>
+    <textarea id="ruleTry" rows="2" placeholder="Type or paste a sentence from an email, e.g. “My PC lives on the floor and it's really slow”"></textarea>
+    <div id="ruleTryOut" class="tryout"></div>
+  </div>
+</dialog>
+
+<script src="js/config.js?v=0.9.0"></script>
+<script src="js/util.js?v=0.9.0"></script>
+<script src="data/parts-db.js?v=0.9.0"></script>
+<script src="js/parser.js?v=0.9.0"></script>
+<script src="js/parts.js?v=0.9.0"></script>
+<script src="js/app.js?v=0.9.0"></script>
+<script src="js/rules.js?v=0.9.0"></script>
+<script src="js/areas.js?v=0.9.0"></script>
+<script src="js/story.js?v=0.9.0"></script>
+<script src="js/notify.js?v=0.9.0"></script>
+<script src="js/keys.js?v=0.9.0"></script>
 </body>
 </html>
