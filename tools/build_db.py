@@ -4,7 +4,7 @@
 Usage:  python tools/build_db.py          (from the repository root)
 
 Each CSV in data/parts/ has the columns:
-    name, level, level_pct, price, spec, dlc, version, jobs, details, power, source
+    name, level, level_pct, price, spec, dlc, version, jobs, details, power, compat, source
   - name   : exact in-game part name (required)
   - level  : unlock level (number, may be empty)
   - level_pct: how far into that level the part unlocks, 0-100 (may be empty)
@@ -17,6 +17,7 @@ Each CSV in data/parts/ has the columns:
   - details: longer facts shown under the part in suggestions and on swaps
              (board sizes, GPU length, socket, RAM, cores, watts, SLI/CrossFire, lighting...)
   - power  : CPU / GPU "watts>max watts when overclocked", PSU "watts" (power check)
+  - compat : what other parts must fit, "key=value;…" (see tools/import_xlsx.py COMPAT)
   - source : where the row came from (calculator, wiki, report #12, ...)
 
 The output is a plain <script> file (not JSON) so the app also works when
@@ -86,8 +87,8 @@ def main():
                     errors.append(f"{f.name}:{i} unknown version '{ver}' (add it to data/versions.csv)")
                 row = [name, num(r.get("level")), num(r.get("price")), (r.get("spec") or "").strip(), dlc, ver, num(r.get("level_pct"))]
                 # optional extras, only written when there is something: [8] 1 = never in random jobs, [9] details
-                nj, det, pw = 1 if (r.get("jobs") or "").strip().lower() == "no" else 0, (r.get("details") or "").strip(), (r.get("power") or "").strip()
-                extra = [nj, det, pw]                       # [7] never in random jobs, [8] details, [9] power
+                nj, det, pw, cp = 1 if (r.get("jobs") or "").strip().lower() == "no" else 0, (r.get("details") or "").strip(), (r.get("power") or "").strip(), (r.get("compat") or "").strip()
+                extra = [nj, det, pw, cp]                   # [7] never in random jobs, [8] details, [9] power, [10] compat
                 while extra and not extra[-1]:
                     extra.pop()
                 row += extra

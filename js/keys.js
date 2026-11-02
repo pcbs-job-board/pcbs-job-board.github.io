@@ -13,7 +13,7 @@ const KEYMAP = [
     ["D", "Job completed (Undo stays available)"]] },
   { group: "Inside a card", keys: [
     ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
-    ["Space / Enter", "Tick the box · press the button"], ["Esc", "Back to choosing jobs"]] },
+    ["Space / Enter", "Tick the box · press the button"], ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"], ["Esc", "Back to choosing jobs"]] },
   { group: "New job window", keys: [
     ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"], ["Alt + A", "🎯 Adjust areas"]] },
   { group: "Screen area window", keys: [["Ctrl + Enter", "✓ Use this area"], ["Esc", "Skip for now"]] },
@@ -144,6 +144,11 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (anyDlg) return;
+  // Alt + ↑ / ↓ on a part swap: change its place in the list (its compatibility priority)
+  if (e.altKey && !e.ctrlKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+    const sw = t.closest?.(".swap"), j2 = sw && jobs.find(x => x.id === sw.closest(".job").dataset.job);
+    if (j2) { e.preventDefault(); const i = j2.swaps.findIndex(s => s.id === sw.dataset.swap); moveSwap(j2, sw.dataset.swap, i + (e.key === "ArrowUp" ? -1 : 1)); return; }
+  }
   if (!e.ctrlKey && !e.metaKey && !e.altKey && inCardKey(e)) return;
   if (typing(t)) {
     if (e.key === "Escape" && !document.querySelector("#ac:not([hidden])")) { const card = t.closest(".job"); t.blur(); if (card) selectCard(card); }

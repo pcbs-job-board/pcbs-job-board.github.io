@@ -11,6 +11,7 @@ Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
 * "details": the facts shown under a part in the suggestions and on part swaps (DETAILS below):
   case board sizes / GPU length / fans, socket, RAM, cores, clock, watts, SLI/CrossFire, lighting.
 * "power" (POWER below): CPU / GPU "watts>watts when overclocked to the max", PSU "watts" – for the power check.
+* "compat" (COMPAT below): what other parts must fit – "key=value;…" (sizes, sockets, slots, lengths, SLI/CrossFire).
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
 
@@ -21,7 +22,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "compat", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -122,6 +123,31 @@ def gpu_power(r):  # "GPU % Power Increase" = how far the power limit can be rai
     return "" if not w else f"{w:g}>{round(w * (1 + (pct or 0) / 100))}"
 POWER = {"CPUs": cpu_power, "GPUs": gpu_power, "Power Supplies": lambda r: s(r.get("Wattage"))}
 
+# ---------- "compat" column (key=value;key=value) ----------
+BCODE = {"Mini-ITX": "ITX", "Micro-ATX": "mATX", "S-ATX": "ATX", "E-ATX": "EATX", "XL-ATX": "XL", "SSI-EEB": "EEB"}
+def kv(**d): return ";".join(f"{k}={v}" for k, v in d.items() if v not in ("", None))
+def n(v):
+    x = num(v); return "" if x is None else f"{x:g}"
+def sock_list(v): return "|".join(x.strip() for x in s(v).split(",") if x.strip())
+def rad(size, slots):  # 240 mm in 2 slots → "120x2"
+    sz, sl = num(size), num(slots)
+    return f"{int(sz / sl)}x{int(sl)}" if sz and sl else ""
+COMPAT = {
+    "Cases": lambda r: kv(b=",".join(c for k, c in BCODE.items() if s(r.get(k)) == "Y"), p=",".join(x for x in ("ATX", "SFX") if s(r.get(f"PSU {x}")) == "Y"),
+                          pl=n(r.get("Max PSU length")), g=n(r.get("Max GPU length")), h=n(r.get("Max CPU Fan Height")), r120=n(r.get("Max 120mm Radiators")), r140=n(r.get("Max 140mm Radiators")),
+                          open="1" if s(r.get("Is Open Bench")) == "Y" else ""),
+    "Motherboards": lambda r: kv(s=s(r.get("CPU Socket")), f=BCODE.get(s(r.get("Size")), s(r.get("Size"))), ram=n(r.get("RAM Slots")), m2=n(r.get("M.2 Slots")), sata=n(r.get("SATA Slots Usable")),
+                                 sli="1" if s(r.get("Support SLI")) == "Y" else "", cf="1" if s(r.get("Support CrossFire")) == "Y" else "", ds=n(r.get("Dual GPU Max Slot Size")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0"),
+    "CPUs": lambda r: kv(s=s(r.get("Socket")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0"),
+    "CPU Coolers": lambda r: kv(ss=sock_list(r.get("CPU Socket List")), h=n(r.get("Height")) if "Air" in s(r.get("Type")) else "", r=rad(r.get("Size"), r.get("Slots")) if "Liquid" in s(r.get("Type")) else ""),
+    "WC CPU Blocks": lambda r: kv(ss=sock_list(r.get("CPU Socket List"))),
+    "WC Radiators": lambda r: kv(r=rad(r.get("Size"), r.get("Slots"))),
+    "GPUs": lambda r: kv(l=n(r.get("Length")), m=s(r.get("Multi-GPU")), c=s(r.get("Chipset")), sl=n(r.get("Slot Size"))),
+    "Power Supplies": lambda r: kv(f=s(r.get("Size")), l=n(r.get("Length"))),
+    "Storage": lambda r: kv(t="m2" if s(r.get("Type")) == "M.2" else "sata"),
+    "Case Fans": lambda r: kv(z=n(r.get("Size"))),
+}
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -147,7 +173,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "compat": COMPAT.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

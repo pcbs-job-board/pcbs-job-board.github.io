@@ -336,3 +336,18 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .power.tight{border-color:var(--warn);background:#2a2412}.power.tight .bar i{background:var(--warn)}
 .power.over{background:#3a1416;border:2px solid var(--bad);box-shadow:0 0 12px #ef535033}.power.over .brow{color:#ffb0ae}.power.over .brow b{color:#ff8a87}.power.over .bar i{background:var(--bad)}.power.over small{color:#e3a3a1}
 .power.unknown{color:var(--muted)}
+
+/* compatibility: suggestions that don't fit, clashes on the card, swap order */
+.ac div span .cwarn{display:block;font-style:normal;font-size:11px;color:var(--warn);margin-top:2px;line-height:1.35}
+.compat{margin:6px 0 4px;padding:7px 10px;border-radius:7px;background:#2e1a12;border:1px solid var(--warn);font-size:12px}
+.compat>b{color:#ffcf8a;font-size:12px}
+.compat ul{margin:4px 0 2px;padding-left:16px}.compat li{margin:3px 0;line-height:1.4}
+.compat li em{font-style:normal;color:var(--muted);font-size:11px}
+.compat li small{display:block;color:var(--muted);font-size:11px}
+.compat .cpart{color:#ffd3a8;font-weight:600}
+.compat .chint{color:var(--muted);font-size:11px}
+.swap .grip{cursor:grab;color:var(--muted);font-size:13px;line-height:1;padding:2px 1px;margin:1px -2px 0 -3px;user-select:none;opacity:.55}
+.swap:hover .grip{opacity:1}
+.swap.clash{border-color:var(--warn)}
+.swap.dragging{opacity:.4}
+.swap.dropbefore{box-shadow:0 -3px 0 var(--accent)}.swap.dropafter{box-shadow:0 3px 0 var(--accent)}

@@ -87,14 +87,17 @@ function acShow(inp) {
   if (q.length < 2) { acEl.hidden = true; return; }
   const brands = (inp.closest("[data-brands]")?.dataset.brands || "").split("|").filter(Boolean);
   const buy = !!inp.closest("[data-swapform]"); // a part to buy → only what the player has unlocked
-  acItems = searchParts(q, cat, 14, brands, buy); acSel = 0;
+  acItems = searchParts(q, cat, buy ? 30 : 14, brands, buy); acSel = 0;
+  // planning a swap: parts that fit the planned PC first, the others with a warning
+  const form = inp.closest("[data-swapform]"), job = form && jobs.find(j => j.id === form.dataset.swapform);
+  if (job && typeof compatRank === "function") { const o = form.querySelector('[data-f="old"]').value; acItems = compatRank(job, job.components[o]?.name || null, acItems).slice(0, 14); }
   const lockedN = searchParts.hidden;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
   const info = p => p.hist ? "typed before" : [p.det ? "" : p.spec, p.lvl != null ? "Lv " + p.lvl + (p.pct > 1 ? " · " + p.pct + "%" : "") : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
-  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}${p.det ? `<i class="det">${esc(p.det)}</i>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
+  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}${p.det ? `<i class="det">${esc(p.det)}</i>` : ""}${p.warn?.length ? `<i class="cwarn">⚠ ${esc(p.warn.join(" · "))}</i>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
     + (lockedN ? `<div class="aclocked">🔒 ${lockedN} more need a higher career level (Lv ${career.level}${career.pct ? " · " + career.pct + "%" : ""} – change it in Settings)</div>` : "")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const host = inp.closest("dialog") || document.body; if (acEl.parentNode !== host) host.append(acEl);

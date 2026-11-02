@@ -49,6 +49,19 @@ function powerHtml(j) {
     <div class="bar"><i style="width:${pct}%"></i></div>
     <small>${what ? what + " + " : ""}~${POWER_OTHER} W for the rest${pc.unknown.length ? ` · <span class="warn">${pc.unknown.length} part${pc.unknown.length > 1 ? "s" : ""} without watts</span>` : ""}${over ? ` · needs a PSU of at least <b>${w(Math.ceil(use / 50) * 50)}</b>` : ""}${ocOver ? ` · <span class="warn">too weak when overclocked (~${w(pc.oc)})</span>` : !pc.ocWanted && pc.oc > pc.stock ? ` · overclocked ~${w(pc.oc)}` : ""}</small></div>`;
 }
+// 🔧 parts that don't fit together – only shown when there is a clash with a planned swap / required part
+function compatHtml(clashes) {
+  if (!clashes.length) return "";
+  const tag = p => p.req ? " <em>(job requirement)</em>" : p.src === "stats" ? " <em>(customer's part)</em>" : "";
+  return `<div class="compat"><b>⚠️ Parts that don't fit together</b><ul>${clashes.map(c => `<li><span class="cpart">${esc(c.part.cat)}: ${esc(c.part.name)}</span>${tag(c.part)} – ${esc(c.msg)}<small>with ${esc(c.other.cat)}: ${esc(c.other.name)}${tag(c.other)}</small></li>`).join("")}</ul>
+    <small class="chint">Higher in the swap list wins – drag ⠿ (or Alt + ↑ ↓) to change the order.</small></div>`;
+}
+// change the order of a job's part swaps (it decides which part "wins" when two don't fit together)
+function moveSwap(j, id, to) {
+  const i = j.swaps.findIndex(s => s.id === id); if (i < 0) return;
+  const k = Math.max(0, Math.min(j.swaps.length - 1, to)); if (k === i) return;
+  const [s] = j.swaps.splice(i, 1); j.swaps.splice(k, 0, s); save(); render();
+}
 function render() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
     const j = jobs.find(j => j.table === n);
@@ -68,7 +81,8 @@ function jobCard(j) {
   const mainHtml = main.length ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li>${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>` : "";
   const foundHtml = found.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}</span>${del(k)}</div>`).join("");
   const swapPrice = s => s.price ?? priceOf(s.new);
-  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
+  const clashes = jobCompatIssues(j), bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
+  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true">⠿</span><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "";
   const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
@@ -94,7 +108,7 @@ function jobCard(j) {
     ${hidHtml}${mainHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
-    <div class="sec"><h4>Part swaps</h4>${powerHtml(j)}${swaps}
+    <div class="sec"><h4>Part swaps</h4>${powerHtml(j)}${swaps}${compatHtml(clashes)}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
@@ -150,7 +164,29 @@ document.addEventListener("keydown", e => {
 });
 // drag & drop: onto a table slot or back to open jobs
 const dropTarget = el => el.closest?.(".slot") || el.closest?.("#queue");
-document.addEventListener("dragstart", e => { const c = e.target.closest?.(".job"); if (c) e.dataTransfer.setData("job", c.dataset.job); });
+document.addEventListener("dragstart", e => {
+  const g = e.target.closest?.(".grip");
+  if (g) { const sw = g.closest(".swap"); e.dataTransfer.setData("swap", sw.dataset.swap); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setDragImage(sw, 12, 12); sw.classList.add("dragging"); return; }
+  const c = e.target.closest?.(".job"); if (c) e.dataTransfer.setData("job", c.dataset.job);
+});
+// swap rows: drop above / below another swap of the same job
+const swapDrop = e => { const row = e.target.closest?.(".swap"); if (!row) return null; const r = row.getBoundingClientRect(); return { row, after: e.clientY > r.top + r.height / 2 }; };
+document.addEventListener("dragover", e => {
+  if (!e.dataTransfer.types.includes("swap")) return;
+  const d = swapDrop(e), src = document.querySelector(".swap.dragging");
+  document.querySelectorAll(".swap.dropbefore,.swap.dropafter").forEach(x => x.classList.remove("dropbefore", "dropafter"));
+  if (!d || !src || d.row.closest(".job") !== src.closest(".job")) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = "move"; d.row.classList.add(d.after ? "dropafter" : "dropbefore");
+});
+document.addEventListener("drop", e => {
+  if (!e.dataTransfer.types.includes("swap")) return;
+  e.preventDefault(); const id = e.dataTransfer.getData("swap"), d = swapDrop(e);
+  document.querySelectorAll(".swap.dropbefore,.swap.dropafter,.swap.dragging").forEach(x => x.classList.remove("dropbefore", "dropafter", "dragging"));
+  if (!d) return; const j = jobs.find(x => x.id === d.row.closest(".job").dataset.job); if (!j) return;
+  const from = j.swaps.findIndex(s => s.id === id), at = j.swaps.findIndex(s => s.id === d.row.dataset.swap); if (from < 0 || at < 0) return;
+  moveSwap(j, id, at + (d.after ? 1 : 0) - (from < at + (d.after ? 1 : 0) ? 1 : 0));
+});
+document.addEventListener("dragend", () => document.querySelectorAll(".swap.dragging,.swap.dropbefore,.swap.dropafter").forEach(x => x.classList.remove("dragging", "dropbefore", "dropafter")));
 document.addEventListener("dragover", e => { if (!e.dataTransfer.types.includes("job")) return; const t = dropTarget(e.target); document.querySelectorAll(".slot,#queue").forEach(c => c.classList.toggle("drop", c === t)); if (t) e.preventDefault(); });
 document.addEventListener("dragend", () => document.querySelectorAll(".drop").forEach(c => c.classList.remove("drop")));
 document.addEventListener("drop", e => { const id = e.dataTransfer.getData("job"); const t = dropTarget(e.target); document.querySelectorAll(".drop").forEach(c => c.classList.remove("drop")); if (!t || !id) return; e.preventDefault(); const j = job(id); const n = t.id === "queue" ? 0 : +t.dataset.table; if (n) { if (j.table !== n) moveToTable(j, n); } else j.table = 0; save(); render(); });

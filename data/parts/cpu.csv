@@ -1,127 +1,127 @@
-name,level,level_pct,price,spec,dlc,version,jobs,details,power,source
-AMD Ryzen 3 Quad Core 1200,3,1,140,AM4 OC,,1.0,,AM4 · 4 cores · 3.4 GHz · 65 W · unlocked (OC),65>116,xlsx v1.15.3
-AMD Ryzen 3 Quad Core 1300X,3,25,150,AM4 OC,,1.0,,AM4 · 4 cores · 3.7 GHz · 65 W · unlocked (OC),65>100,xlsx v1.15.3
-AMD Ryzen 3 Quad Core 3100,32,1,280,AM4 OC,,1.9,,AM4 · 4 cores · 3.9 GHz · 65 W · unlocked (OC),65>117,xlsx v1.15.3
-AMD Ryzen 3 Quad Core 3300X,32,10,290,AM4 OC,,1.9,,AM4 · 4 cores · 4.3 GHz · 65 W · unlocked (OC),65>115,xlsx v1.15.3
-AMD Ryzen 5 Quad Core 1400,3,1,170,AM4 OC,,1.0,,AM4 · 4 cores · 3.4 GHz · 65 W · unlocked (OC),65>109,xlsx v1.15.3
-AMD Ryzen 5 Quad Core 1500X,3,50,190,AM4 OC,,1.0,,AM4 · 4 cores · 3.7 GHz · 65 W · unlocked (OC),65>100,xlsx v1.15.3
-AMD Ryzen 5 Six Core 1600,7,1,260,AM4 OC,,1.0,,AM4 · 6 cores · 3.6 GHz · 65 W · unlocked (OC),65>103,xlsx v1.15.3
-AMD Ryzen 5 Six Core 1600X,7,20,270,AM4 OC,,1.0,,AM4 · 6 cores · 4 GHz · 95 W · unlocked (OC),95>138,xlsx v1.15.3
-AMD Ryzen 5 Six Core 2600,18,1,290,AM4 OC,,1.0,,AM4 · 6 cores · 3.9 GHz · 65 W · unlocked (OC),65>100,xlsx v1.15.3
-AMD Ryzen 5 Six Core 2600X,18,33,300,AM4 OC,,1.0,,AM4 · 6 cores · 4.25 GHz · 95 W · unlocked (OC),95>137,xlsx v1.15.3
-AMD Ryzen 5 Six Core 3600,30,1,200,AM4 OC,,1.5,,AM4 · 6 cores · 4.2 GHz · 65 W · unlocked (OC),65>88,xlsx v1.15.3
-AMD Ryzen 5 Six Core 3600X,30,1,250,AM4 OC,,1.5,,AM4 · 6 cores · 4.4 GHz · 95 W · unlocked (OC),95>127,xlsx v1.15.3
-AMD Ryzen 5 Six Core 3600XT,32,30,400,AM4 OC,,1.9,,AM4 · 6 cores · 4.5 GHz · 95 W · unlocked (OC),95>153,xlsx v1.15.3
-AMD Ryzen 5 Six Core 5600X,33,50,500,AM4 OC,,1.11,,AM4 · 6 cores · 4.6 GHz · 65 W · unlocked (OC),65>126,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 1700,7,1,350,AM4 OC,,1.0,,AM4 · 8 cores · 3.7 GHz · 65 W · unlocked (OC),65>93,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 1700X,7,50,360,AM4 OC,,1.0,,AM4 · 8 cores · 3.8 GHz · 95 W · unlocked (OC),95>132,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 1800X,7,80,370,AM4 OC,,1.0,,AM4 · 8 cores · 4 GHz · 95 W · unlocked (OC),95>139,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 2700,18,1,380,AM4 OC,,1.0,,AM4 · 8 cores · 4.1 GHz · 65 W · unlocked (OC),65>88,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 2700X,18,66,390,AM4 OC,,1.0,,AM4 · 8 cores · 4.35 GHz · 105 W · unlocked (OC),105>140,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 3700X,30,20,330,AM4 OC,,1.5,,AM4 · 8 cores · 4.4 GHz · 65 W · unlocked (OC),65>87,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 3800X,30,40,400,AM4 OC,,1.5,,AM4 · 8 cores · 4.5 GHz · 105 W · unlocked (OC),105>141,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 3800XT,32,50,650,AM4 OC,,1.9,,AM4 · 8 cores · 4.7 GHz · 105 W · unlocked (OC),105>141,xlsx v1.15.3
-AMD Ryzen 7 Eight Core 5800X,33,50,750,AM4 OC,,1.11,,AM4 · 8 cores · 4.7 GHz · 105 W · unlocked (OC),105>203,xlsx v1.15.3
-AMD Ryzen 9 Sixteen Core 3950X,30,80,900,AM4 OC,,1.6,,AM4 · 16 cores · 4.7 GHz · 105 W · unlocked (OC),105>140,xlsx v1.15.3
-AMD Ryzen 9 Sixteen Core 5950X,33,30,1100,AM4 OC,,1.9.5,,AM4 · 16 cores · 4.9 GHz · 105 W · unlocked (OC),105>199,xlsx v1.15.3
-AMD Ryzen 9 Twelve Core 3900X,30,60,700,AM4 OC,,1.5,,AM4 · 12 cores · 4.6 GHz · 105 W · unlocked (OC),105>140,xlsx v1.15.3
-AMD Ryzen 9 Twelve Core 3900XT,32,70,1000,AM4 OC,,1.9,,AM4 · 12 cores · 4.7 GHz · 105 W · unlocked (OC),105>141,xlsx v1.15.3
-AMD Ryzen 9 Twelve Core 5900X,33,1,1000,AM4 OC,,1.9.5,,AM4 · 12 cores · 4.8 GHz · 105 W · unlocked (OC),105>199,xlsx v1.15.3
-AMD Ryzen Threadripper 2920X,28,20,775,TR4 OC,,1.0,,TR4 · 12 cores · 4.3 GHz · 180 W · unlocked (OC),180>243,xlsx v1.15.3
-AMD Ryzen Threadripper 2950X,28,1,850,TR4 OC,,1.0,,TR4 · 16 cores · 4.4 GHz · 180 W · unlocked (OC),180>243,xlsx v1.15.3
-AMD Ryzen Threadripper 2970WX,28,40,1000,TR4 OC,,1.0,,TR4 · 24 cores · 4.2 GHz · 250 W · unlocked (OC),250>337,xlsx v1.15.3
-AMD Ryzen Threadripper 2990WX,28,60,1100,TR4 OC,,1.0,,TR4 · 32 cores · 4.2 GHz · 250 W · unlocked (OC),250>337,xlsx v1.15.3
-AMD Ryzen Threadripper 3960X,31,1,1400,sTRX4 OC,,1.8,,sTRX4 · 24 cores · 4.5 GHz · 280 W · unlocked (OC),280>373,xlsx v1.15.3
-AMD Ryzen Threadripper 3970X,31,30,2000,sTRX4 OC,,1.8,,sTRX4 · 32 cores · 4.4 GHz · 280 W · unlocked (OC),280>382,xlsx v1.15.3
-AMD Ryzen Threadripper 3990X,31,75,3990,sTRX4 OC,,1.8,,sTRX4 · 64 cores · 4.3 GHz · 280 W · unlocked (OC),280>378,xlsx v1.15.3
-AMD Ryzen Threadripper Eight Core 1900X,22,1,550,TR4 OC,,1.0,,TR4 · 8 cores · 4 GHz · 180 W · unlocked (OC),180>243,xlsx v1.15.3
-AMD Ryzen Threadripper Sixteen Core 1950X,22,80,800,TR4 OC,,1.0,,TR4 · 16 cores · 4 GHz · 180 W · unlocked (OC),180>243,xlsx v1.15.3
-AMD Ryzen Threadripper Twelve Core 1920X,22,40,650,TR4 OC,,1.0,,TR4 · 12 cores · 4 GHz · 180 W · unlocked (OC),180>246,xlsx v1.15.3
-Intel Celeron G3900,1,1,45,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 2.8 GHz · 51 W,51,xlsx v1.15.3
-Intel Celeron G3930,5,1,40,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 2.9 GHz · 51 W,51,xlsx v1.15.3
-Intel Celeron G3950,5,20,60,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3 GHz · 51 W,51,xlsx v1.15.3
-Intel Celeron G5900,32,1,50,LGA 1200,,1.9,,LGA 1200 · 2 cores · 3.4 GHz · 58 W,58,xlsx v1.15.3
-Intel Celeron G5920,32,1,55,LGA 1200,,1.9,,LGA 1200 · 2 cores · 3.5 GHz · 58 W,58,xlsx v1.15.3
-Intel Core i3-10100,32,1,250,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.3 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i3-10300,32,1,280,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.4 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i3-10320,32,1,310,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.6 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i3-6100,2,1,105,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.7 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-6100T,2,1,90,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.2 GHz · 35 W,35,xlsx v1.15.3
-Intel Core i3-6300,2,1,110,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.8 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-6320,2,1,115,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.9 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-7100,12,1,120,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.9 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-7300,12,1,125,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-7320,12,10,130,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4.1 GHz · 51 W,51,xlsx v1.15.3
-Intel Core i3-7350K,13,1,135,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4.2 GHz · 60 W · unlocked (OC),60>117,xlsx v1.15.3
-Intel Core i3-8100,15,1,170,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 4 cores · 3.6 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i3-8350K,15,1,195,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 4 cores · 4 GHz · 91 W · unlocked (OC),91>190,xlsx v1.15.3
-Intel Core i5-10400,32,20,350,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.3 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-10500,32,20,390,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.5 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-10600,32,40,430,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.8 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-10600K,32,40,440,LGA 1200 OC,,1.9,,LGA 1200 · 6 cores · 4.8 GHz · 95 W · unlocked (OC),95>172,xlsx v1.15.3
-Intel Core i5-11400,34,1,500,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.4 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-11400F,34,1,500,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.4 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-11500,34,1,550,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.6 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-11600,34,1,600,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.8 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-11600K,34,1,700,LGA 1200 OC,,1.12,,LGA 1200 · 6 cores · 4.9 GHz · 125 W · unlocked (OC),125>240,xlsx v1.15.3
-Intel Core i5-11600KF,34,1,700,LGA 1200 OC,,1.12,,LGA 1200 · 6 cores · 4.9 GHz · 125 W · unlocked (OC),125>242,xlsx v1.15.3
-Intel Core i5-6400,2,1,155,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.3 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-6500,2,1,165,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.6 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-6600,2,1,175,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.9 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-6600K,2,1,180,LGA 1151 (Skylake) OC,,1.0,,LGA 1151 (Skylake) · 4 cores · 3.9 GHz · 91 W · unlocked (OC),91>169,xlsx v1.15.3
-Intel Core i5-7400,12,1,170,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 3.5 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-7500,12,30,180,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 3.8 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-7600,12,40,190,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.1 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-7600K,13,30,200,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.2 GHz · 91 W · unlocked (OC),91>181,xlsx v1.15.3
-Intel Core i5-7640X,24,1,195,LGA 2066 OC,,1.0,,LGA 2066 · 4 cores · 4.3 GHz · 112 W · unlocked (OC),112>223,xlsx v1.15.3
-Intel Core i5-8400,15,20,250,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i5-8600K,15,40,280,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.3 GHz · 95 W · unlocked (OC),95>157,xlsx v1.15.3
-Intel Core i5-9600K,20,1,300,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.6 GHz · 95 W · unlocked (OC),95>180,xlsx v1.15.3
-Intel Core i7-10700,32,60,600,LGA 1200,,1.9,,LGA 1200 · 8 cores · 4.8 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i7-10700K,32,60,630,LGA 1200 OC,,1.9,,LGA 1200 · 8 cores · 5.1 GHz · 95 W · unlocked (OC),95>164,xlsx v1.15.3
-Intel Core i7-11700,34,20,950,LGA 1200,,1.12,,LGA 1200 · 8 cores · 4.9 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i7-11700K,34,20,1000,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5 GHz · 125 W · unlocked (OC),125>237,xlsx v1.15.3
-Intel Core i7-11700KF,34,20,1000,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5 GHz · 125 W · unlocked (OC),125>239,xlsx v1.15.3
-Intel Core i7-6700,2,1,240,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 4 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i7-6700K,2,1,250,LGA 1151 (Skylake) OC,,1.0,,LGA 1151 (Skylake) · 4 cores · 4.2 GHz · 91 W · unlocked (OC),91>174,xlsx v1.15.3
-Intel Core i7-7700,12,60,260,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.2 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i7-7700K,13,60,270,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.5 GHz · 91 W · unlocked (OC),91>162,xlsx v1.15.3
-Intel Core i7-7740X,24,1,265,LGA 2066 OC,,1.0,,LGA 2066 · 4 cores · 4.5 GHz · 112 W · unlocked (OC),112>213,xlsx v1.15.3
-Intel Core i7-7800X,26,1,320,LGA 2066 OC,,1.0,,LGA 2066 · 6 cores · 4 GHz · 140 W · unlocked (OC),140>241,xlsx v1.15.3
-Intel Core i7-7820X,26,1,700,LGA 2066 OC,,1.0,,LGA 2066 · 8 cores · 4.3 GHz · 140 W · unlocked (OC),140>241,xlsx v1.15.3
-Intel Core i7-8086K,20,1,450,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 5 GHz · 95 W · unlocked (OC),95>176,xlsx v1.15.3
-Intel Core i7-8700,15,60,360,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.6 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i7-8700K,15,80,400,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.7 GHz · 95 W · unlocked (OC),95>142,xlsx v1.15.3
-Intel Core i7-9700K,20,30,420,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 8 cores · 4.9 GHz · 95 W · unlocked (OC),95>173,xlsx v1.15.3
-Intel Core i7-9800X,29,1,500,LGA 2066 OC,,1.2,,LGA 2066 · 8 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-10900,32,80,950,LGA 1200,,1.9,,LGA 1200 · 10 cores · 5.2 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i9-10900K,32,80,1000,LGA 1200 OC,,1.9,,LGA 1200 · 10 cores · 5.3 GHz · 125 W · unlocked (OC),125>212,xlsx v1.15.3
-Intel Core i9-10900X,31,1,1000,LGA 2066 OC,,1.8,,LGA 2066 · 10 cores · 4.7 GHz · 165 W · unlocked (OC),165>283,xlsx v1.15.3
-Intel Core i9-10920X,31,15,1200,LGA 2066 OC,,1.8,,LGA 2066 · 12 cores · 4.8 GHz · 165 W · unlocked (OC),165>283,xlsx v1.15.3
-Intel Core i9-10940X,31,60,1600,LGA 2066 OC,,1.8,,LGA 2066 · 14 cores · 4.8 GHz · 165 W · unlocked (OC),165>283,xlsx v1.15.3
-Intel Core i9-10980XE Extreme Edition,34,80,1200,LGA 2066 OC,,1.14,,LGA 2066 · 18 cores · 4.8 GHz · 165 W · unlocked (OC),165>316,xlsx v1.15.3
-Intel Core i9-11900,34,50,1150,LGA 1200,,1.12,,LGA 1200 · 8 cores · 5.2 GHz · 65 W,65,xlsx v1.15.3
-Intel Core i9-11900K,34,50,1200,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5.3 GHz · 125 W · unlocked (OC),125>238,xlsx v1.15.3
-Intel Core i9-11900KF,34,50,1200,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5.3 GHz · 125 W · unlocked (OC),125>239,xlsx v1.15.3
-Intel Core i9-7900X,26,50,900,LGA 2066 OC,,1.0,,LGA 2066 · 10 cores · 4.5 GHz · 140 W · unlocked (OC),140>240,xlsx v1.15.3
-Intel Core i9-7920X,26,62,920,LGA 2066 OC,,1.0,,LGA 2066 · 12 cores · 4.3 GHz · 140 W · unlocked (OC),140>241,xlsx v1.15.3
-Intel Core i9-7940X,26,74,940,LGA 2066 OC,,1.0,,LGA 2066 · 14 cores · 4.3 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-7960X,26,86,1000,LGA 2066 OC,,1.0,,LGA 2066 · 16 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-7980XE,26,94,1200,LGA 2066 OC,,1.0,,LGA 2066 · 18 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9820X,29,20,580,LGA 2066 OC,,1.2,,LGA 2066 · 10 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9900K,20,60,730,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 8 cores · 5 GHz · 95 W · unlocked (OC),95>164,xlsx v1.15.3
-Intel Core i9-9900KS,20,90,800,LGA 1151 (Coffee Lake) OC,,1.8,,LGA 1151 (Coffee Lake) · 8 cores · 5 GHz · 127 W · unlocked (OC),127>239,xlsx v1.15.3
-Intel Core i9-9900X,29,1,660,LGA 2066 OC,,1.2,,LGA 2066 · 10 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9920X,29,20,950,LGA 2066 OC,,1.2,,LGA 2066 · 12 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9940X,29,40,1050,LGA 2066 OC,,1.2,,LGA 2066 · 14 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9960X,29,60,1150,LGA 2066 OC,,1.2,,LGA 2066 · 16 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Core i9-9980XE,29,80,1300,LGA 2066 OC,,1.2,,LGA 2066 · 18 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,xlsx v1.15.3
-Intel Pentium G4400,1,1,65,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.3 GHz · 54 W,54,xlsx v1.15.3
-Intel Pentium G4500,1,1,75,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.5 GHz · 51 W,51,xlsx v1.15.3
-Intel Pentium G4520,1,1,90,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.6 GHz · 51 W,51,xlsx v1.15.3
-Intel Pentium G4560,5,1,90,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.5 GHz · 54 W,54,xlsx v1.15.3
-Intel Pentium G4600,5,40,90,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.6 GHz · 51 W,51,xlsx v1.15.3
-Intel Pentium G4620,5,60,115,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.7 GHz · 51 W,51,xlsx v1.15.3
-Intel Pentium G6400,32,20,120,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4 GHz · 58 W,58,xlsx v1.15.3
-Intel Pentium G6500,32,20,130,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4.1 GHz · 58 W,58,xlsx v1.15.3
-Intel Pentium G6600,32,20,140,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4.2 GHz · 58 W,58,xlsx v1.15.3
+name,level,level_pct,price,spec,dlc,version,jobs,details,power,compat,source
+AMD Ryzen 3 Quad Core 1200,3,1,140,AM4 OC,,1.0,,AM4 · 4 cores · 3.4 GHz · 65 W · unlocked (OC),65>116,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 3 Quad Core 1300X,3,25,150,AM4 OC,,1.0,,AM4 · 4 cores · 3.7 GHz · 65 W · unlocked (OC),65>100,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 3 Quad Core 3100,32,1,280,AM4 OC,,1.9,,AM4 · 4 cores · 3.9 GHz · 65 W · unlocked (OC),65>117,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 3 Quad Core 3300X,32,10,290,AM4 OC,,1.9,,AM4 · 4 cores · 4.3 GHz · 65 W · unlocked (OC),65>115,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Quad Core 1400,3,1,170,AM4 OC,,1.0,,AM4 · 4 cores · 3.4 GHz · 65 W · unlocked (OC),65>109,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Quad Core 1500X,3,50,190,AM4 OC,,1.0,,AM4 · 4 cores · 3.7 GHz · 65 W · unlocked (OC),65>100,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 1600,7,1,260,AM4 OC,,1.0,,AM4 · 6 cores · 3.6 GHz · 65 W · unlocked (OC),65>103,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 1600X,7,20,270,AM4 OC,,1.0,,AM4 · 6 cores · 4 GHz · 95 W · unlocked (OC),95>138,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 2600,18,1,290,AM4 OC,,1.0,,AM4 · 6 cores · 3.9 GHz · 65 W · unlocked (OC),65>100,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 2600X,18,33,300,AM4 OC,,1.0,,AM4 · 6 cores · 4.25 GHz · 95 W · unlocked (OC),95>137,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 3600,30,1,200,AM4 OC,,1.5,,AM4 · 6 cores · 4.2 GHz · 65 W · unlocked (OC),65>88,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 3600X,30,1,250,AM4 OC,,1.5,,AM4 · 6 cores · 4.4 GHz · 95 W · unlocked (OC),95>127,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 3600XT,32,30,400,AM4 OC,,1.9,,AM4 · 6 cores · 4.5 GHz · 95 W · unlocked (OC),95>153,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 5 Six Core 5600X,33,50,500,AM4 OC,,1.11,,AM4 · 6 cores · 4.6 GHz · 65 W · unlocked (OC),65>126,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 1700,7,1,350,AM4 OC,,1.0,,AM4 · 8 cores · 3.7 GHz · 65 W · unlocked (OC),65>93,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 1700X,7,50,360,AM4 OC,,1.0,,AM4 · 8 cores · 3.8 GHz · 95 W · unlocked (OC),95>132,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 1800X,7,80,370,AM4 OC,,1.0,,AM4 · 8 cores · 4 GHz · 95 W · unlocked (OC),95>139,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 2700,18,1,380,AM4 OC,,1.0,,AM4 · 8 cores · 4.1 GHz · 65 W · unlocked (OC),65>88,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 2700X,18,66,390,AM4 OC,,1.0,,AM4 · 8 cores · 4.35 GHz · 105 W · unlocked (OC),105>140,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 3700X,30,20,330,AM4 OC,,1.5,,AM4 · 8 cores · 4.4 GHz · 65 W · unlocked (OC),65>87,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 3800X,30,40,400,AM4 OC,,1.5,,AM4 · 8 cores · 4.5 GHz · 105 W · unlocked (OC),105>141,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 3800XT,32,50,650,AM4 OC,,1.9,,AM4 · 8 cores · 4.7 GHz · 105 W · unlocked (OC),105>141,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 7 Eight Core 5800X,33,50,750,AM4 OC,,1.11,,AM4 · 8 cores · 4.7 GHz · 105 W · unlocked (OC),105>203,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 9 Sixteen Core 3950X,30,80,900,AM4 OC,,1.6,,AM4 · 16 cores · 4.7 GHz · 105 W · unlocked (OC),105>140,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 9 Sixteen Core 5950X,33,30,1100,AM4 OC,,1.9.5,,AM4 · 16 cores · 4.9 GHz · 105 W · unlocked (OC),105>199,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 9 Twelve Core 3900X,30,60,700,AM4 OC,,1.5,,AM4 · 12 cores · 4.6 GHz · 105 W · unlocked (OC),105>140,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 9 Twelve Core 3900XT,32,70,1000,AM4 OC,,1.9,,AM4 · 12 cores · 4.7 GHz · 105 W · unlocked (OC),105>141,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen 9 Twelve Core 5900X,33,1,1000,AM4 OC,,1.9.5,,AM4 · 12 cores · 4.8 GHz · 105 W · unlocked (OC),105>199,s=AM4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 2920X,28,20,775,TR4 OC,,1.0,,TR4 · 12 cores · 4.3 GHz · 180 W · unlocked (OC),180>243,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 2950X,28,1,850,TR4 OC,,1.0,,TR4 · 16 cores · 4.4 GHz · 180 W · unlocked (OC),180>243,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 2970WX,28,40,1000,TR4 OC,,1.0,,TR4 · 24 cores · 4.2 GHz · 250 W · unlocked (OC),250>337,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 2990WX,28,60,1100,TR4 OC,,1.0,,TR4 · 32 cores · 4.2 GHz · 250 W · unlocked (OC),250>337,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 3960X,31,1,1400,sTRX4 OC,,1.8,,sTRX4 · 24 cores · 4.5 GHz · 280 W · unlocked (OC),280>373,s=sTRX4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 3970X,31,30,2000,sTRX4 OC,,1.8,,sTRX4 · 32 cores · 4.4 GHz · 280 W · unlocked (OC),280>382,s=sTRX4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper 3990X,31,75,3990,sTRX4 OC,,1.8,,sTRX4 · 64 cores · 4.3 GHz · 280 W · unlocked (OC),280>378,s=sTRX4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper Eight Core 1900X,22,1,550,TR4 OC,,1.0,,TR4 · 8 cores · 4 GHz · 180 W · unlocked (OC),180>243,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper Sixteen Core 1950X,22,80,800,TR4 OC,,1.0,,TR4 · 16 cores · 4 GHz · 180 W · unlocked (OC),180>243,s=TR4;oc=1,xlsx v1.15.3
+AMD Ryzen Threadripper Twelve Core 1920X,22,40,650,TR4 OC,,1.0,,TR4 · 12 cores · 4 GHz · 180 W · unlocked (OC),180>246,s=TR4;oc=1,xlsx v1.15.3
+Intel Celeron G3900,1,1,45,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 2.8 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Celeron G3930,5,1,40,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 2.9 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Celeron G3950,5,20,60,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Celeron G5900,32,1,50,LGA 1200,,1.9,,LGA 1200 · 2 cores · 3.4 GHz · 58 W,58,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Celeron G5920,32,1,55,LGA 1200,,1.9,,LGA 1200 · 2 cores · 3.5 GHz · 58 W,58,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i3-10100,32,1,250,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.3 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i3-10300,32,1,280,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.4 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i3-10320,32,1,310,LGA 1200,,1.9,,LGA 1200 · 4 cores · 4.6 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i3-6100,2,1,105,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.7 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i3-6100T,2,1,90,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.2 GHz · 35 W,35,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i3-6300,2,1,110,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.8 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i3-6320,2,1,115,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.9 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i3-7100,12,1,120,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.9 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i3-7300,12,1,125,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i3-7320,12,10,130,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4.1 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i3-7350K,13,1,135,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 4.2 GHz · 60 W · unlocked (OC),60>117,s=LGA 1151 (Kaby Lake);oc=1,xlsx v1.15.3
+Intel Core i3-8100,15,1,170,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 4 cores · 3.6 GHz · 65 W,65,s=LGA 1151 (Coffee Lake);oc=0,xlsx v1.15.3
+Intel Core i3-8350K,15,1,195,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 4 cores · 4 GHz · 91 W · unlocked (OC),91>190,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i5-10400,32,20,350,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.3 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-10500,32,20,390,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.5 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-10600,32,40,430,LGA 1200,,1.9,,LGA 1200 · 6 cores · 4.8 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-10600K,32,40,440,LGA 1200 OC,,1.9,,LGA 1200 · 6 cores · 4.8 GHz · 95 W · unlocked (OC),95>172,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i5-11400,34,1,500,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.4 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-11400F,34,1,500,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.4 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-11500,34,1,550,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.6 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-11600,34,1,600,LGA 1200,,1.12,,LGA 1200 · 6 cores · 4.8 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i5-11600K,34,1,700,LGA 1200 OC,,1.12,,LGA 1200 · 6 cores · 4.9 GHz · 125 W · unlocked (OC),125>240,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i5-11600KF,34,1,700,LGA 1200 OC,,1.12,,LGA 1200 · 6 cores · 4.9 GHz · 125 W · unlocked (OC),125>242,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i5-6400,2,1,155,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.3 GHz · 65 W,65,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i5-6500,2,1,165,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.6 GHz · 65 W,65,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i5-6600,2,1,175,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 3.9 GHz · 65 W,65,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i5-6600K,2,1,180,LGA 1151 (Skylake) OC,,1.0,,LGA 1151 (Skylake) · 4 cores · 3.9 GHz · 91 W · unlocked (OC),91>169,s=LGA 1151 (Skylake);oc=1,xlsx v1.15.3
+Intel Core i5-7400,12,1,170,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 3.5 GHz · 65 W,65,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i5-7500,12,30,180,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 3.8 GHz · 65 W,65,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i5-7600,12,40,190,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.1 GHz · 65 W,65,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i5-7600K,13,30,200,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.2 GHz · 91 W · unlocked (OC),91>181,s=LGA 1151 (Kaby Lake);oc=1,xlsx v1.15.3
+Intel Core i5-7640X,24,1,195,LGA 2066 OC,,1.0,,LGA 2066 · 4 cores · 4.3 GHz · 112 W · unlocked (OC),112>223,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i5-8400,15,20,250,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4 GHz · 65 W,65,s=LGA 1151 (Coffee Lake);oc=0,xlsx v1.15.3
+Intel Core i5-8600K,15,40,280,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.3 GHz · 95 W · unlocked (OC),95>157,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i5-9600K,20,1,300,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.6 GHz · 95 W · unlocked (OC),95>180,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i7-10700,32,60,600,LGA 1200,,1.9,,LGA 1200 · 8 cores · 4.8 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i7-10700K,32,60,630,LGA 1200 OC,,1.9,,LGA 1200 · 8 cores · 5.1 GHz · 95 W · unlocked (OC),95>164,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i7-11700,34,20,950,LGA 1200,,1.12,,LGA 1200 · 8 cores · 4.9 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i7-11700K,34,20,1000,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5 GHz · 125 W · unlocked (OC),125>237,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i7-11700KF,34,20,1000,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5 GHz · 125 W · unlocked (OC),125>239,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i7-6700,2,1,240,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 4 cores · 4 GHz · 65 W,65,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Core i7-6700K,2,1,250,LGA 1151 (Skylake) OC,,1.0,,LGA 1151 (Skylake) · 4 cores · 4.2 GHz · 91 W · unlocked (OC),91>174,s=LGA 1151 (Skylake);oc=1,xlsx v1.15.3
+Intel Core i7-7700,12,60,260,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.2 GHz · 65 W,65,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Core i7-7700K,13,60,270,LGA 1151 (Kaby Lake) OC,,1.0,,LGA 1151 (Kaby Lake) · 4 cores · 4.5 GHz · 91 W · unlocked (OC),91>162,s=LGA 1151 (Kaby Lake);oc=1,xlsx v1.15.3
+Intel Core i7-7740X,24,1,265,LGA 2066 OC,,1.0,,LGA 2066 · 4 cores · 4.5 GHz · 112 W · unlocked (OC),112>213,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i7-7800X,26,1,320,LGA 2066 OC,,1.0,,LGA 2066 · 6 cores · 4 GHz · 140 W · unlocked (OC),140>241,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i7-7820X,26,1,700,LGA 2066 OC,,1.0,,LGA 2066 · 8 cores · 4.3 GHz · 140 W · unlocked (OC),140>241,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i7-8086K,20,1,450,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 5 GHz · 95 W · unlocked (OC),95>176,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i7-8700,15,60,360,LGA 1151 (Coffee Lake),,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.6 GHz · 65 W,65,s=LGA 1151 (Coffee Lake);oc=0,xlsx v1.15.3
+Intel Core i7-8700K,15,80,400,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 6 cores · 4.7 GHz · 95 W · unlocked (OC),95>142,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i7-9700K,20,30,420,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 8 cores · 4.9 GHz · 95 W · unlocked (OC),95>173,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i7-9800X,29,1,500,LGA 2066 OC,,1.2,,LGA 2066 · 8 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-10900,32,80,950,LGA 1200,,1.9,,LGA 1200 · 10 cores · 5.2 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i9-10900K,32,80,1000,LGA 1200 OC,,1.9,,LGA 1200 · 10 cores · 5.3 GHz · 125 W · unlocked (OC),125>212,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i9-10900X,31,1,1000,LGA 2066 OC,,1.8,,LGA 2066 · 10 cores · 4.7 GHz · 165 W · unlocked (OC),165>283,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-10920X,31,15,1200,LGA 2066 OC,,1.8,,LGA 2066 · 12 cores · 4.8 GHz · 165 W · unlocked (OC),165>283,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-10940X,31,60,1600,LGA 2066 OC,,1.8,,LGA 2066 · 14 cores · 4.8 GHz · 165 W · unlocked (OC),165>283,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-10980XE Extreme Edition,34,80,1200,LGA 2066 OC,,1.14,,LGA 2066 · 18 cores · 4.8 GHz · 165 W · unlocked (OC),165>316,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-11900,34,50,1150,LGA 1200,,1.12,,LGA 1200 · 8 cores · 5.2 GHz · 65 W,65,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Core i9-11900K,34,50,1200,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5.3 GHz · 125 W · unlocked (OC),125>238,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i9-11900KF,34,50,1200,LGA 1200 OC,,1.12,,LGA 1200 · 8 cores · 5.3 GHz · 125 W · unlocked (OC),125>239,s=LGA 1200;oc=1,xlsx v1.15.3
+Intel Core i9-7900X,26,50,900,LGA 2066 OC,,1.0,,LGA 2066 · 10 cores · 4.5 GHz · 140 W · unlocked (OC),140>240,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-7920X,26,62,920,LGA 2066 OC,,1.0,,LGA 2066 · 12 cores · 4.3 GHz · 140 W · unlocked (OC),140>241,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-7940X,26,74,940,LGA 2066 OC,,1.0,,LGA 2066 · 14 cores · 4.3 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-7960X,26,86,1000,LGA 2066 OC,,1.0,,LGA 2066 · 16 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-7980XE,26,94,1200,LGA 2066 OC,,1.0,,LGA 2066 · 18 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9820X,29,20,580,LGA 2066 OC,,1.2,,LGA 2066 · 10 cores · 4.2 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9900K,20,60,730,LGA 1151 (Coffee Lake) OC,,1.0,,LGA 1151 (Coffee Lake) · 8 cores · 5 GHz · 95 W · unlocked (OC),95>164,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i9-9900KS,20,90,800,LGA 1151 (Coffee Lake) OC,,1.8,,LGA 1151 (Coffee Lake) · 8 cores · 5 GHz · 127 W · unlocked (OC),127>239,s=LGA 1151 (Coffee Lake);oc=1,xlsx v1.15.3
+Intel Core i9-9900X,29,1,660,LGA 2066 OC,,1.2,,LGA 2066 · 10 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9920X,29,20,950,LGA 2066 OC,,1.2,,LGA 2066 · 12 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9940X,29,40,1050,LGA 2066 OC,,1.2,,LGA 2066 · 14 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9960X,29,60,1150,LGA 2066 OC,,1.2,,LGA 2066 · 16 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Core i9-9980XE,29,80,1300,LGA 2066 OC,,1.2,,LGA 2066 · 18 cores · 4.4 GHz · 165 W · unlocked (OC),165>284,s=LGA 2066;oc=1,xlsx v1.15.3
+Intel Pentium G4400,1,1,65,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.3 GHz · 54 W,54,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Pentium G4500,1,1,75,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.5 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Pentium G4520,1,1,90,LGA 1151 (Skylake),,1.0,,LGA 1151 (Skylake) · 2 cores · 3.6 GHz · 51 W,51,s=LGA 1151 (Skylake);oc=0,xlsx v1.15.3
+Intel Pentium G4560,5,1,90,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.5 GHz · 54 W,54,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Pentium G4600,5,40,90,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.6 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Pentium G4620,5,60,115,LGA 1151 (Kaby Lake),,1.0,,LGA 1151 (Kaby Lake) · 2 cores · 3.7 GHz · 51 W,51,s=LGA 1151 (Kaby Lake);oc=0,xlsx v1.15.3
+Intel Pentium G6400,32,20,120,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4 GHz · 58 W,58,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Pentium G6500,32,20,130,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4.1 GHz · 58 W,58,s=LGA 1200;oc=0,xlsx v1.15.3
+Intel Pentium G6600,32,20,140,LGA 1200,,1.9,,LGA 1200 · 2 cores · 4.2 GHz · 58 W,58,s=LGA 1200;oc=0,xlsx v1.15.3
