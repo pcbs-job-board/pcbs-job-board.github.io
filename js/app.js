@@ -441,8 +441,8 @@ function openReport(pre = {}) {
   $("#rDlc").innerHTML = `<option value="Base game">Base game</option>` + DLCS.map(d => `<option>${esc(d.label)}</option>`).join("") + `<option>Other / not sure</option>`;
   ["#rLevel", "#rPrice", "#rNotes"].forEach(id => $(id).value = "");
   const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
-  $("#rDirect").hidden = !direct; $("#rSend").classList.toggle("primary", !direct);
-  $("#rRepoHint").textContent = direct ? "“Send report” sends it straight to the developer – no account needed." : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
+  $("#rDirect").hidden = !direct; $("#rSend").hidden = direct; $("#rCopy").hidden = direct;
+  $("#rRepoHint").textContent = direct ? "" : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
   $("#dlgReport").showModal(); $("#rName").focus();
 }
 function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }

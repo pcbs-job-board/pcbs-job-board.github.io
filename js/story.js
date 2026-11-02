@@ -22,8 +22,9 @@ function openStoryReport(pre = {}) {
   $("#sDetails").value = [pre.body && "Email text:\n" + pre.body, pre.objectives && "Objectives:\n" + pre.objectives,
     (pre.labour || pre.budget || pre.level) && `Labour: $${pre.labour || "?"} · Budget: $${pre.budget || "?"} · Req: Level ${pre.level || "?"}${pre.noStars ? " · no star requirement" : ""}`].filter(Boolean).join("\n\n");
   const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
-  $("#sDirect").hidden = !direct; $("#sGitHub").classList.toggle("primary", !direct);
-  $("#sRepoHint").textContent = direct ? "“Send report” sends it straight to the developer – no account needed." : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "";
+  // with the report inbox there is just one button; GitHub / copy are only the fallback without it
+  $("#sDirect").hidden = !direct; $("#sGitHub").hidden = direct; $("#sCopy").hidden = direct;
+  $("#sRepoHint").textContent = direct ? "" : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "";
   $("#dlgStory").showModal(); (pre.email ? $("#sDetails") : $("#sEmail")).focus();
 }
 function storyReportData() { return { email: $("#sEmail").value.trim(), subject: $("#sSubject").value.trim(), name: $("#sName").value.trim(), details: $("#sDetails").value.trim() }; }
@@ -61,7 +62,7 @@ async function sendReport(kind, data, btnSel) {
     toast(out.number ? `Thanks! Report #${out.number} sent.` : "Thanks! Report sent.");
     return true;
   } catch (e) {
-    toast("Couldn't send the report (" + (e.message || "no connection") + "). Try again, or use “Copy report”.");
+    toast("Couldn't send the report (" + (e.message || "no connection") + "). Please check your internet connection and try again.");
     return false;
   } finally { if (btn) { btn.disabled = false; btn.textContent = label; } }
 }
