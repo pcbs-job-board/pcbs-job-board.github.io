@@ -29,6 +29,7 @@ js/parser.js               email / PC Stats text parsing, hidden-objective rules
 js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
 js/rules.js                hidden-objective rules window
+js/areas.js                finds the email / PC Stats windows, screen-area set-up
 js/keys.js                 keyboard shortcuts
 data/parts/*.csv           parts list – one file per category (source of truth)
 data/dlc.csv               DLC / part groups (key, label, group, default on/off)

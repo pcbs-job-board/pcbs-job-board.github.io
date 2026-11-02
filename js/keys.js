@@ -15,7 +15,8 @@ const KEYMAP = [
     ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
     ["Space / Enter", "Tick the box · press the button"], ["Esc", "Back to choosing jobs"]] },
   { group: "New job window", keys: [
-    ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"]] },
+    ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"], ["Alt + A", "🎯 Adjust areas"]] },
+  { group: "Screen area window", keys: [["Ctrl + Enter", "✓ Use this area"], ["Esc", "Skip for now"]] },
 ];
 let keysOn = LS.get("pcbs.keys", true);
 let selJob = null;
@@ -129,11 +130,17 @@ function inCardKey(e) {
 document.addEventListener("keydown", e => {
   if (!keysOn || e.defaultPrevented) return;
   const t = e.target, review = $("#dlgReview").open, anyDlg = [...document.querySelectorAll("dialog")].some(d => d.open);
+  // screen-area set-up window (opens on top of the new-job window)
+  if ($("#dlgAreas").open) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("#areaUse").click(); }
+    return;
+  }
   // new-job window
   if (review) {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("#fSave")?.click(); return; }
     if (e.altKey && e.code === "KeyE") { e.preventDefault(); $("#btnCapEmail")?.click(); return; }
     if (e.altKey && e.code === "KeyP") { e.preventDefault(); $("#btnCapParts")?.click(); return; }
+    if (e.altKey && e.code === "KeyA") { e.preventDefault(); $("#btnAdjust")?.click(); return; }
     return;
   }
   if (anyDlg) return;

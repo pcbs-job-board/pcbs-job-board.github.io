@@ -50,9 +50,9 @@
         <div class="ctrls">
           <div class="seg" id="shotTabs"></div>
           <span class="spacer"></span>
-          <button id="btnLock">🔒 Locked</button><button id="btnResetCrop">↺ Reset areas</button><button id="btnReOcr">↻ Read again</button>
+          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button><button id="btnReOcr">↻ Read again</button>
         </div>
-        <p class="hint"><span id="areaHint"></span> Click <b>🔒 Locked</b> to unlock before drawing a new box.</p>
+        <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
         <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
         <div id="shotWrap"><img id="shot" alt="capture"><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
         <div class="progress"><div id="prog"></div></div>
@@ -85,6 +85,9 @@
     <h4 class="sub">Hidden objectives</h4>
     <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
     <button id="btnRules">Edit keyword rules…</button>
+    <h4 class="sub">Screen areas</h4>
+    <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
+    <div id="areaStatus" class="areastatus"></div>
   </div>
 </dialog>
 
@@ -105,6 +108,17 @@
 <dialog id="dlgKeys" style="max-width:560px">
   <div class="dlg-h"><h3>⌨ Keyboard shortcuts</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b" id="keysBody"></div>
+</dialog>
+
+<!-- Screen area set-up -->
+<dialog id="dlgAreas" class="areasdlg">
+  <div class="dlg-h"><h3 id="areaTitle">🎯 Set up screen area</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <div id="areaMsg" class="areamsg"></div>
+    <div id="areaWrap"><img id="areaImg" alt="screenshot"><div id="areaBox" hidden><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i><i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i></div></div>
+    <p class="hint">Drag the box to move it, drag its corners or edges to resize it, or drag anywhere else on the picture to draw a new one.</p>
+    <div class="areabtns"><button class="primary big" id="areaUse">✓ Use this area</button><button id="areaRedetect">↻ Detect again</button><button id="areaDraw">✎ Draw it myself</button><span class="spacer"></span><button data-close>Skip for now</button></div>
+  </div>
 </dialog>
 
 <!-- Rules dialog -->
@@ -129,6 +143,7 @@
 <script src="js/parts.js"></script>
 <script src="js/app.js"></script>
 <script src="js/rules.js"></script>
+<script src="js/areas.js"></script>
 <script src="js/keys.js"></script>
 </body>
 </html>

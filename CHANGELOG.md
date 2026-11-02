@@ -6,6 +6,9 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Keyword rules are now an easy table: objective, words that add it, words that stop it.
 - Rules can be switched off, reset one by one, and tested with a "Try it" box.
 - Cable, brand and broken-part detection can be switched off.
+- Email and PC Stats areas are found automatically on the first capture, in a large window where they can be adjusted.
+- "🎯 Adjust areas" replaces Lock / Reset areas; Settings shows the area status with "Set up again".
+- Warning when the captured text doesn't look like an email or PC Stats.
 
 ## 0.8.1
 - Fixed email and subject missing when screenshots are taken bottom-first.

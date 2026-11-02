@@ -14,7 +14,6 @@ if (!rules) rules = DEFAULT_RULES;
 let smart = Object.assign({}, SMART_DEFAULT, LS.get("pcbs.smart", {})); // built-in detections on/off
 const DEFAULT_CROPS = { email: { x: .5, y: .14, w: .42, h: .68 }, stats: { x: .015, y: .1, w: .265, h: .76 } };
 let crops = LS.get("pcbs.crops", structuredClone(DEFAULT_CROPS));
-let cropLocked = true;
 // v1 → v2 migration: tables can hold only one job each
 (() => { const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); })();
 const save = () => LS.set("pcbs.jobs", jobs);
@@ -227,9 +226,11 @@ function openReview(dataUrl, editJob, forJob) {
   if (forJob) { rev.draft.components = structuredClone(forJob.components || []); rev.autoNames = new Set(); }
   $("#revTitle").textContent = editJob ? "Edit job" : forJob ? "Add parts from PC Stats" : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
-  renderForm(); setLock(true); showBlack(false); renderShots(); dlg.showModal();
+  renderForm(); showBlack(false); renderShots(); dlg.showModal();
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
 }
+// a warning under the screenshot with a shortcut to the set-up window – nothing is changed automatically
+function areaWarn(msg) { $("#ocrState").innerHTML = `<div class="areawarn">⚠ ${esc(msg)} <button id="warnAdjust">🎯 Adjust areas</button></div>`; $("#warnAdjust").onclick = adjustArea; }
 function blankDraft() { return { id: uid(), sender: "", subject: "", labour: null, budget: null, level: null, deadline: "", suspect: "", table: 0, tasks: [], swaps: [], components: [], hidden: [], objectives: [] }; }
 function addShot(url, kind) { rev.shots.push({ url, kind, text: "" }); showShot(rev.shots.length - 1, true); }
 function showShot(i, read) {
@@ -271,10 +272,15 @@ async function runOcr() {
   if (!rev || rev.cur < 0) return;
   const sh = rev.shots[rev.cur];
   try {
-    if (sh.kind === "auto") { // pasted screenshot: PC Stats popup or more of the email?
-      const t = await ocr($("#shot"), "parts");
-      sh.kind = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; showShot(rev.cur, false);
+    if (sh.kind === "auto") { // pasted screenshot: PC Stats popup or more of the email? (by colour first – fast)
+      let k = null; try { const im = areaImage($("#shot")); k = detectArea(im, "stats") ? "parts" : detectArea(im, "email") ? "email" : null; } catch { }
+      if (!k) { const t = await ocr($("#shot"), "parts"); k = /components|pc for|benchmark/i.test(t) ? "parts" : "email"; }
+      sh.kind = k; showShot(rev.cur, false);
     }
+    // first capture of this kind: set up the area in the big window first, then read
+    const ak = sh.kind === "parts" ? "stats" : "email";
+    lastFrame[ak] = sh.url;
+    if (!areasSet[ak] && !sh.areaAsked) { sh.areaAsked = true; openAreas(ak, $("#shot"), () => runOcr()); return; }
     const text = await ocr($("#shot"), sh.kind); sh.text = text; sh.conf = lastConf; $("#rawTxt").textContent = text;
     if (sh.kind === "parts") {
       const ok = /components|pc for|benchmark/i.test(text);
@@ -282,7 +288,8 @@ async function runOcr() {
       const total = rebuildParts();
       if (!rev.forJob && !rev.draft.sender) { const m = text.match(/PC for\s+(\S+@\S+)/i); if (m && $("#fSender") && !$("#fSender").value) $("#fSender").value = m[1]; }
       const unsure = (sh.parts || []).filter(p => !p.sure).length;
-      $("#ocrState").textContent = ok ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.` : "No PC Stats popup found in the orange box – open it in-game (PC Stats button) and capture again, or adjust the box.";
+      $("#ocrState").textContent = ok ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.` : "";
+      if (!ok) areaWarn("This doesn't look like the PC Stats window. Is it open in-game (PC Stats button)? If it is, the box may be in the wrong place.");
       return;
     }
     syncComps();
@@ -297,6 +304,8 @@ async function runOcr() {
     if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;
     if (keep.table && $("#fTable")) $("#fTable").value = keep.table;
     $("#ocrState").textContent = (emails.length > 1 ? `Joined ${emails.length} email screenshots. ` : "") + "Check the fields. Long email? Scroll it in-game and press “📸 Add email capture”. Repair job? Open PC Stats and press “📸 Add PC parts capture”.";
+    // gentle warning: none of the words every job email has
+    if (!/labou?r|budget|objectives|[\w.]+@[\w-]+\.|regards|thanks/i.test(text)) areaWarn("This doesn't look like a job email. Is an email open in-game? If it is, the box may be in the wrong place.");
   } catch (err) { $("#ocrState").textContent = "⚠ " + err.message; }
 }
 function renderForm() {
@@ -352,17 +361,10 @@ function saveReview() {
 // crop drawing
 let mode = "email"; // which crop box the current screenshot uses
 function drawCrops() { for (const k of ["email", "stats"]) { const el = $(k === "email" ? "#cropEmail" : "#cropStats"), r = crops[k]; Object.assign(el.style, { left: r.x * 100 + "%", top: r.y * 100 + "%", width: r.w * 100 + "%", height: r.h * 100 + "%" }); } }
-(() => {
-  const wrap = $("#shotWrap"); let st = null;
-  const pos = e => { const b = wrap.getBoundingClientRect(); return { x: Math.min(1, Math.max(0, (e.clientX - b.left) / b.width)), y: Math.min(1, Math.max(0, (e.clientY - b.top) / b.height)) }; };
-  wrap.addEventListener("pointerdown", e => { if (cropLocked) return; st = pos(e); wrap.setPointerCapture(e.pointerId); e.preventDefault(); });
-  wrap.addEventListener("pointermove", e => { if (!st) return; const p = pos(e); crops[mode] = { x: Math.min(st.x, p.x), y: Math.min(st.y, p.y), w: Math.abs(p.x - st.x), h: Math.abs(p.y - st.y) }; drawCrops(); });
-  wrap.addEventListener("pointerup", () => { if (!st) return; st = null; if (crops[mode].w < .03 || crops[mode].h < .03) { crops = LS.get("pcbs.crops", crops); drawCrops(); return; } LS.set("pcbs.crops", crops); });
-})();
 $("#btnReOcr").onclick = runOcr;
-function setLock(v) { cropLocked = v; $("#btnLock").textContent = v ? "🔒 Locked" : "🔓 Unlocked – drag to set"; $("#shotWrap").classList.toggle("unlocked", !v); }
-$("#btnLock").onclick = () => setLock(!cropLocked);
-$("#btnResetCrop").onclick = () => { if (!confirm("Reset both areas to the default positions?")) return; crops = structuredClone(DEFAULT_CROPS); LS.set("pcbs.crops", crops); drawCrops(); setLock(true); if (rev?.shots.length) runOcr(); };
+// 🎯 Adjust areas: the big set-up window for the screenshot being looked at, then read it again
+function adjustArea() { if (!rev || rev.cur < 0) return; const k = rev.shots[rev.cur].kind === "parts" ? "stats" : "email"; openAreas(k, $("#shot"), ok => { if (ok) runOcr(); }); }
+$("#btnAdjust").onclick = adjustArea;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => b.closest("dialog").close());
 $("#dlgReview").addEventListener("close", () => { acEl.hidden = true; document.body.append(acEl); });
 
@@ -415,7 +417,7 @@ $("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#r
 // ================= export / import =================
 $("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
-$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) crops = d.crops; if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
+$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 
 if (!window.PARTS_DB) toast("parts-db.js not found next to this page – part suggestions limited to names you've typed.");
 buildIndex(); initAutocomplete(); render(); setStatus();
