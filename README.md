@@ -41,6 +41,7 @@ data/parts-db.js           GENERATED from the CSVs – don't edit by hand
 tools/build_db.py          CSV → data/parts-db.js
 tools/import_xlsx.py       community workbook → CSVs
 tools/bump_version.py      sets the version in js/config.js and the ?v= tags in index.html
+tools/report-endpoint.gs   Google Apps Script that receives reports (Sheet + email)
 .github/ISSUE_TEMPLATE/    missing-part and bug report forms
 .github/workflows/         rebuilds parts-db.js when CSVs change
 ```
@@ -53,7 +54,10 @@ tools/bump_version.py      sets the version in js/config.js and the ?v= tags in 
 New content pack: add a row to `data/dlc.csv` and use its `key` in the `dlc` column.
 
 ## Adding story jobs
-Career story customers (long emails, no star requirement, no hidden objectives) are listed in `data/story-jobs.csv` – columns `sender_name, email, subject, story, note, source`. Any one of sender email or subject marks a job as a story job; the name only counts when the email also looks like a story job (random customers sign with first names too). Reports arrive as GitHub issues labelled `story-job` or by email ("Story Quest Report #…"). Commit the CSV and the workflow rebuilds `data/parts-db.js`.
+Career story customers (long emails, no star requirement, no hidden objectives) are listed in `data/story-jobs.csv` – columns `sender_name, email, subject, story, note, source`. Any one of sender email or subject marks a job as a story job; the name only counts when the email also looks like a story job (random customers sign with first names too). Reports arrive through the report inbox (below) or as GitHub issues labelled `story-job`.
+
+## Report inbox (no account needed for players)
+`tools/report-endpoint.gs` is a small Google Apps Script: it adds every story job / missing part report to a Google Sheet and emails the owner "Story Quest Report #N" / "Missing Part Report #N". The set-up steps are at the top of the file; put the web app URL in `js/config.js` → `reportEndpoint`. The owner's email address is never part of the website. Commit the CSV and the workflow rebuilds `data/parts-db.js`.
 
 Updating from a newer community workbook:
 ```

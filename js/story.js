@@ -21,8 +21,9 @@ function openStoryReport(pre = {}) {
   $("#sEmail").value = pre.email || ""; $("#sSubject").value = pre.subject || ""; $("#sName").value = pre.name || "";
   $("#sDetails").value = [pre.body && "Email text:\n" + pre.body, pre.objectives && "Objectives:\n" + pre.objectives,
     (pre.labour || pre.budget || pre.level) && `Labour: $${pre.labour || "?"} · Budget: $${pre.budget || "?"} · Req: Level ${pre.level || "?"}${pre.noStars ? " · no star requirement" : ""}`].filter(Boolean).join("\n\n");
-  $("#sRepoHint").textContent = reportRepo() ? `GitHub: opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "";
-  $("#sEmailBtn").hidden = !(window.PCBS_CONFIG || {}).storyReportEmail;
+  const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
+  $("#sDirect").hidden = !direct; $("#sGitHub").classList.toggle("primary", !direct);
+  $("#sRepoHint").textContent = direct ? "“Send report” sends it straight to the developer – no account needed." : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "";
   $("#dlgStory").showModal(); (pre.email ? $("#sDetails") : $("#sEmail")).focus();
 }
 function storyReportData() { return { email: $("#sEmail").value.trim(), subject: $("#sSubject").value.trim(), name: $("#sName").value.trim(), details: $("#sDetails").value.trim() }; }
@@ -39,11 +40,28 @@ $("#sGitHub").onclick = () => {
   window.open(`https://github.com/${repo}/issues/new?${q}`, "_blank", "noopener");
   $("#dlgStory").close(); toast("Report opened on GitHub – press “Create” there to send it");
 };
-$("#sEmailBtn").onclick = () => {
+$("#sDirect").onclick = async () => {
   const r = storyReportData(); if (!storyValid(r)) return;
-  const to = (window.PCBS_CONFIG || {}).storyReportEmail, subject = `Story Quest Report #${storyNumber()}`;
-  location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(storyReportText(r).slice(0, 1800))}`;
-  $("#dlgStory").close(); toast("Your email app opened with the report – press Send there");
+  if (await sendReport("story", { email: r.email, subject: r.subject, name: r.name, details: r.details }, "#sDirect")) $("#dlgStory").close();
 };
 $("#sCopy").onclick = async () => { const r = storyReportData(); if (!storyValid(r)) return; try { await navigator.clipboard.writeText(storyReportText(r)); toast("Report copied"); } catch { prompt("Copy this report:", storyReportText(r)); } };
 $("#btnStory").onclick = () => openStoryReport();
+
+// ---- sending a report to the developer's report inbox (Google Apps Script, see tools/report-endpoint.gs) ----
+// No account needed and no address shown. The answer carries the report number.
+async function sendReport(kind, data, btnSel) {
+  const ep = (window.PCBS_CONFIG || {}).reportEndpoint; if (!ep) return false;
+  const btn = btnSel && $(btnSel), label = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+  try {
+    // text/plain keeps it a "simple" request (no CORS pre-check, which Apps Script doesn't answer)
+    const res = await fetch(ep, { method: "POST", body: JSON.stringify({ kind, ...data, version: (window.PCBS_CONFIG || {}).version || "", website: "" }) });
+    const out = await res.json().catch(() => ({ ok: res.ok }));
+    if (!out.ok) throw new Error(out.error || "not accepted");
+    toast(out.number ? `Thanks! Report #${out.number} sent.` : "Thanks! Report sent.");
+    return true;
+  } catch (e) {
+    toast("Couldn't send the report (" + (e.message || "no connection") + "). Try again, or use “Copy report”.");
+    return false;
+  } finally { if (btn) { btn.disabled = false; btn.textContent = label; } }
+}

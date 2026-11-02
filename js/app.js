@@ -440,7 +440,9 @@ function openReport(pre = {}) {
   $("#rName").value = pre.name || ""; $("#rCat").value = CATS.includes(pre.cat) && pre.cat !== "Other" ? pre.cat : "";
   $("#rDlc").innerHTML = `<option value="Base game">Base game</option>` + DLCS.map(d => `<option>${esc(d.label)}</option>`).join("") + `<option>Other / not sure</option>`;
   ["#rLevel", "#rPrice", "#rNotes"].forEach(id => $(id).value = "");
-  $("#rRepoHint").textContent = reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
+  const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
+  $("#rDirect").hidden = !direct; $("#rSend").classList.toggle("primary", !direct);
+  $("#rRepoHint").textContent = direct ? "“Send report” sends it straight to the developer – no account needed." : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
   $("#dlgReport").showModal(); $("#rName").focus();
 }
 function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }
@@ -452,6 +454,10 @@ $("#rSend").onclick = () => {
   window.open(`https://github.com/${repo}/issues/new?${q}`, "_blank", "noopener");
   const log = LS.get("pcbs.reports", []); log.unshift({ ...r, at: Date.now() }); LS.set("pcbs.reports", log.slice(0, 100));
   $("#dlgReport").close(); toast("Report opened on GitHub – press “Create” there to submit");
+};
+$("#rDirect").onclick = async () => {
+  const r = reportData(); if (!r.name) { $("#rName").focus(); return; }
+  if (await sendReport("part", r, "#rDirect")) { const log = LS.get("pcbs.reports", []); log.unshift({ ...r, at: Date.now() }); LS.set("pcbs.reports", log.slice(0, 100)); $("#dlgReport").close(); }
 };
 $("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#rName").focus(); return; } try { await navigator.clipboard.writeText(reportText(r)); toast("Report copied to clipboard"); } catch { prompt("Copy this report:", reportText(r)); } };
 
