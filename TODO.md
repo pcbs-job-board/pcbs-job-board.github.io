@@ -25,12 +25,16 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 - Reported by Mariusz: Dynabeard (`IT@dynabeard.org`, "Important: Computer required"), top + scrolled
   screenshot. The text reader read all 3 objectives, but "Upgrade to 8 GB of RAM" (the last one) was not
   added. Screenshots are in the tests (`dynabeard_top`, `dynabeard_scrolled`, group "Dynabeard").
+- Why build requests: in fix / upgrade emails the orange/red "PC Status … PC Stats" bar follows the
+  objectives, so the last objective is never the last line. A build request (PC built from zero) has no such
+  bar – after the objectives come only the "Quit / Go to whiteboard" buttons (Mariusz's observation).
 - Cause (reproduced): when the "Quit / Go to whiteboard" buttons aren't read, the last objective is the
   scrolled screenshot's last line. `mergeTexts` marks a screenshot's first/last line as "edge" (maybe
   cut off) and, after the last matching line, drops edge lines when both screenshots have extra lines
   there – so a complete, unique line is thrown away.
 - Fix: only drop an edge line when the other screenshot has a similar line (a cut-off copy of it);
-  keep edge lines nothing else covers. Add a test with the button line missing.
+  keep edge lines nothing else covers. Also end the objectives at "Go to whiteboard" (build requests'
+  button). Add a test with the button line missing.
 
 ---
 
@@ -39,6 +43,8 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 ### Story job list: fill it from reports
 - Reports arrive in the "PCBS reports" Google Sheet (tabs "Story jobs" / "Missing parts") and as
   "Story Quest Report #N" emails. Add confirmed ones to `data/story-jobs.csv`.
+- **Confirmed by Mariusz** (already in the report sheet): `IT@dynabeard.org`, subject "Important: Computer
+  required", signed Kinsley Hackett, IT Supervisor – a build request, Req: Level 14, no star requirement.
 - Candidate from an older screenshot, **not confirmed yet**: `scottyB@dongermail.com`, subject
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
