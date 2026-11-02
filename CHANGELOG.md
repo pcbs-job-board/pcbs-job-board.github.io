@@ -3,7 +3,7 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
-## 0.9.0 (not released yet)
+## 0.9.0
 - Email and PC Stats areas are found automatically on the first capture, in a large window where they can be adjusted.
 - Much more reliable PC Stats parts list – junk text from the part pictures is filtered out.
 - Career level and % in the top bar – part suggestions for swaps only show parts you have unlocked.
@@ -19,6 +19,7 @@ Within each version, changes are listed from most to least important.
 - Settings reorganised, with on/off switches; Export / Import moved into it.
 - "🎯 Adjust areas" replaces Lock / Reset areas; Settings shows the area status with "Set up again".
 - Cable, brand and broken-part detection can be switched off.
+- More phrases detected for urgent jobs ("Can you get it done quickly?").
 - Unlock level % added to the parts database.
 - "Report part" removed from the top bar (still in the part suggestions).
 - "Show all shortcuts" in Settings opens the shortcuts window.

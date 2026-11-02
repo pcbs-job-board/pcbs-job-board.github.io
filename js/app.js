@@ -2,11 +2,19 @@
 // ================= state =================
 let jobs = LS.get("pcbs.jobs", []);
 let rules = LS.get("pcbs.rules", null);
-// saved rules from an older version: the default rules are replaced by the current set,
-// rules the user added themselves are kept
+// saved rules from an older version
 if (rules && LS.get("pcbs.rulesVer", 1) < RULES_VERSION) {
-  const defaults = new Set([...OLD_DEFAULT_TASKS, ...DEFAULT_RULES.map(d => d.task)]);
-  rules = [...structuredClone(DEFAULT_RULES), ...rules.filter(r => !defaults.has(r.task))];
+  if (LS.get("pcbs.rulesVer", 1) < 3) {
+    // before the rules table (v3): the old default rules are replaced by the current set, own rules kept
+    const defaults = new Set([...OLD_DEFAULT_TASKS, ...DEFAULT_RULES.map(d => d.task)]);
+    rules = [...structuredClone(DEFAULT_RULES), ...rules.filter(r => !defaults.has(r.task))];
+  } else {
+    // since the rules table the user may have edited the defaults: only add the new words to them
+    for (const d of DEFAULT_RULES) {
+      const r = rules.find(x => x.task === d.task); if (!r) continue; // deleted on purpose → stays deleted
+      for (const k of d.keys) if (!r.keys.includes(k)) r.keys.push(k);
+    }
+  }
   LS.set("pcbs.rules", rules);
 }
 LS.set("pcbs.rulesVer", RULES_VERSION);

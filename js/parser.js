@@ -1,7 +1,7 @@
 // ===== PCBS job parser (pure functions, no DOM) =====
 // One rule = task + keywords. A keyword starting with "-" is an exception: that phrase is
 // ignored before matching (e.g. "-clean install" so "clean" still catches "never cleaned it").
-const RULES_VERSION = 3;
+const RULES_VERSION = 4;
 // Hints from the PCBS community list – one rule per solution (hints with the same solution are merged).
 const DEFAULT_RULES = [
   { task: "Run the virus scanner and remove viruses", keys: [
@@ -20,7 +20,9 @@ const DEFAULT_RULES = [
     "3dmark", "3d mark", "benchmark", "stability test", "stress test", "performance test", "test the performance", "test it properly", "run some tests"] },
   { task: "Urgent – finish ASAP (aim for 2 days)", keys: [
     "urgent", "asap", "a.s.a.p", "priority", "as soon as possible", "as quick as possible", "as fast as possible", "as quickly as possible", "in a hurry", "hurry", "rush",
-    "need it fast", "need this fast", "need it quick", "need this quick", "need it back fast", "need it back quick", "need it soon", "need this soon", "need it back soon", "right away", "straight away", "pretty soon"] },
+    "need it fast", "need this fast", "need it quick", "need this quick", "need it back fast", "need it back quick", "need it soon", "need this soon", "need it back soon", "right away", "straight away", "pretty soon",
+    "quickly", "done quick", "done fast", "done soon", "quick as you can", "fast as you can", "soon as you can", "quick turnaround", "in a rush", "no time to lose",
+    "-boots quickly", "-boots up quickly", "-boot quickly", "-starts quickly", "-starts up quickly", "-loads quickly", "-runs quickly", "-ran quickly", "-more quickly", "-so quickly", "-too quickly", "-heats up quickly", "-gets hot quickly", "-dies quickly", "-crashes quickly"] },
   { task: "Add RGB lighting", keys: ["rgb", "lights", "lighting", "glow", "colourful", "colorful", "led", "-lights turn on", "-lights come on", "-lights are on", "-power light", "-lights on the"] },
   { task: "Water cooling requested", keys: ["water cool", "watercool", "water-cool", "liquid cool", "custom loop", "aio", "radiator"] },
 ];
