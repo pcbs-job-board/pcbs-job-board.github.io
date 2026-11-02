@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.9.1** (dev: `dev-0.10.0` – Tesseract.js 7, waiting for the go-ahead) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -22,7 +22,7 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 
 ---
 
-## Small fixes (1)
+## Small fixes (5)
 
 ### Last objective lost when joining two email screenshots
 - Reported by Mariusz: Dynabeard (`IT@dynabeard.org`, "Important: Computer required"), top + scrolled
@@ -41,6 +41,31 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 
 ---
 
+### Found by the tests with the real reader (also in the live 0.9.1 – not caused by the upgrade)
+Since 0.10.0 the tests use the same tesseract.js as players. Its output is a little different from the old
+command-line stand-in, and it shows these (identical on 5.1.1 and 7.0.0; marked "known" in the tests):
+
+### PC Stats: misread model number matched to the wrong part
+- `4503a9e0` SilverStone **ST65F-PT** read as "STE5F-PT" → matched ST55F-PT. `506ab405` "AMD Ryzen 5 Quad
+  Core 1500" (X cut off at the line end) → matched 1400 instead of 1500X.
+- Idea: when the look-alike / one-slip match is ambiguous between parts of the same series, prefer the one
+  whose digits agree with the reading (E→6 is not a look-alike; "1500" is a prefix of 1500X, not 1400).
+
+### PC Stats: picture crumbs kept as parts
+- `4b889ddb` "[S35] yo" → part "S35"; `f7d01836` half-cut last line "… ion "NNN" → part "ion".
+- Idea: a bracketed 2–4 character token, or a single short word on the last (cut) line, is not a part.
+
+### Email: stray "]" in the sender address → no sender, no subject
+- `737a8f34` read "TinyAunt@]JulieBrewing.ly" → address not recognised, so subject is lost too.
+- Idea: drop stray brackets / pipes next to "@" before looking for the address.
+
+### Objectives: junk after / below the last objective
+- `c1f4af87` "Diagnose and fix R"; `df46ed81` button bar read as "[fae se ee ee]" → objective "fae".
+- Idea: trailing single capital after a known objective phrase is junk; a line in [brackets] made of
+  2–3 letter bits is the button bar.
+
+---
+
 ## Bigger updates (waiting for the go-ahead)
 
 ### Story job list: compare with the report sheet (planned for 1.0, the final build)
@@ -56,31 +81,6 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
-
-### Upgrade the text reader: Tesseract.js 5.1.1 → 7 (core – strict testing required)
-- Why (Mariusz: both very important for this project): 6.0 fixed a long-standing memory leak that could
-  grow until the tab crashes (many captures in one session); 7.0 reads ~15–35 % faster than 6.
-- Breaking change to handle (6.0): only plain `text` is returned by default. The app uses
-  `data.lines` (text + confidence per line) for joining screenshots (`mergeTexts` / `lineQuality`), the
-  "doesn't look like an email" warning and the area checks → request `{ blocks: true }` and build the
-  line list from blocks → paragraphs → lines. Removed: `worker.initialize` / `loadLanguage` (not used).
-  Check `createWorker(lang, oem, …)`, the level-digit worker (psm 7 + digit whitelist) and the progress
-  logger still work.
-- Load from the CDN with a pinned exact version (as now), check the core / language data URLs and
-  first-load size; keep the "Text reader didn't load" message.
-- **Strict testing – nothing may break:**
-  1. Before changing anything: run every fixture through **real tesseract.js 5.1.1** (Node, npm package +
-     `@tesseract.js-data/eng`, no CDN needed) and save the full output per screenshot (text, lines,
-     confidences, parsed email / parts / career) as the baseline.
-  2. Same with 7: compare field by field. Every difference is reviewed; anything worse is fixed before
-     going on. The whole suite (`run.js`) must stay at 0 failed, known problems may only go down.
-  3. Switch the test suite from the Tesseract command-line stand-in to the real tesseract.js 7, so tests
-     match what players get (should also clear the "green Complete by line" known problem).
-  4. Browser checks on the dev build: capture flow (screen share + paste + drop), area set-up window,
-     joining 2–3 email screenshots both orders, PC Stats several shots, career auto-read, story job,
-     long session (30+ captures) watching memory, Chrome + Edge + Firefox.
-  5. Timing before / after on the same screenshots (expect faster), first load with an empty cache.
-  6. Only then ask Mariusz to release; live page test afterwards. Keep `backup-<live>` as the way back.
 
 ### "How to use" window – "?" button at the far right of the top bar
 - Requested by Mariusz. A "?" icon as the **right-most** item in the top bar (after ⚙ Settings) opens a
