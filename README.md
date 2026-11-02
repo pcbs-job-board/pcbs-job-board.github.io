@@ -42,7 +42,7 @@ tools/import_xlsx.py       community workbook → CSVs
 ```
 
 ## Adding / fixing parts
-1. Edit the right CSV in `data/parts/` (columns: `name, level, price, spec, dlc, version, source`). For a reported part, put `report #<issue number>` in `source`.
+1. Edit the right CSV in `data/parts/` (columns: `name, level, level_pct, price, spec, dlc, version, source` – `level_pct` is how far into that career level the part unlocks). For a reported part, put `report #<issue number>` in `source`.
 2. Commit. The **Build parts database** workflow regenerates `data/parts-db.js` automatically (or run `python tools/build_db.py` yourself).
 3. Close the issue.
 
