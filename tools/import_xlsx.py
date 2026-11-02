@@ -18,7 +18,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -81,7 +81,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

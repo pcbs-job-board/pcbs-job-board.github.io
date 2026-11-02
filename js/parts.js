@@ -157,19 +157,26 @@ const dice = (a, b) => { let c = 0; for (const g of a) if (b.has(g)) c++; return
 function fullIndex() {
   if (FULL) return FULL;
   FULL = [];
-  for (const cat in window.PARTS_DB || {}) for (const [name] of window.PARTS_DB[cat]) { const n = normP(name); FULL.push({ cat, name, n, w: n.split(" "), tri: trigrams(n) }); }
+  for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) { const n = normP(r[0]); FULL.push({ cat, name: r[0], n, w: n.split(" "), tri: trigrams(n), noJobs: r[7] === 1 }); }
   return FULL;
 }
 // remove prices and other screen text that is not part of the name ("$120", "Sell", "Used")
 const cleanOcrPart = s => String(s).replace(/[$£€]\s?[\d,.]+/g, " ").replace(/\b(price|sell|used|new|installed|broken)\b:?/gi, " ").replace(/\s{2,}/g, " ").trim();
+const NO_JOBS_PENALTY = 0.05;
 function bestPartMatch(raw, onlyCat, min = 0.5) {
   const s = normP(cleanOcrPart(raw)); const w = s.split(" ").filter(x => x.length > 1);
   if (s.replace(/ /g, "").length < 4 || !w.length) return null;
+  // read perfectly → that part ("GAMING X+ 6G" and "GAMING X 6G" only differ in the "+", so the letters decide first)
+  const lc = cleanOcrPart(raw).toLowerCase().replace(/\s+/g, " ").trim(), inCat = p => !onlyCat || p.cat === onlyCat;
+  const exact = fullIndex().find(p => inCat(p) && p.name.toLowerCase() === lc) || fullIndex().find(p => inCat(p) && p.n === s);
+  if (exact) return { name: exact.name, cat: exact.cat, score: 1, amb: false };
   const tri = trigrams(s); let best = null, bs = 0, sec = null, ss = 0;
   for (const p of fullIndex()) {
     if (onlyCat && p.cat !== onlyCat) continue;
     const tok = w.filter(x => p.w.includes(x)).length / w.length;
-    const sc = 0.6 * dice(tri, p.tri) + 0.4 * tok;
+    // parts the game never puts in a random customer's PC ("Exclude From Random Jobs") lose close calls –
+    // an exact reading still finds them (story customers' PCs are set by hand)
+    const sc = 0.6 * dice(tri, p.tri) + 0.4 * tok - (p.noJobs ? NO_JOBS_PENALTY : 0);
     if (sc > bs) { if (best && best.name !== p.name) { sec = best; ss = bs; } bs = sc; best = p; }
     else if (sc > ss && p.name !== best.name) { sec = p; ss = sc; }
   }

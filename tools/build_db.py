@@ -4,7 +4,7 @@
 Usage:  python tools/build_db.py          (from the repository root)
 
 Each CSV in data/parts/ has the columns:
-    name, level, level_pct, price, spec, dlc, version, source
+    name, level, level_pct, price, spec, dlc, version, jobs, source
   - name   : exact in-game part name (required)
   - level  : unlock level (number, may be empty)
   - level_pct: how far into that level the part unlocks, 0-100 (may be empty)
@@ -12,6 +12,8 @@ Each CSV in data/parts/ has the columns:
   - spec   : short info shown in suggestions (socket, VRAM, type...)
   - dlc    : key from data/dlc.csv, empty = base game
   - version: game update (PC/Steam numbering) that added the part, e.g. 1.13
+  - jobs   : "no" = the game never puts this part in a random customer's PC
+             ("Exclude From Random Jobs"); empty = it can appear
   - source : where the row came from (calculator, wiki, report #12, ...)
 
 The output is a plain <script> file (not JSON) so the app also works when
@@ -80,6 +82,8 @@ def main():
                 if ver and ver not in known_versions:
                     errors.append(f"{f.name}:{i} unknown version '{ver}' (add it to data/versions.csv)")
                 row = [name, num(r.get("level")), num(r.get("price")), (r.get("spec") or "").strip(), dlc, ver, num(r.get("level_pct"))]
+                if (r.get("jobs") or "").strip().lower() == "no":
+                    row.append(1)   # not in random jobs
                 rows.append(row)
         rows.sort(key=lambda x: (x[1] if x[1] is not None else 999, x[2] or 0, x[0]))
         db[cat] = rows

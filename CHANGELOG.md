@@ -10,6 +10,8 @@ Within each version, changes are listed from most to least important.
 - PC Stats: model numbers cut at the line end are matched ("1500" → 1500X).
 - PC Stats: an unclear model number is shown as read for checking instead of a guessed part.
 - PC Stats: picture crumbs ("S35", "ion") no longer added as parts.
+- PC Stats: parts the game never puts in customers' PCs lose close calls to parts it does.
+- PC Stats: parts differing only by "+" (GAMING X vs GAMING X+) are told apart.
 - Fixed sender and subject lost when a crumb sticks to the address ("TinyAunt@]…").
 - Fixed junk after the last objective ("Diagnose and fix R").
 - Uses less memory in long sessions.
