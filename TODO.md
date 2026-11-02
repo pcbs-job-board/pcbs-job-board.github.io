@@ -69,9 +69,8 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 - Source: guide text + images in `help-assets/` on this branch (copy them into the dev branch, e.g. `img/help/`).
   Images: convert to compressed WebP/JPEG (the PNGs are ~0.2–1.4 MB each) and load them only when the
   window opens. `.gitignore` blocks *.png/*.jpg since 0.9.1 – add `!img/**` or use `git add -f`.
-- Watch out: the `?` key already opens the keyboard shortcuts window. Keep that, and give the new window a
-  link to the shortcuts (and the shortcuts window a link back). Close with Esc / ✕, scrollable, fits narrow
-  screens. Probably a new feature version (0.10.0) unless it goes into 1.0.
+- No keyboard shortcut for this window (opened maybe once); `?` stays the shortcuts key. Close with Esc / ✕,
+  scrollable, fits narrow screens. Probably a new feature version (0.10.0) unless it goes into 1.0.
 
 ### Missing part reports: also ask for the unlock level %
 - The parts database has `level_pct` since 0.9.0, but the report form only asks for the level.
