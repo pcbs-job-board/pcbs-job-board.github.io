@@ -19,9 +19,18 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
 
-_None open._
+### Last objective lost when joining two email screenshots
+- Reported by Mariusz: Dynabeard (`IT@dynabeard.org`, "Important: Computer required"), top + scrolled
+  screenshot. The text reader read all 3 objectives, but "Upgrade to 8 GB of RAM" (the last one) was not
+  added. Screenshots are in the tests (`dynabeard_top`, `dynabeard_scrolled`, group "Dynabeard").
+- Cause (reproduced): when the "Quit / Go to whiteboard" buttons aren't read, the last objective is the
+  scrolled screenshot's last line. `mergeTexts` marks a screenshot's first/last line as "edge" (maybe
+  cut off) and, after the last matching line, drops edge lines when both screenshots have extra lines
+  there – so a complete, unique line is thrown away.
+- Fix: only drop an edge line when the other screenshot has a similar line (a cut-off copy of it);
+  keep edge lines nothing else covers. Add a test with the button line missing.
 
 ---
 
