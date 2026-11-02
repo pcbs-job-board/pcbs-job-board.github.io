@@ -193,12 +193,14 @@ function joinPCStatsLines(lines) {
 // The pictures next to each part in PC Stats are read as junk ("oF ae", "4, pov RA nwt mm) PTO").
 // Every word is checked against the words used in real part names (one OCR slip allowed, e.g. "MS!"):
 // junk at the start / end of a line is cut off, lines that are mostly junk are dropped.
-let VOCAB = null;
+let VOCAB = null, SHAPES = null;
+// model numbers read with letters for look-alike digits: "STSSF" = "ST55F", "B5O" = "850"
+const shape = w => w.replace(/[s]/g, "5").replace(/[o]/g, "0").replace(/[il]/g, "1").replace(/[b]/g, "8");
 function partVocab() {
   if (VOCAB) return VOCAB;
-  VOCAB = new Set();
+  VOCAB = new Set(); SHAPES = new Set();
   const names = [...Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => r[0])), ...partsHistory.map(p => p.name)];
-  for (const name of names) for (const t of normP(name).split(" ")) if (t.length >= 2) VOCAB.add(t);
+  for (const name of names) for (const t of normP(name).split(" ")) if (t.length >= 2) { VOCAB.add(t); if (t.length >= 4 && /\d/.test(t)) SHAPES.add(shape(t)); }
   return VOCAB;
 }
 const near1 = (a, b) => { // edit distance ≤ 1
@@ -212,6 +214,8 @@ function wordOk(tok) {
   if (!t) return false;
   if (v.has(t)) return true;
   if (/\d/.test(t) && /[a-z0-9]{3,}/.test(t)) return true;           // model numbers: 1500X, 2370-PRO, i7-8086K
+  const parts = normP(tok).split(" ").filter(Boolean);
+  if (parts.some(p => p.length >= 4 && SHAPES.has(shape(p))) && parts.every(p => v.has(p) || SHAPES.has(shape(p)))) return true; // "STSSF-PT" = ST55F-PT
   // one OCR slip: words of 4+ letters, or short ones with a symbol in them ("MS!" → MSI) – not "pto" → "pro"
   if (t.length >= 4 || (t.length === 3 && /[^a-z0-9]/.test(t))) for (const w of v) if (w.length >= 3 && near1(t, w)) return true;
   return false;
@@ -236,12 +240,18 @@ function denoisePartLines(lines) {
   }
   return out;
 }
+// one word, a word that isn't part of any part name, or odd symbols ("1/-GUGBOK") → probably a cut-off / misread line
+const weakPartLine = t => { const w = String(t).split(/\s+/).filter(Boolean); return w.length < 2 || w.some(x => /[^\w().+-]/.test(x) || !wordOk(x)); };
 function resolvePCStats(items) {
   if (typeof items === "string") items = joinPCStatsLines(denoisePartLines(componentLines(items)));
   const out = [], count = {};
   let lastIdx = -1;
   for (const it of items) {
     const m = bestPartMatch(it.name);
+    let loose = false;
+    // the top of a scrolled list is often a half-cut line ("supe", "Intel COFe 1/-GUGBOK", "ama Carbon"):
+    // before the first recognised part, a weak unrecognised line is dropped instead of guessed
+    if (!out.some(o => o.sure) && (m ? m.score < 0.8 && !/\s/.test(it.name.trim()) : weakPartLine(it.name))) continue;
     let cat = m ? m.cat : categorize(cleanOcrPart(it.name)), name = m ? m.name : cleanOcrPart(it.name);
     const full = c => PC_MAX[c] && (count[c] || 0) >= PC_MAX[c];
     if (!m && (cat === "Other" || full(cat))) {
@@ -250,11 +260,12 @@ function resolvePCStats(items) {
       if (cand) cat = cand;
       // category known from the position → a looser match inside that category is good enough
       const m2 = cand && bestPartMatch(it.name, cand, 0.35);
-      if (m2) { name = m2.name; }
+      if (m2) { name = m2.name; loose = true; }
     }
     if (full(cat)) continue;
     if (m && PC_MAX[cat] === 1 && out.some(o => o.name === name)) continue;
     count[cat] = (count[cat] || 0) + 1; lastIdx = Math.max(lastIdx, PC_ORDER.indexOf(cat));
+    if (loose && !out.some(o => o.sure)) continue;
     out.push({ name, cat, sure: !!m });
   }
   return out;

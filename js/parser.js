@@ -75,6 +75,15 @@ function trimJunk(s) {
   while (w.length > 1 && /^(?:[^A-Za-z0-9(]+|[^A-Za-z0-9(]*[a-z]{1,2}[^A-Za-z0-9)]*|[‘'`|;:,.~_][A-Za-z]{1,2})$/.test(w[w.length - 1]) && !/^(it|up|on|in|me|my|pc|os|ok)$/i.test(w[w.length - 1])) w.pop();
   return w.join(" ");
 }
+// a crumb of the icon / bullet in front of the first word: "s3DMark score" → "3DMark score",
+// "eA Computer has gone crazy" → "Computer has gone crazy" (but "iPhone", "eBay" stay)
+function trimLead(s) {
+  let t = String(s).trim();
+  const w = t.split(/\s+/);
+  if (w.length > 1 && /^[^A-Za-z0-9(]*[a-z][A-Z]?[^A-Za-z0-9]*$/.test(w[0]) && !/^a$/.test(w[0]) && /^[A-Z0-9]/.test(w[1])) t = w.slice(1).join(" ");
+  else if (/^[a-z](?=\d|[A-Z]{2})/.test(t)) t = t.slice(1);
+  return t;
+}
 // OCR noise (status bar, buttons) must not be glued onto an objective
 function looksLikeText(l) {
   const w = l.split(/\s+/).filter(Boolean); if (!w.length || w.length > 12) return false;
@@ -307,7 +316,7 @@ function parseEmail(text, rules, smart) {
   if (emailLineIdx >= 0) {
     job.sender = lines[emailLineIdx].match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/i)[0];
     const nxt = lines[emailLineIdx + 1];
-    if (nxt && !/you work with|labour|objectives|@/i.test(nxt) && emailLineIdx + 1 !== startB0) job.subject = trimJunk(nxt.replace(/^Ineed/, "I need"));
+    if (nxt && !/you work with|labour|objectives|@/i.test(nxt) && emailLineIdx + 1 !== startB0) job.subject = trimLead(trimJunk(nxt.replace(/^Ineed/, "I need")));
   }
   const emailDate = (emailLineIdx >= 0 && (lines[emailLineIdx].match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/) || (lines[emailLineIdx + 1] || "").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) || raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   const pcFor = raw.match(/PC for\s+([\w.+-]+@[\w-]+(\.[\w-]+)+)/i);
@@ -324,7 +333,7 @@ function parseEmail(text, rules, smart) {
       const l = lines[i];
       if (/^\W{0,3}(reject|accept|pc status|pc stats|in transit|go to pc|quit|labou?r)\b/i.test(l)) break;
       const m = l.match(/^\W{0,3}?[•*+·°»«©¢®\-–\[\]{}|:;]\s*(.+)/) || l.match(/^[oe]\s+([A-Z0-9].+)/);
-      if (m) { const o = trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, "")); if (o.length > 2) { job.objectives.push(o); junk = 0; continue; } }
+      if (m) { const o = trimLead(trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, ""))); if (o.length > 2) { job.objectives.push(o); junk = 0; continue; } }
       if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) { job.objectives[job.objectives.length - 1] += " " + trimJunk(l); continue; }
       junk++;
     }

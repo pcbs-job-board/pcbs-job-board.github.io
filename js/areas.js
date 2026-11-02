@@ -105,7 +105,8 @@ const lum = ([r, g, b]) => (r + g + b) / 3;
 function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
   const { width: w, height: h, data: d } = img;
   // green runs, grouped into bars (same left end, rows next to each other)
-  const rs = runs(img, isBarGreen, Math.max(6, W * 0.012));
+  // short runs too: at ~0 % only a small green stub is left at the left end (smaller screenshots: a few pixels)
+  const rs = runs(img, isBarGreen, Math.max(4, W * 0.0025));
   const groups = [];
   for (const r of rs) {
     const g = groups.find(g => Math.abs(g.x0 - r.x0) <= 4 && r.y - g.y1 <= 2);

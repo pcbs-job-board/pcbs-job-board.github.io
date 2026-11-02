@@ -4,3 +4,9 @@ __pycache__/
 Thumbs.db
 *.xlsx
 backups/
+
+# screenshots / test images never belong in the public repo (tests live in the private repo)
+# a real app image can still be added with: git add -f <file>
+*.png
+*.jpg
+*.jpeg

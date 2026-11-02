@@ -3,6 +3,13 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.9.1
+- PC Stats: half-cut first line no longer added as a junk or wrong part.
+- PC Stats: model numbers with look-alike letters recognised ("ST55F" read as "STSSF").
+- Career level found at 0 % and on smaller screenshots.
+- Stray letters removed before the subject and objectives ("s3DMark").
+- Leftover test images removed from the website.
+
 ## 0.9.0
 - Email and PC Stats areas are found automatically on the first capture, in a large window where they can be adjusted.
 - Much more reliable PC Stats parts list – junk text from the part pictures is filtered out.
