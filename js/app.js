@@ -442,7 +442,7 @@ $("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysTog
 function reportRepo() {
   const cfg = (window.PCBS_CONFIG || {}).repo; if (cfg) return cfg;
   const m = location.hostname.match(/^([\w-]+)\.github\.io$/i); const repo = location.pathname.split("/").filter(Boolean)[0];
-  return m && repo ? `${m[1]}/${repo}` : "";
+  return m ? `${m[1]}/${repo && !/\.html?$/i.test(repo) ? repo : m[1] + ".github.io"}` : "";   // site at the root: OWNER.github.io
 }
 function openReport(pre = {}) {
   $("#rName").value = pre.name || ""; $("#rCat").value = CATS.includes(pre.cat) && pre.cat !== "Other" ? pre.cat : "";

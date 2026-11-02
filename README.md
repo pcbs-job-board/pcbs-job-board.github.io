@@ -2,7 +2,7 @@
 
 A job manager for **PC Building Simulator** (1). Capture a customer email from your screen, and the board reads it, lists the objectives, spots *hidden* objectives ("it's a bit dusty" → compressed air, "weird pop-ups" → antivirus, "I like braided dark grey" → new cables), and tracks your three workbenches.
 
-**Use it:** open the GitHub Pages link of this repository, or download it and open `index.html` in Chrome/Edge.
+**Use it:** open **https://pcbs-job-board.github.io/**, or download it and open `index.html` in Chrome/Edge.
 
 > Works with the **English** version of the game only. Text is read automatically (OCR), so mistakes can happen – always double-check what it found.
 
@@ -67,7 +67,7 @@ python tools/import_xlsx.py "PCBS1 Parts & Unlock Levels ... .xlsx"
 Rows that came from reports are kept.
 
 ## Hosting on GitHub Pages
-Settings → Pages → *Deploy from a branch* → `main` / `(root)`. The site appears at `https://<user>.github.io/<repo>/`. Missing-part reports then go to this repository's Issues automatically.
+Settings → Pages → *Deploy from a branch* → `main` / `(root)`. The site appears at `https://<user>.github.io/<repo>/` (or at `https://<user>.github.io/` when the repository is named `<user>.github.io` – the live site: **https://pcbs-job-board.github.io/**). Missing-part reports then go to this repository's Issues automatically.
 
 ## Credits
 See [DATA_SOURCES.md](DATA_SOURCES.md). Fan-made tool, not affiliated with the game's developers or publishers. Code: MIT license.
