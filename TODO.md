@@ -66,7 +66,7 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 - Text as in the guide, minus what doesn't fit inside the app: drop "Go to https://pcbs-job-board.github.io/.
   A desktop browser (Chrome, Edge, Firefox) works best." (the player is already there); button names must
   match the app.
-- Source: guide text + images (`scratchpad/steam-guide/` – copy them into the dev branch, e.g. `img/help/`).
+- Source: guide text + images in `help-assets/` on this branch (copy them into the dev branch, e.g. `img/help/`).
   Images: convert to compressed WebP/JPEG (the PNGs are ~0.2–1.4 MB each) and load them only when the
   window opens. `.gitignore` blocks *.png/*.jpg since 0.9.1 – add `!img/**` or use `git add -f`.
 - Watch out: the `?` key already opens the keyboard shortcuts window. Keep that, and give the new window a
