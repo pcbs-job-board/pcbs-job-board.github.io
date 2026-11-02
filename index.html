@@ -17,6 +17,11 @@
   <button class="primary big" id="btnCapture">📸 Capture job</button>
   <button id="btnManual">＋ Manual job</button>
   <div class="spacer"></div>
+  <div class="careerbar" id="careerBar">
+    <span class="cbl">Career</span>
+    <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level"></label>
+    <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level">%</label>
+  </div>
   <div class="notify" id="notify" hidden>
     <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
     <div class="notipanel" id="notiPanel" hidden></div>
@@ -69,28 +74,23 @@
 <dialog id="dlgSettings" style="max-width:660px">
   <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
-    <h4 class="sub">Your career</h4>
-    <div class="career"><label>Career level<input type="number" id="careerLevel" min="1" max="99" placeholder="not set"></label><label>% through it<input type="number" id="careerPct" min="0" max="100" placeholder="0"></label><span id="careerInfo" class="hint"></span></div>
-    <p class="hint">Shown in-game top right, under the stars. Parts you haven't unlocked yet are left out of the suggestions for new parts (part swaps). Leave the level empty to see every part.</p>
-    <h4 class="sub">Game version</h4>
-    <select id="gameVersion" style="width:100%"></select>
-    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
-    <h4 class="sub">DLC with extra parts</h4>
-    <div id="dlcList"></div>
-    <p class="hint" id="dlcOther"></p>
-    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
-    <h4 class="sub">Other part groups</h4>
-    <div id="groupList"></div>
-    <p class="hint" id="dbInfo"></p>
-    <h4 class="sub">Keyboard</h4>
-    <label class="dlcrow"><input type="checkbox" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
-    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
     <h4 class="sub">Hidden objectives</h4>
     <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
     <button id="btnRules">Edit keyword rules…</button>
     <h4 class="sub">Screen areas</h4>
     <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
     <div id="areaStatus" class="areastatus"></div>
+    <h4 class="sub">Keyboard</h4>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
+    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+    <h4 class="sub">DLC &amp; promo parts</h4>
+    <div id="dlcList"></div>
+    <p class="hint" id="dlcOther"></p>
+    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
+    <h4 class="sub">Game version</h4>
+    <select id="gameVersion" style="width:100%"></select>
+    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
+    <p class="hint" id="dbInfo"></p>
     <h4 class="sub">Backup</h4>
     <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
     <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
@@ -98,6 +98,17 @@
     <h4 class="sub danger">Reset</h4>
     <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
     <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
+  </div>
+</dialog>
+
+<!-- Reset confirmation -->
+<dialog id="dlgReset" style="max-width:460px">
+  <div class="dlg-h"><h3>🗑 Reset all data?</h3><button class="ghost" data-close>✕</button></div>
+  <div class="dlg-b">
+    <p>This deletes <b>all jobs</b>, your keyword rules and every setting, forgets the screen areas and disconnects the screen.</p>
+    <p class="warnbox">It can't be undone. If you might want your jobs back, press <b>Export backup</b> first.</p>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="resetSure"><span><b>Yes, I want to delete everything</b></span></label>
+    <div class="btnrow"><button class="danger solid" id="resetGo" disabled>Delete everything</button><span class="spacer"></span><button data-close autofocus>Cancel</button></div>
   </div>
 </dialog>
 

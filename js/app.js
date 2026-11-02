@@ -374,39 +374,42 @@ const DLC_NO_PARTS = ["Career Power Pack", "Esports Expansion", "NZXT Workshop",
 function changelogUrl() { const r = reportRepo(); return r ? `https://github.com/${r}/blob/main/CHANGELOG.md` : "CHANGELOG.md"; }
 function renderSettings() {
   const m = window.PARTS_META || {};
-  const row = d => { const n = dlcCount(d.key); return `<label class="dlcrow"><input type="checkbox" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}</small></span></label>`; };
+  const row = d => { const n = dlcCount(d.key); return `<label class="dlcrow"><input type="checkbox" class="switch" data-dlc="${esc(d.key)}" ${dlcOn[d.key] ? "checked" : ""}><span><b>${esc(d.label)}</b> <small>${n} parts</small><br><small>${esc(d.note)}</small></span></label>`; };
   const withParts = DLCS.filter(d => dlcCount(d.key) > 0);
-  $("#dlcList").innerHTML = withParts.filter(d => d.group === "dlc").map(row).join("") || `<p class="hint">None.</p>`;
-  $("#groupList").innerHTML = withParts.filter(d => d.group !== "dlc").map(row).join("");
+  $("#dlcList").innerHTML = withParts.map(row).join("") || `<p class="hint">None.</p>`;
   $("#dlcOther").textContent = "No extra parts (workshops, game modes, music – nothing to switch): " + DLC_NO_PARTS.join(", ") + ".";
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
   $("#appVersion").href = changelogUrl();
   if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
-  $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct;
-  careerInfo();
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
 $("#btnKeysFromSettings").onclick = () => { $("#dlgSettings").close(); openKeysHelp(); };
+// career level + % in the top bar; the tooltip says what it does and how many parts are unlocked
 function careerInfo() {
   const n = INDEX.filter(p => !p.hist).length, ok = INDEX.filter(p => !p.hist && unlocked(p)).length;
-  $("#careerInfo").textContent = career.level == null ? "Every part is suggested." : `${ok} of ${n} parts unlocked.`;
+  $("#careerBar").title = "Your career level and % through it (in-game, top right under the stars). Part-swap suggestions only show parts you have unlocked.\n"
+    + (career.level == null ? "Not set – every part is suggested." : `${ok} of ${n} parts unlocked.`);
+  $("#careerBar").classList.toggle("set", career.level != null);
 }
+function showCareer() { $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct; careerInfo(); }
 // typing a level / % saves straight away; empty level = not set
 ["#careerLevel", "#careerPct"].forEach(id => $(id).addEventListener("input", () => { setCareer($("#careerLevel").value, $("#careerPct").value); careerInfo(); }));
 // tidy the fields when leaving them (e.g. 150 % → 100), empty % = 0
 $("#careerLevel").addEventListener("change", () => { $("#careerLevel").value = career.level ?? ""; });
 $("#careerPct").addEventListener("change", () => { $("#careerPct").value = career.pct ? career.pct : ""; });
 // factory reset: every saved key of this tool, the screen share, then a fresh start
-$("#btnResetAll").onclick = () => {
-  if (!confirm("Reset ALL data?\n\nAll jobs, rules and settings will be deleted and the screen will be disconnected. This can't be undone – use “Export backup” first if you might want them back.")) return;
+$("#btnResetAll").onclick = () => { $("#resetSure").checked = false; $("#resetGo").disabled = true; $("#dlgSettings").close(); $("#dlgReset").showModal(); };
+$("#resetSure").onchange = e => { $("#resetGo").disabled = !e.target.checked; };
+$("#resetGo").onclick = () => {
+  if (!$("#resetSure").checked) return;
   try { if (stream) stream.getTracks().forEach(t => t.stop()); } catch { }
   Object.keys(localStorage).filter(k => k.startsWith("pcbs.")).forEach(k => localStorage.removeItem(k));
   LS.set("pcbs.seenVersion", (window.PCBS_CONFIG || {}).version || ""); // no "what's new" right after a reset
   location.reload();
 };
-$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
+$("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); careerInfo(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); careerInfo(); } });
 
 // ================= missing-part reports → GitHub issues =================
 function reportRepo() {
@@ -436,7 +439,7 @@ $("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#r
 // ================= export / import =================
 $("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion, career }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
-$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.career) setCareer(d.career.level, d.career.pct); if (d.dlc) { dlcOn = Object.assign(dlcOn, d.dlc); LS.set("pcbs.dlc", dlcOn); } if (d.gameVersion && typeof setGameVersion === "function") setGameVersion(d.gameVersion); if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); if ($("#dlgSettings").open) renderSettings(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
+$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.career) { setCareer(d.career.level, d.career.pct); showCareer(); } if (d.dlc) { dlcOn = Object.assign(dlcOn, d.dlc); LS.set("pcbs.dlc", dlcOn); } if (d.gameVersion && typeof setGameVersion === "function") setGameVersion(d.gameVersion); if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); if ($("#dlgSettings").open) renderSettings(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 
 if (!window.PARTS_DB) toast("parts-db.js not found next to this page – part suggestions limited to names you've typed.");
-buildIndex(); initAutocomplete(); render(); setStatus();
+buildIndex(); initAutocomplete(); render(); setStatus(); showCareer();
