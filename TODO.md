@@ -4,8 +4,8 @@ Working notes for the job board (private – dev repository only).
 Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
-- **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike. When he starts a
-  bigger update, open small fixes can be taken into it if he agrees.
+- **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
+- When he starts a bigger update, every small fix still open goes into it too.
 - **After adding an item, tell Mariusz how many small fixes and bigger updates are on the list.**
 - An item is **removed from this list as soon as it's done and ready in a dev branch**. From then on the
   dev branch's changelog records it.
