@@ -57,6 +57,31 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
 
+### Upgrade the text reader: Tesseract.js 5.1.1 → 7 (core – strict testing required)
+- Why (Mariusz: both very important for this project): 6.0 fixed a long-standing memory leak that could
+  grow until the tab crashes (many captures in one session); 7.0 reads ~15–35 % faster than 6.
+- Breaking change to handle (6.0): only plain `text` is returned by default. The app uses
+  `data.lines` (text + confidence per line) for joining screenshots (`mergeTexts` / `lineQuality`), the
+  "doesn't look like an email" warning and the area checks → request `{ blocks: true }` and build the
+  line list from blocks → paragraphs → lines. Removed: `worker.initialize` / `loadLanguage` (not used).
+  Check `createWorker(lang, oem, …)`, the level-digit worker (psm 7 + digit whitelist) and the progress
+  logger still work.
+- Load from the CDN with a pinned exact version (as now), check the core / language data URLs and
+  first-load size; keep the "Text reader didn't load" message.
+- **Strict testing – nothing may break:**
+  1. Before changing anything: run every fixture through **real tesseract.js 5.1.1** (Node, npm package +
+     `@tesseract.js-data/eng`, no CDN needed) and save the full output per screenshot (text, lines,
+     confidences, parsed email / parts / career) as the baseline.
+  2. Same with 7: compare field by field. Every difference is reviewed; anything worse is fixed before
+     going on. The whole suite (`run.js`) must stay at 0 failed, known problems may only go down.
+  3. Switch the test suite from the Tesseract command-line stand-in to the real tesseract.js 7, so tests
+     match what players get (should also clear the "green Complete by line" known problem).
+  4. Browser checks on the dev build: capture flow (screen share + paste + drop), area set-up window,
+     joining 2–3 email screenshots both orders, PC Stats several shots, career auto-read, story job,
+     long session (30+ captures) watching memory, Chrome + Edge + Firefox.
+  5. Timing before / after on the same screenshots (expect faster), first load with an empty cache.
+  6. Only then ask Mariusz to release; live page test afterwards. Keep `backup-<live>` as the way back.
+
 ### "How to use" window – "?" button at the far right of the top bar
 - Requested by Mariusz. A "?" icon as the **right-most** item in the top bar (after ⚙ Settings) opens a
   window with the "How to use it" chapter of the Steam guide.
