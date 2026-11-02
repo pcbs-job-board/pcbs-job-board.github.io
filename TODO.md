@@ -43,6 +43,18 @@ _None open. The last five are done in `dev-0.10.0`._
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
 
+### 1.0: bring the "How to use it" window up to date
+- The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) was written from the Steam guide
+  before the later 0.10.0 features. For 1.0, add the important functions added since then, up to and including
+  everything released in 1.0. From 0.10.0 so far:
+  - part details in the suggestions and on swaps (board sizes, GPU length, socket, RAM, watts, SLI/CrossFire, lighting)
+  - ⚡ power check (shows once a PSU is planned; overclocking)
+  - compatibility: fitting parts first in the suggestions, warning box under part swaps, swap order decides
+    who wins (drag ⠿ / Alt + ↑ ↓), parts named in the objectives win over all
+  - unclear PC Stats model numbers shown as read, for checking
+- Add anything 1.0 brings. New screenshots where they help (compressed WebP, loaded only when the window opens).
+  Check every button name against the app.
+
 ### Missing part reports: also ask for the unlock level %
 - The parts database has `level_pct` since 0.9.0, but the report form only asks for the level.
 - Needs a form change plus new Apps Script columns (`tools/report-endpoint.gs`, then redeploy as a new
