@@ -329,7 +329,8 @@ async function autoCareer(url) {
     const r = await readCareer(src);
     if (!r) return;
     const cur = { ...career };
-    if (cur.level != null && (r.level < cur.level || (r.level === cur.level && r.pct === cur.pct))) return; // never go backwards on a misread
+    // never backwards on a misread: the level only stays or goes up; the % only drops together with a level-up
+    if (cur.level != null && (r.level < cur.level || (r.level === cur.level && r.pct <= cur.pct))) return;
     setCareer(r.level, r.pct); showCareer();
     toast(`Career level updated from the screenshot: Lv ${r.level} · ${r.pct}%`, () => { setCareer(cur.level, cur.pct); showCareer(); });
   } catch { } finally { careerBusy = false; }
