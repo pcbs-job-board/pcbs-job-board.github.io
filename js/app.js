@@ -11,6 +11,7 @@ if (rules && LS.get("pcbs.rulesVer", 1) < RULES_VERSION) {
 }
 LS.set("pcbs.rulesVer", RULES_VERSION);
 if (!rules) rules = DEFAULT_RULES;
+let smart = Object.assign({}, SMART_DEFAULT, LS.get("pcbs.smart", {})); // built-in detections on/off
 const DEFAULT_CROPS = { email: { x: .5, y: .14, w: .42, h: .68 }, stats: { x: .015, y: .1, w: .265, h: .76 } };
 let crops = LS.get("pcbs.crops", structuredClone(DEFAULT_CROPS));
 let cropLocked = true;
@@ -127,7 +128,7 @@ document.addEventListener("dragend", () => document.querySelectorAll(".drop").fo
 document.addEventListener("drop", e => { const id = e.dataTransfer.getData("job"); const t = dropTarget(e.target); document.querySelectorAll(".drop").forEach(c => c.classList.remove("drop")); if (!t || !id) return; e.preventDefault(); const j = job(id); const n = t.id === "queue" ? 0 : +t.dataset.table; if (n) { if (j.table !== n) moveToTable(j, n); } else j.table = 0; save(); render(); });
 
 let toastTimer;
-function toast(msg, undo) { $("#toastTxt").textContent = msg; $("#toast").style.display = "flex"; $("#toastBtn").style.display = undo ? "" : "none"; $("#toastBtn").onclick = () => { undo(); $("#toast").style.display = "none"; }; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").style.display = "none", 7000); }
+function toast(msg, undo) { const host = [...document.querySelectorAll("dialog")].find(d => d.open) || document.body; if ($("#toast").parentNode !== host) host.append($("#toast")); $("#toastTxt").textContent = msg; $("#toast").style.display = "flex"; $("#toastBtn").style.display = undo ? "" : "none"; $("#toastBtn").onclick = () => { undo(); $("#toast").style.display = "none"; }; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").style.display = "none", 7000); }
 
 // ================= screen capture =================
 let stream = null;
@@ -287,7 +288,7 @@ async function runOcr() {
     syncComps();
     const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => ({ text: s.text, conf: s.conf }));
     const keep = { extra: $("#fExtra")?.value, table: $("#fTable")?.value };
-    const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules);
+    const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules, smart);
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
@@ -384,8 +385,6 @@ function renderSettings() {
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
 $("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
-const rulesToText = r => r.map(x => `${x.task}: ${x.keys.join(", ")}`).join("\n");
-$("#btnRules").onclick = () => { $("#dlgSettings").close(); $("#rulesTxt").value = rulesToText(rules); $("#dlgRules").showModal(); };
 
 // ================= missing-part reports → GitHub issues =================
 function reportRepo() {
@@ -412,16 +411,11 @@ $("#rSend").onclick = () => {
   $("#dlgReport").close(); toast("Report opened on GitHub – press “Create” there to submit");
 };
 $("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#rName").focus(); return; } try { await navigator.clipboard.writeText(reportText(r)); toast("Report copied to clipboard"); } catch { prompt("Copy this report:", reportText(r)); } };
-$("#rulesSave").onclick = () => {
-  rules = $("#rulesTxt").value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const i = l.lastIndexOf(":"); return i > 0 ? { task: l.slice(0, i).trim(), keys: l.slice(i + 1).split(",").map(s => s.trim()).filter(Boolean) } : null; }).filter(Boolean);
-  LS.set("pcbs.rules", rules); $("#dlgRules").close(); toast("Rules saved");
-};
-$("#rulesReset").onclick = () => { $("#rulesTxt").value = rulesToText(DEFAULT_RULES); };
 
 // ================= export / import =================
-$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
+$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
-$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.crops) crops = d.crops; if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
+$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) crops = d.crops; if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 
 if (!window.PARTS_DB) toast("parts-db.js not found next to this page – part suggestions limited to names you've typed.");
 buildIndex(); initAutocomplete(); render(); setStatus();

@@ -124,7 +124,6 @@ dialog::backdrop{background:#000a}
 .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 #drop{position:fixed;inset:0;background:#33b5f033;border:4px dashed var(--accent);display:none;align-items:center;justify-content:center;font-size:22px;z-index:50}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:9px 14px;display:none;gap:12px;align-items:center;z-index:60;box-shadow:0 6px 24px #0008}
-textarea.rules{width:100%;min-height:340px;font-family:Consolas,monospace;font-size:12.5px}
 .rawtxt{white-space:pre-wrap;font-family:Consolas,monospace;font-size:11.5px;color:var(--muted);background:#0e1117;padding:8px;border-radius:6px;max-height:180px;overflow:auto}
 .ac em.dlc{font-style:normal;font-size:10px;background:#3a2d4d;color:#d6b8ff;border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
 .ac .report{color:var(--warn);border-top:1px solid var(--line);font-size:12px}
@@ -200,3 +199,44 @@ kbd{display:inline-block;min-width:20px;text-align:center;font:600 12px/1.6 Cons
 .job :is(button,input[type=checkbox],summary,select):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .job .x:focus-visible,.job .kbrow .x{opacity:1}
 .ocrnote{font-size:12px;color:#c9d4e3;background:#162232;border:1px solid #2a4560;border-left:3px solid var(--accent);border-radius:6px;padding:7px 9px;margin:8px 0}
+/* hidden-objective rules table */
+dialog.rulesdlg{width:min(1060px,96vw);max-width:none}
+.rulesdlg .dlg-h .saved{color:var(--good);font-size:12.5px;margin-left:10px;margin-right:auto}
+.rtable{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow-y:auto;padding-right:4px}
+.rrow{display:grid;grid-template-columns:38px minmax(170px,1.1fr) 2fr 1.3fr 64px;gap:8px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px}
+.rrow.rhead{background:none;border:0;padding:0 7px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);position:sticky;top:0;background:var(--panel);z-index:1}
+.rrow.off{opacity:.5}
+.rrow.off .rtask{text-decoration:line-through}
+.rtoggle{display:flex;justify-content:center;padding-top:6px;cursor:pointer}
+.rtoggle input{width:18px;height:18px;accent-color:var(--good);cursor:pointer}
+.rtask{width:100%;font-weight:600;min-width:0}
+.chips-in{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:32px;padding:3px;border:1px solid var(--line);border-radius:6px;background:#11151d;cursor:text}
+.chips-in:focus-within{border-color:var(--accent)}
+.chips-in input{flex:1;min-width:110px;border:0;background:none;padding:3px 4px;outline:none}
+.kw{display:inline-flex;align-items:center;gap:2px;font-size:12.5px;border-radius:12px;padding:1px 2px 1px 9px;white-space:nowrap}
+.chips-in.add .kw{background:#16301f;border:1px solid #2e6b45;color:#c9f5da}
+.chips-in.skip .kw{background:#3a1a1a;border:1px solid #7a3434;color:#ffc9c7}
+.kw.short{border-style:dashed!important;border-color:var(--warn)!important}
+.kw button{padding:0 6px;border:0;background:none;font-size:14px;line-height:1;color:inherit;opacity:.7}
+.kw button:hover{opacity:1}
+.ract{display:flex;gap:2px;justify-content:flex-end;padding-top:3px}
+.rbtns{display:flex;gap:8px;margin-top:10px}
+.smartlist{display:flex;flex-direction:column;gap:4px}
+.smartrow{display:grid;grid-template-columns:22px 160px 1fr;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer}
+.smartrow input{width:17px;height:17px;accent-color:var(--good)}
+.smartrow small{color:var(--muted)}
+#ruleTry{width:100%;resize:vertical}
+.tryout{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.tryhit{background:#2a2110;border:1px solid #7a5a17;border-radius:6px;padding:5px 9px}
+.tryhit small{color:var(--muted)}
+.tryno{color:var(--muted);font-size:12.5px}
+@media (max-width:760px){
+  .rrow.rhead{display:none}
+  .rrow{grid-template-columns:34px 1fr auto}
+  .rrow .chips-in{grid-column:1 / -1}
+  .rrow .chips-in.add::before{content:"Add it when the email says:";width:100%;font-size:11px;color:var(--muted)}
+  .rrow .chips-in.skip::before{content:"…but not when it says:";width:100%;font-size:11px;color:var(--muted)}
+  .rrow .ract{grid-column:3;grid-row:1}
+  .smartrow{grid-template-columns:22px 1fr}
+  .smartrow small{grid-column:2}
+}

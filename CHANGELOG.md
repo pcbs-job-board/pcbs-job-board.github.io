@@ -2,6 +2,11 @@
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 
+## 0.9.0 (not released yet)
+- Keyword rules are now an easy table: objective, words that add it, words that stop it.
+- Rules can be switched off, reset one by one, and tested with a "Try it" box.
+- Cable, brand and broken-part detection can be switched off.
+
 ## 0.8.1
 - Fixed email and subject missing when screenshots are taken bottom-first.
 - Fixed duplicated objectives from words cut off at the edge of a screenshot.
