@@ -7,5 +7,5 @@ window.PCBS_CONFIG = {
   repo: "mariusz-przeczek/pcbs-job-board",
   version: "0.9.0",
   // Google Apps Script web app that receives reports (see tools/report-endpoint.gs). Empty = only GitHub / copy.
-  reportEndpoint: "",
+  reportEndpoint: "https://script.google.com/macros/s/AKfycbwJSdRrb_yY93Eo3BR8Wv-wBvlHlXWeZgj7xD_TBzqhlVpeLLF-q3cmJPsEKqBGHg2Z/exec",
 };
