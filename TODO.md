@@ -4,9 +4,9 @@ Working notes for the job board (private – dev repository only).
 Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
-- **Small fixes**: once there are **5 or more**, they're done together in a new hot-fix dev branch (`dev-X.Y.Z`).
-- **Bigger updates**: only started when Mariusz asks for them. A bigger update also takes in every
-  small fix still open, even if there are fewer than 5.
+- **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike. When he starts a
+  bigger update, open small fixes can be taken into it if he agrees.
+- **After adding an item, tell Mariusz how many small fixes and bigger updates are on the list.**
 - An item is **removed from this list as soon as it's done and ready in a dev branch**. From then on the
   dev branch's changelog records it.
 - All dev branches and backups live in this private repository (`pcbs-job-board-dev`). The public
@@ -19,9 +19,9 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 
 ---
 
-## Small fixes (0 / 5)
+## Small fixes (0)
 
-_No numbered fixes open._
+_None open._
 
 ---
 
