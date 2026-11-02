@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.9.0** (`main` in the public repository `pcbs-job-board`).
+Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Small fixes**: once there are **5 or more**, they're done together in a new hot-fix dev branch (`dev-X.Y.Z`).
@@ -21,7 +21,13 @@ Live version: **0.9.0** (`main` in the public repository `pcbs-job-board`).
 
 ## Small fixes (0 / 5)
 
-_None open. The last five are done in `dev-0.9.1` (waiting for the go-ahead to release)._
+_No numbered fixes open._
+
+### Carry along with the next release (no changelog line, doesn't count toward the 5)
+- Repo moved to the organization `pcbs-job-board` (site now at the root, https://pcbs-job-board.github.io/).
+  `js/config.js` still says `repo: "mariusz-przeczek/pcbs-job-board"` – GitHub forwards it, so links work.
+  Ready-made change on branch `dev-0.9.2` (config repo, root-site detection in `reportRepo()`, README address):
+  take those files into the next dev branch, **without** the 0.9.2 changelog entry / version bump.
 
 ---
 
