@@ -8,6 +8,8 @@ Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
   "promo_cases", parts flagged "HEM" get "hem". "Steam Version" goes to the version column.
 * "Level" and "Level %" (how far into that career level the part unlocks) go to
   level / level_pct.
+* "details": the facts shown under a part in the suggestions and on part swaps (DETAILS below):
+  case board sizes / GPU length / fans, socket, RAM, cores, clock, watts, SLI/CrossFire, lighting.
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
 
@@ -18,7 +20,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -56,6 +58,53 @@ SHEETS = {
     "WC Coolants": ("water-cooling", lambda r: "Coolant"),
 }
 
+# ---------- "details" column ----------
+BOARD = [("Mini-ITX", "ITX"), ("Micro-ATX", "mATX"), ("S-ATX", "ATX"), ("E-ATX", "E-ATX"), ("XL-ATX", "XL-ATX"), ("SSI-EEB", "EEB")]
+def light(r):
+    l = s(r.get("Lighting"))
+    return {"PurpleBlue": "Purple/Blue"}.get(l, l) + (" lighting" if l and l != "RGB" else "") if l else ""
+def socket(x):  # "LGA 1151 (Coffee Lake)" → "LGA 1151 (Coffee Lake)"; kept as the game writes it
+    return s(x)
+def sockets(lst):  # cooler / water block list → families, short: "AM4 · LGA 1151, 1200, 2066 · TR4, sTRX4"
+    have = [x.strip() for x in s(lst).split(",") if x.strip()]
+    amd = sorted({x for x in have if x.startswith(("AM", "FM"))}, key=lambda x: (x[:2] != "AM", x))
+    lga = []
+    for x in have:
+        if x.startswith("LGA"):
+            n = x.split()[1].replace("-V3", "-3")
+            if n not in lga: lga.append(n)
+    tr = [x for x in have if x in ("TR4", "sTRX4")]
+    parts = [" ".join(amd).replace("FM2 FM2+", "FM2/FM2+")] if amd else []
+    if lga: parts.append("LGA " + ", ".join(sorted(lga, key=lambda n: int("".join(c for c in n if c.isdigit())[:4]))))
+    if tr: parts.append(", ".join(tr))
+    return " · ".join(parts)
+def fans(r):  # fans that come with the case: "3× 120 mm + 1× 140 mm fans"
+    out = {}
+    for i in (1, 2, 3):
+        n, m = s(r.get(f"Case Fan Type {i} Count")), s(r.get(f"Case Fan Type {i} Model"))
+        if n and n != "0" and m:
+            size = "140" if "140" in m else "200" if "200" in m else "120"
+            out[size] = out.get(size, 0) + int(float(n))
+    return " + ".join(f"{n}× {k} mm" for k, n in sorted(out.items())) + " fans" if out else "no fans"
+def j(*xs): return " · ".join(x for x in xs if x)
+DETAILS = {
+    "Cases": lambda r: j("/".join(b for k, b in BOARD if s(r.get(k)) == "Y"), f"GPU ≤ {s(r.get('Max GPU length'))} mm" if s(r.get("Max GPU length")) else "",
+                         fans(r), "radiators " + " / ".join(f"{s(r.get(f'Max {z}mm Radiators'))}×{z}" for z in (120, 140) if s(r.get(f"Max {z}mm Radiators")) not in ("", "0")) if any(s(r.get(f"Max {z}mm Radiators")) not in ("", "0") for z in (120, 140)) else "", light(r)),
+    "Motherboards": lambda r: j(socket(r.get("CPU Socket")), dict(BOARD).get(s(r.get("Size")), s(r.get("Size"))), f"{s(r.get('RAM Type'))} {s(r.get('Default RAM Speed'))}" + (f"–{s(r.get('Max RAM Speed Step'))} MHz" if s(r.get("Max RAM Speed Step")) else " MHz"),
+                                f"{s(r.get('RAM Slots'))} RAM slots" if s(r.get("RAM Slots")) else "", "/".join(x for x, k in (("SLI", "Support SLI"), ("CrossFire", "Support CrossFire")) if s(r.get(k)) == "Y"), light(r)),
+    "CPUs": lambda r: j(socket(r.get("Socket")), f"{s(r.get('Cores'))} cores" if s(r.get("Cores")) else "", f"{float(s(r.get('Frequency'))) / 1000:g} GHz" if s(r.get("Frequency")) else "",
+                        f"{s(r.get('Wattage'))} W" if s(r.get("Wattage")) else "", "unlocked (OC)" if s(r.get("Can Overclock")) == "Y" else ""),
+    "CPU Coolers": lambda r: j(s(r.get("Type")) or s(r.get("Part Type")).replace("CPU Cooler - ", ""), sockets(r.get("CPU Socket List")), light(r)),
+    "WC CPU Blocks": lambda r: j("water block", sockets(r.get("CPU Socket List")), light(r)),
+    "Memory": lambda r: j(s(r.get("RAM Type")), f"{s(r.get('Size (GB)'))} GB" if s(r.get("Size (GB)")) else "", f"{s(r.get('Frequency'))} MHz" if s(r.get("Frequency")) else "", light(r)),
+    "GPUs": lambda r: j(f"{s(r.get('VRAM (GB)'))} GB" if s(r.get("VRAM (GB)")) else "", f"{s(r.get('Length'))} mm" if s(r.get("Length")) else "", f"{s(r.get('Wattage'))} W" if s(r.get("Wattage")) else "",
+                        s(r.get("Multi-GPU")), "water-cooled" if "Water" in s(r.get("Part Type")) else "", light(r)),
+    "Power Supplies": lambda r: j(f"{s(r.get('Wattage'))} W" if s(r.get("Wattage")) else "", s(r.get("Type")), s(r.get("Size"))),
+    "Case Fans": lambda r: j(f"{s(r.get('Size'))} mm" if s(r.get("Size")) else "", light(r)),
+    "Storage": lambda r: j(s(r.get("Type")), light(r)),
+    "WC Radiators": lambda r: j(light(r)), "WC Reservoirs": lambda r: j(light(r)), "WC Pipe Connectors": lambda r: j(light(r)),
+}
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -81,7 +130,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

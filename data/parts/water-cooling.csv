@@ -1,164 +1,164 @@
-name,level,level_pct,price,spec,dlc,version,jobs,source
-Alphacool Eisblock XPX (Black),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX (Blue),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX (Grey),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX (Matte Grey),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX (Red),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX (Silver),18,20,70,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX Pro 1U (LGA 2066),24,1,80,CPU block,,1.4,,xlsx v1.15.3
-Alphacool Eisblock XPX Pro 1U (TR4),22,1,80,CPU block,,1.4,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB 115X/AM4 (Black),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB 115X/AM4 (White),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB 2066 (Black),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB 2066 (White),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB sTR4 (Black),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC7 RGB sTR4 (White),25,10,70,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC9 RGB 2066 (Black),25,40,75,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC9 RGB 2066 (White),25,40,75,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC9 RGB sTR4 (Black),25,40,75,CPU block,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XC9 RGB sTR4 (White),25,40,75,CPU block,,1.7,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Black Acetal,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Black Plexi,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Nickel Acetal,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Nickel Plexi,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Red Acetal,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Edge Red Plexi,17,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy EVO - Acetal,16,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy EVO - Full Nickel,16,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy EVO - Nickel,16,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy Evo Acetal Blue,16,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy Evo Plexi Red,16,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy EVO RGB - Nickel,23,1,360,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy Evo White Acetal,16,1,300,CPU block,,1.11,,xlsx v1.15.3
-EKWB EK-Supremacy sTR4 - Full Nickel,22,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy sTR4 - Nickel,22,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy sTR4 - Nickel+Acetal,22,1,300,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-Supremacy sTR4 RGB - Nickel,23,1,360,CPU block,,1.0,,xlsx v1.15.3
-EKWB EK-WB Custom,34,1,1,"CPU block, not in shop",,1.12,,xlsx v1.15.3
-GIGABYTE Z490 Aorus All-In-One Monoblock,34,1,1,"CPU block, not in shop",,1.13,,xlsx v1.15.3
-GIGABYTE Z590 Aorus All-In-One Display Monoblock,34,1,1,"CPU block, not in shop",,1.13,,xlsx v1.15.3
-Raijintek CWB-RGB,27,1,420,CPU block,,1.3,,xlsx v1.15.3
-Raijintek CWB-TR4 RBW,27,1,420,CPU block,,1.3,,xlsx v1.15.3
-Raijintek FORKIS ELITE,32,1,65,CPU block,,1.14,,xlsx v1.15.3
-Raijintek FORKIS PRO RBW,32,1,70,CPU block,,1.14,,xlsx v1.15.3
-Alphacool NexXxoS ST30 120,19,1,130,Radiator 120mm x1,,1.4,,xlsx v1.15.3
-Alphacool NexXxoS ST30 140,19,1,150,Radiator 140mm x1,,1.4,,xlsx v1.15.3
-Alphacool NexXxoS ST30 240,19,1,230,Radiator 240mm x2,,1.4,,xlsx v1.15.3
-Alphacool NexXxoS ST30 280,19,1,280,Radiator 280mm x2,,1.4,,xlsx v1.15.3
-Alphacool NexXxoS ST30 360,19,1,300,Radiator 360mm x3,,1.4,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 120,25,10,150,Radiator 120mm x1,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 140,25,10,180,Radiator 140mm x1,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 240,25,10,250,Radiator 240mm x2,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 280,25,10,320,Radiator 280mm x2,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 360,25,10,370,Radiator 360mm x3,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR5 420,25,10,450,Radiator 420mm x3,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR7 240,25,40,250,Radiator 240mm x2,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR7 360,25,40,370,Radiator 360mm x3,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XR7 480,25,40,450,Radiator 480mm x4,,1.7,,xlsx v1.15.3
-EKWB EK-CoolStream SE 120,16,1,130,Radiator 120mm x1,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 120 RGB,23,1,280,Radiator 120mm x1,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 140,16,1,150,Radiator 140mm x1,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 240,16,1,230,Radiator 240mm x2,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 240 RGB,23,1,270,Radiator 240mm x2,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 280,16,1,280,Radiator 280mm x2,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 360,16,1,300,Radiator 360mm x3,,1.0,,xlsx v1.15.3
-EKWB EK-CoolStream SE 360 RGB,23,1,350,Radiator 360mm x3,,1.0,,xlsx v1.15.3
-Raijintek CALORE C240D,27,1,300,Radiator 240mm x2,,1.3,,xlsx v1.15.3
-Raijintek CALORE C360D,27,1,400,Radiator 360mm x3,,1.3,,xlsx v1.15.3
-Alphacool Eisbecher D5 250mm Acetal,27,30,420,Reservoir,,1.4,,xlsx v1.15.3
-Alphacool Eisbecher DDC 150mm Acetal,27,30,380,Reservoir,,1.4,,xlsx v1.15.3
-Alphacool Eisstation DC-Ultra,27,30,150,Reservoir,,1.4,,xlsx v1.15.3
-CORSAIR XD3 RGB Combo,25,10,150,Reservoir,,1.11,,xlsx v1.15.3
-CORSAIR XD5 RGB Combo (Black),25,10,150,Reservoir,,1.7,,xlsx v1.15.3
-CORSAIR XD5 RGB Combo (White),25,10,150,Reservoir,,1.7,,xlsx v1.15.3
-EKWB EK-XRES 100 Revo D5,16,1,220,Reservoir,,1.0,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5,16,1,250,Reservoir,,1.0,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5 - Plexi,16,1,250,Reservoir,,1.0,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5 RGB,23,1,320,Reservoir,,1.0,,xlsx v1.15.3
-Raijintek Antila D5 RBW,26,50,340,Reservoir,,1.4,,xlsx v1.15.3
-AIO pipe,1,1,100,"Pipe Flexible, not in shop",,1.0,,xlsx v1.15.3
-AIO white pipe,1,1,100,"Pipe Flexible, not in shop",,1.14,,xlsx v1.15.3
-Flexible Black Pipe,16,1,200,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Blue Pipe,17,1,300,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Clear Pipe,16,1,200,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Green Pipe,18,1,300,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Purple Pipe,18,1,300,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Red Pipe,17,1,300,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible White Pipe,16,1,200,Pipe Flexible,,1.0,,xlsx v1.15.3
-Flexible Yellow Pipe,18,1,300,Pipe Flexible,,1.0,,xlsx v1.15.3
-Rigid Black Pipe,20,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Blue Pipe,21,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Clear Pipe,20,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Copper Pipe,28,50,500,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Green Pipe,21,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Nickel Pipe,29,50,500,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Purple Pipe,21,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Red Pipe,21,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid White Pipe,20,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Rigid Yellow Pipe,21,1,400,Pipe Rigid,,1.0,,xlsx v1.15.3
-Alphacool Eiszapfen 13mm Fitting (Black),18,40,200,Fitting,,1.4,,xlsx v1.15.3
-Alphacool Eiszapfen 13mm Fitting (Blue),18,40,200,Fitting,,1.4,,xlsx v1.15.3
-Alphacool Eiszapfen 13mm Fitting (Red),18,40,200,Fitting,,1.4,,xlsx v1.15.3
-Alphacool Eiszapfen 13mm Fitting (Silver),18,40,200,Fitting,,1.4,,xlsx v1.15.3
-CORSAIR Hydro X Series XF Fitting (Black),25,10,225,Fitting,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XF Fitting (Gold),25,10,225,Fitting,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XF Fitting (Silver),25,10,225,Fitting,,1.7,,xlsx v1.15.3
-CORSAIR Hydro X Series XF Fitting (White),25,10,225,Fitting,,1.7,,xlsx v1.15.3
-EKWB EK-WB Angled (Black Nickel),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Angled (Black),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Angled (Nickel),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Black Nickel),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Black),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Blue),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Copper),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Gold),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Green),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Nickel),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Purple),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (Red),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-EKWB EK-WB Fitting (White),16,1,200,Fitting,,1.0,,xlsx v1.15.3
-Raijintek PELIAS RGB Fitting,27,1,400,Fitting,,1.3,,xlsx v1.15.3
-Black Clear Coolant,16,90,200,Coolant,,1.0,,xlsx v1.15.3
-Black Flecked Coolant,25,90,400,Coolant,,1.0,,xlsx v1.15.3
-Black Opaque Coolant,17,90,300,Coolant,,1.0,,xlsx v1.15.3
-Blue Clear Coolant,16,1,200,Coolant,,1.0,,xlsx v1.15.3
-Blue Flecked Coolant,25,1,400,Coolant,,1.0,,xlsx v1.15.3
-Blue Opaque Coolant,17,1,300,Coolant,,1.0,,xlsx v1.15.3
-Clear Coolant,16,1,100,Coolant,,1.0,,xlsx v1.15.3
-Cyan Clear Coolant,16,60,200,Coolant,,1.0,,xlsx v1.15.3
-Cyan Flecked Coolant,25,60,400,Coolant,,1.0,,xlsx v1.15.3
-Cyan Opaque Coolant,17,60,300,Coolant,,1.0,,xlsx v1.15.3
-Dirty,1,1,100,"Coolant, not in shop",,1.0,,xlsx v1.15.3
-Green Clear Coolant,16,1,200,Coolant,,1.0,,xlsx v1.15.3
-Green Flecked Coolant,25,1,400,Coolant,,1.0,,xlsx v1.15.3
-Green Opaque Coolant,17,1,300,Coolant,,1.0,,xlsx v1.15.3
-Lime Clear Coolant,16,60,200,Coolant,,1.0,,xlsx v1.15.3
-Lime Flecked Coolant,25,60,400,Coolant,,1.0,,xlsx v1.15.3
-Lime Opaque Coolant,17,60,300,Coolant,,1.0,,xlsx v1.15.3
-Pink Clear Coolant,16,30,200,Coolant,,1.0,,xlsx v1.15.3
-Pink Flecked Coolant,25,30,400,Coolant,,1.0,,xlsx v1.15.3
-Pink Opaque Coolant,17,30,300,Coolant,,1.0,,xlsx v1.15.3
-Purple Clear Coolant,16,30,200,Coolant,,1.0,,xlsx v1.15.3
-Purple Flecked Coolant,25,30,400,Coolant,,1.0,,xlsx v1.15.3
-Purple Opaque Coolant,17,30,300,Coolant,,1.0,,xlsx v1.15.3
-Red Clear Coolant,16,1,200,Coolant,,1.0,,xlsx v1.15.3
-Red Flecked Coolant,25,1,400,Coolant,,1.0,,xlsx v1.15.3
-Red Opaque Coolant,17,1,300,Coolant,,1.0,,xlsx v1.15.3
-UV Blue Clear Coolant,27,1,500,Coolant,,1.0,,xlsx v1.15.3
-UV Blue Opaque Coolant,27,60,500,Coolant,,1.0,,xlsx v1.15.3
-UV Green Clear Coolant,27,1,500,Coolant,,1.0,,xlsx v1.15.3
-UV Green Opaque Coolant,27,60,500,Coolant,,1.0,,xlsx v1.15.3
-UV Orange Clear Coolant,27,30,500,Coolant,,1.0,,xlsx v1.15.3
-UV Orange Opaque Coolant,27,90,500,Coolant,,1.0,,xlsx v1.15.3
-UV Purple Clear Coolant,27,30,500,Coolant,,1.0,,xlsx v1.15.3
-UV Purple Opaque Coolant,27,90,500,Coolant,,1.0,,xlsx v1.15.3
-UV Red Clear Coolant,27,1,500,Coolant,,1.0,,xlsx v1.15.3
-UV Red Opaque Coolant,27,60,500,Coolant,,1.0,,xlsx v1.15.3
-UV Yellow Clear Coolant,27,1,500,Coolant,,1.0,,xlsx v1.15.3
-UV Yellow Opaque Coolant,27,60,500,Coolant,,1.0,,xlsx v1.15.3
-White Clear Coolant,16,90,200,Coolant,,1.0,,xlsx v1.15.3
-White Flecked Coolant,25,90,400,Coolant,,1.0,,xlsx v1.15.3
-White Opaque Coolant,17,90,300,Coolant,,1.0,,xlsx v1.15.3
-Yellow Clear Coolant,16,1,200,Coolant,,1.0,,xlsx v1.15.3
-Yellow Flecked Coolant,25,1,400,Coolant,,1.0,,xlsx v1.15.3
-Yellow Opaque Coolant,17,1,300,Coolant,,1.0,,xlsx v1.15.3
+name,level,level_pct,price,spec,dlc,version,jobs,details,source
+Alphacool Eisblock XPX (Black),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX (Blue),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX (Grey),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX (Matte Grey),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX (Red),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX (Silver),18,20,70,CPU block,,1.4,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Alphacool Eisblock XPX Pro 1U (LGA 2066),24,1,80,CPU block,,1.4,,water block · LGA 2066,xlsx v1.15.3
+Alphacool Eisblock XPX Pro 1U (TR4),22,1,80,CPU block,,1.4,,"water block · TR4, sTRX4",xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB 115X/AM4 (Black),25,10,70,CPU block,,1.7,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3 · RGB",xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB 115X/AM4 (White),25,10,70,CPU block,,1.7,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3 · RGB",xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB 2066 (Black),25,10,70,CPU block,,1.7,,water block · LGA 2066 · RGB,xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB 2066 (White),25,10,70,CPU block,,1.7,,water block · LGA 2066 · RGB,xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB sTR4 (Black),25,10,70,CPU block,,1.7,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+CORSAIR Hydro X Series XC7 RGB sTR4 (White),25,10,70,CPU block,,1.7,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+CORSAIR Hydro X Series XC9 RGB 2066 (Black),25,40,75,CPU block,,1.7,,water block · LGA 2066 · RGB,xlsx v1.15.3
+CORSAIR Hydro X Series XC9 RGB 2066 (White),25,40,75,CPU block,,1.7,,water block · LGA 2066 · RGB,xlsx v1.15.3
+CORSAIR Hydro X Series XC9 RGB sTR4 (Black),25,40,75,CPU block,,1.7,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+CORSAIR Hydro X Series XC9 RGB sTR4 (White),25,40,75,CPU block,,1.7,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+EKWB EK-Supremacy Edge Black Acetal,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Edge Black Plexi,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Edge Nickel Acetal,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Edge Nickel Plexi,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Edge Red Acetal,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Edge Red Plexi,17,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy EVO - Acetal,16,1,300,CPU block,,1.0,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy EVO - Full Nickel,16,1,300,CPU block,,1.0,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy EVO - Nickel,16,1,300,CPU block,,1.0,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Evo Acetal Blue,16,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy Evo Plexi Red,16,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy EVO RGB - Nickel,23,1,360,CPU block,,1.0,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066 · RGB",xlsx v1.15.3
+EKWB EK-Supremacy Evo White Acetal,16,1,300,CPU block,,1.11,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+EKWB EK-Supremacy sTR4 - Full Nickel,22,1,300,CPU block,,1.0,,"water block · TR4, sTRX4",xlsx v1.15.3
+EKWB EK-Supremacy sTR4 - Nickel,22,1,300,CPU block,,1.0,,"water block · TR4, sTRX4",xlsx v1.15.3
+EKWB EK-Supremacy sTR4 - Nickel+Acetal,22,1,300,CPU block,,1.0,,"water block · TR4, sTRX4",xlsx v1.15.3
+EKWB EK-Supremacy sTR4 RGB - Nickel,23,1,360,CPU block,,1.0,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+EKWB EK-WB Custom,34,1,1,"CPU block, not in shop",,1.12,,water block · LGA 1200 · RGB,xlsx v1.15.3
+GIGABYTE Z490 Aorus All-In-One Monoblock,34,1,1,"CPU block, not in shop",,1.13,,water block · LGA 1200 · RGB,xlsx v1.15.3
+GIGABYTE Z590 Aorus All-In-One Display Monoblock,34,1,1,"CPU block, not in shop",,1.13,,water block · LGA 1200 · RGB,xlsx v1.15.3
+Raijintek CWB-RGB,27,1,420,CPU block,,1.3,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066 · RGB",xlsx v1.15.3
+Raijintek CWB-TR4 RBW,27,1,420,CPU block,,1.3,,"water block · TR4, sTRX4 · RGB",xlsx v1.15.3
+Raijintek FORKIS ELITE,32,1,65,CPU block,,1.14,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066",xlsx v1.15.3
+Raijintek FORKIS PRO RBW,32,1,70,CPU block,,1.14,,"water block · AM3+ AM4 FM2/FM2+ · LGA 1151, 1200, 2011-3, 2066 · RGB",xlsx v1.15.3
+Alphacool NexXxoS ST30 120,19,1,130,Radiator 120mm x1,,1.4,,,xlsx v1.15.3
+Alphacool NexXxoS ST30 140,19,1,150,Radiator 140mm x1,,1.4,,,xlsx v1.15.3
+Alphacool NexXxoS ST30 240,19,1,230,Radiator 240mm x2,,1.4,,,xlsx v1.15.3
+Alphacool NexXxoS ST30 280,19,1,280,Radiator 280mm x2,,1.4,,,xlsx v1.15.3
+Alphacool NexXxoS ST30 360,19,1,300,Radiator 360mm x3,,1.4,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 120,25,10,150,Radiator 120mm x1,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 140,25,10,180,Radiator 140mm x1,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 240,25,10,250,Radiator 240mm x2,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 280,25,10,320,Radiator 280mm x2,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 360,25,10,370,Radiator 360mm x3,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR5 420,25,10,450,Radiator 420mm x3,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR7 240,25,40,250,Radiator 240mm x2,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR7 360,25,40,370,Radiator 360mm x3,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XR7 480,25,40,450,Radiator 480mm x4,,1.7,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 120,16,1,130,Radiator 120mm x1,,1.0,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 120 RGB,23,1,280,Radiator 120mm x1,,1.0,,RGB,xlsx v1.15.3
+EKWB EK-CoolStream SE 140,16,1,150,Radiator 140mm x1,,1.0,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 240,16,1,230,Radiator 240mm x2,,1.0,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 240 RGB,23,1,270,Radiator 240mm x2,,1.0,,RGB,xlsx v1.15.3
+EKWB EK-CoolStream SE 280,16,1,280,Radiator 280mm x2,,1.0,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 360,16,1,300,Radiator 360mm x3,,1.0,,,xlsx v1.15.3
+EKWB EK-CoolStream SE 360 RGB,23,1,350,Radiator 360mm x3,,1.0,,RGB,xlsx v1.15.3
+Raijintek CALORE C240D,27,1,300,Radiator 240mm x2,,1.3,,RGB,xlsx v1.15.3
+Raijintek CALORE C360D,27,1,400,Radiator 360mm x3,,1.3,,RGB,xlsx v1.15.3
+Alphacool Eisbecher D5 250mm Acetal,27,30,420,Reservoir,,1.4,,,xlsx v1.15.3
+Alphacool Eisbecher DDC 150mm Acetal,27,30,380,Reservoir,,1.4,,,xlsx v1.15.3
+Alphacool Eisstation DC-Ultra,27,30,150,Reservoir,,1.4,,RGB,xlsx v1.15.3
+CORSAIR XD3 RGB Combo,25,10,150,Reservoir,,1.11,,RGB,xlsx v1.15.3
+CORSAIR XD5 RGB Combo (Black),25,10,150,Reservoir,,1.7,,RGB,xlsx v1.15.3
+CORSAIR XD5 RGB Combo (White),25,10,150,Reservoir,,1.7,,RGB,xlsx v1.15.3
+EKWB EK-XRES 100 Revo D5,16,1,220,Reservoir,,1.0,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5,16,1,250,Reservoir,,1.0,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5 - Plexi,16,1,250,Reservoir,,1.0,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5 RGB,23,1,320,Reservoir,,1.0,,RGB,xlsx v1.15.3
+Raijintek Antila D5 RBW,26,50,340,Reservoir,,1.4,,RGB,xlsx v1.15.3
+AIO pipe,1,1,100,"Pipe Flexible, not in shop",,1.0,,,xlsx v1.15.3
+AIO white pipe,1,1,100,"Pipe Flexible, not in shop",,1.14,,,xlsx v1.15.3
+Flexible Black Pipe,16,1,200,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Blue Pipe,17,1,300,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Clear Pipe,16,1,200,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Green Pipe,18,1,300,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Purple Pipe,18,1,300,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Red Pipe,17,1,300,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible White Pipe,16,1,200,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Flexible Yellow Pipe,18,1,300,Pipe Flexible,,1.0,,,xlsx v1.15.3
+Rigid Black Pipe,20,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Blue Pipe,21,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Clear Pipe,20,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Copper Pipe,28,50,500,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Green Pipe,21,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Nickel Pipe,29,50,500,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Purple Pipe,21,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Red Pipe,21,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid White Pipe,20,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Rigid Yellow Pipe,21,1,400,Pipe Rigid,,1.0,,,xlsx v1.15.3
+Alphacool Eiszapfen 13mm Fitting (Black),18,40,200,Fitting,,1.4,,,xlsx v1.15.3
+Alphacool Eiszapfen 13mm Fitting (Blue),18,40,200,Fitting,,1.4,,,xlsx v1.15.3
+Alphacool Eiszapfen 13mm Fitting (Red),18,40,200,Fitting,,1.4,,,xlsx v1.15.3
+Alphacool Eiszapfen 13mm Fitting (Silver),18,40,200,Fitting,,1.4,,,xlsx v1.15.3
+CORSAIR Hydro X Series XF Fitting (Black),25,10,225,Fitting,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XF Fitting (Gold),25,10,225,Fitting,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XF Fitting (Silver),25,10,225,Fitting,,1.7,,,xlsx v1.15.3
+CORSAIR Hydro X Series XF Fitting (White),25,10,225,Fitting,,1.7,,,xlsx v1.15.3
+EKWB EK-WB Angled (Black Nickel),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Angled (Black),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Angled (Nickel),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Black Nickel),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Black),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Blue),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Copper),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Gold),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Green),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Nickel),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Purple),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (Red),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+EKWB EK-WB Fitting (White),16,1,200,Fitting,,1.0,,,xlsx v1.15.3
+Raijintek PELIAS RGB Fitting,27,1,400,Fitting,,1.3,,RGB,xlsx v1.15.3
+Black Clear Coolant,16,90,200,Coolant,,1.0,,,xlsx v1.15.3
+Black Flecked Coolant,25,90,400,Coolant,,1.0,,,xlsx v1.15.3
+Black Opaque Coolant,17,90,300,Coolant,,1.0,,,xlsx v1.15.3
+Blue Clear Coolant,16,1,200,Coolant,,1.0,,,xlsx v1.15.3
+Blue Flecked Coolant,25,1,400,Coolant,,1.0,,,xlsx v1.15.3
+Blue Opaque Coolant,17,1,300,Coolant,,1.0,,,xlsx v1.15.3
+Clear Coolant,16,1,100,Coolant,,1.0,,,xlsx v1.15.3
+Cyan Clear Coolant,16,60,200,Coolant,,1.0,,,xlsx v1.15.3
+Cyan Flecked Coolant,25,60,400,Coolant,,1.0,,,xlsx v1.15.3
+Cyan Opaque Coolant,17,60,300,Coolant,,1.0,,,xlsx v1.15.3
+Dirty,1,1,100,"Coolant, not in shop",,1.0,,,xlsx v1.15.3
+Green Clear Coolant,16,1,200,Coolant,,1.0,,,xlsx v1.15.3
+Green Flecked Coolant,25,1,400,Coolant,,1.0,,,xlsx v1.15.3
+Green Opaque Coolant,17,1,300,Coolant,,1.0,,,xlsx v1.15.3
+Lime Clear Coolant,16,60,200,Coolant,,1.0,,,xlsx v1.15.3
+Lime Flecked Coolant,25,60,400,Coolant,,1.0,,,xlsx v1.15.3
+Lime Opaque Coolant,17,60,300,Coolant,,1.0,,,xlsx v1.15.3
+Pink Clear Coolant,16,30,200,Coolant,,1.0,,,xlsx v1.15.3
+Pink Flecked Coolant,25,30,400,Coolant,,1.0,,,xlsx v1.15.3
+Pink Opaque Coolant,17,30,300,Coolant,,1.0,,,xlsx v1.15.3
+Purple Clear Coolant,16,30,200,Coolant,,1.0,,,xlsx v1.15.3
+Purple Flecked Coolant,25,30,400,Coolant,,1.0,,,xlsx v1.15.3
+Purple Opaque Coolant,17,30,300,Coolant,,1.0,,,xlsx v1.15.3
+Red Clear Coolant,16,1,200,Coolant,,1.0,,,xlsx v1.15.3
+Red Flecked Coolant,25,1,400,Coolant,,1.0,,,xlsx v1.15.3
+Red Opaque Coolant,17,1,300,Coolant,,1.0,,,xlsx v1.15.3
+UV Blue Clear Coolant,27,1,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Blue Opaque Coolant,27,60,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Green Clear Coolant,27,1,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Green Opaque Coolant,27,60,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Orange Clear Coolant,27,30,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Orange Opaque Coolant,27,90,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Purple Clear Coolant,27,30,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Purple Opaque Coolant,27,90,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Red Clear Coolant,27,1,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Red Opaque Coolant,27,60,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Yellow Clear Coolant,27,1,500,Coolant,,1.0,,,xlsx v1.15.3
+UV Yellow Opaque Coolant,27,60,500,Coolant,,1.0,,,xlsx v1.15.3
+White Clear Coolant,16,90,200,Coolant,,1.0,,,xlsx v1.15.3
+White Flecked Coolant,25,90,400,Coolant,,1.0,,,xlsx v1.15.3
+White Opaque Coolant,17,90,300,Coolant,,1.0,,,xlsx v1.15.3
+Yellow Clear Coolant,16,1,200,Coolant,,1.0,,,xlsx v1.15.3
+Yellow Flecked Coolant,25,1,400,Coolant,,1.0,,,xlsx v1.15.3
+Yellow Opaque Coolant,17,1,300,Coolant,,1.0,,,xlsx v1.15.3

@@ -320,3 +320,8 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .help .hpair img{margin:6px 0 10px}
 .help .htip{margin-top:18px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--muted,#9aa7b5)}
 @media(max-width:640px){.help .hpair{grid-template-columns:1fr}}
+
+/* part details: under the name in the suggestions and on part swaps */
+.ac div span .det{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:2px;line-height:1.35}
+.ac div.sel span .det,.ac div:hover span .det{color:#b5c3d6}
+.swap .det{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.35}

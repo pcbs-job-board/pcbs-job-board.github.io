@@ -34,9 +34,9 @@ let INDEX = [];
 function buildIndex() {
   INDEX = [];
   const db = window.PARTS_DB || {};
-  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct] of db[cat]) {
+  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct, , det] of db[cat]) {
     if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
-    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
+    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, det, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }
@@ -91,10 +91,10 @@ function acShow(inp) {
   const lockedN = searchParts.hidden;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
-  const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl + (p.pct > 1 ? " · " + p.pct + "%" : "") : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
+  const info = p => p.hist ? "typed before" : [p.det ? "" : p.spec, p.lvl != null ? "Lv " + p.lvl + (p.pct > 1 ? " · " + p.pct + "%" : "") : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
-  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
+  acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}${p.det ? `<i class="det">${esc(p.det)}</i>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
     + (lockedN ? `<div class="aclocked">🔒 ${lockedN} more need a higher career level (Lv ${career.level}${career.pct ? " · " + career.pct + "%" : ""} – change it in Settings)</div>` : "")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const host = inp.closest("dialog") || document.body; if (acEl.parentNode !== host) host.append(acEl);
@@ -316,6 +316,12 @@ function mergePCStats(lists) {
 
 // shop price of a part by its exact name (any DLC / version – it's for budget maths)
 let PRICE = null;
+// longer facts for a part (board sizes, socket, RAM, watts, SLI/CrossFire, lighting…) – shown on swaps
+let DETAILS = null;
+function detailsOf(name) {
+  if (!DETAILS) { DETAILS = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) DETAILS.set(r[0].toLowerCase(), r[8] || r[3] || ""); }
+  return DETAILS.get(String(name || "").trim().toLowerCase()) || "";
+}
 function priceOf(name) {
   if (!PRICE) { PRICE = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[2] != null) PRICE.set(r[0].toLowerCase(), r[2]); }
   return PRICE.get(String(name || "").trim().toLowerCase()) ?? null;
