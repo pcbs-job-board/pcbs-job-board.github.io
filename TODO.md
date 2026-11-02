@@ -57,6 +57,22 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
 
+### "How to use" window – "?" button at the far right of the top bar
+- Requested by Mariusz. A "?" icon as the **right-most** item in the top bar (after ⚙ Settings) opens a
+  window with the "How to use it" chapter of the Steam guide.
+- Starts with the **banner image** (`00_banner.png`), then the 7 steps + "Tweak it" with the guide's
+  screenshots in the same places (04 area setup, 05 new job window, 03 job card, 06 suggestions,
+  02 open jobs, 07 rules, 10 settings).
+- Text as in the guide, minus what doesn't fit inside the app: drop "Go to https://pcbs-job-board.github.io/.
+  A desktop browser (Chrome, Edge, Firefox) works best." (the player is already there); button names must
+  match the app.
+- Source: guide text + images (`scratchpad/steam-guide/` – copy them into the dev branch, e.g. `img/help/`).
+  Images: convert to compressed WebP/JPEG (the PNGs are ~0.2–1.4 MB each) and load them only when the
+  window opens. `.gitignore` blocks *.png/*.jpg since 0.9.1 – add `!img/**` or use `git add -f`.
+- Watch out: the `?` key already opens the keyboard shortcuts window. Keep that, and give the new window a
+  link to the shortcuts (and the shortcuts window a link back). Close with Esc / ✕, scrollable, fits narrow
+  screens. Probably a new feature version (0.10.0) unless it goes into 1.0.
+
 ### Missing part reports: also ask for the unlock level %
 - The parts database has `level_pct` since 0.9.0, but the report form only asks for the level.
 - Needs a form change plus new Apps Script columns (`tools/report-endpoint.gs`, then redeploy as a new

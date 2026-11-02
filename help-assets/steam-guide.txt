@@ -1,0 +1,134 @@
+=====================================================================
+STEAM GUIDE – PCBS Job Board
+Paste each SECTION into its own guide section (Steam: "Add Section").
+[IMAGE: xx] = upload that file in the guide's image manager and insert it there.
+=====================================================================
+
+GUIDE TITLE
+PCBS Job Board – a free job manager that reads your emails for you
+
+SHORT DESCRIPTION (guide summary)
+Tired of running back to the in-game PC to re-read emails? PCBS Job Board reads job emails from a screenshot, spots hidden objectives and keeps every workbench organised. Free, runs in your browser, nothing to install.
+
+GUIDE PREVIEW IMAGE
+00_preview_square.png
+
+
+---------------------------------------------------------------------
+SECTION 1 – Introduction
+---------------------------------------------------------------------
+[IMAGE: 00_banner.png]
+
+[b]PCBS Job Board[/b] is a small, free web app for PC Building Simulator 1 that keeps track of your jobs while you play.
+
+[h3]Why I made it[/h3]
+The vanilla PC version and the console editions of PCBS don't really help you manage jobs. I kept running between the workbench and the in-game PC just to re-read an email. Ordering parts for the next day, saving and quitting, then coming back and having no idea which part was meant for which system… And the built-in notes app is, let's be honest, really uncomfortable to use.
+
+So I built a tool that does the remembering for me – and now for you too.
+
+[list]
+[*]Free, no account, nothing to install – it runs in your browser
+[*]Your jobs stay on your own device (saved in the browser)
+[*]Works with the English version of the game
+[*]Works on PC, and with consoles through PS Remote Play, chiaki-ng or any screen you can share
+[/list]
+
+[url=https://pcbs-job-board.github.io/][b]▶ Open PCBS Job Board[/b][/url]
+
+
+---------------------------------------------------------------------
+SECTION 2 – Features
+---------------------------------------------------------------------
+[IMAGE: 01_board.png]
+
+[h3]Read jobs straight from the game[/h3]
+[list]
+[*][b]Capture a job email[/b] from a shared game window, or paste / drop a screenshot – the text is read for you (customer, subject, labour, budget, deadline, objectives)
+[*][b]Long emails[/b] can be read from several screenshots and are joined together
+[*][b]PC Stats capture[/b] – the customer's current parts are read and matched to the in-game parts database
+[*][b]Email and PC Stats areas are found automatically[/b] on the first capture, and you can adjust them
+[*][b]Career level and %[/b] are read from the screenshot on every capture
+[/list]
+
+[h3]Hidden objectives[/h3]
+[list]
+[*]Spots what the customer only hints at: dust, viruses, urgent deadlines, cable colours, favourite brands ("total NZXT fanboy"), parts they think are broken and more
+[*]Suggestions are shown in the new job window – tick the ones you want to keep
+[*]All the rules are an editable table: objective, words that add it, words that stop it – with a "Try it" box
+[/list]
+
+[h3]Workbench board[/h3]
+[list]
+[*]Three workbenches (one job each) plus an [b]open jobs[/b] queue sorted by deadline – drag & drop between them
+[*]Each job card shows remaining budget, hidden objectives, objectives, tasks you found while working and part swaps
+[*][b]Part swaps[/b] with autofill from 2,000+ in-game parts, with price and unlock level – only parts you've unlocked are suggested
+[*][b]Story jobs[/b] are recognised and marked, with no fake hidden objectives and a non-binding budget
+[*]Keyboard shortcuts (press [b]?[/b] in the app)
+[/list]
+
+[h3]Everything else[/h3]
+[list]
+[*]Game version and DLC settings (hide parts you can't have yet)
+[*]Backup: export / import all your jobs and settings
+[*]Report a story job or a missing part straight from the app – no account needed
+[*]Notification when a new version is out, with a short "What's new"
+[/list]
+
+
+---------------------------------------------------------------------
+SECTION 3 – How to use it
+---------------------------------------------------------------------
+[h3]1. Open the app[/h3]
+Go to [url=https://pcbs-job-board.github.io/]pcbs-job-board.github.io[/url]. A desktop browser (Chrome, Edge, Firefox) works best. Set your [b]career level[/b] and [b]%[/b] in the top bar (it updates by itself after your first capture).
+
+[h3]2. Connect the game screen[/h3]
+Click [b]🖥 Connect screen[/b] and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste ([b]Ctrl+V[/b]) or drop a screenshot instead.
+
+[h3]3. Capture the job email[/h3]
+Open the job email in the game and click [b]📸 Capture job[/b]. On your very first capture a large window shows where the app found the email – drag the box if needed and confirm. This is only needed once.
+[IMAGE: 04_area_setup.png]
+
+[h3]4. Check the new job[/h3]
+The new job window shows everything that was read. Fix anything that looks off, tick the hidden objectives you want to keep, then add the job. Email too long for one screen? Scroll in the game and capture again – the parts are joined.
+[IMAGE: 05_new_job_window.png]
+
+[h3]5. Add the customer's parts (optional)[/h3]
+When the PC is on your bench, open [b]PC Stats[/b] in the game and capture it. Take more screenshots if the list is long. The parts appear under [b]Current parts[/b] on the job card.
+
+[h3]6. Work the job[/h3]
+Drag the job to a workbench. Tick objectives as you go, add things you find while working, and use [b]Add part replacement[/b] to plan swaps – start typing and pick from the list. The budget bar tells you how much is left.
+[IMAGE: 03_job_card.png]
+[IMAGE: 06_suggestions.png]
+
+Now you can order parts, save, quit and come back tomorrow knowing exactly which part goes where.
+[IMAGE: 02_open_jobs.png]
+
+[h3]7. Finish[/h3]
+Press [b]✓ Job completed[/b] when the job is done.
+
+[h3]Tweak it[/h3]
+In [b]⚙ Settings[/b] you'll find the hidden objective rules, screen areas, keyboard shortcuts, DLC & promo parts, game version, backup and reset.
+[IMAGE: 07_rules.png]
+[IMAGE: 10_settings.png]
+
+[i]Tip: text reading is never 100% perfect – always give the new job a quick look before adding it.[/i]
+
+
+---------------------------------------------------------------------
+SECTION 4 – Future plans & how you can help
+---------------------------------------------------------------------
+The main things left are:
+[list]
+[*][b]Completing the story job list[/b] – so every story mission is recognised automatically
+[*][b]Filling in missing parts[/b] in the parts database
+[/list]
+
+[b]I'd be really thankful for any help with those![/b] If you get a story job that isn't marked, or a part is missing from the suggestions, report it right from the app – it takes a few seconds and no account is needed:
+[list]
+[*][b]📖 Report story job[/b] – in the top bar or the new job window
+[*][b]🚩 Can't find it? Report…[/b] – at the bottom of the part suggestions list
+[/list]
+[IMAGE: 08_story_review.png]
+[IMAGE: 09_report.png]
+
+Ideas, bugs or feedback? Leave a comment below. Thanks for using it and happy building! 🛠️
