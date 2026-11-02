@@ -6,6 +6,4 @@
 window.PCBS_CONFIG = {
   repo: "mariusz-przeczek/pcbs-job-board",
   version: "0.9.0",
-  // where "Report story job → Send by email" goes (subject "Story Quest Report #…")
-  storyReportEmail: "przeczek.mariusz@gmail.com",
 };
