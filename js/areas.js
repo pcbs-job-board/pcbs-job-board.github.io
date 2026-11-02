@@ -96,6 +96,44 @@ const frac = (x0, y0, x1, y1, w, h) => {
   x0 = c(x0, w); x1 = c(x1, w); y0 = c(y0, h); y1 = c(y1, h);
   return { x: x0 / w, y: y0 / h, w: (x1 - x0) / w, h: (y1 - y0) / h };
 };
+// ---- career level bar (top-right HUD: stars, "LEVEL 20", green progress bar under them) ----
+// img = the top-right corner of the frame at full resolution, starting at (ox, oy) of a W×H frame.
+// Finds the green fill, then walks right through the light track to the bar's grey outline.
+// Returns how full the bar is (0–1) and where the level number is written (fractions of the frame).
+const isBarGreen = ([r, g, b]) => g > 130 && g - r > 50 && g - b > 50;
+const lum = ([r, g, b]) => (r + g + b) / 3;
+function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
+  const { width: w, height: h, data: d } = img;
+  // green runs, grouped into bars (same left end, rows next to each other)
+  const rs = runs(img, isBarGreen, Math.max(6, W * 0.012));
+  const groups = [];
+  for (const r of rs) {
+    const g = groups.find(g => Math.abs(g.x0 - r.x0) <= 4 && r.y - g.y1 <= 2);
+    if (g) { g.y1 = r.y; g.rows.push(r); } else groups.push({ x0: r.x0, y0: r.y, y1: r.y, rows: [r] });
+  }
+  let best = null;
+  for (const g of groups) {
+    const bh = g.y1 - g.y0 + 1;
+    if (bh < 3 || bh > H * 0.03) continue;                 // a thin bar, not a big green sign
+    const mid = g.rows[Math.floor(g.rows.length / 2)], y = mid.y;
+    const fill = g.rows.map(r => r.x1).sort((a, b) => a - b)[Math.floor(g.rows.length / 2)];
+    let x = fill; for (let k = 0; k < 4 && x < w - 1 && lum(px(d, w, x, y)) < 200; k++) x++; // blended edge pixels
+    while (x < w - 1 && lum(px(d, w, x, y)) >= 200) x++;      // light track up to the outline
+    const len = x - g.x0;
+    if (len < W * 0.05 || len > W * 0.3 || x >= w - 1) continue;
+    if (x - fill < 6) continue;                              // a bar is never 100 % full – green up to a dark edge is a sign or a logo
+    if (!best || g.rows.length > best.rows) best = { x0: g.x0, x1: x, fill, y0: g.y0, y1: g.y1, rows: g.rows.length };
+  }
+  if (!best) return null;
+  const bw = best.x1 - best.x0, bh = best.y1 - best.y0 + 1, fx = v => (v + ox) / W, fy = v => (v + oy) / H;
+  return {
+    full: Math.max(0, Math.min(1, (best.fill - best.x0) / bw)),
+    bar: { x: fx(best.x0), y: fy(best.y0), w: bw / W, h: bh / H },
+    // "LEVEL 20" sits above the right end of the bar
+    // (sized from the bar's width – its measured height varies a little between screenshots)
+    digits: { x: fx(best.x0 + bw * 0.62), y: fy(Math.max(0, best.y0 - bw * 0.155)), w: bw * 0.41 / W, h: bw * 0.145 / H },
+  };
+}
 // kind: "email" | "stats"  →  { box, sure } or null
 function detectArea(img, kind) { return kind === "stats" ? findStats(img) : findEmail(img); }
 // browser helper: <img>/<canvas> → small ImageData
@@ -105,7 +143,7 @@ function areaImage(src) {
   const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(src, 0, 0, AREA_W, h);
   return g.getImageData(0, 0, AREA_W, h);
 }
-if (typeof module !== "undefined") module.exports = { detectArea, AREA_W };
+if (typeof module !== "undefined") module.exports = { detectArea, findLevelBar, AREA_W };
 
 // ================= "Set up screen areas" window (browser only) =================
 // Hidden "set up" flag per area. Boxes that were moved before this existed count as set up.
@@ -213,4 +251,86 @@ if (typeof document !== "undefined") {
     openAreas(k, im, () => { });
   });
   renderAreaStatus();
+}
+
+// ================= career level from the HUD (browser only) =================
+// Runs after an email / PC Stats capture has been read – separately, with its own small OCR worker,
+// so a problem here can never affect reading the email or the parts.
+let levelWorker = null;
+async function getLevelWorker() {
+  if (!levelWorker) {
+    levelWorker = await Tesseract.createWorker("eng", 1);
+    await levelWorker.setParameters({ tessedit_pageseg_mode: "7", tessedit_char_whitelist: "0123456789" });
+  }
+  return levelWorker;
+}
+// level digits → a clean black-on-white picture of just the big digits (drops "LEVEL" and the $ coin)
+function levelDigitsCanvas(src, b) {
+  const W = src.naturalWidth || src.width, H = src.naturalHeight || src.height;
+  const sx = Math.round(b.x * W), sy = Math.round(b.y * H), w = Math.max(4, Math.round(b.w * W)), h = Math.max(4, Math.round(b.h * H));
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(src, sx, sy, w, h, 0, 0, w, h);
+  const d = g.getImageData(0, 0, w, h).data, L = new Uint8Array(w * h);
+  let lo = 255, hi = 0;
+  for (let i = 0; i < w * h; i++) { const v = (d[i * 4] + d[i * 4 + 1] + d[i * 4 + 2]) / 3; L[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+  if (hi - lo < 60) return null;
+  const th = (lo + hi) / 2, ink = i => L[i] < th, seen = new Uint8Array(w * h), comps = [];
+  for (let i = 0; i < w * h; i++) {
+    if (!ink(i) || seen[i]) continue;
+    let x0 = w, y0 = h, x1 = 0, y1 = 0, n = 0; const st = [i]; seen[i] = 1;
+    while (st.length) {
+      const j = st.pop(), x = j % w, y = (j - x) / w; n++;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (const k of [x > 0 ? j - 1 : -1, x < w - 1 ? j + 1 : -1, y > 0 ? j - w : -1, y < h - 1 ? j + w : -1]) if (k >= 0 && !seen[k] && ink(k)) { seen[k] = 1; st.push(k); }
+    }
+    comps.push({ x0, y0, x1, y1, n });
+  }
+  if (!comps.length) return null;
+  const top = Math.max(...comps.map(c => c.y1 - c.y0));
+  let tall = comps.filter(c => c.y1 - c.y0 >= 0.6 * top && c.n > 20 && c.x0 > 0 && c.y0 > 0)
+    .map(c => c.x1 - c.x0 > 0.95 * (c.y1 - c.y0) ? { ...c, x1: Math.min(c.x1, c.x0 + Math.round(0.72 * (c.y1 - c.y0))) } : c) // digit merged with the coin
+    .sort((a, b) => a.x0 - b.x0);
+  if (!tall.length) return null;
+  const groups = [[tall[0]]];
+  for (const c of tall.slice(1)) { if (c.x0 - groups.at(-1).at(-1).x1 < 0.6 * top) groups.at(-1).push(c); else groups.push([c]); }
+  const grp = groups.reduce((a, b) => (b.length > a.length ? b : a));
+  const bx0 = Math.min(...grp.map(c => c.x0)), by0 = Math.min(...grp.map(c => c.y0)), bx1 = Math.max(...grp.map(c => c.x1)), by1 = Math.max(...grp.map(c => c.y1));
+  const pad = Math.max(3, Math.round((by1 - by0) / 4)), gh = by1 - by0 + 1, scale = 64 / (gh + pad * 2);
+  const o = document.createElement("canvas"); o.width = Math.round((bx1 - bx0 + 1 + pad * 2) * scale); o.height = 64;
+  const og = o.getContext("2d"), oi = og.createImageData(o.width, o.height);
+  for (let y = 0; y < o.height; y++) for (let x = 0; x < o.width; x++) {
+    const X = Math.floor(x / scale) - pad + bx0, Y = Math.floor(y / scale) - pad + by0, k = (y * o.width + x) * 4;
+    const v = X >= bx0 && X <= bx1 && Y >= by0 && Y <= by1 && ink(Y * w + X) ? 0 : 255;
+    oi.data[k] = oi.data[k + 1] = oi.data[k + 2] = v; oi.data[k + 3] = 255;
+  }
+  og.putImageData(oi, 0, 0);
+  return o;
+}
+// → { level, pct } (pct rounded down to 5 %), or null when the HUD can't be read
+async function readCareer(src) {
+  const W = src.naturalWidth || src.width, H = src.naturalHeight || src.height;
+  const ox = Math.round(W * 0.45), cw = W - ox, ch = Math.round(H * 0.22);
+  const c = document.createElement("canvas"); c.width = cw; c.height = ch;
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(src, ox, 0, cw, ch, 0, 0, cw, ch);
+  const bar = findLevelBar(g.getImageData(0, 0, cw, ch), ox, 0, W, H);
+  if (!bar) return null;
+  const pct = Math.floor(bar.full * 100 / 5) * 5;
+  const dc = levelDigitsCanvas(src, bar.digits); if (!dc || !window.Tesseract) return null;
+  const t = (await (await getLevelWorker()).recognize(dc)).data.text.replace(/\D/g, "");
+  const level = parseInt(t, 10);
+  return level >= 1 && level <= 99 ? { level, pct } : null;
+}
+// called after a capture was read; updates the top bar when the HUD shows a newer career state
+let careerBusy = false;
+async function autoCareer(url) {
+  if (careerBusy || !url) return; careerBusy = true;
+  try {
+    const src = new Image(); src.src = url; await src.decode();
+    const r = await readCareer(src);
+    if (!r) return;
+    const cur = { ...career };
+    if (cur.level != null && (r.level < cur.level || (r.level === cur.level && r.pct === cur.pct))) return; // never go backwards on a misread
+    setCareer(r.level, r.pct); showCareer();
+    toast(`Career level updated from the screenshot: Lv ${r.level} · ${r.pct}%`, () => { setCareer(cur.level, cur.pct); showCareer(); });
+  } catch { } finally { careerBusy = false; }
 }

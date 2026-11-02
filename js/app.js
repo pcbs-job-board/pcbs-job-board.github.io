@@ -282,6 +282,8 @@ async function runOcr() {
     lastFrame[ak] = sh.url;
     if (!areasSet[ak] && !sh.areaAsked) { sh.areaAsked = true; openAreas(ak, $("#shot"), () => runOcr()); return; }
     const text = await ocr($("#shot"), sh.kind); sh.text = text; sh.conf = lastConf; $("#rawTxt").textContent = text;
+    // career level / % from the HUD – only after the main reading is done, never waited for, errors ignored
+    if (!sh.careerDone) { sh.careerDone = true; setTimeout(() => autoCareer(sh.url).catch(() => { }), 0); }
     if (sh.kind === "parts") {
       const ok = /components|pc for|benchmark/i.test(text);
       sh.parts = ok ? resolvePCStats(text) : null;

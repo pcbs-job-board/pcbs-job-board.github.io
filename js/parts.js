@@ -76,7 +76,7 @@ function brandCategories(brand) { return [...new Set(INDEX.filter(p => !p.hist &
 function rememberPart(name, cat) {
   if (!name || Object.values(window.PARTS_DB || {}).some(rows => rows.some(r => r[0].toLowerCase() === name.toLowerCase()))) return;
   partsHistory = [{ name, cat }, ...partsHistory.filter(p => p.name.toLowerCase() !== name.toLowerCase())].slice(0, 400);
-  LS.set("pcbs.partsHistory", partsHistory); buildIndex();
+  LS.set("pcbs.partsHistory", partsHistory); buildIndex(); VOCAB = null;
 }
 
 // ---- autocomplete dropdown (any input with data-ac) ----
@@ -183,14 +183,61 @@ function joinPCStatsLines(lines) {
   for (const l of lines) {
     if (!cur) { cur = l.text; continue; }
     if (l.branded) { items.push(cur); cur = l.text; continue; }
+    if (/^\(/.test(l.text)) { cur += " " + l.text; continue; }   // "(Silver) 16 GB 2800 MHz" continues the name above
     const joined = cur + " " + l.text, sj = sc(joined), sCur = sc(cur), sLine = sc(l.text);
     if (sj >= sCur - 0.02 && sj >= sLine) cur = joined; else { items.push(cur); cur = l.text; }
   }
   if (cur) items.push(cur);
   return items.map(name => ({ name }));
 }
+// The pictures next to each part in PC Stats are read as junk ("oF ae", "4, pov RA nwt mm) PTO").
+// Every word is checked against the words used in real part names (one OCR slip allowed, e.g. "MS!"):
+// junk at the start / end of a line is cut off, lines that are mostly junk are dropped.
+let VOCAB = null;
+function partVocab() {
+  if (VOCAB) return VOCAB;
+  VOCAB = new Set();
+  const names = [...Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => r[0])), ...partsHistory.map(p => p.name)];
+  for (const name of names) for (const t of normP(name).split(" ")) if (t.length >= 2) VOCAB.add(t);
+  return VOCAB;
+}
+const near1 = (a, b) => { // edit distance ≤ 1
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, e = 0;
+  while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++e > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+  return e + (a.length - i) + (b.length - j) <= 1;
+};
+function wordOk(tok) {
+  const t = normP(tok).replace(/ /g, ""), v = partVocab();
+  if (!t) return false;
+  if (v.has(t)) return true;
+  if (/\d/.test(t) && /[a-z0-9]{3,}/.test(t)) return true;           // model numbers: 1500X, 2370-PRO, i7-8086K
+  // one OCR slip: words of 4+ letters, or short ones with a symbol in them ("MS!" → MSI) – not "pto" → "pro"
+  if (t.length >= 4 || (t.length === 3 && /[^a-z0-9]/.test(t))) for (const w of v) if (w.length >= 3 && near1(t, w)) return true;
+  return false;
+}
+// sizes read with letters for digits: "SOOGB" → 500GB, "1TB", "I6 GB"
+const fixSize = t => /^[\dOoSsIl]{1,5}(gb|tb|mhz|mm|w)$/i.test(t) && /\d/.test(t.replace(/[Ss]/g, "5").replace(/[Oo]/g, "0")) ? t.replace(/^[\dOoSsIl]+/, m => m.replace(/[Oo]/g, "0").replace(/[Ss]/g, "5").replace(/[Il]/g, "1")) : t;
+function denoisePartLines(lines) {
+  const out = [];
+  for (const l of lines) {
+    const toks = l.text.split(/\s+/).filter(Boolean).map(fixSize), good = toks.map(wordOk);
+    // at the ends, 1–2 letter bits ("Se", "a") are picture crumbs even when they happen to be real words
+    const edgeOk = i => good[i] && !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
+    let a = 0, z = toks.length - 1;
+    while (a <= z && !edgeOk(a)) a++;
+    while (z >= a && !edgeOk(z) && !/^\(?[a-z]+\)$/i.test(toks[z]) && !/^logo\)?$/i.test(toks[z])) z--;
+    if (a > z) continue;
+    const keep = toks.slice(a, z + 1), kg = good.slice(a, z + 1), n = kg.filter(Boolean).length;
+    if (n / keep.length < 0.6) continue;
+    // a line of bare numbers ("109°)") is picture noise; a wrapped model number like "1500X" mixes letters and digits
+    if (!keep.some(t => /[a-z]{2,}/i.test(t) || (/\d/.test(t) && /[a-z]/i.test(t)))) continue;
+    out.push({ ...l, text: keep.join(" ") });
+  }
+  return out;
+}
 function resolvePCStats(items) {
-  if (typeof items === "string") items = joinPCStatsLines(componentLines(items));
+  if (typeof items === "string") items = joinPCStatsLines(denoisePartLines(componentLines(items)));
   const out = [], count = {};
   let lastIdx = -1;
   for (const it of items) {

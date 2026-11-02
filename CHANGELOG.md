@@ -5,7 +5,9 @@ Within each version, changes are listed from most to least important.
 
 ## 0.9.0 (not released yet)
 - Email and PC Stats areas are found automatically on the first capture, in a large window where they can be adjusted.
+- Much more reliable PC Stats parts list – junk text from the part pictures is filtered out.
 - Career level and % in the top bar – part suggestions for swaps only show parts you have unlocked.
+- Career level and % are read from the screenshot automatically on every capture.
 - Keyword rules are now an easy table: objective, words that add it, words that stop it.
 - 🔔 Notifications: new version available (with reload) and a short "What's new" after an update.
 - Rules can be switched off, reset one by one, and tested with a "Try it" box.
