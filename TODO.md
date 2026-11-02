@@ -33,7 +33,7 @@ Live version: **0.9.1** (`main` in the public repository `pcbs-job-board/pcbs-jo
   cut off) and, after the last matching line, drops edge lines when both screenshots have extra lines
   there – so a complete, unique line is thrown away.
 - Fix: only drop an edge line when the other screenshot has a similar line (a cut-off copy of it);
-  keep edge lines nothing else covers. Also end the objectives at "Go to whiteboard" (build requests'
+  keep edge lines nothing else covers. Also end the objectives at "Go to whiteboard" (the build request's
   button). Add a test with the button line missing.
 
 ---
