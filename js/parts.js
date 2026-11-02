@@ -322,6 +322,40 @@ function detailsOf(name) {
   if (!DETAILS) { DETAILS = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) DETAILS.set(r[0].toLowerCase(), r[8] || r[3] || ""); }
   return DETAILS.get(String(name || "").trim().toLowerCase()) || "";
 }
+// ---------- power check ----------
+// watts for a part: CPU / GPU { w: stock, oc: overclocked to the max }, PSU { w } – from the parts database
+// ("power" column), a PSU not in it by the watts in its name ("… 650W")
+let POWER = null;
+function powerOf(name) {
+  if (!POWER) { POWER = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[9]) { const [w, oc] = String(r[9]).split(">").map(Number); POWER.set(r[0].toLowerCase(), { w, oc: oc || w }); } }
+  const key = String(name || "").trim().toLowerCase(), p = POWER.get(key);
+  if (p) return p;
+  const m = key.match(/(\d{3,4})\s?w\b/); return m ? { w: +m[1], oc: +m[1] } : null;
+}
+const POWER_OTHER = 50;   // everything except CPU and GPUs (board, RAM, drives, fans, pump…) – rule of thumb 40–50 W
+// the PC as it will be when the job is done: current parts with the planned swaps applied
+function plannedBuild(j) {
+  const b = (j.components || []).map(c => ({ cat: c.cat, name: c.name }));
+  for (const s of j.swaps || []) {
+    const i = s.old ? b.findIndex(c => !c.swapped && c.name.toLowerCase() === s.old.toLowerCase()) : -1;
+    // category as chosen; left on "Other" → from the parts database, else the replaced part's
+    const db = fullIndex().find(p => p.name.toLowerCase() === String(s.new).trim().toLowerCase());
+    const cat = s.cat && s.cat !== "Other" ? s.cat : db ? db.cat : i >= 0 ? b[i].cat : s.cat;
+    if (i >= 0) b[i] = { cat, name: s.new, swapped: true };
+    else b.push({ cat, name: s.new, swapped: true });
+  }
+  return b;
+}
+// null when there is no PSU yet; otherwise what the CPU + GPU(s) + the rest need, stock and overclocked
+function powerCheck(j) {
+  const b = plannedBuild(j), psu = b.filter(c => c.cat === "PSU").pop();
+  if (!psu) return null;
+  const P = powerOf(psu.name), cpu = b.filter(c => c.cat === "CPU").pop(), gpus = b.filter(c => c.cat === "GPU");
+  const parts = [cpu, ...gpus].filter(Boolean).map(c => ({ ...c, p: powerOf(c.name) }));
+  const need = k => POWER_OTHER + parts.reduce((t, c) => t + (c.p ? c.p[k] : 0), 0);
+  const ocWanted = /overclock|\boc\b/i.test([...(j.objectives || []), ...(j.tasks || []).map(t => t.text), ...(j.hidden || []).map(h => h.task || h)].join(" "));
+  return { psu: psu.name, psuW: P ? P.w : null, cpu, gpus, parts, stock: need("w"), oc: need("oc"), ocWanted, unknown: parts.filter(c => !c.p).map(c => c.name) };
+}
 function priceOf(name) {
   if (!PRICE) { PRICE = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[2] != null) PRICE.set(r[0].toLowerCase(), r[2]); }
   return PRICE.get(String(name || "").trim().toLowerCase()) ?? null;

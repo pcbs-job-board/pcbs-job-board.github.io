@@ -10,6 +10,7 @@ Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
   level / level_pct.
 * "details": the facts shown under a part in the suggestions and on part swaps (DETAILS below):
   case board sizes / GPU length / fans, socket, RAM, cores, clock, watts, SLI/CrossFire, lighting.
+* "power" (POWER below): CPU / GPU "watts>watts when overclocked to the max", PSU "watts" – for the power check.
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
 
@@ -20,7 +21,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -105,6 +106,22 @@ DETAILS = {
     "WC Radiators": lambda r: j(light(r)), "WC Reservoirs": lambda r: j(light(r)), "WC Pipe Connectors": lambda r: j(light(r)),
 }
 
+# ---------- "power" column ----------
+def num(v):
+    try: return float(s(v))
+    except ValueError: return None
+def cpu_power(r):
+    # power grows with voltage² × clock; the workbook gives stock voltage / clock and the overclocking
+    # reference voltage / clock ("OC Base"), so max OC ≈ W × (V_oc / V)² × (f_oc / f). Locked CPUs can't be overclocked.
+    w, v, f, vo, fo = (num(r.get(k)) for k in ("Wattage", "Voltage", "Frequency", "OC Base Voltage", "OC Base Freq"))
+    if not w: return ""
+    if s(r.get("Can Overclock")) != "Y" or not (v and f and vo and fo): return f"{w:g}"
+    return f"{w:g}>{round(w * (vo / v) ** 2 * (fo / f))}"
+def gpu_power(r):  # "GPU % Power Increase" = how far the power limit can be raised when overclocking
+    w, pct = num(r.get("Wattage")), num(r.get("GPU % Power Increase"))
+    return "" if not w else f"{w:g}>{round(w * (1 + (pct or 0) / 100))}"
+POWER = {"CPUs": cpu_power, "GPUs": gpu_power, "Power Supplies": lambda r: s(r.get("Wattage"))}
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -130,7 +147,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

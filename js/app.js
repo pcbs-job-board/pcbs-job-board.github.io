@@ -35,6 +35,20 @@ function hidIcon(t) {
 }
 
 function deadlineValue(s) { const m = String(s || "").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? Date.UTC(+m[3], +m[1] - 1, +m[2]) : Infinity; }
+// ⚡ power check: CPU + GPU(s) + ~50 W for the rest vs. the PSU of the planned PC (current parts + swaps)
+function powerHtml(j) {
+  const pc = powerCheck(j); if (!pc) return "";
+  const w = n => n.toLocaleString() + " W", g = pc.gpus.length;
+  if (pc.psuW == null) return `<div class="power unknown">⚡ <span>Power check: watts of <b>${esc(pc.psu)}</b> unknown</span></div>`;
+  const use = pc.ocWanted ? pc.oc : pc.stock, over = use > pc.psuW, ocOver = !pc.ocWanted && pc.oc > pc.psuW, tight = !over && use > pc.psuW * 0.9;
+  const pct = Math.min(100, use / pc.psuW * 100);
+  const what = [pc.cpu ? "CPU" : "", g ? (g > 1 ? g + " GPUs" : "GPU") : ""].filter(Boolean).join(" + ");
+  const title = pc.parts.map(c => `${c.cat}: ${c.name} – ${c.p ? c.p.w + " W" + (c.p.oc > c.p.w ? " (up to " + c.p.oc + " W overclocked)" : "") : "watts unknown"}`).concat([`Everything else (board, RAM, drives, fans…): ~${POWER_OTHER} W`]).join("\n");
+  return `<div class="power ${over ? "over" : tight || ocOver ? "tight" : ""}" title="${esc(title)}">
+    <div class="brow"><span>${over ? "⚠️ PSU too weak" : "⚡ Power"}${pc.ocWanted ? " <small>(overclocked)</small>" : ""}</span><b>${w(use)} / ${w(pc.psuW)}</b></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <small>${what ? what + " + " : ""}~${POWER_OTHER} W for the rest${pc.unknown.length ? ` · <span class="warn">${pc.unknown.length} part${pc.unknown.length > 1 ? "s" : ""} without watts</span>` : ""}${over ? ` · needs a PSU of at least <b>${w(Math.ceil(use / 50) * 50)}</b>` : ""}${ocOver ? ` · <span class="warn">too weak when overclocked (~${w(pc.oc)})</span>` : !pc.ocWanted && pc.oc > pc.stock ? ` · overclocked ~${w(pc.oc)}` : ""}</small></div>`;
+}
 function render() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
     const j = jobs.find(j => j.table === n);
@@ -80,7 +94,7 @@ function jobCard(j) {
     ${hidHtml}${mainHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
-    <div class="sec"><h4>Part swaps</h4>${swaps}
+    <div class="sec"><h4>Part swaps</h4>${powerHtml(j)}${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>

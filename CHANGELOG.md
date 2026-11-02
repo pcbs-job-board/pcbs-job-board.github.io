@@ -7,6 +7,7 @@ Within each version, changes are listed from most to least important.
 - Text reader updated to Tesseract.js 7 – screenshots are read about 20 % faster.
 - Fixed the last objective of build requests lost when joining email screenshots.
 - New "How to use it" window – the ? button in the top bar.
+- Power check: warns when the PSU is too weak for the planned CPU + GPU(s), also when overclocked.
 - Part suggestions and swaps show more details: board sizes, GPU length, socket, RAM, cores, watts, SLI/CrossFire, lighting.
 - PC Stats: model numbers cut at the line end are matched ("1500" → 1500X).
 - PC Stats: an unclear model number is shown as read for checking instead of a guessed part.

@@ -325,3 +325,14 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .ac div span .det{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:2px;line-height:1.35}
 .ac div.sel span .det,.ac div:hover span .det{color:#b5c3d6}
 .swap .det{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+
+/* ⚡ power check on the job card */
+.power{margin:4px 0 6px;padding:6px 9px 5px;border-radius:7px;background:#14232f;border:1px solid #2b5672;font-size:12px}
+.power .brow{display:flex;justify-content:space-between;align-items:baseline;color:#9fd2ef;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.power .brow small{text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted)}
+.power .brow b{font-size:14px;color:#cfeaff;letter-spacing:0}
+.power .bar{height:5px;border-radius:3px;background:#0e1820;margin:4px 0 3px;overflow:hidden}.power .bar i{display:block;height:100%;background:var(--accent)}
+.power small{color:var(--muted);line-height:1.4}.power small .warn{color:var(--warn)}
+.power.tight{border-color:var(--warn);background:#2a2412}.power.tight .bar i{background:var(--warn)}
+.power.over{background:#3a1416;border:2px solid var(--bad);box-shadow:0 0 12px #ef535033}.power.over .brow{color:#ffb0ae}.power.over .brow b{color:#ff8a87}.power.over .bar i{background:var(--bad)}.power.over small{color:#e3a3a1}
+.power.unknown{color:var(--muted)}
