@@ -308,3 +308,15 @@ button.danger.solid:disabled{opacity:.4;cursor:not-allowed}
 /* switch rows inside forms (e.g. "Story job" in the new-job window) keep their own look */
 .form label.dlcrow{display:flex;text-transform:none;letter-spacing:normal;font-size:13.5px;color:var(--text);margin:10px 0 4px}
 .form input.switch{width:38px;min-width:38px;height:22px;padding:0}
+
+/* "How to use it" window */
+.helpbtn{font-weight:800;font-size:15px;width:32px;height:32px;padding:0;border-radius:50%}
+dialog.helpdlg{width:min(860px,96vw);max-width:none}
+.help h4{margin:20px 0 6px;font-size:15px;color:var(--accent,#33b5f0)}
+.help p{margin:0 0 10px;line-height:1.5}
+.help img{display:block;max-width:100%;height:auto;margin:6px 0 14px;border:1px solid var(--line);border-radius:8px;background:#0b0f14}
+.help .hbanner{border:0;border-radius:10px;margin-top:0}
+.help .hpair{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.help .hpair img{margin:6px 0 10px}
+.help .htip{margin-top:18px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--muted,#9aa7b5)}
+@media(max-width:640px){.help .hpair{grid-template-columns:1fr}}

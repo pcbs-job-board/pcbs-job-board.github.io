@@ -421,6 +421,8 @@ function renderSettings() {
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
+// ❓ How to use it – the pictures are only downloaded the first time the window is opened
+$("#btnHelp").onclick = () => { document.querySelectorAll("#dlgHelp img[data-src]").forEach(i => { i.src = i.dataset.src; i.removeAttribute("data-src"); }); $("#dlgHelp").showModal(); $("#dlgHelp .dlg-b").scrollTop = 0; };
 $("#btnKeysFromSettings").onclick = () => { $("#dlgSettings").close(); openKeysHelp(); };
 // career level + % in the top bar; the tooltip says what it does and how many parts are unlocked
 function careerInfo() {

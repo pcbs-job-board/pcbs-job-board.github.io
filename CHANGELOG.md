@@ -5,7 +5,15 @@ Within each version, changes are listed from most to least important.
 
 ## 0.10.0
 - Text reader updated to Tesseract.js 7 – screenshots are read about 20 % faster.
+- Fixed the last objective of build requests lost when joining email screenshots.
+- New "How to use it" window – the ? button in the top bar.
+- PC Stats: model numbers cut at the line end are matched ("1500" → 1500X).
+- PC Stats: an unclear model number is shown as read for checking instead of a guessed part.
+- PC Stats: picture crumbs ("S35", "ion") no longer added as parts.
+- Fixed sender and subject lost when a crumb sticks to the address ("TinyAunt@]…").
+- Fixed junk after the last objective ("Diagnose and fix R").
 - Uses less memory in long sessions.
+- Dynabeard ("Important: Computer required") recognised as a story job.
 
 ## 0.9.1
 - PC Stats: half-cut first line no longer added as a junk or wrong part.
