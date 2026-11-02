@@ -30,11 +30,13 @@ js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
 js/rules.js                hidden-objective rules window
 js/areas.js                finds the email / PC Stats windows, screen-area set-up
+js/story.js                story jobs: banner in the new-job window, story job reports
 js/notify.js               🔔 update notifications (new version / what's new)
 js/keys.js                 keyboard shortcuts
 data/parts/*.csv           parts list – one file per category (source of truth)
 data/dlc.csv               DLC / part groups (key, label, group, default on/off)
 data/versions.csv          game versions shown in Settings
+data/story-jobs.csv        known career story jobs (sender, email, subject)
 data/parts-db.js           GENERATED from the CSVs – don't edit by hand
 tools/build_db.py          CSV → data/parts-db.js
 tools/import_xlsx.py       community workbook → CSVs
@@ -49,6 +51,9 @@ tools/bump_version.py      sets the version in js/config.js and the ?v= tags in 
 3. Close the issue.
 
 New content pack: add a row to `data/dlc.csv` and use its `key` in the `dlc` column.
+
+## Adding story jobs
+Career story customers (long emails, no star requirement, no hidden objectives) are listed in `data/story-jobs.csv` – columns `sender_name, email, subject, story, note, source`. Any one of sender email or subject marks a job as a story job; the name only counts when the email also looks like a story job (random customers sign with first names too). Reports arrive as GitHub issues labelled `story-job` or by email ("Story Quest Report #…"). Commit the CSV and the workflow rebuilds `data/parts-db.js`.
 
 Updating from a newer community workbook:
 ```

@@ -342,12 +342,42 @@ function parseEmail(text, rules, smart) {
   const endB = lines.findIndex(l => /labou?r|budget/i.test(l));
   const bodyLines = lines.slice(startB >= 0 ? startB : emailLineIdx + 2, endB > 0 ? endB : undefined);
   job.body = bodyLines.join(" ").replace(/\s+/g, " ").trim();
+  // story-job signals: the name the email is signed with, no star requirement in the blue band, a long text
+  job.signature = bodyLines.slice(-3).map(l => l.replace(/^[-–—~\s]+/, "").replace(/[,.!]+$/, "").trim()).filter(l => l && l.split(/\s+/).length <= 4 && !/regards|thanks|cheers|best|sincerely/i.test(l));
+  job.words = job.body ? job.body.split(/\s+/).length : 0;
+  const band = /labou?r/i.test(raw) && /budget/i.test(raw);
+  job.noStars = band ? /Re[qga]\s*[:;.]?\s*Level/i.test(raw) && (raw.match(/\bRe[qga]\s*[:;.]/gi) || []).length < 2 : null; // OCR reads "Req" as "Rea" too
 
   const det = detectHidden(job.body, rules, smart, job.objectives, emailDate, !!job.deadline);
   job.hidden = det.hidden; job.suspect = det.suspect;
   if (det.softDeadline) { job.deadline = det.softDeadline; job.softDeadline = true; }
   return job;
 }
+
+// ---- story jobs (career story customers): known ones from data/story-jobs.csv, others by their look ----
+const normStory = s => String(s || "").toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9@.' ]+/g, " ").replace(/\s+/g, " ").trim();
+// which list entry this email belongs to, and what matched. A name alone only counts when the email also
+// looks like a story job – random customers sign with first names too.
+function storyMatch(job, list) {
+  const e = normStory(job.sender), sub = normStory(job.subject), sig = (job.signature || []).map(normStory);
+  for (const st of list || []) {
+    if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
+    if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
+  }
+  const looks = storyLooks(job).looks;
+  for (const st of list || []) if (looks && st.sender_name && sig.includes(normStory(st.sender_name))) return { entry: st, by: "name" };
+  return null;
+}
+// unknown story job? no star requirement (random jobs always have one) or a very long email without a deadline
+function storyLooks(job) {
+  const long = (job.words || 0) >= 100;
+  const why = [];
+  if (job.noStars) why.push("no star requirement");
+  if (long) why.push("long, story-like email");
+  return { looks: !!job.noStars || (long && !job.deadline), why };
+}
+// story job with the budget written in the objectives → the budget does count
+const budgetInObjectives = objs => (objs || []).some(o => /budget|\$\s?\d/i.test(typeof o === "string" ? o : o.text));
 
 // Built-in ("smart") detections that can be switched off in the rules window
 const SMART_DEFAULT = { cables: true, brands: true, broken: true };
@@ -392,4 +422,4 @@ function normKeyword(k) { return String(k || "").toLowerCase().replace(/[’`´]
 // keywords this short match too much ("it", "ok") – the rules window warns about them
 const tooShort = k => k.replace(/[^a-z0-9]/g, "").length < 3;
 
-if (typeof module !== "undefined") module.exports = { parseEmail, detectHidden, SMART_DEFAULT, normKeyword, parseComponents, DEFAULT_RULES, RULES_VERSION, OLD_DEFAULT_TASKS, categorize, detectBrands, detectSuspects, detectCables, looksLikeText };
+if (typeof module !== "undefined") module.exports = { parseEmail, detectHidden, storyMatch, storyLooks, budgetInObjectives, SMART_DEFAULT, normKeyword, parseComponents, DEFAULT_RULES, RULES_VERSION, OLD_DEFAULT_TASKS, categorize, detectBrands, detectSuspects, detectCables, looksLikeText };

@@ -8,6 +8,8 @@ Within each version, changes are listed from most to least important.
 - Much more reliable PC Stats parts list – junk text from the part pictures is filtered out.
 - Career level and % in the top bar – part suggestions for swaps only show parts you have unlocked.
 - Career level and % are read from the screenshot automatically on every capture.
+- Story jobs recognised (known list, or no star requirement / long email): no hidden objectives, budget not binding unless an objective mentions it.
+- "📖 Report story job" in the top bar and the new-job window – via GitHub or email.
 - Keyword rules are now an easy table: objective, words that add it, words that stop it.
 - 🔔 Notifications: new version available (with reload) and a short "What's new" after an update.
 - Rules can be switched off, reset one by one, and tested with a "Try it" box.

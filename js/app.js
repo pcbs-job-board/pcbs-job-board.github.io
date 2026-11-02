@@ -49,7 +49,13 @@ function jobCard(j) {
   const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="margin-top:3px;accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span></div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "";
-  if (j.budget != null) {
+  const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
+  if (j.budget != null && loose) {
+    const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0);
+    budgetHtml = `<div class="budget loose" title="Story job – you can go over the budget and still get full marks">
+      <div class="brow"><span>💰 Budget <small>(story job – can go over)</small></span><b>$${j.budget.toLocaleString()}</b></div>
+      <small>$${spent.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}</small></div>`;
+  } else if (j.budget != null) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0), noPrice = j.swaps.filter(s => swapPrice(s) == null).length;
     const left = j.budget - spent, over = left < 0, pct = j.budget > 0 ? Math.min(100, spent / j.budget * 100) : (spent > 0 ? 100 : 0);
     budgetHtml = `<div class="budget ${over ? "over" : pct >= 85 ? "tight" : ""}">
@@ -58,7 +64,8 @@ function jobCard(j) {
       <small>$${spent.toLocaleString()} of $${j.budget.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}${noPrice ? ` · <span class="warn">${noPrice} without price</span>` : ""}</small></div>`;
   }
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
-  return `<article class="job" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+  return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+    ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>${budgetHtml}
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
@@ -66,7 +73,7 @@ function jobCard(j) {
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}
-      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
+      <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
@@ -301,7 +308,12 @@ async function runOcr() {
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
-    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body });
+    Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body, signature: p.signature, noStars: p.noStars, words: p.words });
+    // story job? known from the list (sender email / subject / name) or looks like one (no star requirement, long text)
+    const sm = storyMatch(p, window.STORY_JOBS || []), sl = storyLooks(p);
+    rev.draft.storyKnown = sm ? (sm.entry.story || sm.entry.sender_name || "known story job") : "";
+    rev.draft.storyWhy = sm ? "" : sl.why.join(" · ");
+    if (!rev.storyTouched) rev.draft.story = !!sm || sl.looks;
     renderForm();
     if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;
     if (keep.table && $("#fTable")) $("#fTable").value = keep.table;
@@ -322,15 +334,20 @@ function renderForm() {
     const isEdit = !!rev.editJob;
     f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
+      <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
       ${isEdit ? "" : `<label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
-      <label>Hidden objectives found in email</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" checked data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
+      ${storyBanner(d)}
+      <label>Hidden objectives found in email${d.story ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${d.story ? "" : "checked"} data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
       <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}
       <label>Current parts (one per line, “Category: name”)</label><textarea id="fComps" rows="7">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
       ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
       <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
   }
   $("#fSave").onclick = saveReview;
+  // switching "Story job" unticks / ticks the hidden objectives in one go
+  $("#fStory")?.addEventListener("change", e => { rev.storyTouched = true; rev.draft.story = e.target.checked; document.querySelectorAll("#fHidden input").forEach(c => c.checked = !e.target.checked); const b = $("#storyBanner"); if (b) b.outerHTML = storyBanner(rev.draft); bindStoryBanner(); });
+  bindStoryBanner();
   const addPart = () => { const v = $("#fPartAdd").value.trim(); if (!v) return; const m = INDEX.find(p => p.name === v) || matchPart(v); const line = (m ? m.cat + ": " + m.name : categorize(v) + ": " + v); const ta = $("#fComps"); ta.value = (ta.value.trim() ? ta.value.trim() + "\n" : "") + line; $("#fPartAdd").value = ""; };
   $("#fPartAddBtn").onclick = addPart;
   $("#btnCapParts").onclick = capParts;
@@ -343,7 +360,7 @@ function saveReview() {
   comps.forEach(c => rememberPart(c.name, c.cat));
   if (rev.forJob) { job(rev.forJob.id).components = comps; }
   else {
-    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps };
+    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, story: !!$("#fStory")?.checked };
     const table = +$("#fTable").value;
     let target;
     if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }
