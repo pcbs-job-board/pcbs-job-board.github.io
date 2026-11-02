@@ -165,14 +165,28 @@ const cleanOcrPart = s => String(s).replace(/[$£€]\s?[\d,.]+/g, " ").replace(
 function bestPartMatch(raw, onlyCat, min = 0.5) {
   const s = normP(cleanOcrPart(raw)); const w = s.split(" ").filter(x => x.length > 1);
   if (s.replace(/ /g, "").length < 4 || !w.length) return null;
-  const tri = trigrams(s); let best = null, bs = 0;
+  const tri = trigrams(s); let best = null, bs = 0, sec = null, ss = 0;
   for (const p of fullIndex()) {
     if (onlyCat && p.cat !== onlyCat) continue;
     const tok = w.filter(x => p.w.includes(x)).length / w.length;
     const sc = 0.6 * dice(tri, p.tri) + 0.4 * tok;
-    if (sc > bs) { bs = sc; best = p; }
+    if (sc > bs) { if (best && best.name !== p.name) { sec = best; ss = bs; } bs = sc; best = p; }
+    else if (sc > ss && p.name !== best.name) { sec = p; ss = sc; }
   }
-  return bs >= min ? { name: best.name, cat: best.cat, score: bs } : null;
+  if (bs < min) return null;
+  // "amb": another part fits (almost) as well AND the reading has a misread model number that is one slip
+  // away from both – "STE5F-PT" could be ST55F-PT or ST65F-PT. A model number that is just missing
+  // ("GA-AX370-Gaming" without its "5") is not a reason: that part is still the best guess.
+  let amb = false;
+  if (sec && bs - ss < 0.02) {
+    const v = partVocab(), onlyIn = (a, b) => a.w.filter(x => !b.w.includes(x));
+    const da = onlyIn(best, sec), db = onlyIn(sec, best);
+    const bad = w.filter(t => /\d/.test(t) && !v.has(t) && da.some(x => near1(t, x)) && db.some(x => near1(t, x)));
+    // a look-alike letter decides it: "STS5F" is ST55F (S = 5), "STE5F" stays open (E is no digit look-alike)
+    const fitsA = bad.some(t => da.some(x => shape(x) === shape(t))), fitsB = bad.some(t => db.some(x => shape(x) === shape(t)));
+    if (fitsB && !fitsA) best = sec; else amb = bad.length > 0 && !fitsA;
+  }
+  return { name: best.name, cat: best.cat, score: bs, amb };
 }
 // one screenshot → list of {name, cat}: match each line, fill unknown categories from the list order,
 // drop extras beyond the limits (a duplicate Case/CPU/PSU… is an OCR repeat, not a second part)
@@ -181,9 +195,11 @@ function joinPCStatsLines(lines) {
   const items = []; let cur = null;
   const sc = t => (bestPartMatch(t) || { score: 0 }).score;
   for (const l of lines) {
-    if (!cur) { cur = l.text; continue; }
+    if (!cur) { if (!l.num) cur = l.text; continue; }
     if (l.branded) { items.push(cur); cur = l.text; continue; }
     if (/^\(/.test(l.text)) { cur += " " + l.text; continue; }   // "(Silver) 16 GB 2800 MHz" continues the name above
+    // a bare number ("1500" – the X cut off) only counts as the end of the name above when the database agrees
+    if (l.num) { const mj = cur && bestPartMatch(cur + " " + l.text); if (mj && normP(mj.name).split(" ").some(x => x.startsWith(l.text))) cur += " " + l.text; continue; }
     const joined = cur + " " + l.text, sj = sc(joined), sCur = sc(cur), sLine = sc(l.text);
     if (sj >= sCur - 0.02 && sj >= sLine) cur = joined; else { items.push(cur); cur = l.text; }
   }
@@ -234,8 +250,13 @@ function denoisePartLines(lines) {
     if (a > z) continue;
     const keep = toks.slice(a, z + 1), kg = good.slice(a, z + 1), n = kg.filter(Boolean).length;
     if (n / keep.length < 0.6) continue;
-    // a line of bare numbers ("109°)") is picture noise; a wrapped model number like "1500X" mixes letters and digits
-    if (!keep.some(t => /[a-z]{2,}/i.test(t) || (/\d/.test(t) && /[a-z]/i.test(t)))) continue;
+    // a line of bare numbers ("109°)") is picture noise; a wrapped model number like "1500X" mixes letters and digits.
+    // One 3–5 digit number may still be a wrapped model number with its last letter lost ("1500") – the joining decides
+    if (!keep.some(t => /[a-z]{2,}/i.test(t) || (/\d/.test(t) && /[a-z]/i.test(t)))) {
+      const num = (l.text.match(/\b\d{3,5}\b/g) || []);
+      if (num.length === 1) out.push({ ...l, text: num[0], num: true });
+      continue;
+    }
     out.push({ ...l, text: keep.join(" ") });
   }
   return out;
@@ -247,14 +268,18 @@ function resolvePCStats(items) {
   const out = [], count = {};
   let lastIdx = -1;
   for (const it of items) {
-    const m = bestPartMatch(it.name);
+    let m = bestPartMatch(it.name);
     let loose = false;
+    // a lone short word nothing matches ("S35", "ion") is a crumb of a picture or of a half-cut line
+    if (!m && !/\s/.test(it.name.trim()) && it.name.replace(/[^a-z0-9]/gi, "").length < 6) continue;
+    // two parts fit equally well → don't guess: keep what was read, marked for checking
+    const amb = m && m.amb ? m : null; if (amb) m = null;
     // the top of a scrolled list is often a half-cut line ("supe", "Intel COFe 1/-GUGBOK", "ama Carbon"):
     // before the first recognised part, a weak unrecognised line is dropped instead of guessed
     if (!out.some(o => o.sure) && (m ? m.score < 0.8 && !/\s/.test(it.name.trim()) : weakPartLine(it.name))) continue;
-    let cat = m ? m.cat : categorize(cleanOcrPart(it.name)), name = m ? m.name : cleanOcrPart(it.name);
+    let cat = m ? m.cat : amb ? amb.cat : categorize(cleanOcrPart(it.name)), name = m ? m.name : cleanOcrPart(it.name);
     const full = c => PC_MAX[c] && (count[c] || 0) >= PC_MAX[c];
-    if (!m && (cat === "Other" || full(cat))) {
+    if (!m && !amb && (cat === "Other" || full(cat))) {
       // not recognised: next category in the PC Stats order that still has room
       const cand = PC_ORDER.slice(Math.max(lastIdx, 0)).find(c => !full(c));
       if (cand) cat = cand;

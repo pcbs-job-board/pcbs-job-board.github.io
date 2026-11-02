@@ -78,7 +78,7 @@ function trimJunk(s) {
 // a crumb of the icon / bullet in front of the first word: "s3DMark score" → "3DMark score",
 // "eA Computer has gone crazy" → "Computer has gone crazy" (but "iPhone", "eBay" stay)
 function trimLead(s) {
-  let t = String(s).trim();
+  let t = String(s).trim().replace(/^[\]\[|{}~_=:;,.]+\s+(?=\S)/, "");   // "] UPGRADES?" → "UPGRADES?"
   const w = t.split(/\s+/);
   if (w.length > 1 && /^[^A-Za-z0-9(]*[a-z][A-Z]?[^A-Za-z0-9]*$/.test(w[0]) && !/^a$/.test(w[0]) && /^[A-Z0-9]/.test(w[1])) t = w.slice(1).join(" ");
   else if (/^[a-z](?=\d|[A-Z]{2})/.test(t)) t = t.slice(1);
@@ -285,8 +285,17 @@ function mergeTexts(shots) {
     // lines between two matches: when both screenshots have some, a line at a screenshot's
     // edge is a cut-off copy of what the other one shows in full – drop it
     // before the first / after the last match, the screenshot reaching further out goes outermost
+    // …but at the very start / end only the screenshot that does NOT reach further out has a cut copy there;
+    // the edge line of the one reaching further out is kept when it's clean text (or the sender's address).
+    // E.g. the last objective of a build request, when the buttons below it weren't read – fix / upgrade
+    // emails always have the "PC Status" bar below the objectives instead.
+    const clean = e => /@[\w-]+\./.test(e.t) || (e.conf != null && e.conf >= 80 && (e.t.match(/[A-Za-z]{3,}/g) || []).length >= 2);
     const gap = (A, B, where) => {
-      if (A.length && B.length) { A = A.filter(e => !e.edge); B = B.filter(e => !e.edge && !A.some(a => lineSim(a.t, e.t) >= 0.5)); }
+      if (A.length && B.length) {
+        const outer = where === "mid" || A.length === B.length ? null : A.length > B.length ? "A" : "B";
+        const keep = (e, side) => !e.edge || (side === outer && clean(e));
+        A = A.filter(e => keep(e, "A")); B = B.filter(e => keep(e, "B") && !A.some(a => lineSim(a.t, e.t) >= 0.5));
+      }
       const swap = where === "start" ? B.length > A.length : where === "end" ? A.length > B.length : false;
       out.push(...(swap ? [...B, ...A] : [...A, ...B]));
     };
@@ -307,7 +316,8 @@ function parseEmail(text, rules, smart) {
   rules = rules || DEFAULT_RULES;
   const raw = text.replace(/\r/g, "");
   // a box wider than the email also catches the inbox's date column: "6/12/2018 I hate using…"
-  const lines = raw.split("\n").map(s => s.trim().replace(/^\d{1,2}\/\d{1,2}\/\d{4}\s*(?=\S{3}|$)/, "").replace(/^\d{1,4}\s*[|]?\s+(?=\S)/, "").replace(/^[|=]\s*/, "").trim()).filter(Boolean);
+  // stray picture crumbs glued to the "@" of an address: "TinyAunt@]JulieBrewing.ly" → "TinyAunt@JulieBrewing.ly"
+  const lines = raw.split("\n").map(s => s.trim().replace(/(\w)(?:\s?[\[\]|{}()]\s?@\s?[\[\]|{}()]?|@\s?[\[\]|{}()]\s?)(?=\w)/g, "$1@").replace(/^\d{1,2}\/\d{1,2}\/\d{4}\s*(?=\S{3}|$)/, "").replace(/^\d{1,4}\s*[|]?\s+(?=\S)/, "").replace(/^[|=]\s*/, "").trim()).filter(Boolean);
   const job = { sender: "", subject: "", labour: null, budget: null, level: null, deadline: "", objectives: [], hidden: [], suspect: "", body: "", components: [] };
   // sender = the last address above the greeting (inbox entries come first when the box is too big)
   const startB0 = lines.findIndex(l => /you work with computers|^(hi|hello|hey|dear|good (day|morning|afternoon|evening))\b/i.test(l));
@@ -331,9 +341,11 @@ function parseEmail(text, rules, smart) {
     let junk = 0;
     for (let i = oi + 1; i < lines.length && junk < 4; i++) {
       const l = lines[i];
-      if (/^\W{0,3}(reject|accept|pc status|pc stats|in transit|go to pc|quit|labou?r)\b/i.test(l)) break;
+      if (/^\W{0,3}(reject|accept|pc status|pc stats|in transit|go ?to (pc|whiteboard)|quit|labou?r)\b/i.test(l)) break;
       const m = l.match(/^\W{0,3}?[•*+·°»«©¢®\-–\[\]{}|:;]\s*(.+)/) || l.match(/^[oe]\s+([A-Z0-9].+)/);
-      if (m) { const o = trimLead(trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, ""))); if (o.length > 2) { job.objectives.push(o); junk = 0; continue; } }
+      // real objectives always have a word of 4+ letters – "[fae se ee ee]" is the button bar read as text;
+      // a lone capital at the end is a crumb ("Diagnose and fix R")
+      if (m) { const o = trimLead(trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, ""))).replace(/\s+[A-Z]$/, ""); if (o.length > 2 && /[A-Za-z]{4,}/.test(o)) { job.objectives.push(o); junk = 0; continue; } }
       if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) { job.objectives[job.objectives.length - 1] += " " + trimJunk(l); continue; }
       junk++;
     }
