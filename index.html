@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PCBS Job Board</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0.9.0">
 </head>
 <body>
 <header>
@@ -17,12 +17,12 @@
   <button class="primary big" id="btnCapture">📸 Capture job</button>
   <button id="btnManual">＋ Manual job</button>
   <div class="spacer"></div>
-  <button id="btnReport" title="Tell us about a part that is missing from the suggestions">🚩 Report part</button>
+  <div class="notify" id="notify" hidden>
+    <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
+    <div class="notipanel" id="notiPanel" hidden></div>
+  </div>
   <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
   <button id="btnSettings">⚙️ Settings</button>
-  <button id="btnExport" title="Save a backup file of all jobs and settings">⬇ Export</button>
-  <button id="btnImport" title="Load a backup file">⬆ Import</button>
-  <input type="file" id="importFile" accept=".json" hidden>
 </header>
 
 <main>
@@ -69,6 +69,9 @@
 <dialog id="dlgSettings" style="max-width:660px">
   <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
+    <h4 class="sub">Your career</h4>
+    <div class="career"><label>Career level<input type="number" id="careerLevel" min="1" max="99" placeholder="not set"></label><label>% through it<input type="number" id="careerPct" min="0" max="100" placeholder="0"></label><span id="careerInfo" class="hint"></span></div>
+    <p class="hint">Shown in-game top right, under the stars. Parts you haven't unlocked yet are left out of the suggestions for new parts (part swaps). Leave the level empty to see every part.</p>
     <h4 class="sub">Game version</h4>
     <select id="gameVersion" style="width:100%"></select>
     <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
@@ -81,13 +84,20 @@
     <p class="hint" id="dbInfo"></p>
     <h4 class="sub">Keyboard</h4>
     <label class="dlcrow"><input type="checkbox" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
-    <details class="keyslist"><summary>Show all shortcuts</summary><div id="keysInSettings"></div></details>
+    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
     <h4 class="sub">Hidden objectives</h4>
     <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
     <button id="btnRules">Edit keyword rules…</button>
     <h4 class="sub">Screen areas</h4>
     <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
     <div id="areaStatus" class="areastatus"></div>
+    <h4 class="sub">Backup</h4>
+    <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
+    <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
+    <input type="file" id="importFile" accept=".json" hidden>
+    <h4 class="sub danger">Reset</h4>
+    <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
+    <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
   </div>
 </dialog>
 
@@ -136,14 +146,15 @@
   </div>
 </dialog>
 
-<script src="js/config.js"></script>
-<script src="js/util.js"></script>
-<script src="data/parts-db.js"></script>
-<script src="js/parser.js"></script>
-<script src="js/parts.js"></script>
-<script src="js/app.js"></script>
-<script src="js/rules.js"></script>
-<script src="js/areas.js"></script>
-<script src="js/keys.js"></script>
+<script src="js/config.js?v=0.9.0"></script>
+<script src="js/util.js?v=0.9.0"></script>
+<script src="data/parts-db.js?v=0.9.0"></script>
+<script src="js/parser.js?v=0.9.0"></script>
+<script src="js/parts.js?v=0.9.0"></script>
+<script src="js/app.js?v=0.9.0"></script>
+<script src="js/rules.js?v=0.9.0"></script>
+<script src="js/areas.js?v=0.9.0"></script>
+<script src="js/notify.js?v=0.9.0"></script>
+<script src="js/keys.js?v=0.9.0"></script>
 </body>
 </html>

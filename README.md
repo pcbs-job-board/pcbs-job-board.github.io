@@ -17,7 +17,7 @@ A job manager for **PC Building Simulator** (1). Capture a customer email from y
 - ⌨ Keyboard shortcuts – press `?` in the app for the list
 
 ## Privacy
-Everything you create — jobs, rules, settings — is stored **only in your browser** (`localStorage`). Nothing is sent to GitHub or anywhere else. Screen captures are processed locally and never uploaded. The only network requests are loading the page, the parts list, and the OCR engine. Use **Export / Import** for backups or to move to another browser.
+Everything you create — jobs, rules, settings — is stored **only in your browser** (`localStorage`). Nothing is sent to GitHub or anywhere else. Screen captures are processed locally and never uploaded. The only network requests are loading the page, the parts list, and the OCR engine. Use **Settings → Export / Import backup** for backups or to move to another browser.
 
 ## Repository layout
 ```
@@ -30,6 +30,7 @@ js/parts.js                parts search, DLC filter, autocomplete
 js/app.js                  board, capture, OCR review, settings, reports
 js/rules.js                hidden-objective rules window
 js/areas.js                finds the email / PC Stats windows, screen-area set-up
+js/notify.js               🔔 update notifications (new version / what's new)
 js/keys.js                 keyboard shortcuts
 data/parts/*.csv           parts list – one file per category (source of truth)
 data/dlc.csv               DLC / part groups (key, label, group, default on/off)
@@ -37,6 +38,7 @@ data/versions.csv          game versions shown in Settings
 data/parts-db.js           GENERATED from the CSVs – don't edit by hand
 tools/build_db.py          CSV → data/parts-db.js
 tools/import_xlsx.py       community workbook → CSVs
+tools/bump_version.py      sets the version in js/config.js and the ?v= tags in index.html
 .github/ISSUE_TEMPLATE/    missing-part and bug report forms
 .github/workflows/         rebuilds parts-db.js when CSVs change
 ```

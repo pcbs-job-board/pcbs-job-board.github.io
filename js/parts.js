@@ -15,6 +15,15 @@ let gameVersion = LS.get("pcbs.gameVersion", "") || LATEST;
 if (!VERSIONS.some(v => v.v === gameVersion)) gameVersion = LATEST;
 function setGameVersion(v) { gameVersion = v; LS.set("pcbs.gameVersion", v === LATEST ? "" : v); buildIndex(); }
 const versionOk = v => !v || !gameVersion || verNum(v) <= verNum(gameVersion);
+// the player's career progress: level + % through it (level null = not set → every part is shown)
+let career = Object.assign({ level: null, pct: 0 }, LS.get("pcbs.career", {}));
+function setCareer(level, pct) {
+  const l = parseInt(level, 10), p = parseInt(pct, 10);
+  career = { level: Number.isFinite(l) && l > 0 ? Math.min(99, l) : null, pct: Number.isFinite(p) ? Math.max(0, Math.min(100, p)) : 0 };
+  LS.set("pcbs.career", career);
+}
+// unlocked at the player's progress? Parts listed at 0–1 % unlock right at the level-up.
+const unlocked = p => career.level == null || p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct);
 const dlcCount = k => Object.values(window.PARTS_DB || {}).reduce((n, rows) => n + rows.filter(r => r[4] === k).length, 0);
 
 // parts the user typed that are not in the database
@@ -25,17 +34,22 @@ let INDEX = [];
 function buildIndex() {
   INDEX = [];
   const db = window.PARTS_DB || {};
-  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver] of db[cat]) {
+  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct] of db[cat]) {
     if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
-    const n = normP(name); INDEX.push({ cat, name, lvl, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
+    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }
 }
-function searchParts(q, cat, limit = 14, brands = []) {
-  const toks = normP(q).split(" ").filter(Boolean); if (!toks.length) return [];
+// buyable = only parts unlocked at the player's career progress (parts to buy for a swap);
+// searchParts.hidden tells how many matches were left out because of that
+function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
+  const toks = normP(q).split(" ").filter(Boolean); searchParts.hidden = 0; if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
-  return INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)))
+  const all = INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
+  const ok = buyable ? all.filter(p => p.hist || unlocked(p)) : all;
+  searchParts.hidden = all.length - ok.length;
+  return ok
     .map(p => ({ p, s: toks.reduce((s, t) => s + (p.w.includes(t) ? 4 : p.w.some(w => w.startsWith(t)) ? 2 : 1), 0) * 10 - p.n.length / 8 + (p.hist ? 6 : 0) - (p.dlc ? 3 : 0) + (brands.some(b => brandMatch(p, b)) ? 15 : 0) }))
     .sort((a, b) => b.s - a.s).slice(0, limit).map(x => x.p);
 }
@@ -72,13 +86,16 @@ function acShow(inp) {
   acInput = inp; const q = inp.value.trim(), cat = acCat(inp);
   if (q.length < 2) { acEl.hidden = true; return; }
   const brands = (inp.closest("[data-brands]")?.dataset.brands || "").split("|").filter(Boolean);
-  acItems = searchParts(q, cat, 14, brands); acSel = 0;
+  const buy = !!inp.closest("[data-swapform]"); // a part to buy → only what the player has unlocked
+  acItems = searchParts(q, cat, 14, brands, buy); acSel = 0;
+  const lockedN = searchParts.hidden;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => { let h = esc(s); toks.forEach(t => { h = h.replace(new RegExp("(" + reEsc(t) + ")", "ig"), "\u0001$1\u0002"); }); return h.replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>"); };
-  const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
+  const info = p => p.hist ? "typed before" : [p.spec, p.lvl != null ? "Lv " + p.lvl + (p.pct > 1 ? " · " + p.pct + "%" : "") : "", p.price != null ? "$" + p.price : ""].filter(Boolean).join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left, left = leftAttr == null ? null : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
   acEl.innerHTML = `<div class="aclist">` + acItems.map((p, i) => `<div data-i="${i}" class="${i ? "" : "sel"} ${overB(p) ? "overb" : ""}" ${overB(p) ? `title="$${p.price - left} over the remaining budget"` : ""}><span>${brands.some(b => brandMatch(p, b)) ? '<em class="fav" title="Customer\'s preferred brand">★</em> ' : ""}${hl(p.name)}${p.dlc ? ` <em class="dlc">${esc(DLC_LABEL[p.dlc] || p.dlc)}</em>` : ""}</span><small>${esc(info(p))}${!cat || cat === "Other" ? " · " + esc(p.cat) : ""}${overB(p) ? ` · <b class="overtag">over budget</b>` : ""}</small></div>`).join("") + `</div><div class="acmore" data-more hidden></div>`
+    + (lockedN ? `<div class="aclocked">🔒 ${lockedN} more need a higher career level (Lv ${career.level}${career.pct ? " · " + career.pct + "%" : ""} – change it in Settings)</div>` : "")
     + `<div class="report" data-report>🚩 Can't find it? Report “${esc(q)}” as a missing part</div>`;
   const host = inp.closest("dialog") || document.body; if (acEl.parentNode !== host) host.append(acEl);
   acEl.hidden = false; acPlace();

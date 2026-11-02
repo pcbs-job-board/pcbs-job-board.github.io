@@ -9,6 +9,12 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 - Email and PC Stats areas are found automatically on the first capture, in a large window where they can be adjusted.
 - "🎯 Adjust areas" replaces Lock / Reset areas; Settings shows the area status with "Set up again".
 - Warning when the captured text doesn't look like an email or PC Stats.
+- Career level and % in Settings – part suggestions for swaps only show parts you have unlocked.
+- Unlock level % added to the parts database.
+- 🔔 Notifications: new version available (with reload) and a short "What's new" after an update.
+- Export / Import moved into Settings, with a new "Reset all data" button.
+- "Report part" removed from the top bar (still in the part suggestions).
+- "Show all shortcuts" in Settings opens the shortcuts window.
 
 ## 0.8.1
 - Fixed email and subject missing when screenshots are taken bottom-first.

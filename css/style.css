@@ -259,3 +259,26 @@ dialog.areasdlg{width:min(1500px,97vw);max-width:none}
 .arearow b.ok{color:var(--good)}.arearow b.no{color:var(--warn)}
 .areawarn{background:#30260e;border:1px solid #7a5a17;color:#ffe0a6;border-radius:7px;padding:7px 10px}
 .areawarn button{margin-left:6px}
+/* 🔔 notifications in the top bar */
+.notify{position:relative}
+.notify .bell{position:relative;font-size:16px;padding:5px 9px;border:1px solid var(--warn);background:#30260e}
+.notify .badge{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 2px var(--panel)}
+.notipanel{position:absolute;right:0;top:calc(100% + 8px);width:340px;max-width:calc(100vw - 24px);background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 40px #000c;padding:8px;z-index:50;display:flex;flex-direction:column;gap:8px}
+.noti{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px}
+.noti.new{border-color:var(--accent)}
+.noti.upd{border-color:#2e6b45}
+.noti b{display:block;margin-bottom:3px}
+.noti small{color:var(--muted);display:block}
+.noti ul{margin:5px 0 4px;padding-left:18px;color:var(--text)}
+.noti li{margin:2px 0}
+.noti a{color:var(--accent);font-size:12.5px}
+.btnrow{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}
+/* Settings: career, backup, reset */
+.career{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.career label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.career input{width:120px;font-size:15px}
+.career .hint{margin:0 0 6px}
+h4.sub.danger{color:#ff9a9a}
+/* suggestions: parts hidden because of the career level */
+.ac .aclocked,.ac .aclocked:hover{display:block;font-size:11.5px;color:var(--muted);background:#161b24;border-top:1px solid var(--line);cursor:default}
+.ac.up .aclocked{border-top:0;border-bottom:1px solid var(--line)}

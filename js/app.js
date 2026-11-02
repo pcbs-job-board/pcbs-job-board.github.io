@@ -382,10 +382,30 @@ function renderSettings() {
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
   $("#appVersion").href = changelogUrl();
-  if (typeof keysOn !== "undefined") { $("#keysToggle").checked = keysOn; $("#keysInSettings").innerHTML = keysHelpHtml(); }
+  if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
+  $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct;
+  careerInfo();
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }
 $("#btnSettings").onclick = () => { renderSettings(); $("#dlgSettings").showModal(); };
+$("#btnKeysFromSettings").onclick = () => { $("#dlgSettings").close(); openKeysHelp(); };
+function careerInfo() {
+  const n = INDEX.filter(p => !p.hist).length, ok = INDEX.filter(p => !p.hist && unlocked(p)).length;
+  $("#careerInfo").textContent = career.level == null ? "Every part is suggested." : `${ok} of ${n} parts unlocked.`;
+}
+// typing a level / % saves straight away; empty level = not set
+["#careerLevel", "#careerPct"].forEach(id => $(id).addEventListener("input", () => { setCareer($("#careerLevel").value, $("#careerPct").value); careerInfo(); }));
+// tidy the fields when leaving them (e.g. 150 % → 100), empty % = 0
+$("#careerLevel").addEventListener("change", () => { $("#careerLevel").value = career.level ?? ""; });
+$("#careerPct").addEventListener("change", () => { $("#careerPct").value = career.pct ? career.pct : ""; });
+// factory reset: every saved key of this tool, the screen share, then a fresh start
+$("#btnResetAll").onclick = () => {
+  if (!confirm("Reset ALL data?\n\nAll jobs, rules and settings will be deleted and the screen will be disconnected. This can't be undone – use “Export backup” first if you might want them back.")) return;
+  try { if (stream) stream.getTracks().forEach(t => t.stop()); } catch { }
+  Object.keys(localStorage).filter(k => k.startsWith("pcbs.")).forEach(k => localStorage.removeItem(k));
+  LS.set("pcbs.seenVersion", (window.PCBS_CONFIG || {}).version || ""); // no "what's new" right after a reset
+  location.reload();
+};
 $("#dlgSettings").addEventListener("change", e => { if (e.target.id === "keysToggle") { setKeys(e.target.checked); return; } const k = e.target.dataset.dlc; if (k) { setDlc(k, e.target.checked); renderSettings(); } else if (e.target.id === "gameVersion") { setGameVersion(e.target.value); renderSettings(); } });
 
 // ================= missing-part reports → GitHub issues =================
@@ -403,7 +423,6 @@ function openReport(pre = {}) {
 }
 function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }
 function reportText(r) { return `Missing part: ${r.name}\nCategory: ${r.cat || "?"}\nContent: ${r.dlc}\nUnlock level: ${r.level || "?"}\nPrice: ${r.price ? "$" + r.price : "?"}\nNotes: ${r.notes || "-"}\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""}, database ${(window.PARTS_META || {}).built || "?"})`; }
-$("#btnReport").onclick = () => openReport();
 $("#rSend").onclick = () => {
   const r = reportData(); if (!r.name) { $("#rName").focus(); return; }
   const repo = reportRepo(); if (!repo) { $("#rCopy").click(); return; }
@@ -415,9 +434,9 @@ $("#rSend").onclick = () => {
 $("#rCopy").onclick = async () => { const r = reportData(); if (!r.name) { $("#rName").focus(); return; } try { await navigator.clipboard.writeText(reportText(r)); toast("Report copied to clipboard"); } catch { prompt("Copy this report:", reportText(r)); } };
 
 // ================= export / import =================
-$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
+$("#btnExport").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 2, jobs, rules, smart, crops, partsHistory, dlc: dlcOn, gameVersion, career }, null, 1)], { type: "application/json" })); a.download = "pcbs-jobs-backup.json"; a.click(); };
 $("#btnImport").onclick = () => $("#importFile").click();
-$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
+$("#importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { const d = JSON.parse(t); jobs = d.jobs || []; if (d.rules) rules = d.rules; if (d.smart) { smart = Object.assign({}, SMART_DEFAULT, d.smart); LS.set("pcbs.smart", smart); } if (d.crops) { crops = d.crops; areasSet = { email: true, stats: true }; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); } if (d.career) setCareer(d.career.level, d.career.pct); if (d.dlc) { dlcOn = Object.assign(dlcOn, d.dlc); LS.set("pcbs.dlc", dlcOn); } if (d.gameVersion && typeof setGameVersion === "function") setGameVersion(d.gameVersion); if (d.partsHistory) partsHistory = d.partsHistory.map(p => typeof p === "string" ? { name: p, cat: categorize(p) } : p); const seen = new Set(); jobs.forEach(j => { if (j.table && seen.has(j.table)) j.table = 0; else if (j.table) seen.add(j.table); }); LS.set("pcbs.rules", rules); LS.set("pcbs.crops", crops); LS.set("pcbs.partsHistory", partsHistory); buildIndex(); save(); render(); if ($("#dlgSettings").open) renderSettings(); toast("Backup imported"); } catch { toast("That file isn't a valid backup"); } }); e.target.value = ""; };
 
 if (!window.PARTS_DB) toast("parts-db.js not found next to this page – part suggestions limited to names you've typed.");
 buildIndex(); initAutocomplete(); render(); setStatus();
