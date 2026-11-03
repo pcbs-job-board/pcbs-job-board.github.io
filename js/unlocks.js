@@ -19,7 +19,7 @@ const UNLOCKS = [
 // app features that wait for an unlock
 const GATES = {   // what: used in messages · app: the "In this app" column of the unlocks popup
   cpuOC: { lvl: 6, tool: "OCCT", what: "CPU overclocking help", app: "CPU overclock objectives: Overclock tile + part suggestions" },
-  pcBay: { lvl: 9, tool: "PC Bay", what: "PC Bay (coming later)", app: "PC Bay features (coming in a later update)" },
+  pcBay: { lvl: 9, tool: "PC Bay", what: "PC Bay builds", app: "📦 PC Bay builds: fix, upgrade and resell broken PCs" },
   gpuOC: { lvl: 13, tool: "GPU Tuner", what: "GPU overclocking help", app: "GPU overclock objectives: Overclock tile + part suggestions" },
   customWC: { lvl: 16, tool: "Custom Water Cooling Shop", what: "custom water cooling parts in suggestions", app: "Custom water cooling parts in suggestions and autofill" },
 };

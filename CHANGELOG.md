@@ -3,6 +3,9 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.12.1
+- Fixed: a saved PC Bay build stopped the page from loading; the 📦 button only showed after re-entering the level; unlocks list called PC Bay "coming later".
+
 ## 0.12.0
 - 📦 PC Bay builds (level 9+): capture the broken PC and your inventory, fix and upgrade it, see the expected sale price and profit.
 - 3DMark helper: score tile (XMP off / on) and the cheapest part sets to reach the target – also for PCs built from nothing.

@@ -5,7 +5,7 @@
    want the report button to go to your repository. */
 window.PCBS_CONFIG = {
   repo: "pcbs-job-board/pcbs-job-board.github.io",
-  version: "0.12.0",
+  version: "0.12.1",
   // Google Apps Script web app that receives reports (see tools/report-endpoint.gs). Empty = only GitHub / copy.
   reportEndpoint: "https://script.google.com/macros/s/AKfycbwJSdRrb_yY93Eo3BR8Wv-wBvlHlXWeZgj7xD_TBzqhlVpeLLF-q3cmJPsEKqBGHg2Z/exec",
 };
