@@ -5,7 +5,7 @@ Within each version, changes are listed from most to least important.
 
 ## 0.12.0
 - 📦 PC Bay builds (level 9+): capture the broken PC and your inventory, fix and upgrade it, see the expected sale price and profit.
-- 3DMark helper: score tile (XMP off / on) and the cheapest part sets to reach the target – also for PCs built from nothing. Formula from Jacob Klein's PCBS calculator.
+- 3DMark helper: score tile (XMP off / on) and the cheapest part sets to reach the target – also for PCs built from nothing.
 - Overclock helper: whether the objective can be reached, the clock and temperature to expect, and a PSU that can carry it.
 - 💡 Tips on job cards – small reminders like thermal paste, XMP or the leak test.
 - Career unlocks list by level; help for overclocking and custom water cooling waits until the game unlocks it.
