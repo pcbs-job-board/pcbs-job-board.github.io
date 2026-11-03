@@ -424,3 +424,4 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .ocitem .octitle{font-weight:700;color:var(--text)}.ocitem small{display:block;color:#c7cedb;line-height:1.4}
 .ocbox .ocnote{color:var(--muted);font-size:11px;font-style:italic}
 .stip .ocbox{margin:0}
+.ocitem .octemp{color:#ffcf8a}.ocitem .octemp b{color:#ffe2c4}

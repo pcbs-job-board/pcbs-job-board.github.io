@@ -172,10 +172,10 @@ BENCH = {
 
 # ---- overclocking facts ----
 # CPU "OC base MHz,OC base V,stock MHz,stock V,throttle °C" (only for CPUs that can overclock)
-# GPU "base core,OC base core,max core,base mem,OC base mem,max mem" (MHz)   RAM "MHz,OC base MHz,OC base V"
+# GPU "base core,OC base core,max core,base mem,OC base mem,max mem" (MHz),throttle °C   RAM "MHz,OC base MHz,OC base V"
 OCF = {
     "CPUs": lambda r: ",".join(g(r.get(k)) for k in ("OC Base Freq", "OC Base Voltage", "Frequency", "Voltage", "Thermal Throttling")) if s(r.get("Can Overclock")) == "Y" and s(r.get("OC Base Freq")) else "",
-    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Base Core Freq", "OC Base Core Freq", "Max Core Freq", "Base Mem Freq", "OC Base Mem Freq", "Max Mem Freq")) if s(r.get("Max Core Freq")) else "",
+    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Base Core Freq", "OC Base Core Freq", "Max Core Freq", "Base Mem Freq", "OC Base Mem Freq", "Max Mem Freq", "GPU Thermal Throttling")) if s(r.get("Max Core Freq")) else "",
     "Memory": lambda r: ",".join(g(r.get(k)) for k in ("Frequency", "OC Base Freq", "OC Base Voltage")) if s(r.get("OC Base Freq")) else "",
 }
 

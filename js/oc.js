@@ -2,9 +2,24 @@
    A mention in the email body ("I'll overclock it later") only feeds the PSU check (see suggest.js, "overclock later").
    Level 1 – certain: can it overclock at all (unlocked CPU + a motherboard that can overclock), is the target inside the
              part's hard limit (GPU core / memory maximum), overclocked watts vs the PSU.
-   Level 2 – a rough guide: the target against the part's "overclock base" clock from the parts workbook. At or below it:
-             should be reachable with a reasonable cooler. Above it: needs good cooling and may not get there – the game's
-             temperature formula isn't known, so which cooler is enough can't be worked out. */
+   Level 2 – an estimate: players rarely get a part to its full overclock potential, so we count on 90 % of it:
+             reachable ≈ stock + 0.9 × (overclock base − stock), the overclock base being the part's overclock clock in the
+             parts workbook. Parts are judged and picked on that; the game's temperature formula isn't known, so real
+             results depend on cooling / power. Watts are still counted at the full overclock.
+   Temperatures: each part's throttle temperature from the workbook (CPUs that can overclock, all GPUs); without it
+             Intel CPUs 100 °C, AMD CPUs 95 °C, GPUs 95 °C (the game's usual values). */
+const OC_SHARE = 0.9;
+function ocEst(stock, oc) { return Math.round(stock + OC_SHARE * Math.max(0, oc - stock)); }
+// what a part should reach overclocked (90 % of its potential): CPU MHz · GPU { core, mem } · RAM MHz
+function ocReach(name) {
+  const d = ocOf(name); if (!d) return null;
+  return d.core != null ? { core: ocEst(d.core, d.ocCore), mem: ocEst(d.mem, d.ocMem) } : ocEst(d.mhz, d.ocMhz);
+}
+function throttleOf(cat, name) {
+  const d = ocOf(name);
+  if (d && d.thr) return { c: d.thr, known: true };
+  return { c: cat === "CPU" && /^amd\b/i.test(name) ? 95 : cat === "CPU" ? 100 : 95, known: false };
+}
 
 let OCD = null;
 function ocOf(name) {
@@ -13,7 +28,7 @@ function ocOf(name) {
     for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[12]) {
       const v = String(r[12]).split(",").map(Number);
       OCD.set(r[0].toLowerCase(), cat === "CPU" ? { ocMhz: v[0], ocV: v[1], mhz: v[2], v: v[3], thr: v[4] }
-        : cat === "GPU" ? { core: v[0], ocCore: v[1], maxCore: v[2], mem: v[3], ocMem: v[4], maxMem: v[5] }
+        : cat === "GPU" ? { core: v[0], ocCore: v[1], maxCore: v[2], mem: v[3], ocMem: v[4], maxMem: v[5], thr: v[6] }
         : cat === "RAM" ? { mhz: v[0], ocMhz: v[1], ocV: v[2] } : null);
     }
   }
@@ -35,6 +50,7 @@ function ocCheck(j) {
   const items = [], missing = new Set();
   for (const t of targets) {
     const it = { ...t, state: "ok", lines: [] }; items.push(it);
+    const temp = (cat, name) => { const th = throttleOf(cat, name); it.lines.push(`<span class="octemp">🌡 Keep the ${cat} under <b>${th.c} °C</b> – it throttles there${th.known ? "" : ` (usual for ${cat === "CPU" ? (/^amd\b/i.test(name) ? "AMD" : "Intel") + " CPUs" : "GPUs"})`}.</span>`); };
     if (t.part === "CPU") {
       const cpu = first("CPU"), mb = first("Motherboard");
       if (!cpu) { missing.add("CPU"); it.state = "off"; continue; }
@@ -44,28 +60,34 @@ function ocCheck(j) {
       if (!mb) missing.add("Motherboard");
       else if ((compatOf(mb.name) || {}).oc === "0") { it.state = "bad"; it.lines.push(`<b>${esc(mb.name)}</b> can't overclock – a motherboard that can is needed.`); }
       if (it.state === "bad" || !d) continue;
-      if (t.mhz == null) it.lines.push(`Unlocked, on a board that can overclock. Its overclock base: ${mhz(d.ocMhz)} at ${d.ocV} V.`);
-      else if (t.mhz <= d.mhz) it.lines.push(`Already runs at ${mhz(d.mhz)} – the ${mhz(t.mhz)} target is met without overclocking.`);
-      else if (t.mhz <= d.ocMhz) it.lines.push(`${mhz(t.mhz)} is within its overclock base (${mhz(d.ocMhz)} at ${d.ocV} V) – should be reachable with a reasonable cooler.`);
-      else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above its overclock base (${mhz(d.ocMhz)} at ${d.ocV} V) – needs good cooling, and may not get there. Throttles at ${d.thr} °C.`); }
+      const est = ocEst(d.mhz, d.ocMhz);
+      if (t.mhz != null && t.mhz <= d.mhz) it.lines.push(`Already runs at ${mhz(d.mhz)} – the ${mhz(t.mhz)} target is met without overclocking.`);
+      else {
+        if (t.mhz == null) it.lines.push(`Should reach about <b>${mhz(est)}</b> (stock ${mhz(d.mhz)}, full potential ${mhz(d.ocMhz)} at ${d.ocV} V).`);
+        else if (t.mhz <= est) it.lines.push(`${mhz(t.mhz)} – should be reachable: estimate <b>${mhz(est)}</b> (stock ${mhz(d.mhz)}, full potential ${mhz(d.ocMhz)} at ${d.ocV} V).`);
+        else if (t.mhz <= d.ocMhz) { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above the estimate (<b>${mhz(est)}</b>) but within its full potential (${mhz(d.ocMhz)}) – needs very good cooling.`); }
+        else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above this CPU's full overclock potential (${mhz(d.ocMhz)}; estimate ${mhz(est)}) – unlikely to get there.`); }
+        temp("CPU", cpu.name);
+      }
     } else if (t.part === "GPU") {
       const gpu = first("GPU"); if (!gpu) { missing.add("GPU"); it.state = "off"; continue; }
       it.name = gpu.name; const d = ocOf(gpu.name);
       if (!d) { it.state = "off"; it.lines.push(`No overclocking data for <b>${esc(gpu.name)}</b>.`); continue; }
-      const [base, oc, max, what] = t.mem ? [d.mem, d.ocMem, d.maxMem, "memory clock"] : [d.core, d.ocCore, d.maxCore, "core clock"];
-      if (t.mhz == null) it.lines.push(`${what}: ${mhz(base)} stock · overclock base ${mhz(oc)} · maximum ${mhz(max)}.`);
-      else if (t.mhz > max) { it.state = "bad"; it.lines.push(`${mhz(t.mhz)} is over this card's maximum ${what} (${mhz(max)}) – no cooler gets there. Another GPU is needed.`); }
-      else if (t.mhz <= base) it.lines.push(`Already runs at ${mhz(base)} – the target is met without overclocking.`);
-      else if (t.mhz <= oc) it.lines.push(`${mhz(t.mhz)} is within its overclock base (${mhz(oc)}, maximum ${mhz(max)}) – should be reachable.`);
-      else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above its overclock base (${mhz(oc)}), under the maximum (${mhz(max)}) – needs good cooling.`); }
+      const [base, oc, max, what] = t.mem ? [d.mem, d.ocMem, d.maxMem, "memory clock"] : [d.core, d.ocCore, d.maxCore, "core clock"], est = ocEst(base, oc);
+      if (t.mhz != null && t.mhz > max) { it.state = "bad"; it.lines.push(`${mhz(t.mhz)} is over this card's maximum ${what} (${mhz(max)}) – no cooler gets there. Another GPU is needed.`); continue; }
+      if (t.mhz != null && t.mhz <= base) { it.lines.push(`Already runs at ${mhz(base)} – the target is met without overclocking.`); continue; }
+      if (t.mhz == null) it.lines.push(`${what}: should reach about <b>${mhz(est)}</b> (stock ${mhz(base)}, full potential ${mhz(oc)}, maximum ${mhz(max)}).`);
+      else if (t.mhz <= est) it.lines.push(`${mhz(t.mhz)} – should be reachable: estimate <b>${mhz(est)}</b> (stock ${mhz(base)}, full potential ${mhz(oc)}).`);
+      else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above the estimate (<b>${mhz(est)}</b>${t.mhz <= oc ? `, full potential ${mhz(oc)}` : `; over its full potential ${mhz(oc)}, under the maximum ${mhz(max)}`}) – needs very good cooling.`); }
+      temp("GPU", gpu.name);
     } else {
       const ram = build.filter(p => p.cat === "RAM"); if (!ram.length) { missing.add("RAM"); it.state = "off"; continue; }
       const ds = ram.map(r => ocOf(r.name)).filter(Boolean); it.name = ram[0].name;
       if (!ds.length) { it.state = "off"; it.lines.push("No overclocking data for this RAM."); continue; }
-      const base = Math.min(...ds.map(d => d.mhz)), oc = Math.min(...ds.map(d => d.ocMhz));
-      if (t.mhz == null || t.mhz <= base) it.lines.push(`RAM runs at ${mhz(base)}${t.mhz ? " – the target is met (turn on XMP in the BIOS)" : ""}; overclock base ${mhz(oc)}.`);
-      else if (t.mhz <= oc) it.lines.push(`${mhz(t.mhz)} is within the RAM's overclock base (${mhz(oc)}) – should be reachable.`);
-      else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above the RAM's overclock base (${mhz(oc)}) – may not get there; faster RAM is safer.`); }
+      const base = Math.min(...ds.map(d => d.mhz)), est = Math.min(...ds.map(d => ocEst(d.mhz, d.ocMhz)));
+      if (t.mhz == null || t.mhz <= base) it.lines.push(`RAM runs at ${mhz(base)}${t.mhz ? " – the target is met (turn on XMP in the BIOS)" : ""}; overclocked estimate ${mhz(est)}.`);
+      else if (t.mhz <= est) it.lines.push(`${mhz(t.mhz)} – should be reachable: estimate <b>${mhz(est)}</b>.`);
+      else { it.state = "warn"; it.lines.push(`${mhz(t.mhz)} is above the RAM's estimate (${mhz(est)}) – may not get there; faster RAM is safer.`); }
     }
   }
   const pc = powerCheck(j), psu = pc && pc.psuW != null ? { use: pc.oc, w: pc.psuW, bad: pc.oc > pc.psuW } : null;
@@ -75,4 +97,4 @@ function ocCheck(j) {
   if (items.every(i => i.state === "off")) state = "off";
   return { items, psu, missing: [...missing], state };
 }
-if (typeof module !== "undefined") module.exports = { ocOf, ocTargets, ocCheck };
+if (typeof module !== "undefined") module.exports = { ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };

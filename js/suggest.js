@@ -283,15 +283,15 @@ function aioSuggestion(job, ctx, reason, cur) {
 function ocSuggestions(job, ctx, reason, cur) {
   const out = [], t = ocTargets({ objectives: [reason] })[0] || { part: "CPU", mhz: null }, cpu = cur("CPU").pop(), board = cur("Motherboard").pop();
   if (t.part === "CPU") {
-    const reach = p => t.mhz == null || (ocOf(p.name)?.ocMhz || 0) >= t.mhz;
+    const reach = p => t.mhz == null || (ocReach(p.name) || 0) >= t.mhz;   // 90 % of the overclock potential
     if (cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) {
       const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && sockOk(cInfo(p).s, cInfo(cpu).s) && rk(p) >= rk(cpu) && reach(p));
       const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }); if (o.length) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: o, cat: "CPU", old: cpu.name });
       else { const w = cpuWithBoard(job, ctx, shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && rk(p) >= rk(cpu) && reach(p)), cpu, cur, p => cInfo(p).oc === "1"); if (w.length) out.push({ key: "obj:oc-cpu", reason: reason + (cInfo(board || {}).oc === "0" ? " – the CPU is locked and the motherboard can't overclock: an unlocked CPU + a board that can" : " – the CPU is locked: an unlocked CPU with the motherboard it needs"), options: w, cat: "CPU", old: cpu.name }); }
-    } else if (cpu && t.mhz && t.mhz > (ocOf(cpu.name)?.ocMhz || 0) && t.mhz > (ocOf(cpu.name)?.mhz || 0)) {
+    } else if (cpu && t.mhz && t.mhz > (ocReach(cpu.name) || 0) && t.mhz > (ocOf(cpu.name)?.mhz || 0)) {
       const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, cInfo(cpu).s) && reach(p) && rk(p) >= rk(cpu));
       const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }).filter(x => !x.over);
-      if (o.length) out.push({ key: "obj:oc-cpu-easier", reason: `${reason} – optional: ${t.mhz.toLocaleString()} MHz is above this CPU's overclock base (${ocOf(cpu.name).ocMhz.toLocaleString()} MHz); these reach it at theirs`, options: o, cat: "CPU", old: cpu.name });
+      if (o.length) out.push({ key: "obj:oc-cpu-easier", reason: `${reason} – optional: ${t.mhz.toLocaleString()} MHz is above this CPU's estimate (${ocReach(cpu.name).toLocaleString()} MHz, 90 % of its potential); these should reach it`, options: o, cat: "CPU", old: cpu.name });
     }
     if (board && cInfo(board).oc === "0" && !out.some(x => x.options.some(o => (o.extras || []).some(e => e.cat === "Motherboard")))) {
       const bc = cInfo(board), c = shopParts("Motherboard").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, bc.s) && cInfo(p).f === bc.f);
@@ -299,19 +299,22 @@ function ocSuggestions(job, ctx, reason, cur) {
     }
   } else if (t.part === "GPU" && t.mhz) {
     const gpu = cur("GPU")[0], d = gpu && ocOf(gpu.name), max = g => t.mem ? g.maxMem : g.maxCore;
-    if (gpu && d && t.mhz > max(d)) {
-      const c = shopParts("GPU").filter(p => { const x = ocOf(p.name); return x && max(x) >= t.mhz && rk(p) >= rk(gpu); });   // never worse
-      const o = pickOptions(job, ctx, c, { replace: gpu.name, base: gpu });
-      out.push({ key: "obj:oc-gpu", reason: `${reason} – this GPU's maximum ${t.mem ? "memory" : "core"} clock is ${max(d).toLocaleString()} MHz`, options: o, cat: "GPU", old: gpu.name, hint: o.length ? "" : "No unlocked GPU reaches that clock." });
+    const est = gpu && ocReach(gpu.name);
+    if (gpu && d && t.mhz > (t.mem ? est.mem : est.core)) {
+      const c = shopParts("GPU").filter(p => { const x = ocReach(p.name); return x && (t.mem ? x.mem : x.core) >= t.mhz && rk(p) >= rk(gpu); });   // 90 % estimate reaches it, never worse
+      const must = t.mhz > max(d), o = pickOptions(job, ctx, c, { replace: gpu.name, base: gpu }).filter(x => must || !x.over);   // optional ones: in budget only
+      if (must || o.length) out.push({ key: must ? "obj:oc-gpu" : "obj:oc-gpu-easier", reason: must ? `${reason} – this GPU's maximum ${t.mem ? "memory" : "core"} clock is ${max(d).toLocaleString()} MHz` : `${reason} – optional: above this GPU's estimate (${(t.mem ? est.mem : est.core).toLocaleString()} MHz, 90 % of its potential)`, options: o, cat: "GPU", old: gpu.name, hint: o.length ? "" : "No unlocked GPU reaches that clock." });
     }
   } else if (t.part === "RAM" && t.mhz) {
     const ram = cur("RAM"), ds = ram.map(r => ocOf(r.name)).filter(Boolean);
-    if (ds.length && t.mhz > Math.min(...ds.map(d => d.ocMhz))) {
+    if (ds.length && t.mhz > Math.min(...ram.map(r => ocReach(r.name) || 0))) {
       const r0 = ram[0], c = shopParts("RAM").filter(p => +cInfo(p).mhz >= t.mhz && +cInfo(p).gb >= +(cInfo(r0).gb || 0));
       const o = pickOptions(job, ctx, c, { replace: r0.name, count: ram.length }).filter(x => !x.over);
       if (o.length) out.push({ key: "obj:oc-ram", reason: `${reason} – optional: RAM that runs at ${t.mhz.toLocaleString()} MHz with XMP (replaces ${ram.length} stick${ram.length > 1 ? "s" : ""})`, options: o, cat: "RAM", old: r0.name });
     }
   }
+  // tell how the parts were picked
+  out.forEach(x => { if (!/90 %/.test(x.reason) && x.key !== "obj:oc-board") x.reason += " · picked on 90 % of each part's overclock potential – in-game results depend on cooling / power"; });
   return out;
 }
 // ---------- 3DMark score ----------

@@ -77,7 +77,7 @@ function ocHtml(oc) {
   return `<div class="ocbox st-${oc.state}"><div class="brow"><span>Overclock</span></div>
     ${oc.items.map(i => `<div class="ocitem st-${i.state}"><b class="ocic">${ic[i.state]}</b><div><div class="octitle">${esc(i.text)}</div>${i.lines.map(l => `<small>${l}</small>`).join("")}</div></div>`).join("")}
     ${oc.psu ? `<div class="ocitem st-${oc.psu.bad ? "bad" : "ok"}"><b class="ocic">${oc.psu.bad ? "✗" : "✓"}</b><div><small>Overclocked power ~${oc.psu.use.toLocaleString()} W of ${oc.psu.w.toLocaleString()} W${oc.psu.bad ? " – <b>the PSU is too weak</b>" : ""}</small></div></div>` : `<small>Power: add the PSU to check the overclocked watts.</small>`}
-    <small class="ocnote">Which cooler is enough can't be worked out – the game's temperature formula isn't known.</small></div>`;
+    <small class="ocnote">Clocks are estimated at 90 % of each part's overclock potential – your in-game result can differ with the cooling and power. Watts are counted at the full overclock.</small></div>`;
 }
 // STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
 function statusHtml(j, { budgetHtml, budgetState, clashes }) {
