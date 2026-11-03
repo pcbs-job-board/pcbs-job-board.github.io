@@ -43,6 +43,29 @@ _None open. The last five are done in `dev-0.10.0`._
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
 
+### Job card: "Status" section with icon tiles (replaces the budget, power and "don't fit" boxes)
+- Concept agreed with Mariusz (sketch `status_tiles_concept.png`, 2026-11-03). Remove the 💰 budget box, the
+  ⚡ power box and the ⚠️ "Parts that don't fit together" box from the card.
+- New section **STATUS** (small label, same style as the other section labels) **right under the T1 / T2 / T3
+  row, above the hidden objectives**. One row of tiles: 💰 budget · ⚡ power · ⚠️ fit.
+- Tiles: icon only, no text; rounded like T1–T3 but a bit taller. They **fill the whole width** like every other
+  section, all equal width (with 3 tiles = same width as T1/T2/T3). More tiles may come later → sizes adjust
+  automatically and always stay **in one row** (flex / grid with equal columns, not fixed widths).
+- Colour = state: **grey** not active · **green** active, fine · **orange** active, close to the limit ·
+  **red** active, over the limit / something doesn't fit.
+  - 💰 grey when the job has no budget; story job with a loose budget: decide colour rules (probably never red).
+  - ⚡ grey until a PSU is planned; orange over 90 % or too weak only when overclocked; red when too weak.
+  - ⚠️ always active: green when everything fits, red when there is a clash (orange: maybe for "unclear" cases).
+- Details in a **small popup** (what the boxes show today: bar + numbers / the clash list with the swap-order hint):
+  - mouse: shown after hovering the tile for about **0.5 s**, closes when the mouse leaves.
+  - keyboard: every tile is **focusable** (part of the card's keyboard movement, one line with 3 items);
+    details show after the same ~0.5 s delay when a tile gets focus. Focus **never enters the popup**; any
+    navigation key (arrows, Tab, Esc…) moves on as usual and closes the popup.
+  - popup stays inside the window (flips above / left when there is no room), readable on narrow screens;
+    give the tile an aria-label / aria-describedby so screen readers get the same text.
+- Keep: the amber border on swap rows that clash, power / compat logic unchanged. Update the flow test
+  (tiles, colours, hover delay, keyboard focus) and the "How to use it" window (see the 1.0 item).
+
 ### 1.0: bring the "How to use it" window up to date
 - The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) was written from the Steam guide
   before the later 0.10.0 features. For 1.0, add the important functions added since then, up to and including
