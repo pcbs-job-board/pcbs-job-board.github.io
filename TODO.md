@@ -81,6 +81,11 @@ Notes for later (not tasks yet):
   "Story Quest Report #N" emails. Add confirmed ones to `data/story-jobs.csv`.
 - Added in 0.10.0: Dynabeard – `IT@dynabeard.org`, subject "Important: Computer
   required", signed Kinsley Hackett, IT Supervisor – a build request, Req: Level 14, no star requirement.
+- Added in 0.12.0: HRH The Queen – `maj@hrh.royals.org`, "By Royal Appointment" (build from nothing, Req: Level 21).
+- **Waiting to be added** (reported 2026-11-03, goes in with the next small update): Giovanna Sciarra, PhD –
+  `giovanna@giosci.lab`, subject "A minor setback", signed "Giovanna Sciarra, PhD". Particle accelerator magnet
+  quench – parts overheated, PC won't turn on. Objectives: Diagnose and fix; Complete by end of day (tomorrow).
+  Labour $150, Budget $600, Req: Level 13, no star requirement.
 - Candidate from an older screenshot, **not confirmed yet**: `scottyB@dongermail.com`, subject
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
