@@ -3,6 +3,18 @@
 Working notes for the job board (private – dev repository only).
 Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score + overclock helper – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
+## dev-0.12.0 – state (for picking up after a context reset)
+Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, flow 44, units 96, edgetest).
+- 3DMark: js/bench.js (Jacob Klein's formula, workbook "bench" column [11]); Status tile (score bars + "3D" icon),
+  multi-part suggestion sets in suggest.js benchSuggestions; XMP task; matches game benchmark (Azuka 4327, DullGirl 4730).
+- Overclock: js/oc.js (workbook "oc" column [12]); objectives only; 90 % of overclock potential; throttle temps
+  (workbook, fallback Intel 100 / AMD 95 / GPU 95); Overclock tile (gauge); "plans to overclock later" → PSU in budget.
+- Career unlocks: js/unlocks.js (popup next to career box, columns Lv / In the game / In this app; gates cpuOC 6,
+  pcBay 9, gpuOC 13, customWC 16).
+- 💡 Tips: js/hints.js. 3DMark + "slow" → no virus hint. Skylake/Kaby Lake fit each other.
+- Next: the final, biggest system of 0.12.0 (non-job; uses 3DMark + overclock formulas, PC Bay from level 9) –
+  being designed with Mariusz first, nothing built yet.
+
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
 - When he starts a bigger update, every small fix still open goes into it too.
