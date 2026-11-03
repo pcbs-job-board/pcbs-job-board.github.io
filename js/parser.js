@@ -423,6 +423,10 @@ function detectHidden(body, rules, smart, objectives, emailDate, hasDeadline) {
   if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used|used is fine/.test(b)) hidden = hidden.filter(h => !/new parts only/i.test(h.task));
   // 3DMark already in the listed objectives → no extra hint
   if (objectives.some(o => /3d ?mark|benchmark/i.test(o))) hidden = hidden.filter(h => !/3dmark/i.test(h.task));
+  // …and "slow" is then about the score, not viruses: the virus hint stays only when something else points to viruses
+  // (pop-ups, "acting weird", "my kids used it"…) – DullGirl: "PC is super slow… benchmarked 5660!!"
+  const SPEED = /^(slow|sluggish|takes ages|takes forever|laggy|lagging|not as quick|not as fast|quick as it used|fast as it used)$/i;
+  if (objectives.some(o => /3d ?mark/i.test(o))) hidden = hidden.filter(h => !/virus/i.test(h.task) || h.because.some(q => !SPEED.test(String(q).trim())));
   // urgent without an explicit deadline → soft deadline 2 days after the email date
   const urg = hidden.find(h => /^urgent/i.test(h.task));
   if (urg) {
