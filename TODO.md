@@ -1,9 +1,9 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score, overclock helper, tips, unlocks, PC Bay builds – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.12.0** (released 2026-11-03; backup of 0.11.1: `backup-0.11.1`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
-## PC Bay build (0.12.0, agreed with Mariusz 2026-11-03 – built in dev-0.12.0, waiting for his test)
+## PC Bay build (released in 0.12.0)
 Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
 - Resale value (community formula, matches Mariusz's PC: $441 broken → $591 booted → $949 at 4288 points):
   value = sum of used part values × multiplier + $100 when booted to the OS; multiplier 1.0× at ≤1,000 points rising
@@ -27,18 +27,15 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
-## dev-0.12.0 – state (for picking up after a context reset)
-Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, flow 44, units 96, edgetest).
-- 3DMark: js/bench.js (Jacob Klein's formula, workbook "bench" column [11]); Status tile (score bars + "3D" icon),
-  multi-part suggestion sets in suggest.js benchSuggestions; XMP task; matches game benchmark (Azuka 4327, DullGirl 4730).
-- Overclock: js/oc.js (workbook "oc" column [12]); objectives only; 90 % of overclock potential; throttle temps
-  (workbook, fallback Intel 100 / AMD 95 / GPU 95); Overclock tile (gauge); "plans to overclock later" → PSU in budget.
-- Career unlocks: js/unlocks.js (popup next to career box, columns Lv / In the game / In this app; gates cpuOC 6,
-  pcBay 9, gpuOC 13, customWC 16).
-- 💡 Tips: js/hints.js. 3DMark + "slow" → no virus hint. Skylake/Kaby Lake fit each other.
-- PC Bay build: js/flip.js (logic, readers) + js/flipui.js (window, tile, 📦 button); tests: units.js + pcbay.js
-  (readers on 8 screenshots in fixtures/pcbay). Areas "resale" / "inv" found automatically on the first capture (js/areas.js findResale / findInventory), adjustable.
-- Next: Mariusz tests the PC Bay build; then release 0.12.0 (backup-0.11.1 first).
+## 0.12.0 – where things are (released 2026-11-03)
+All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
+- 3DMark: js/bench.js (Jacob Klein's formula, workbook "bench" column [11]); Status tile; suggestion sets in suggest.js
+  benchSuggestions; new builds from nothing: newBuildBench (cheapest CPU + board + RAM (+ GPU, 1 or 2 cards) + PSU + cooler,
+  around parts ticked in the new-job window – opts.picked).
+- Overclock: js/oc.js (workbook "oc" column [12]); objectives only; 90 % of potential; throttle temps; "overclock later" → PSU.
+- Career unlocks: js/unlocks.js (gates cpuOC 6, pcBay 9, gpuOC 13, customWC 16). 💡 Tips: js/hints.js.
+- PC Bay build: js/flip.js + js/flipui.js; inventory USED / NEW / BROKEN from the card labels (cardLabels); areas
+  "resale" / "inv" found automatically (js/areas.js). Parts marked "not in shop" (menu cases…) are never suggested.
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
