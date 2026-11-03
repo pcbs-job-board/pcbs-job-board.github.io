@@ -10,12 +10,15 @@
 <body>
 <header>
   <h1>PCBS <span>Job Board</span></h1>
-  <button id="btnShare">🖥️ Connect screen</button>
-  <button id="btnStop" class="danger" hidden>⏹ Stop capture</button>
-  <div class="status"><div class="dot" id="dot"></div><span id="statusTxt">Not connected</span></div>
-  <canvas id="live" width="160" height="90" title="Live preview of the shared screen" hidden style="border:1px solid var(--line);border-radius:4px;background:#000;height:45px;width:80px"></canvas>
-  <button class="primary big" id="btnCapture">📸 Capture job</button>
-  <button id="btnManual">＋ Manual job</button>
+  <button id="btnShare" title="Connect screen (Shift+C)">🖥️ Connect screen</button>
+  <div class="scrchip" id="scrChip" hidden>
+    <button id="btnChange" class="scrprev" title="Screen connected – click to change screen (Shift+C)" aria-label="Screen connected – change screen"><canvas id="live" width="160" height="90"></canvas><span class="dot on" id="dot"></span></button>
+    <button id="btnStop" class="scrstop" title="Stop capture" aria-label="Stop capture"></button>
+  </div>
+  <div class="capsplit">
+    <button class="primary big" id="btnCapture" title="Capture job (C)">📸 Capture job</button>
+    <button class="primary capplus" id="btnManual" title="Manual job (M)" aria-label="Manual job">＋</button>
+  </div>
   <div class="spacer"></div>
   <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
   <div class="careerbar" id="careerBar">
@@ -28,7 +31,7 @@
     <div class="notipanel" id="notiPanel" hidden></div>
   </div>
   <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
-  <button id="btnSettings">⚙️ Settings</button>
+  <button id="btnSettings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
   <button id="btnHelp" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
 </header>
 
@@ -156,7 +159,7 @@
     <p>Enter your <b>career level</b> and <b>%</b> in the top bar, so part suggestions only show parts you have unlocked. It updates by itself after your first capture.</p>
 
     <h4>2. Connect the game screen</h4>
-    <p>Click <b>🖥️ Connect screen</b> and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste (<b>Ctrl+V</b>) or drop a screenshot instead.</p>
+    <p>Click <b>🖥️ Connect screen</b> and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste (<b>Ctrl+V</b>) or drop a screenshot instead. Once connected, the button turns into a small live preview – click it to change the screen, the red <b>■</b> next to it stops capturing.</p>
 
     <h4>3. Capture the job email</h4>
     <p>Open the job email in the game and click <b>📸 Capture job</b>. On your very first capture a large window shows where the app found the email – drag the box if needed and press <b>Use this area</b>. This is only needed once.</p>

@@ -10,6 +10,7 @@ Within each version, changes are listed from most to least important.
 - Upgrades offer the cheapest step up and the best part in budget; "or better" never suggests worse.
 - A CPU on another socket, a second GPU or more power come with the motherboard / PSU they need.
 - Favourite brand, broken-part hints, RGB and water-cooling requests shape the suggestions too.
+- Slimmer top bar: live preview = change screen, ＋ next to Capture job = manual job, ⚙️ icon only.
 - Missing-part reports also ask for the unlock level %.
 - Fixed: parts named in the objectives didn't count as job requirements on saved jobs.
 

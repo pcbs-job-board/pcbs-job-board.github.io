@@ -121,7 +121,7 @@ function render() {
   // soonest in-game deadline first; jobs without a deadline keep their order at the end
   const q = jobs.filter(j => !j.table).map((j, i) => ({ j, i, d: deadlineValue(j.deadline) })).sort((a, b) => a.d - b.d || a.i - b.i).map(x => x.j);
   $("#qCount").textContent = q.length ? `(${q.length})` : "";
-  $("#queue").innerHTML = q.length ? q.map(jobCard).join("") : `<div class="empty">No open jobs. Press <b>📸 Capture job</b> or <b>＋ Manual job</b>.</div>`;
+  $("#queue").innerHTML = q.length ? q.map(jobCard).join("") : `<div class="empty">No open jobs. Press <b>📸 Capture job</b> or <b>＋</b> (manual job).</div>`;
 }
 function jobCard(j) {
   const busy = n => jobs.some(o => o.table === n && o !== j);
@@ -261,7 +261,8 @@ $("#btnShare").onclick = async () => {
 };
 function stopStream() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } $("#video").srcObject = null; }
 $("#btnStop").onclick = () => { stopStream(); setStatus(); toast("Screen capture stopped"); };
-function setStatus() { startLive(); $("#dot").classList.toggle("on", !!stream); $("#statusTxt").textContent = stream ? "Screen connected" : "Not connected"; $("#btnShare").textContent = stream ? "🖥️ Change screen" : "🖥️ Connect screen"; $("#btnStop").hidden = !stream; }
+$("#btnChange").onclick = () => $("#btnShare").onclick();
+function setStatus() { startLive(); $("#btnShare").hidden = !!stream; $("#scrChip").hidden = !stream; }
 async function grabFrame() {
   const track = stream.getVideoTracks()[0];
   let c = null;
@@ -285,11 +286,11 @@ function isBlack(c) {
 }
 let liveTimer = null;
 function startLive() {
-  const cv = $("#live"), v = $("#video"); cv.hidden = !stream; clearInterval(liveTimer); if (!stream) return;
+  const cv = $("#live"), v = $("#video"); clearInterval(liveTimer); if (!stream) return;
   liveTimer = setInterval(() => { if (v.videoWidth) cv.getContext("2d").drawImage(v, 0, 0, cv.width, cv.height); }, 1000);
 }
 const BLACK_HELP = `The captured image is black. Try, in this order:<br>
-1. Click <b>Change screen</b> and choose the <b>Entire screen</b> tab → screen 1 (not the “Window” tab).<br>
+1. Click the <b>screen preview</b> in the top bar (change screen) and choose the <b>Entire screen</b> tab → screen 1 (not the “Window” tab).<br>
 2. Switch chiaki-ng from fullscreen to a maximised window.<br>
 3. Browser Settings → System → turn <b>off “Use graphics/hardware acceleration”</b>, restart the browser.<br>
 Meanwhile: press <b>Win+Shift+S</b>, snip screen 1, and <b>Ctrl+V</b> into this page.`;
