@@ -33,7 +33,7 @@ _None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
 Notes for later (not tasks yet):
 - Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published;
   could be fitted from ~20–30 in-game readings: CPU, cooler, voltage, MHz, °C, with / without case fans).
-- 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there. Not taken (for now): new storage → install the OS; two NVIDIA GPUs → SLI bridge.
+- 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - PC Bay unlocks at career level 9 – the gate `pcBay` is ready in js/unlocks.js for the coming system.
 - Mariusz plans a non-job system (part of the 0.12.0 line) that uses both the 3DMark and the overclock formulas.
 - Overclock objective wording seen so far only on Steam ("OC CPU to 4000MHz", "OC GPU to 2133MHz") – check against a
