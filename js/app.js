@@ -56,7 +56,7 @@ function powerState(j) {
   return use > pc.psuW ? "bad" : use > pc.psuW * 0.9 || (!pc.ocWanted && pc.oc > pc.psuW) ? "warn" : "ok";
 }
 // 3DMark: the planned PC's score (XMP off – how customer PCs come – and on) against the objective's target
-const BENCH_ICON = `<svg class="bicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 17a8.5 8.5 0 0 1 17 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".35"/><path d="M3.5 17a8.5 8.5 0 0 1 12.7-7.4" fill="none" stroke="#ff8a1f" stroke-width="2.6" stroke-linecap="round"/><path d="M12 17l5.2-6.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="2.1" fill="#fff"/><text x="12" y="23.6" text-anchor="middle" font-size="5.6" font-weight="800" fill="#ffb066" font-family="Segoe UI,system-ui,sans-serif">3D</text></svg>`;
+const BENCH_ICON = `<svg class="bicon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="4" height="7" rx="1" fill="#ffb066"/><rect x="10" y="9" width="4" height="11" rx="1" fill="#ff9a3d"/><rect x="17" y="4" width="4" height="16" rx="1" fill="#ff7a12"/><text x="7.2" y="8.6" text-anchor="middle" font-size="6.5" font-weight="900" fill="#fff" font-family="Segoe UI,Arial,sans-serif">3D</text></svg>`;   // score bars + "3D" (a gauge would read as overclocking)
 function benchHtml(bc) {
   const n = x => x.toLocaleString(), t = bc.target, pct = Math.min(100, bc.off / t * 100), pctOn = Math.min(100, bc.on / t * 100);
   const verdict = bc.state === "ok" ? `<span class="okc">✓ Reaches the target${bc.off >= t ? " as it is" : " with XMP on (task ticked off)"}.</span>`
