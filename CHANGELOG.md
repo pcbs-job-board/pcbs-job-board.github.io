@@ -10,7 +10,7 @@ Within each version, changes are listed from most to least important.
 - 💡 Tips on job cards – small reminders like thermal paste, XMP or the leak test.
 - Career unlocks list by level; help for overclocking and custom water cooling waits until the game unlocks it.
 - New story job: HRH The Queen.
-- Fixed: water cooling suggested for brand fans; case "or better" suggesting a case not sold in the shop; virus hint on 3DMark jobs; overclocking counted from tasks.
+- Fixed: water cooling suggested because of a favourite brand; "or better" cases not sold in the shop; virus hint on 3DMark jobs; overclocking read from tasks.
 
 ## 0.11.1
 - Suggested swaps now appear right after a PC Stats capture in the new-job window.
