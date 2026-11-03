@@ -3,7 +3,7 @@
 Working notes for the job board (private – dev repository only).
 Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score + overclock helper – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
-## PC Bay build (0.12.0, agreed with Mariusz 2026-11-03 – being built)
+## PC Bay build (0.12.0, agreed with Mariusz 2026-11-03 – built in dev-0.12.0, waiting for his test)
 Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
 - Resale value (community formula, matches Mariusz's PC: $441 broken → $591 booted → $949 at 4288 points):
   value = sum of used part values × multiplier + $100 when booted to the OS; multiplier 1.0× at ≤1,000 points rising
@@ -36,7 +36,9 @@ Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, f
 - Career unlocks: js/unlocks.js (popup next to career box, columns Lv / In the game / In this app; gates cpuOC 6,
   pcBay 9, gpuOC 13, customWC 16).
 - 💡 Tips: js/hints.js. 3DMark + "slow" → no virus hint. Skylake/Kaby Lake fit each other.
-- Next: PC Bay build (see above) – agreed, being built.
+- PC Bay build: js/flip.js (logic, readers) + js/flipui.js (window, tile, 📦 button); tests: units.js + pcbay.js
+  (readers on 8 screenshots in fixtures/pcbay). Screenshot boxes are fixed for 16:9 (FLIP_RESALE_BOX, FLIP_INV_COLS).
+- Next: Mariusz tests the PC Bay build; then release 0.12.0 (backup-0.11.1 first).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
