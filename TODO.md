@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score + overclock helper – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score, overclock helper, tips, unlocks, PC Bay builds – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## PC Bay build (0.12.0, agreed with Mariusz 2026-11-03 – built in dev-0.12.0, waiting for his test)
 Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
@@ -25,7 +25,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - Profit = value now − value as bought − price of NEW parts (inventory / used parts count $0).
 - Inventory is stored per build (incl. parts taken out of it) and deleted with "Finish build" (asks first).
 - 💡 tip on every build: the resale formula in general words.
-- Waiting for: a screenshot of the inventory with a NEW part in it (to check the reader).
+- Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
 ## dev-0.12.0 – state (for picking up after a context reset)
 Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, flow 44, units 96, edgetest).
