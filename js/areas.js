@@ -170,7 +170,7 @@ function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
   };
 }
 // kind: "email" | "stats" | "resale" | "inv"  →  { box, sure } or null
-function detectArea(img, kind) { return kind === "stats" ? findStats(img) : kind === "resale" ? findResale(img) : kind === "inv" ? findInventory(img) : findEmail(img); }
+function detectArea(img, kind) { return kind === "stats" ? findStats(img) : kind === "resale" ? (findInventory(img) ? null : findResale(img)) : kind === "inv" ? findInventory(img) : findEmail(img); }
 // browser helper: <img>/<canvas> → small ImageData
 function areaImage(src) {
   const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, h = Math.round(AREA_W * sh / sw);

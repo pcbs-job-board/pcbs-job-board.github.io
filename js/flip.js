@@ -54,13 +54,17 @@ function parseResale(lines) {
   return out;
 }
 // Inventory (one card column): name (1–2 lines) → feature bullets → "$218" (with "Auction on PC Bay" / "Sell")
+// middle of the name: its lines from the last one up, while they follow each other (a red INCOMPATIBLE label above is left out)
+function nameMid(bs) { let i = bs.length - 1; while (i > 0 && bs[i].y0 - bs[i - 1].y1 < (bs[i].y1 - bs[i].y0) * 0.8) i--; return (bs[i].y0 + bs[bs.length - 1].y1) / 2; }
 function parseInventoryColumn(lines) {
-  lines = lines.map(l => Array.isArray(l) ? { text: l[0], conf: l[1] } : typeof l === "string" ? { text: l, conf: 100 } : l);
-  const out = []; let name = [], cur = null;
-  // the sell price shown is the used value (⅓ of the shop price) – when the "$" line can't be read, that's used instead
-  const done = c => out.push({ ...c, price: c.price ?? usedValue(c.name) });
-  const flush = () => { if (!name.length) return; const t = name.join(" "); name = []; const m = bestPartMatch(t); if (m && !m.amb && m.score >= 0.7) { if (cur) done(cur); cur = { name: m.name, cat: m.cat, price: null }; } };
-  for (const { text, conf } of lines) {
+  lines = lines.map(l => Array.isArray(l) ? { text: l[0], conf: l[1], bbox: l[2] } : typeof l === "string" ? { text: l, conf: 100 } : l);
+  const out = []; let name = [], box = [], cur = null;
+  // the sell price shown is the used value (⅓ of the shop price) – when the "$" line can't be read, that's used instead;
+  // a BROKEN part shows ~10 % of it
+  const done = c => { const price = c.price ?? usedValue(c.name), u = usedValue(c.name); out.push({ ...c, price, broken: c.price != null && u != null && u >= 8 && c.price <= u * 0.4 }); };
+  // where the name sits (middle of its lines, in pixels of the column picture) – the USED / BROKEN labels are found from it
+  const flush = () => { if (!name.length) return; const t = name.join(" "), bs = box; name = []; box = []; const m = bestPartMatch(t); if (m && !m.amb && m.score >= 0.7) { if (cur) done(cur); cur = { name: m.name, cat: m.cat, price: null, nameY: bs.length ? nameMid(bs) : null }; } };
+  for (const { text, conf, bbox } of lines) {
     const t = String(text).trim(); if (!t) continue;
     // "$65" – sometimes read as "365" / "S65" (the $ taken for a 3, 5, 8 or S): the parts database decides
     const pr = t.match(/\$\s?(\d[\d,]*)/) || (cur && t.match(/(?:auction on|sell)\D{0,3}([358S]?\d{1,4})\s*$/i));
@@ -73,14 +77,38 @@ function parseInventoryColumn(lines) {
       }
       continue;
     }
-    if (/^\W{0,2}(auction|pc\s?bay|sell|used|incompatible)\b/i.test(t) || /:/.test(t) || /^[*«»+•·-]/.test(t)) { flush(); continue; }
+    if (/^\W{0,2}(auction|pc\s?bay|sell|used|incompatible|broken)\b/i.test(t) || /:/.test(t) || /^[*«»+•·-]/.test(t)) { flush(); continue; }
     if (conf < 60) { flush(); continue; }
-    if (/[A-Za-z]{2}/.test(t) || /\d/.test(t)) name.push(t);
+    if (/[A-Za-z]{2}/.test(t) || /\d/.test(t)) { name.push(t); if (bbox) box.push(bbox); }
   }
   flush(); if (cur) done(cur);
   return out;
 }
-
+// USED (dark letters, top right of the card picture) and BROKEN (red letters under it) – by colour, from where the
+// name is: the picture's top is ~0.30 of the screen height above the middle of the name. px(x, y) → [r, g, b] (0–1 coords)
+function cardLabels(px, colX, colW, nameMidY, W, H) {
+  const top = nameMidY - 0.30, cnt = (x0, x1, y0, y1, test) => { let n = 0, t = 0; for (let y = y0; y < y1; y += 1 / H) for (let x = x0; x < x1; x += 1 / W) { t++; if (test(px(x, y))) n++; } return t ? n / t : 0; };
+  const dark = cnt(colX + colW * 0.62, colX + colW * 0.97, top + 0.004, top + 0.04, ([r, g, b]) => (r + g + b) / 3 < 90);
+  const red = cnt(colX + colW * 0.2, colX + colW * 0.8, top + 0.04, top + 0.1, ([r, g, b]) => r > 170 && g < 80 && b < 80);
+  return { used: dark > 0.05, broken: red > 0.035, dark, red };
+}
+// a whole inventory screenshot (browser): the 3 card columns of the "inv" area → [{name, cat, price, used, broken}]
+async function readInventory(img, grid) {
+  const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height, fc = document.createElement("canvas"); fc.width = W; fc.height = H;
+  const fg = fc.getContext("2d", { willReadFrequently: true }); fg.drawImage(img, 0, 0); const pd = fg.getImageData(0, 0, W, H).data;
+  const px = (x, y) => { const i = (Math.min(H - 1, Math.max(0, Math.round(y * H))) * W + Math.min(W - 1, Math.max(0, Math.round(x * W)))) * 4; return [pd[i], pd[i + 1], pd[i + 2]]; };
+  const items = [];
+  for (const b of invColumns(grid)) {
+    const c = cropCanvas(img, b), got = parseInventoryColumn((await readText(c)).lines);
+    for (const it of got) {
+      if (it.nameY != null) { const L = cardLabels(px, b.x, b.w, b.y + it.nameY / c.height * b.h, W, H); it.used = L.used; it.broken = L.broken;
+        // not broken but the price reads far too low → misread, the used value it must be
+        const u = usedValue(it.name); if (!it.broken && u != null && it.price <= u * 0.4) it.price = u; } else it.used = true;
+      items.push(it);
+    }
+  }
+  return items;
+}
 // ---------- the build ----------
 const flipUid = () => Math.random().toString(36).slice(2, 9);
 function newFlip() {
@@ -109,7 +137,7 @@ function flipInventory(f) {
   const out = f.inv.map(i => ({ ...i }));
   for (const c of f.changes) if (c.kind === "hw" && c.old) { const p = f.parts.find(x => x.id === c.old); if (p && !p.broken) out.push({ id: "out:" + p.id, cat: p.cat, name: p.name, used: true, src: "removed" }); }
   const taken = new Set(f.changes.map(c => c.invId).filter(Boolean));
-  return out.map(i => ({ ...i, taken: taken.has(i.id) }));
+  return out.map(i => ({ ...i, taken: taken.has(i.id) || !!i.broken }));   // broken parts can't be used
 }
 const softOk = (f, build) => {
   const cpu = build.find(p => p.cat === "CPU"), mb = build.find(p => p.cat === "Motherboard");
@@ -211,4 +239,4 @@ function flipReset(f, cat) {
   if (cat === "Motherboard") { s.xmp = s.ocCpu = s.ocGpu = false; }
   s.bench = false; f.score = null;
 }
-if (typeof module !== "undefined") module.exports = { parseResale, parseInventoryColumn, benchMult, flipValue, usedValue, newFlip, flipState, flipBuild, flipUpgrades, flipNotes, flipChange, flipUnchange, markBroken, brokenWhy, flipScore };
+if (typeof module !== "undefined") module.exports = { parseResale, parseInventoryColumn, cardLabels, benchMult, flipValue, usedValue, newFlip, flipState, flipBuild, flipUpgrades, flipNotes, flipChange, flipUnchange, markBroken, brokenWhy, flipScore };

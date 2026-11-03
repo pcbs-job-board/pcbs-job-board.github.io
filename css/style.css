@@ -487,3 +487,4 @@ dialog.flipdlg{width:min(1000px,97vw);max-width:none}
 .okc{color:#9fdcb6}
 .fstep .addrow .fval{flex:0 0 90px}.fstep .addrow .fbrk{flex:none}
 .fscore input{flex:0 0 150px}
+.tag.broken{background:var(--bad);color:#fff}

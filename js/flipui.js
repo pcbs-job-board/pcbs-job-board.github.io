@@ -67,10 +67,10 @@ function flipStep1(f) {
 function invHtml(f, cat) {
   const inv = flipInventory(f).filter(i => !cat || i.cat === cat);
   return `<div class="finv"><div class="fh">Your inventory for this build${cat ? ` – ${esc(cat)}` : ""}</div>
-    <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. Used parts are best – a NEW part keeps only ⅓ of its price in the sale value.</p>
+    <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
     <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
-    ${inv.map(i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="cat">${esc(i.cat)}</span><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken ? ` <small>(in use)</small>` : ""}</span>
-      ${i.src === "removed" ? `<span class="tag used">USED</span>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`).join("") || `<div class="hint">Nothing yet.</div>`}
+    ${inv.map(i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="cat">${esc(i.cat)}</span><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+      ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`).join("") || `<div class="hint">Nothing yet.</div>`}
     <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
 }
 // ---------- step 2: fix ----------
@@ -180,11 +180,11 @@ async function flipImage(url, kind, again) {
       markBroken(f); f.lastShot = flipThumb(img);
       toast(`Read ${r.items.length} parts${r.total != null ? ` · resale value $${r.total}` : ""}`);
     } else {
-      let items = [];
-      for (const b of invColumns(crops.inv)) items.push(...parseInventoryColumn((await readText(cropCanvas(img, b))).lines));
+      const items = await readInventory(img, crops.inv);
       if (!items.length) { if (st) st.innerHTML = '⚠ No inventory cards found – is the Inventory open in the game? Box in the wrong place? <button data-fa="adjust-inv">🎯 Adjust area</button>'; return; }
-      for (const i of items) f.inv.push({ id: flipUid(), cat: i.cat, name: i.name, used: true, price: i.price, src: "capture" });
-      toast(`Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory (marked USED – untick if one is new)`);
+      for (const i of items) f.inv.push({ id: flipUid(), cat: i.cat, name: i.name, used: i.used, broken: !!i.broken, price: i.price, src: "capture" });
+      const nb = items.filter(i => i.broken).length, nn = items.filter(i => !i.used && !i.broken).length;
+      toast(`Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory${nn ? ` · ${nn} new` : ""}${nb ? ` · ${nb} broken (can't be used)` : ""}`);
     }
     flipSave(); flipRender();
   } catch (err) { if (st) st.textContent = "⚠ " + (err.message || "Couldn't read the screenshot"); }
