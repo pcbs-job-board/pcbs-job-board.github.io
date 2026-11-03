@@ -93,7 +93,10 @@ document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile
 document.addEventListener("focusout", e => { if (e.target.closest?.(".stile")) stipHide(); });
 document.addEventListener("keydown", () => { if (!stip.hidden || stipTimer) stipHide(); }, true);
 document.addEventListener("click", e => { const t = e.target.closest?.(".stile"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
-addEventListener("scroll", stipHide, true); addEventListener("resize", stipHide);
+// scrolling / resizing closes an open popup but doesn't cancel one about to open
+// (keyboard moves scroll the focused tile into view – the popup is placed after that)
+const stipClose = () => { if (!stip.hidden) stipHide(); };
+addEventListener("scroll", stipClose, true); addEventListener("resize", stipClose);
 
 // 🔧 parts that don't fit together – only shown when there is a clash with a planned swap / required part
 function compatHtml(clashes) {
