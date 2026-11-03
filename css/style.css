@@ -375,6 +375,7 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .stile.st-warn{background:#6b4a14;border-color:var(--warn)}
 .stile.st-bad{background:#6a1f1f;border-color:var(--bad);box-shadow:0 0 8px #ef535040}
 .stile:hover,.stile:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.stip{position:fixed;z-index:120;background:#0f131a;border:1px solid var(--accent);border-radius:9px;padding:6px;box-shadow:0 10px 30px #000a;font-size:12.5px;pointer-events:none}
+.stip{position:fixed;z-index:120;overflow:hidden;background:#0f131a;border:1px solid var(--accent);border-radius:9px;padding:6px;box-shadow:0 10px 30px #000a;font-size:12.5px;pointer-events:none}
 .stip .budget,.stip .power,.stip .compat{margin:0}
 .stip .stoff{color:var(--muted);padding:6px 8px}.stip .stoff.ok{color:#9fdcb6}
+.stip.cut::after{content:"… more – the swap rows with an amber border are the ones that don't fit";position:absolute;left:0;right:0;bottom:0;padding:14px 10px 6px;font-size:11px;color:#ffcf8a;background:linear-gradient(transparent,#0f131a 45%)}

@@ -74,10 +74,16 @@ let stipTimer = null, stipFor = null;
 function stipShow(tile) {
   clearTimeout(stipTimer); stipFor = tile;
   stip.innerHTML = tile.querySelector("template").innerHTML; stip.hidden = false; tile.setAttribute("aria-describedby", "stip");
-  const r = tile.getBoundingClientRect(), w = Math.min(340, innerWidth - 16); stip.style.width = w + "px";
-  const h = stip.offsetHeight, below = r.bottom + 6 + h <= innerHeight - 8 || r.top - 6 - h < 8;
-  stip.style.left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 8)) + "px";
-  stip.style.top = (below ? r.bottom + 6 : r.top - 6 - h) + "px";
+  // always fully inside the window: width capped, pushed in from the left / right edge, below the tile or – when
+  // there is more room – above it; taller than the room on that side → cut to fit with a note (the popup can't scroll)
+  const r = tile.getBoundingClientRect(), M = 8, w = Math.min(340, innerWidth - 2 * M);
+  Object.assign(stip.style, { width: w + "px", maxHeight: "", left: "0px", top: "0px" }); stip.classList.remove("cut");
+  const roomBelow = innerHeight - r.bottom - 6 - M, roomAbove = r.top - 6 - M, h = stip.offsetHeight;
+  const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.max(60, below ? roomBelow : roomAbove);
+  if (h > room) { stip.style.maxHeight = room + "px"; stip.classList.add("cut"); }
+  const hh = Math.min(h, room);
+  stip.style.left = Math.max(M, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - M)) + "px";
+  stip.style.top = Math.max(M, Math.min(below ? r.bottom + 6 : r.top - 6 - hh, innerHeight - hh - M)) + "px";
 }
 function stipHide() { clearTimeout(stipTimer); if (stipFor) stipFor.removeAttribute("aria-describedby"); stipFor = null; stip.hidden = true; }
 const stipLater = tile => { clearTimeout(stipTimer); stipTimer = setTimeout(() => stipShow(tile), 500); };
