@@ -132,21 +132,28 @@ def sock_list(v): return "|".join(x.strip() for x in s(v).split(",") if x.strip(
 def rad(size, slots):  # 240 mm in 2 slots → "120x2"
     sz, sl = num(size), num(slots)
     return f"{int(sz / sl)}x{int(sl)}" if sz and sl else ""
+def with_light(f):
+    return lambda r: ";".join(x for x in (f(r), "lt=1" if s(r.get("Lighting")) else "") if x)
 COMPAT = {
     "Cases": lambda r: kv(b=",".join(c for k, c in BCODE.items() if s(r.get(k)) == "Y"), p=",".join(x for x in ("ATX", "SFX") if s(r.get(f"PSU {x}")) == "Y"),
                           pl=n(r.get("Max PSU length")), g=n(r.get("Max GPU length")), h=n(r.get("Max CPU Fan Height")), r120=n(r.get("Max 120mm Radiators")), r140=n(r.get("Max 140mm Radiators")),
                           open="1" if s(r.get("Is Open Bench")) == "Y" else ""),
     "Motherboards": lambda r: kv(s=s(r.get("CPU Socket")), f=BCODE.get(s(r.get("Size")), s(r.get("Size"))), ram=n(r.get("RAM Slots")), m2=n(r.get("M.2 Slots")), sata=n(r.get("SATA Slots Usable")),
                                  sli="1" if s(r.get("Support SLI")) == "Y" else "", cf="1" if s(r.get("Support CrossFire")) == "Y" else "", ds=n(r.get("Dual GPU Max Slot Size")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0"),
-    "CPUs": lambda r: kv(s=s(r.get("Socket")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0"),
-    "CPU Coolers": lambda r: kv(ss=sock_list(r.get("CPU Socket List")), h=n(r.get("Height")) if "Air" in s(r.get("Type")) else "", r=rad(r.get("Size"), r.get("Slots")) if "Liquid" in s(r.get("Type")) else ""),
+    "CPUs": lambda r: kv(s=s(r.get("Socket")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0", rk=n(r.get("Part Ranking Score"))),
+    "CPU Coolers": lambda r: kv(aio="1" if "Liquid" in s(r.get("Type")) else "", ss=sock_list(r.get("CPU Socket List")), h=n(r.get("Height")) if "Air" in s(r.get("Type")) else "", r=rad(r.get("Size"), r.get("Slots")) if "Liquid" in s(r.get("Type")) else ""),
     "WC CPU Blocks": lambda r: kv(ss=sock_list(r.get("CPU Socket List"))),
     "WC Radiators": lambda r: kv(r=rad(r.get("Size"), r.get("Slots"))),
-    "GPUs": lambda r: kv(l=n(r.get("Length")), m=s(r.get("Multi-GPU")), c=s(r.get("Chipset")), sl=n(r.get("Slot Size"))),
+    "GPUs": lambda r: kv(l=n(r.get("Length")), m=s(r.get("Multi-GPU")), c=s(r.get("Chipset")), sl=n(r.get("Slot Size")), rk=n(r.get("Part Ranking Score"))),
     "Power Supplies": lambda r: kv(f=s(r.get("Size")), l=n(r.get("Length"))),
-    "Storage": lambda r: kv(t="m2" if s(r.get("Type")) == "M.2" else "sata"),
+    "Storage": lambda r: kv(t="m2" if s(r.get("Type")) == "M.2" else "sata", k={"HDD": "1", "SSD": "2", "M.2": "3"}.get(s(r.get("Type")), ""), gb=n(r.get("Size (GB)")), sp=n(r.get("Transfer Speed (MB/s)"))),
+    "Memory": lambda r: kv(gb=n(r.get("Size (GB)")), mhz=n(r.get("Frequency"))),
     "Case Fans": lambda r: kv(z=n(r.get("Size"))),
 }
+
+COMPAT = {k: with_light(v) for k, v in COMPAT.items()}
+for sh in ("WC Radiators", "WC Reservoirs", "WC Pipe Connectors"):
+    COMPAT.setdefault(sh, with_light(lambda r: ""))
 
 def main():
     if len(sys.argv) < 2:

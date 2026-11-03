@@ -3,6 +3,14 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.11.0
+- Suggested part swaps in the new-job and PC Stats windows, worked out from the objectives and the PC's parts – tick one to add it.
+- Suggestions only use unlocked parts that fit the planned PC and its PSU, cheapest first, inside the budget when possible.
+- Upgrades offer the cheapest step up and the best part in budget; "or better" never suggests worse.
+- A CPU on another socket, a second GPU or more power come with the motherboard / PSU they need.
+- Favourite brand, broken-part hints, RGB and water-cooling requests shape the suggestions too.
+- Fixed: parts named in the objectives didn't count as job requirements on saved jobs.
+
 ## 0.10.0
 - Text reader updated to Tesseract.js 7 – screenshots are read about 20 % faster.
 - Fixed the last objective of build requests lost when joining email screenshots.

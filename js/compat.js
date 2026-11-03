@@ -5,6 +5,8 @@
      100+i  part swaps, in the order of the swap list (drag ⠿ or Alt+↑/↓ to change it)
      1000+i the customer's parts from PC Stats that stay (a replaced one is ignored)
    Clashes between two of the customer's own parts are not reported. */
+// a saved job keeps its objectives as tasks (src "obj"); a draft / test job has an objectives list
+const jobObjectives = j => j.objectives || (j.tasks || []).filter(t => t.src === "obj").map(t => t.text);
 let COMPAT = null;
 function compatOf(name) {
   if (!COMPAT) {
@@ -39,7 +41,7 @@ function compatBuild(j, extra) {
 // does an objective name this part? "Install GTX 1080" → any GeForce GTX 1080 (not 1080 Ti); "Install Intel Core i5-7500 or better" → that CPU,
 // or – with "or better" – the part swapped in for that category
 function requiredBy(j, p) {
-  const objs = (j.objectives || []).filter(o => /\b(install|upgrade to|replace .* with)\b/i.test(o));
+  const objs = jobObjectives(j).filter(o => /\b(install|upgrade to|replace .* with)\b/i.test(o));
   if (!objs.length || p.cat === "Other") return false;
   const norm = s => " " + String(s).toLowerCase().replace(/[^a-z0-9+]+/g, " ").trim() + " ";
   const keys = [norm(p.name)];

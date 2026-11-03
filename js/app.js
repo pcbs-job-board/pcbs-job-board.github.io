@@ -396,7 +396,7 @@ function renderForm() {
   const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small></button>`;
   if (rev.forJob) {
     f.innerHTML = `<label>Parts of this PC (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
-      <p class="hint">Captured parts replace earlier captured ones; lines you typed yourself are kept.</p><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
+      <p class="hint">Captured parts replace earlier captured ones; lines you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
     f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
@@ -408,6 +408,7 @@ function renderForm() {
       <label>Hidden objectives found in email${d.story ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${d.story ? "" : "checked"} data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
       <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}
       <label>Current parts (one per line, “Category: name”)</label><textarea id="fComps" rows="7">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
+      ${isEdit ? "" : `<div id="fSugg"></div>`}
       ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
       <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
   }
@@ -420,12 +421,62 @@ function renderForm() {
   $("#btnCapParts").onclick = capParts;
   if ($("#btnCapEmail")) $("#btnCapEmail").onclick = capEmail;
   $("#fPartAdd").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPart(); } });
+  // suggested swaps follow what is typed / ticked in the form
+  let t = null; const later = () => { clearTimeout(t); t = setTimeout(renderSuggestions, 350); };
+  ["#fComps", "#fObj", "#fBudget", "#fSuspect"].forEach(id => $(id)?.addEventListener("input", later));
+  $("#fHidden")?.addEventListener("change", renderSuggestions); $("#fStory")?.addEventListener("change", renderSuggestions);
+  $("#fPartAddBtn").addEventListener("click", renderSuggestions);
+  renderSuggestions();
+}
+// ================= suggested swaps (new-job window and "Add parts from PC Stats") =================
+// what the suggestions are worked out from: the form as it is now (or the job the parts are for)
+function suggestInput() {
+  const d = rev.draft, fj = rev.forJob && job(rev.forJob.id), lines = id => ($(id)?.value || "").split("\n").map(x => x.trim()).filter(Boolean);
+  const components = $("#fComps") ? parseCompText($("#fComps").value) : d.components;
+  if (fj) {
+    const hid = (fj.tasks || []).filter(t => t.src === "hid").map(t => t.text);
+    return { job: { ...fj, components }, opts: { brands: fj.brands || [], broken: hid.map(t => (t.match(/replace the (.+?) – customer hints/i) || [])[1]).filter(Boolean), rgb: hid.some(t => /rgb/i.test(t)), waterCooling: hid.some(t => /water cooling/i.test(t)) } };
+  }
+  const hid = [...document.querySelectorAll("#fHidden input:checked")].map(c => d.hidden[c.dataset.h]).filter(Boolean);
+  const budget = $("#fBudget") && $("#fBudget").value !== "" ? +$("#fBudget").value : d.budget;
+  return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid },
+    opts: { brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /rgb/i.test(h.task)), waterCooling: hid.some(h => /water cooling/i.test(h.task)) } };
+}
+function renderSuggestions() {
+  const box = $("#fSugg"); if (!box || !rev) return;
+  const keep = new Set([...box.querySelectorAll("input:checked")].map(c => c.dataset.pick));
+  let list = []; try { const { job: j, opts } = suggestInput(); list = suggestSwaps(j, opts); } catch (e) { console.warn("suggestions", e); }
+  rev.sugg = list;
+  if (!list.length) { box.innerHTML = ""; return; }
+  const money = o => o.total != null ? "$" + o.total.toLocaleString() : "";
+  box.innerHTML = `<label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label>` + list.map((sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
+    ${sg.options.length ? sg.options.map((o, k) => { const pick = sg.key + "|" + o.name + "|" + o.tag; return `<label class="sopt ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
+      <span><span class="sname">${sg.old && o.swaps[0]?.old ? `<span class="old">${esc(sg.old)}</span> → ` : o.swaps[0]?.old === "" && o.cat !== "RAM" ? "<span class=\"old\">(empty slot)</span> → " : ""}<span class="new">${o.count > 1 ? o.count + " × " : ""}${esc(o.name)}</span></span>
+      <small class="stag">${esc(o.tag)}${o.lvl != null ? ` · Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
+      ${o.det ? `<small class="sdet">${esc(o.det)}</small>` : ""}
+      ${(o.extras || []).map(e => `<small class="sextra">+ ${esc(e.cat)}: ${e.name ? esc(e.name) + (e.price != null ? " ($" + e.price + ")" : "") : "<span class=\"warn\">" + esc(e.why) + "</span>"}${e.name && e.why ? " – " + esc(e.why) : ""}</small>`).join("")}
+      ${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${money(o)}</b></label>`; }).join("")
+      : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`}</div>`).join("");
+  // one choice per suggestion
+  box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; }); }));
+}
+// the ticked suggestions → part swaps (+ tasks for sticks to take out)
+function pickedSuggestions() {
+  const swaps = [], tasks = [];
+  document.querySelectorAll("#fSugg input[data-sg]:checked").forEach(c => {
+    const o = rev.sugg?.[+c.dataset.sg]?.options[+c.dataset.so]; if (!o) return;
+    o.swaps.forEach(s => swaps.push({ id: uid(), cat: s.cat, old: s.old || "", new: s.new, done: false }));
+    (o.extras || []).filter(e => e.name).forEach(e => swaps.push({ id: uid(), cat: e.cat, old: e.old || "", new: e.name, done: false }));
+    if (o.removeOld?.length) tasks.push({ id: uid(), text: `Take out ${o.removeOld.length} old RAM stick${o.removeOld.length > 1 ? "s" : ""} (${o.removeOld[0]})`, src: "add", done: false });
+  });
+  return { swaps, tasks };
 }
 function parseCompText(txt) { return txt.split("\n").map(s => s.trim()).filter(Boolean).map(s => { const m = s.match(/^([^:]{2,15}):\s*(.+)$/); return m && CATS.includes(m[1].trim()) ? { cat: m[1].trim(), name: m[2].trim() } : { cat: categorize(s), name: s }; }); }
 function saveReview() {
   const d = rev.draft, comps = parseCompText($("#fComps").value);
   comps.forEach(c => rememberPart(c.name, c.cat));
-  if (rev.forJob) { job(rev.forJob.id).components = comps; }
+  const picked = pickedSuggestions();
+  if (rev.forJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
   else {
     const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, story: !!$("#fStory")?.checked };
     const table = +$("#fTable").value;
@@ -437,7 +488,8 @@ function saveReview() {
       const brands = [];
       document.querySelectorAll("#fHidden input:checked").forEach(c => { const h = d.hidden[c.dataset.h]; tasks.push({ id: uid(), text: h.task, src: "hid", done: false }); if (h.brand && !h.avoid) brands.push(h.brand); });
       $("#fExtra").value.split("\n").map(s => s.trim()).filter(Boolean).forEach(t => tasks.push({ id: uid(), text: t, src: "add", done: false }));
-      target = { ...fields, table: 0, id: d.id, level: d.level, tasks, swaps: [], brands, created: Date.now() };
+      tasks.push(...picked.tasks);
+      target = { ...fields, table: 0, id: d.id, level: d.level, tasks, swaps: picked.swaps, brands, created: Date.now() };
       jobs.push(target);
     }
     if ((target.table || 0) !== table) { if (table) moveToTable(target, table); else target.table = 0; }
