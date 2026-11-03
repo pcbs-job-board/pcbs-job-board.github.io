@@ -282,6 +282,9 @@ function aioSuggestion(job, ctx, reason, cur) {
 // it at their overclock base (in budget only). Favourite brand first, as everywhere (pickOptions).
 function ocSuggestions(job, ctx, reason, cur) {
   const out = [], t = ocTargets({ objectives: [reason] })[0] || { part: "CPU", mhz: null }, cpu = cur("CPU").pop(), board = cur("Motherboard").pop();
+  // the player can't overclock this part in the game yet (OCCT at level 6, GPU Tuner at 13) → say so, suggest nothing
+  const gate = t.part === "CPU" ? "cpuOC" : t.part === "GPU" ? "gpuOC" : null;
+  if (gate && !hasUnlock(gate)) return [{ key: "obj:oc-locked", reason, options: [], hint: gateMsg(gate).replace(/<\/?b>/g, "") + "." }];
   if (t.part === "CPU") {
     const reach = p => t.mhz == null || (ocReach(p.name) || 0) >= t.mhz;   // 90 % of the overclock potential
     if (cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) {

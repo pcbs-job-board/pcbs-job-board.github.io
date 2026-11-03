@@ -425,3 +425,17 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .ocbox .ocnote{color:var(--muted);font-size:11px;font-style:italic}
 .stip .ocbox{margin:0}
 .ocitem .octemp{color:#ffcf8a}.ocitem .octemp b{color:#ffe2c4}
+
+/* career unlocks: button next to the career box + its popup */
+.ulbtn{display:flex;align-items:center;justify-content:center;padding:4px 8px;color:#9fdcb6}
+.ulbtn .ulic{display:flex}.ulbtn svg{width:20px;height:20px}
+.stip.big{padding:8px}
+.ulbox{display:flex;flex-direction:column;gap:3px;font-size:12px}
+.ulhead{font-weight:700;color:#9fd2ef;text-transform:uppercase;letter-spacing:.5px;font-size:11.5px;margin-bottom:3px}.ulhead small{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400}
+.ulrow{display:grid;grid-template-columns:40px 1fr;gap:6px;align-items:start;padding:3px 5px;border-radius:6px}
+.ulrow .ullv{font-size:11px;padding-top:1px}
+.ulrow .ulnames{display:flex;flex-wrap:wrap;gap:3px 10px}
+.ulrow.ok .ullv,.ulrow.ok .ul{color:#7ee2a6}.ulrow.no .ullv,.ulrow.no .ul{color:#7b8496}
+.ulrow .ul small{color:inherit;opacity:.8}
+.ulrow.now{background:#1f5a3733;outline:1px solid #2e8a54}
+.stip.big.cut::after{content:"… more – make the window taller to see all levels"}

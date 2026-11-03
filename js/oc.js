@@ -55,6 +55,7 @@ function ocCheck(j) {
       const cpu = first("CPU"), mb = first("Motherboard");
       if (!cpu) { missing.add("CPU"); it.state = "off"; continue; }
       it.name = cpu.name;
+      if (!hasUnlock("cpuOC")) { it.state = "bad"; it.lines.push(gateMsg("cpuOC") + "."); continue; }
       const d = ocOf(cpu.name), c = compatOf(cpu.name) || {};
       if (!d || c.oc === "0") { it.state = "bad"; it.lines.push(`<b>${esc(cpu.name)}</b> is locked – it can't be overclocked. An unlocked CPU is needed.`); }
       if (!mb) missing.add("Motherboard");
@@ -72,6 +73,7 @@ function ocCheck(j) {
     } else if (t.part === "GPU") {
       const gpu = first("GPU"); if (!gpu) { missing.add("GPU"); it.state = "off"; continue; }
       it.name = gpu.name; const d = ocOf(gpu.name);
+      if (!hasUnlock("gpuOC")) { it.state = "bad"; it.lines.push(gateMsg("gpuOC") + "."); continue; }
       if (!d) { it.state = "off"; it.lines.push(`No overclocking data for <b>${esc(gpu.name)}</b>.`); continue; }
       const [base, oc, max, what] = t.mem ? [d.mem, d.ocMem, d.maxMem, "memory clock"] : [d.core, d.ocCore, d.maxCore, "core clock"], est = ocEst(base, oc);
       if (t.mhz != null && t.mhz > max) { it.state = "bad"; it.lines.push(`${mhz(t.mhz)} is over this card's maximum ${what} (${mhz(max)}) – no cooler gets there. Another GPU is needed.`); continue; }

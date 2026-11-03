@@ -23,7 +23,8 @@ function setCareer(level, pct) {
   LS.set("pcbs.career", career);
 }
 // unlocked at the player's progress? Parts listed at 0–1 % unlock right at the level-up.
-const unlocked = p => career.level == null || p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct);
+// Custom water cooling parts come from their own shop, unlocked at career level 16 (js/unlocks.js)
+const unlocked = p => career.level == null || ((p.cat !== "Water Cooling" || typeof hasUnlock !== "function" || hasUnlock("customWC")) && (p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct)));
 const dlcCount = k => Object.values(window.PARTS_DB || {}).reduce((n, rows) => n + rows.filter(r => r[4] === k).length, 0);
 
 // parts the user typed that are not in the database

@@ -99,13 +99,15 @@ document.body.append(stip);
 let stipTimer = null, stipFor = null;
 function stipShow(tile) {
   clearTimeout(stipTimer); stipFor = tile;
-  stip.innerHTML = tile.querySelector("template").innerHTML; stip.hidden = false; tile.setAttribute("aria-describedby", "stip");
+  const big = tile.id === "btnUnlocks";   // the career unlocks list: wider and taller than a Status tile's details
+  stip.innerHTML = big ? unlocksHtml() : tile.querySelector("template").innerHTML; stip.hidden = false; tile.setAttribute("aria-describedby", "stip");
+  stip.classList.toggle("big", big);
   // always fully inside the window: width capped, pushed in from the left / right edge, below the tile or – when
   // there is more room – above it; taller than the room on that side (or than 260 px) → cut to fit with a note (the popup can't scroll)
-  const r = tile.getBoundingClientRect(), M = 8, w = Math.min(340, innerWidth - 2 * M);
+  const r = tile.getBoundingClientRect(), M = 8, w = Math.min(big ? 420 : 340, innerWidth - 2 * M);
   Object.assign(stip.style, { width: w + "px", maxHeight: "", left: "0px", top: "0px" }); stip.classList.remove("cut");
   const roomBelow = innerHeight - r.bottom - 6 - M, roomAbove = r.top - 6 - M, h = stip.offsetHeight;
-  const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.min(260, Math.max(60, below ? roomBelow : roomAbove));
+  const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.min(big ? 640 : 260, Math.max(60, below ? roomBelow : roomAbove));
   if (h > room) { stip.style.maxHeight = room + "px"; stip.classList.add("cut"); }
   const hh = Math.min(h, room);
   stip.style.left = Math.max(M, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - M)) + "px";
@@ -113,12 +115,12 @@ function stipShow(tile) {
 }
 function stipHide() { clearTimeout(stipTimer); if (stipFor) stipFor.removeAttribute("aria-describedby"); stipFor = null; stip.hidden = true; }
 const stipLater = tile => { clearTimeout(stipTimer); stipTimer = setTimeout(() => stipShow(tile), 500); };
-document.addEventListener("mouseover", e => { const t = e.target.closest?.(".stile"); if (t && t !== stipFor) stipLater(t); });
-document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
-document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile"); if (t) stipLater(t); else stipHide(); });
-document.addEventListener("focusout", e => { if (e.target.closest?.(".stile")) stipHide(); });
+document.addEventListener("mouseover", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t && t !== stipFor) stipLater(t); });
+document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
+document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t) stipLater(t); else stipHide(); });
+document.addEventListener("focusout", e => { if (e.target.closest?.(".stile,.ulbtn")) stipHide(); });
 document.addEventListener("keydown", () => { if (!stip.hidden || stipTimer) stipHide(); }, true);
-document.addEventListener("click", e => { const t = e.target.closest?.(".stile"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
+document.addEventListener("click", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
 // scrolling / resizing closes an open popup but doesn't cancel one about to open
 // (keyboard moves scroll the focused tile into view – the popup is placed after that)
 const stipClose = () => { if (!stip.hidden) stipHide(); };
@@ -636,7 +638,10 @@ function careerInfo() {
 }
 function showCareer() { $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct; careerInfo(); }
 // typing a level / % saves straight away; empty level = not set
-["#careerLevel", "#careerPct"].forEach(id => $(id).addEventListener("input", () => { setCareer($("#careerLevel").value, $("#careerPct").value); careerInfo(); }));
+// (the job cards follow: overclocking help and custom water cooling parts wait for their in-game unlock)
+let careerRender = null;
+["#careerLevel", "#careerPct"].forEach(id => $(id).addEventListener("input", () => { setCareer($("#careerLevel").value, $("#careerPct").value); careerInfo(); clearTimeout(careerRender); careerRender = setTimeout(render, 400); }));
+$("#btnUnlocks .ulic").innerHTML = UL_ICON;
 // tidy the fields when leaving them (e.g. 150 % → 100), empty % = 0
 $("#careerLevel").addEventListener("change", () => { $("#careerLevel").value = career.level ?? ""; });
 $("#careerPct").addEventListener("change", () => { $("#careerPct").value = career.pct ? career.pct : ""; });
