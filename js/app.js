@@ -538,7 +538,14 @@ function suggestInput() {
   const hid = [...document.querySelectorAll("#fHidden input:checked")].map(c => d.hidden[c.dataset.h]).filter(Boolean);
   const budget = $("#fBudget") && $("#fBudget").value !== "" ? +$("#fBudget").value : d.budget;
   return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid, ocLater: ocLaterOf(d) },
-    opts: { brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /^add rgb/i.test(h.task)), waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)) } };
+    opts: { picked: tickedForBench(), brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /^add rgb/i.test(h.task)), waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)) } };
+}
+// parts ticked in other suggestions (an objective's GPU, case…) – a 3DMark set for a new build is worked out around them
+function tickedForBench() {
+  const out = [];
+  document.querySelectorAll("#fSugg input[data-sg]:checked").forEach(c => { const sg = rev?.sugg?.[+c.dataset.sg], o = sg?.options[+c.dataset.so]; if (!o || sg.key === "bench") return;
+    o.swaps.forEach(s => out.push({ cat: s.cat, old: s.old || "", new: s.new })); (o.extras || []).filter(e => e.name).forEach(e => out.push({ cat: e.cat, old: e.old || "", new: e.name })); });
+  return out;
 }
 function renderSuggestions() {
   const box = $("#fSugg"); if (!box || !rev) return;
@@ -556,7 +563,9 @@ function renderSuggestions() {
       ${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${money(o)}</b></label>`; }).join("")
       : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`}</div>`).join("");
   // one choice per suggestion
-  box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; }); }));
+  const newBench = list.some(sg => sg.key === "bench" && / – new build/.test(sg.reason));
+  box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; });
+    if (newBench && list[+c.dataset.sg]?.key !== "bench") renderSuggestions(); }));   // new build: the 3DMark set follows the parts ticked
 }
 // a 3DMark suggestion is a SET of parts: one box adds all of them (+ the XMP task when the score needs it)
 function benchOptHtml(o, i, k, pick, keep) {
