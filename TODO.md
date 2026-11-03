@@ -37,7 +37,7 @@ Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, f
   pcBay 9, gpuOC 13, customWC 16).
 - 💡 Tips: js/hints.js. 3DMark + "slow" → no virus hint. Skylake/Kaby Lake fit each other.
 - PC Bay build: js/flip.js (logic, readers) + js/flipui.js (window, tile, 📦 button); tests: units.js + pcbay.js
-  (readers on 8 screenshots in fixtures/pcbay). Screenshot boxes are fixed for 16:9 (FLIP_RESALE_BOX, FLIP_INV_COLS).
+  (readers on 8 screenshots in fixtures/pcbay). Areas "resale" / "inv" found automatically on the first capture (js/areas.js findResale / findInventory), adjustable.
 - Next: Mariusz tests the PC Bay build; then release 0.12.0 (backup-0.11.1 first).
 
 ## How this list is used
