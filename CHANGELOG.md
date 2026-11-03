@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.12.0
+- 📦 PC Bay builds (career level 9+): capture a broken PC's Resale Value window, spot the broken part, fix it from your inventory, upgrade, XMP / overclock, 3DMark – with the expected sale price and profit at every step.
 - 3DMark tile in the Status row: the PC's score with XMP off (as customer PCs come) and on, against the objective's target.
 - Suggested part sets for "3DMark score of N": XMP alone, more RAM sticks, GPU, second GPU, CPU, CPU + GPU, motherboard + CPU – cheapest first, in budget, favourite brand marked; one tick adds the whole set (and the XMP task when needed).
 - Overclock tile for overclock objectives: can it be done (locked CPU, board, GPU maximum), the clock to expect (90 % of the part's overclock potential), the temperature to stay under, PSU when overclocked – plus the parts it needs, favourite brand first.

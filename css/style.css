@@ -451,3 +451,39 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .hintbox ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:5px;color:#f1e6cf;line-height:1.4}
 .stip .hintbox{margin:0}
 .stip.tips.cut::after{content:"… more – make the window taller to see all tips"}
+
+/* 📦 PC Bay build */
+.flipbtn{font-size:17px;padding:5px 10px}
+.job.flip{border-left:4px solid #e0a63a;background:linear-gradient(180deg,#2a2416,var(--card) 60px)}
+.fliptag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#1d1504;background:#e0a63a;border-radius:5px;padding:2px 7px;margin-bottom:6px}
+.chip.profit{border-color:#2e8a54;color:#9fdcb6}.chip.loss{border-color:var(--bad);color:#ffb0ae}
+dialog.flipdlg{width:min(1000px,97vw);max-width:none}
+.flipdlg .dlg-h{display:flex;align-items:center;gap:12px}.flipdlg .dlg-h h3{white-space:nowrap}
+.flipsteps{display:flex;gap:4px;flex:1;flex-wrap:wrap}.flipsteps button{font-size:12.5px;padding:4px 10px}
+.flipsteps button.sel{background:#e0a63a;border-color:#e0a63a;color:#1d1504;font-weight:700}.flipsteps button.done{border-color:#2e8a54}
+.flipwrap{max-height:none;overflow:visible}
+.flipsum{display:flex;flex-wrap:wrap;gap:6px 18px;padding:7px 10px;margin:0 0 10px;border-radius:8px;background:#14232f;border:1px solid #2b5672;font-size:13px;color:var(--muted)}
+.flipsum b{color:var(--text)}.flipsum .profit b{color:#7ee2a6}.flipsum .loss b{color:#ff8a87}.flipsum .warn{color:var(--warn)}
+.flipbody{max-height:calc(100vh - 260px);overflow:auto;padding-right:4px}
+.flipfoot{display:flex;gap:8px;align-items:center;margin-top:10px}.flipfoot .spacer{flex:1}
+.flipconfirm{display:flex;gap:8px;align-items:center;margin-top:8px;padding:8px 10px;border-radius:8px;background:#30260e;border:1px solid #7a5a17;color:#ffe0a6}.flipconfirm span{flex:1}
+.fstep .hint{margin:0 0 8px}.fstep .fh{font-weight:700;color:#ffd27a;margin:12px 0 6px;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+.fcap{display:flex;gap:10px;align-items:center;margin-bottom:8px}.fcap img{height:54px;border-radius:5px;border:1px solid var(--line)}.fstate{color:var(--warn);font-size:12.5px}
+.fprow{display:grid;grid-template-columns:96px 1fr auto auto auto;gap:8px;align-items:center;padding:4px 6px;border-radius:6px;border:1px solid transparent}
+.fprow:nth-child(odd){background:#1c2230}.fprow.broken{border-color:var(--bad);background:#2c1416}.fprow.taken{opacity:.55}
+.fprow .cat{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}.fprow .nm small{color:var(--muted)}
+.fprow .why{grid-column:2 / -1;color:#ffb0ae}.fprow.inv{grid-template-columns:96px 1fr auto auto}
+.fval{width:76px}.fbrk{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted)}
+.fstart{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px}.fstart input{width:90px}.fstart small{color:var(--muted)}
+.finv{margin-top:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#161b25}
+.ffix{padding:8px 10px;border-radius:8px;border:1px solid #7a2a2a;background:#2c1416;margin-bottom:8px}.ffix .fh{margin-top:0;color:#ffb0ae}
+.ffix .why{display:block;color:#e3a3a1;margin-bottom:6px}.fopts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.fopts .addrow{flex-basis:100%}
+.fopts button.nofit{opacity:.6;border-style:dashed}.fchosen{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.4px}.tag.used{background:#3c4558;color:#dde3ee}.tag.new{background:#e0a63a;color:#1d1504}
+.fnote{padding:6px 9px;border-radius:7px;background:#2a2412;border:1px solid #7a5a17;color:#f1e6cf;margin-bottom:6px;font-size:13px}
+.fup{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:7px;border:1px solid var(--line);margin-bottom:5px}.fup small{color:var(--muted)}
+.fsoft{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;border:1px solid var(--line);margin-bottom:6px;cursor:pointer}.fsoft small{color:var(--muted)}
+.fsoft.locked{opacity:.55;cursor:default}.fscore input{width:130px}.fscore small{color:var(--muted)}
+.okc{color:#9fdcb6}
+.fstep .addrow .fval{flex:0 0 90px}.fstep .addrow .fbrk{flex:none}
+.fscore input{flex:0 0 150px}

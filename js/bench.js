@@ -15,7 +15,7 @@ function benchOf(name) {
       const v = String(r[11]);
       BENCH.set(r[0].toLowerCase(), cat === "Motherboard" ? { steps: v.split("|").map(Number).filter(Boolean) }
         : cat === "CPU" ? (([core, chan, mem, adj, mhz, maxCh, defMem]) => ({ core, chan, mem, adj, mhz, maxCh, defMem }))(v.split(",").map(Number))
-        : cat === "GPU" ? (([one, two]) => ({ one, two }))(v.split(",").map(Number)) : null);
+        : cat === "GPU" ? (([one, two, ocOne, ocTwo]) => ({ one, two, ocOne, ocTwo }))(v.split(",").map(Number)) : null);
     }
   }
   return BENCH.get(String(name || "").trim().toLowerCase()) || null;

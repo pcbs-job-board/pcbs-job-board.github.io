@@ -159,14 +159,14 @@ for sh in ("WC Radiators", "WC Reservoirs", "WC Pipe Connectors"):
 
 # ---- 3DMark score inputs (formula as in Jacob Klein's PCBS HTML Calculator) ----
 # CPU "clock factor,channel factor,memory factor,adjustment,MHz,max RAM channels,default RAM MHz"
-# GPU "graphics score with one card,with two cards"    motherboard "RAM speed steps" (MHz, "|" between)
+# GPU "graphics score with one card,with two cards,overclocked one card,overclocked two cards"    motherboard "RAM speed steps" (MHz, "|" between)
 def g(v):
     x = s(v)
     try: return repr(float(x)).rstrip("0").rstrip(".") if "." in x else x
     except ValueError: return x
 BENCH = {
     "CPUs": lambda r: ",".join(g(r.get(k)) for k in ("CoreClockMultiplier", "MemChannelsMultiplier", "MemClockMultiplier", "FinalAdjustment", "Frequency", "Max Memory Channels", "Default Memory Speed")) if s(r.get("CoreClockMultiplier")) else "",
-    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Single GPU Graphics Score", "Double GPU Graphics Score")) if s(r.get("Single GPU Graphics Score")) else "",
+    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Single GPU Graphics Score", "Double GPU Graphics Score", "OC Single GPU score", "OC Double GPU score")) if s(r.get("Single GPU Graphics Score")) else "",
     "Motherboards": lambda r: "|".join(x.strip() for x in s(r.get("RAM Speed Steps")).split(",") if x.strip()),
 }
 

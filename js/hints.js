@@ -17,6 +17,8 @@ const HINTS = [
     text: "Story job: the budget isn't binding – you can go over it and still get full marks (unless an objective mentions the budget)." },
   { id: "occt", when: j => hintObjs(j).some(o => /\b(overclock\w*|oc)\b/i.test(o)),
     text: "After overclocking, run the OCCT stress test to check the PC is stable, and watch the temperatures while it runs." },
+  { id: "pcbay-value", when: j => isFlip(j),
+    text: "Sale price = (value of the used parts × a multiplier set by the 3DMark score) + $100 once it boots to the OS. The multiplier grows from 1× to 3× at 10,000 points – more than that adds nothing. The auction can still move the final price a little." },
   { id: "leak-test", when: (j, build) => hintSwap(build, ["Water Cooling"]),
     text: "Custom water cooling: fill the loop with coolant and run the leak test before you boot the PC." },
 ];

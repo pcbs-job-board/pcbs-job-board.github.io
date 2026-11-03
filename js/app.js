@@ -157,6 +157,7 @@ function render() {
   $("#queue").innerHTML = q.length ? q.map(jobCard).join("") : `<div class="empty">No open jobs. Press <b>📸 Capture job</b> or <b>＋</b> (manual job).</div>`;
 }
 function jobCard(j) {
+  if (isFlip(j)) return flipCard(j);   // 📦 PC Bay build – own tile (flipui.js)
   const busy = n => jobs.some(o => o.table === n && o !== j);
   const hid = j.tasks.filter(k => k.src === "hid"), main = j.tasks.filter(k => k.src === "obj"), found = j.tasks.filter(k => k.src === "add");
   const del = k => `<button class="ghost x" data-act="delTask" data-id="${j.id}" data-k="${k.id}" title="Remove">✕</button>`;
@@ -342,7 +343,7 @@ window.addEventListener("dragenter", e => { if (e.dataTransfer.types.includes("F
 window.addEventListener("dragleave", e => { if (e.dataTransfer.types.includes("Files") && --dragDepth <= 0) { dragDepth = 0; $("#drop").style.display = "none"; } });
 window.addEventListener("dragover", e => { if (e.dataTransfer.types.includes("Files")) e.preventDefault(); });
 window.addEventListener("drop", e => { if (!e.dataTransfer.files.length) return; e.preventDefault(); dragDepth = 0; $("#drop").style.display = "none"; const f = [...e.dataTransfer.files].find(f => f.type.startsWith("image/")); if (f) readImg(f); });
-function readImg(f) { const r = new FileReader(); r.onload = () => { if ($("#dlgReview").open && rev) addShot(r.result, rev.forJob ? "parts" : "auto"); else openReview(r.result, null); }; r.readAsDataURL(f); }
+function readImg(f) { const r = new FileReader(); r.onload = () => { if (typeof flipTakeImage === "function" && flipTakeImage(r.result)) return; if ($("#dlgReview").open && rev) addShot(r.result, rev.forJob ? "parts" : "auto"); else openReview(r.result, null); }; r.readAsDataURL(f); }
 
 // ================= OCR =================
 let worker = null;
@@ -365,7 +366,7 @@ async function readText(canvas) {
   const w = await getWorker();
   const d = (await w.recognize(canvas, {}, { text: true, blocks: true })).data;
   const lines = [];
-  for (const b of d.blocks || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) lines.push([String(l.text || "").trim(), l.confidence]);
+  for (const b of d.blocks || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) lines.push([String(l.text || "").trim(), l.confidence, l.bbox]);   // bbox: where on the (cropped) picture
   return { text: d.text || "", lines };
 }
 let lastConf = null;
@@ -640,6 +641,7 @@ function careerInfo() {
   $("#careerBar").title = "Your career level and % through it (in-game, top right under the stars). Part-swap suggestions only show parts you have unlocked.\n"
     + (career.level == null ? "Not set – every part is suggested." : `${ok} of ${n} parts unlocked.`);
   $("#careerBar").classList.toggle("set", career.level != null);
+  if (typeof flipBtnUpdate === "function") flipBtnUpdate();
 }
 function showCareer() { $("#careerLevel").value = career.level ?? ""; $("#careerPct").value = career.level == null || !career.pct ? "" : career.pct; careerInfo(); }
 // typing a level / % saves straight away; empty level = not set

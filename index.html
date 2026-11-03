@@ -19,6 +19,7 @@
     <button class="primary big" id="btnCapture" title="Capture job (C)">📸 Capture job</button>
     <button class="primary capplus" id="btnManual" title="Manual job (M)" aria-label="Manual job">＋</button>
   </div>
+  <button id="btnFlip" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>📦</button>
   <div class="spacer"></div>
   <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
   <div class="careerbar" id="careerBar">
@@ -51,6 +52,17 @@
 <div id="drop">Drop screenshot to create a job</div>
 <div id="toast"><span id="toastTxt"></span><button id="toastBtn">Undo</button></div>
 <div class="ac" id="ac" hidden></div>
+
+<!-- 📦 PC Bay build -->
+<dialog id="dlgFlip" class="flipdlg">
+  <div class="dlg-h"><h3 style="flex:none">📦 PC Bay build</h3><div class="flipsteps"></div><button class="ghost flipmin" title="Save and minimize">✕</button></div>
+  <div class="dlg-b flipwrap">
+  <div class="flipsum"></div>
+  <div class="flipbody"></div>
+  <div class="flipfoot"><button class="flipmin">💾 Save and minimize</button><span class="spacer"></span><button class="flipback">← Back</button><button class="primary flipnext">Next →</button></div>
+  <div class="flipconfirm" hidden><span>Finish this build? It and the inventory saved for it are removed from the app.</span><button class="flipno">Cancel</button><button class="danger flipyes">Yes, finish</button></div>
+  </div>
+</dialog>
 
 <!-- Review dialog -->
 <dialog id="dlgReview">
@@ -227,7 +239,9 @@
 <script src="js/oc.js?v=0.12.0"></script>
 <script src="js/hints.js?v=0.12.0"></script>
 <script src="js/suggest.js?v=0.12.0"></script>
+<script src="js/flip.js?v=0.12.0"></script>
 <script src="js/app.js?v=0.12.0"></script>
+<script src="js/flipui.js?v=0.12.0"></script>
 <script src="js/rules.js?v=0.12.0"></script>
 <script src="js/areas.js?v=0.12.0"></script>
 <script src="js/story.js?v=0.12.0"></script>
