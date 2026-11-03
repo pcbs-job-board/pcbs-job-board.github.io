@@ -66,6 +66,18 @@ _None open. The last five are done in `dev-0.10.0`._
 - Keep: the amber border on swap rows that clash, power / compat logic unchanged. Update the flow test
   (tiles, colours, hover delay, keyboard focus) and the "How to use it" window (see the 1.0 item).
 
+### 1.0: re-analyse keyboard shortcuts and navigation (especially inside a job card)
+- The card got many new parts since the keyboard design (0.8.x): part details, ⚡ power, ⚠️ clash box →
+  Status tiles, swap ⠿ order with Alt + ↑ ↓, ranked suggestions with warnings, swap form selects.
+- Walk through every card and window with the keyboard only and write down what is slow, confusing or
+  unreachable: line order (`ROW_SEL` in `js/keys.js`), what ← → do on each line, where focus lands after
+  an action / re-render, the suggestion list (↑ ↓ / Enter / Esc), Status tiles (focus + delayed popup),
+  opening / closing the swap form, deleting a swap, "Current parts", the review window and dialogs.
+- Check shortcuts for clashes with the browser / screen readers (Alt + arrows = back / forward in some
+  browsers outside a focused control), and that every mouse-only action has a keyboard way.
+- Propose the changes to Mariusz first (list), then build, update the shortcuts window and the "How to use it"
+  window, and add keyboard checks to the flow test.
+
 ### 1.0: bring the "How to use it" window up to date
 - The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) was written from the Steam guide
   before the later 0.10.0 features. For 1.0, add the important functions added since then, up to and including
