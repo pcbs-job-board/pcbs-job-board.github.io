@@ -96,6 +96,40 @@ const frac = (x0, y0, x1, y1, w, h) => {
   x0 = c(x0, w); x1 = c(x1, w); y0 = c(y0, h); y1 = c(y1, h);
   return { x: x0 / w, y: y0 / h, w: (x1 - x0) / w, h: (y1 - y0) / h };
 };
+// PC Bay – Resale Value panel: the bright panel on the right of the screen (look at a PC: name / value list + PC Status)
+function findResale(img) {
+  const { width: w, height: h, data: d } = img;
+  const rs = runs(img, isBright, w * 0.12).filter(r => r.x0 > w * 0.55);
+  if (rs.length < 8) return null;
+  const L = edge(rs.map(r => r.x0), 3, "left"), R = edge(rs.map(r => r.x1), 3, "right");
+  if (!L || !R || R.v - L.v < w * 0.12) return null;
+  const rowOk = y => { let n = 0, t = 0; for (let x = L.v; x < R.v; x += 2) { t++; if (isLight(px(d, w, x, y))) n++; } return n / t > 0.45; };
+  const ys = []; for (let y = 0; y < h; y++) if (rowOk(y)) ys.push(y);
+  if (!ys.length) return null;
+  let best = [ys[0], ys[0]], cur = [ys[0], ys[0]];
+  for (const y of ys.slice(1)) { if (y - cur[1] <= h * 0.012) cur[1] = y; else cur = [y, y]; if (cur[1] - cur[0] > best[1] - best[0]) best = [...cur]; }
+  if (best[1] - best[0] < h * 0.3) return null;
+  return { box: frac(L.v - 2, best[0], R.v + 2, best[1] + 2, w, h), sure: true };
+}
+// PC Bay – Inventory window: the big light window in the middle; the box is its grid of part cards (3 columns)
+function findInventory(img) {
+  const { width: w, height: h } = img;
+  // rows where the window is light all the way across (its header strip and the bottom margin)
+  const rs = runs(img, isLight, w * 0.55);
+  if (rs.length < 3) return null;
+  const L = modeOf(rs.map(r => r.x0), 3), R = modeOf(rs.map(r => r.x1), 3);
+  if (!L || !R || R.v - L.v < w * 0.5) return null;
+  const ys = rs.filter(r => Math.abs(r.x0 - L.v) <= 6 && Math.abs(r.x1 - R.v) <= 6).map(r => r.y);
+  const top = Math.min(...ys), bot = Math.max(...ys);
+  if (bot - top < h * 0.6) return null;
+  // the card grid sits at fixed places inside the window (left of it: categories, above it: search + tabs)
+  const ww = R.v - L.v, wh = bot - top;
+  return { box: frac(L.v + ww * INV_GRID.x, top + wh * INV_GRID.y, L.v + ww * (INV_GRID.x + INV_GRID.w), top + wh * (INV_GRID.y + INV_GRID.h), w, h), sure: true, win: frac(L.v, top, R.v, bot, w, h) };
+}
+const isLight = ([r, g, b]) => Math.min(r, g, b) > 205 && Math.max(r, g, b) - Math.min(r, g, b) < 20;   // inventory window / cards
+const INV_GRID = { x: 0.27, y: 0.185, w: 0.685, h: 0.8 };
+// the inventory grid → its 3 card columns (each column is read on its own)
+function invColumns(b) { return [0, 1, 2].map(i => ({ x: b.x + b.w * i * 0.3442, y: b.y, w: b.w * 0.3157, h: b.h })); }
 // ---- career level bar (top-right HUD: stars, "LEVEL 20", green progress bar under them) ----
 // img = the top-right corner of the frame at full resolution, starting at (ox, oy) of a W×H frame.
 // Finds the green fill, then walks right through the light track to the bar's grey outline.
@@ -135,8 +169,8 @@ function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
     digits: { x: fx(best.x0 + bw * 0.62), y: fy(Math.max(0, best.y0 - bw * 0.155)), w: bw * 0.41 / W, h: bw * 0.145 / H },
   };
 }
-// kind: "email" | "stats"  →  { box, sure } or null
-function detectArea(img, kind) { return kind === "stats" ? findStats(img) : findEmail(img); }
+// kind: "email" | "stats" | "resale" | "inv"  →  { box, sure } or null
+function detectArea(img, kind) { return kind === "stats" ? findStats(img) : kind === "resale" ? findResale(img) : kind === "inv" ? findInventory(img) : findEmail(img); }
 // browser helper: <img>/<canvas> → small ImageData
 function areaImage(src) {
   const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, h = Math.round(AREA_W * sh / sw);
@@ -144,7 +178,7 @@ function areaImage(src) {
   const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(src, 0, 0, AREA_W, h);
   return g.getImageData(0, 0, AREA_W, h);
 }
-if (typeof module !== "undefined") module.exports = { detectArea, findLevelBar, AREA_W };
+if (typeof module !== "undefined") module.exports = { detectArea, findLevelBar, AREA_W, invColumns };
 
 // ================= "Set up screen areas" window (browser only) =================
 // Hidden "set up" flag per area. Boxes that were moved before this existed count as set up.
@@ -153,7 +187,8 @@ if (typeof LS !== "undefined" && !areasSet) {
   const saved = LS.get("pcbs.crops", null), moved = k => !!saved?.[k] && JSON.stringify(saved[k]) !== JSON.stringify(DEFAULT_CROPS[k]);
   areasSet = { email: moved("email"), stats: moved("stats") }; LS.set("pcbs.areasSet", areasSet);
 }
-const AREA_NAME = { email: "email", stats: "PC Stats" };
+if (areasSet) { areasSet.resale ??= false; areasSet.inv ??= false; }
+const AREA_NAME = { email: "email", stats: "PC Stats", resale: "Resale Value", inv: "Inventory" };
 let areaEd = null; // { kind, img, box, done }
 const lastFrame = {}; // newest screenshot per area – used by "Set up again" in Settings
 
@@ -163,7 +198,7 @@ function openAreas(kind, src, done) {
   lastFrame[kind] = src.currentSrc || src.src || lastFrame[kind];
   const dlg = $("#dlgAreas"), im = $("#areaImg");
   $("#areaTitle").textContent = `🎯 Set up the ${AREA_NAME[kind]} area`;
-  dlg.classList.toggle("stats", kind === "stats");
+  dlg.classList.toggle("stats", kind !== "email");
   im.onload = () => { detectNow(); };
   im.src = lastFrame[kind];
   if (!dlg.open) dlg.showModal();
@@ -177,11 +212,15 @@ function detectNow() {
     areaEd.box = r.box;
     msg.className = "areamsg ok";
     msg.innerHTML = k === "email" ? "✓ Found the email window. Check the box covers the whole email – from the sender at the top to the Accept / Go to PC buttons – then press <b>Use this area</b>."
+      : k === "resale" ? "✓ Found the Resale Value window. Check the box covers it from “Resale Value” down to the PC Status, then press <b>Use this area</b>."
+      : k === "inv" ? "✓ Found the inventory. Check the box covers the three columns of part cards (not the categories on the left), then press <b>Use this area</b>."
       : "✓ Found the PC Stats window. Check the box covers it from “PC for …” down to the last part, then press <b>Use this area</b>.";
   } else {
     areaEd.box = structuredClone(crops[k]);
     msg.className = "areamsg bad";
     msg.innerHTML = k === "email" ? "Couldn't find the email window on this screenshot. Is an email open in-game? You can also drag a box over it yourself."
+      : k === "resale" ? "Couldn't find the Resale Value window. Look at the PC in-game so the window shows on the right, capture again – or drag a box over it yourself."
+      : k === "inv" ? "Couldn't find the inventory. Open it in-game and capture again – or drag a box over the three columns of part cards yourself."
       : "Couldn't find the PC Stats window. Open it in-game (<b>PC Stats</b> button in the email) and capture again – or drag a box over it yourself.";
   }
   drawAreaBox();
@@ -235,7 +274,8 @@ function drawAreaBox() {
 // Settings → Screen areas
 function renderAreaStatus() {
   const el = $("#areaStatus"); if (!el) return;
-  el.innerHTML = ["email", "stats"].map(k => `<div class="arearow"><span>${k === "email" ? "✉ Email area" : "🧩 PC Stats area"}</span>
+  const label = { email: "✉ Email area", stats: "🧩 PC Stats area", resale: "📦 Resale Value area (PC Bay)", inv: "📦 Inventory area (PC Bay)" };
+  el.innerHTML = ["email", "stats", "resale", "inv"].map(k => `<div class="arearow"><span>${label[k]}</span>
     <b class="${areasSet[k] ? "ok" : "no"}">${areasSet[k] ? "✓ set up" : "not set up yet"}</b><button data-areaagain="${k}">${areasSet[k] ? "Set up again" : "Set up now"}</button></div>`).join("");
 }
 if (typeof document !== "undefined") {
@@ -246,7 +286,7 @@ if (typeof document !== "undefined") {
     else if (lastFrame[k]) src = lastFrame[k];
     if (!src) {
       areasSet[k] = false; LS.set("pcbs.areasSet", areasSet); renderAreaStatus();
-      toast(`No screen connected – the ${AREA_NAME[k]} area will be set up on your next ${k === "email" ? "capture" : "PC parts capture"}.`); return;
+      toast(`No screen connected – the ${AREA_NAME[k]} area will be set up on your next ${k === "email" ? "capture" : k === "stats" ? "PC parts capture" : AREA_NAME[k] + " capture"}.`); return;
     }
     const im = new Image(); im.src = src; await im.decode().catch(() => { });
     openAreas(k, im, () => { });

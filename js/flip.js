@@ -6,9 +6,8 @@
    Used part value = the workbook's sell price = ⅓ of the shop price (rounded). A broken part shows ~10 % of it. */
 
 const FLIP_LEVEL = 9;   // PC Bay (js/unlocks.js)
-// where the windows are on a 16:9 game screen (relative): the Resale Value panel, the inventory's three card columns
-const FLIP_RESALE_BOX = { x: 0.722, y: 0.095, w: 0.27, h: 0.66 };
-const FLIP_INV_COLS = [0.336, 0.505, 0.672].map(x => ({ x, y: 0.24, w: 0.155, h: 0.73 }));
+// where the windows are: the screen areas "resale" (Resale Value panel) and "inv" (inventory card grid) – found
+// automatically on the first capture, like the email / PC Stats areas (js/areas.js), adjustable in Settings
 
 function usedValue(name) { const p = priceOf(name); return p == null ? null : Math.round(p / 3); }
 function benchMult(score) { return score == null ? 1 : score <= 1000 ? 1 : score >= 10000 ? 3 : 1 + 2 * (score - 1000) / 9000; }
@@ -58,16 +57,27 @@ function parseResale(lines) {
 function parseInventoryColumn(lines) {
   lines = lines.map(l => Array.isArray(l) ? { text: l[0], conf: l[1] } : typeof l === "string" ? { text: l, conf: 100 } : l);
   const out = []; let name = [], cur = null;
-  const flush = () => { if (!name.length) return; const t = name.join(" "); name = []; const m = bestPartMatch(t); if (m && !m.amb && m.score >= 0.7) cur = { name: m.name, cat: m.cat, price: null }; };
+  // the sell price shown is the used value (⅓ of the shop price) – when the "$" line can't be read, that's used instead
+  const done = c => out.push({ ...c, price: c.price ?? usedValue(c.name) });
+  const flush = () => { if (!name.length) return; const t = name.join(" "); name = []; const m = bestPartMatch(t); if (m && !m.amb && m.score >= 0.7) { if (cur) done(cur); cur = { name: m.name, cat: m.cat, price: null }; } };
   for (const { text, conf } of lines) {
     const t = String(text).trim(); if (!t) continue;
-    const pr = t.match(/\$\s?(\d[\d,]*)/);
-    if (pr) { flush(); if (cur) { cur.price = +pr[1].replace(/,/g, ""); out.push(cur); cur = null; } continue; }
+    // "$65" – sometimes read as "365" / "S65" (the $ taken for a 3, 5, 8 or S): the parts database decides
+    const pr = t.match(/\$\s?(\d[\d,]*)/) || (cur && t.match(/(?:auction on|sell)\D{0,3}([358S]?\d{1,4})\s*$/i));
+    if (pr) {
+      flush();
+      if (cur) {
+        const raw = pr[1].replace(/,/g, ""), u = usedValue(cur.name), n = +raw.replace(/^S/, "");
+        const alt = /^[358S]\d+$/.test(raw) && !/\$/.test(t) ? +raw.slice(1) : null;
+        cur.price = alt != null && u != null && Math.abs(alt - u) < Math.abs(n - u) ? alt : n; done(cur); cur = null;
+      }
+      continue;
+    }
     if (/^\W{0,2}(auction|pc\s?bay|sell|used|incompatible)\b/i.test(t) || /:/.test(t) || /^[*«»+•·-]/.test(t)) { flush(); continue; }
     if (conf < 60) { flush(); continue; }
     if (/[A-Za-z]{2}/.test(t) || /\d/.test(t)) name.push(t);
   }
-  flush(); if (cur) out.push(cur);
+  flush(); if (cur) done(cur);
   return out;
 }
 

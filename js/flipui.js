@@ -58,7 +58,7 @@ function partRow(p, f) {
 function flipStep1(f) {
   return `<div class="fstep">
     <p class="hint">Open the PC's <b>Resale Value</b> window in the game (look at the PC), then <b>📸 Capture</b> – or paste / drop a screenshot. Long list? Scroll it in the game and capture again; the parts are joined like PC Stats.</p>
-    <div class="fcap"><button class="primary" data-fa="cap">📸 Capture Resale Value window</button>${f.lastShot ? `<img src="${f.lastShot}" alt="last screenshot">` : ""}<span class="fstate"></span></div>
+    <div class="fcap"><button class="primary" data-fa="cap">📸 Capture Resale Value window</button><button data-fa="adjust-resale" title="Find / move the box around the Resale Value window">🎯 Adjust area</button>${f.lastShot ? `<img src="${f.lastShot}" alt="last screenshot">` : ""}<span class="fstate"></span></div>
     <div class="fgrid">${f.parts.map(p => partRow(p, f)).join("") || `<div class="hint">No parts yet.</div>`}</div>
     <div class="addrow"><input data-ac data-fa="addname" placeholder="Add a part – type to search" autocomplete="off"><input class="fval" type="number" min="0" data-fa="addval" placeholder="$"><button data-fa="add">＋</button></div>
     <label class="fstart">Resale value as bought <input type="number" min="0" data-fa="start" value="${f.startValue ?? ""}" placeholder="${f.parts.reduce((t, p) => t + (p.value || 0), 0)}"> <small>(the "Resale Value" at the top of the window – the start for the profit)</small></label></div>`;
@@ -68,7 +68,7 @@ function invHtml(f, cat) {
   const inv = flipInventory(f).filter(i => !cat || i.cat === cat);
   return `<div class="finv"><div class="fh">Your inventory for this build${cat ? ` – ${esc(cat)}` : ""}</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. Used parts are best – a NEW part keeps only ⅓ of its price in the sale value.</p>
-    <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><span class="fstate"></span></div>
+    <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
     ${inv.map(i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="cat">${esc(i.cat)}</span><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken ? ` <small>(in use)</small>` : ""}</span>
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`).join("") || `<div class="hint">Nothing yet.</div>`}
     <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
@@ -132,6 +132,7 @@ flipDlg.addEventListener("click", e => {
   else if (t.classList.contains("flipno")) { flipDlg.querySelector(".flipconfirm").hidden = true; return; }
   else if (t.dataset.fa === "cap") { flipCapture("resale"); return; }
   else if (t.dataset.fa === "capinv") { flipCapture("inv"); return; }
+  else if (t.dataset.fa === "adjust-resale" || t.dataset.fa === "adjust-inv") { flipAdjust(t.dataset.fa.slice(7)); return; }
   else if (t.dataset.fa === "add") { const n = flipDlg.querySelector('[data-fa="addname"]').value.trim(); if (!n) return; const m = INDEX.find(p => p.name === n) || bestPartMatch(n); const v = flipDlg.querySelector('[data-fa="addval"]').value; f.parts.push({ id: flipUid(), cat: m ? m.cat : categorize(n), name: m ? m.name : n, value: v === "" ? usedValue(m ? m.name : n) : +v, src: "typed", sure: !!m }); markBroken(f); }
   else if (t.dataset.fa === "invadd") { const n = flipDlg.querySelector('[data-fa="invname"]').value.trim(); if (!n) return; const m = INDEX.find(p => p.name === n) || bestPartMatch(n); f.inv.push({ id: flipUid(), cat: m ? m.cat : categorize(n), name: m ? m.name : n, used: flipDlg.querySelector('[data-fa="invused"]').checked, src: "typed" }); }
   else if (t.dataset.fp === "del") { f.parts = f.parts.filter(p => p.id !== t.dataset.k); f.changes = f.changes.filter(c => c.old !== t.dataset.k); }
@@ -158,14 +159,18 @@ function flipAskFinish() { const c = flipDlg.querySelector(".flipconfirm"); c.hi
 flipDlg.addEventListener("close", () => { flipCur = null; });
 
 // ---------- screenshots ----------
-async function flipImage(url, kind) {
+const flipLast = {};   // newest screenshot per area (in memory only) – read again after "🎯 Adjust area"
+async function flipImage(url, kind, again) {
   const f = flipCur; if (!f) return;
   const st = flipDlg.querySelector(".fstate"); if (st) st.textContent = "Reading…";
   try {
     const img = new Image(); img.src = url; await img.decode();
+    flipLast[kind] = url; lastFrame[kind] = url;
+    // first capture of this kind: find the window in the big set-up window first (like email / PC Stats)
+    if (!areasSet[kind] && !again) { openAreas(kind, img, ok => { if (ok) flipImage(url, kind, true); else if (st) st.textContent = ""; }); return; }
     if (kind === "resale") {
-      const r = parseResale((await readText(cropCanvas(img, FLIP_RESALE_BOX))).lines);
-      if (!r.items.length) { if (st) st.textContent = "⚠ No Resale Value window found – is it open in the game (look at the PC)?"; return; }
+      const r = parseResale((await readText(cropCanvas(img, crops.resale))).lines);
+      if (!r.items.length) { if (st) st.innerHTML = '⚠ No Resale Value window found – is it open in the game (look at the PC)? Box in the wrong place? <button data-fa="adjust-resale">🎯 Adjust area</button>'; return; }
       f.shots = [...(f.shots || []), r.items.map(i => ({ ...i }))];
       const merged = mergePCStats(f.shots), typed = f.parts.filter(p => p.src === "typed");
       const keep = new Map(f.parts.map(p => [p.cat + "|" + p.name, p]));
@@ -176,13 +181,22 @@ async function flipImage(url, kind) {
       toast(`Read ${r.items.length} parts${r.total != null ? ` · resale value $${r.total}` : ""}`);
     } else {
       let items = [];
-      for (const b of FLIP_INV_COLS) items.push(...parseInventoryColumn((await readText(cropCanvas(img, b))).lines));
-      if (!items.length) { if (st) st.textContent = "⚠ No inventory cards found – is the Inventory open in the game?"; return; }
+      for (const b of invColumns(crops.inv)) items.push(...parseInventoryColumn((await readText(cropCanvas(img, b))).lines));
+      if (!items.length) { if (st) st.innerHTML = '⚠ No inventory cards found – is the Inventory open in the game? Box in the wrong place? <button data-fa="adjust-inv">🎯 Adjust area</button>'; return; }
       for (const i of items) f.inv.push({ id: flipUid(), cat: i.cat, name: i.name, used: true, price: i.price, src: "capture" });
       toast(`Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory (marked USED – untick if one is new)`);
     }
     flipSave(); flipRender();
   } catch (err) { if (st) st.textContent = "⚠ " + (err.message || "Couldn't read the screenshot"); }
+}
+// 🎯 Adjust area: the set-up window on the newest screenshot (or the live screen); then that screenshot is read again
+async function flipAdjust(kind) {
+  let src = flipLast[kind] || null;
+  if (!src && typeof stream !== "undefined" && stream) src = (await grabFrame()).url;
+  if (!src && lastFrame[kind]) src = lastFrame[kind];
+  if (!src) { areasSet[kind] = false; LS.set("pcbs.areasSet", areasSet); renderAreaStatus(); toast(`No screenshot yet – the ${AREA_NAME[kind]} area is set up on your next capture.`); return; }
+  const im = new Image(); im.src = src; await im.decode().catch(() => { });
+  openAreas(kind, im, ok => { if (ok && flipLast[kind]) flipImage(flipLast[kind], kind, true); });
 }
 function flipThumb(img) { const c = document.createElement("canvas"), w = 320; c.width = w; c.height = Math.round(img.naturalHeight / img.naturalWidth * w); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); return c.toDataURL("image/jpeg", 0.7); }
 async function flipCapture(kind) {
