@@ -196,6 +196,13 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
     const fitsA = bad.some(t => da.some(x => shape(x) === shape(t))), fitsB = bad.some(t => db.some(x => shape(x) === shape(t)));
     if (fitsB && !fitsA) best = sec; else amb = bad.length > 0 && !fitsA;
   }
+  // an incomplete reading (the 2nd line of the name lost, or a letter hidden by the mouse pointer): every word read
+  // is in the best part's name but also in another part's – "MSI Radeon RX 580" could be GAMING 8G, GAMING X 8G, X+ 8G…
+  if (!amb) {
+    // only a tie counts: "GA-AX370-Gaming" is still "Gaming 5" (closer than "Gaming K7")
+    const has = p => w.every(t => p.w.includes(t)), sc = p => 0.6 * dice(tri, p.tri);
+    if (has(best) && best.w.length > w.length && fullIndex().some(p => p.cat === best.cat && p.name !== best.name && (!p.noJobs || best.noJobs) && has(p) && sc(best) - sc(p) < 0.005)) amb = true;
+  }
   return { name: best.name, cat: best.cat, score: bs, amb };
 }
 // one screenshot → list of {name, cat}: match each line, fill unknown categories from the list order,
@@ -256,7 +263,11 @@ function denoisePartLines(lines) {
     const edgeOk = i => good[i] && !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
     let a = 0, z = toks.length - 1;
     while (a <= z && !edgeOk(a)) a++;
+    // …except a capital model letter / suffix right after a real word ("Phantom Gaming D", "RX580 8G OC") – it can decide
+    // between two parts; a lone "I" / "l" is too often a bar of the picture
+    const capEnd = i => i > a && good[i - 1] && /^([A-HJ-KM-Z]|[A-Z]{2})$/.test(toks[i]) && (toks[i].length === 1 || partVocab().has(toks[i].toLowerCase()));
     while (z >= a && !edgeOk(z) && !/^\(?[a-z]+\)$/i.test(toks[z]) && !/^logo\)?$/i.test(toks[z])) z--;
+    if (z + 1 < toks.length && capEnd(z + 1) && !(z + 2 < toks.length && capEnd(z + 2))) z++;
     if (a > z) continue;
     const keep = toks.slice(a, z + 1), kg = good.slice(a, z + 1), n = kg.filter(Boolean).length;
     if (n / keep.length < 0.6) continue;

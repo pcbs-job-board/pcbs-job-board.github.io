@@ -351,7 +351,13 @@ let rev = null;
 function openReview(dataUrl, editJob, forJob) {
   const dlg = $("#dlgReview");
   rev = { editJob, forJob, shots: [], cur: -1, draft: editJob ? structuredClone(editJob) : blankDraft() };
-  if (forJob) { rev.draft.components = structuredClone(forJob.components || []); rev.autoNames = new Set(); }
+  if (forJob) rev.draft.components = structuredClone(forJob.components || []);
+  // parts that came from a PC Stats capture are replaced by a new capture (typed ones are kept);
+  // jobs saved before 0.11.1 don't know which were captured – all their parts count as captured
+  const known = forJob || editJob;
+  rev.autoNames = new Set(known ? (known.capNames || (known.components || []).map(c => c.name)).map(n => n.toLowerCase()) : []);
+  // a new capture in a saved job's Parts window adds to the parts captured before instead of standing next to them
+  rev.prevCap = forJob ? (forJob.components || []).filter(c => rev.autoNames.has(c.name.toLowerCase())).map(({ cat, name }) => ({ cat, name })) : [];
   $("#revTitle").textContent = editJob ? "Edit job" : forJob ? "Add parts from PC Stats" : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
   renderForm(); showBlack(false); renderShots(); dlg.showModal();
@@ -389,11 +395,14 @@ function syncComps() { const ta = $("#fComps"); if (ta && rev) rev.draft.compone
 function rebuildParts() {
   syncComps();
   const prevAuto = rev.autoNames || new Set();
-  const auto = mergePCStats(rev.shots.filter(s => s.kind === "parts" && s.parts).map(s => s.parts));
+  const lists = rev.shots.filter(s => s.kind === "parts" && s.parts).map(s => s.parts);
+  // the earlier captured parts come first: a category is only replaced when a new screenshot shows more of it
+  const auto = mergePCStats(rev.prevCap?.length ? [rev.prevCap, ...lists] : lists);
   rev.autoNames = new Set(auto.map(p => p.name.toLowerCase()));
   const manual = rev.draft.components.filter(c => !prevAuto.has(c.name.toLowerCase()) && !rev.autoNames.has(c.name.toLowerCase()));
   rev.draft.components = [...auto.map(({ name, cat }) => ({ name, cat })), ...manual];
   const ta = $("#fComps"); if (ta) ta.value = rev.draft.components.map(c => c.cat + ": " + c.name).join("\n");
+  renderSuggestions();   // setting the box from code fires no "input" event
   return auto;
 }
 async function runOcr() {
@@ -450,7 +459,7 @@ function renderForm() {
   const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small></button>`;
   if (rev.forJob) {
     f.innerHTML = `<label>Parts of this PC (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
-      <p class="hint">Captured parts replace earlier captured ones; lines you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
+      <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); lines you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
     f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
@@ -529,10 +538,10 @@ function parseCompText(txt) { return txt.split("\n").map(s => s.trim()).filter(B
 function saveReview() {
   const d = rev.draft, comps = parseCompText($("#fComps").value);
   comps.forEach(c => rememberPart(c.name, c.cat));
-  const picked = pickedSuggestions();
-  if (rev.forJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
+  const picked = pickedSuggestions(), capNames = comps.filter(c => rev.autoNames?.has(c.name.toLowerCase())).map(c => c.name);
+  if (rev.forJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.capNames = capNames; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
   else {
-    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, story: !!$("#fStory")?.checked };
+    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, capNames, story: !!$("#fStory")?.checked };
     const table = +$("#fTable").value;
     let target;
     if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }

@@ -58,6 +58,10 @@ function requiredBy(j, p) {
   return false;
 }
 
+// LGA 1151 Skylake and Kaby Lake work together both ways in the game (customer PCs come with an i7-6700K on a Z270;
+// the wiki: "Skylake's Motherboard has capability to support Kaby Lake's Processor"). Coffee Lake stays apart.
+const SOCK_GROUP = { "LGA 1151 (Skylake)": "1151a", "LGA 1151 (Kaby Lake)": "1151a" };
+const sockOk = (a, b) => a === b || (!!SOCK_GROUP[a] && SOCK_GROUP[a] === SOCK_GROUP[b]);
 // ---------- the rules (each checked both ways) ----------
 // pair(a, b) rules return a message for the part with the LOWER priority (the one that has to change)
 const COMPAT_RULES = [
@@ -76,7 +80,7 @@ const COMPAT_RULES = [
   { cats: ["Case", "CPU Cooler"], test: (cs, cl) => !numC(cs.c.h) || !numC(cl.c.h) || +cl.c.h <= +cs.c.h,
     msg: (cs, cl, low) => low === cl ? `cooler is ${cl.c.h} mm tall – case fits up to ${cs.c.h} mm` : `case fits coolers up to ${cs.c.h} mm – this one is ${cl.c.h} mm` },
   // 7 motherboard ↔ CPU socket
-  { cats: ["Motherboard", "CPU"], test: (mb, cp) => !mb.c.s || !cp.c.s || mb.c.s === cp.c.s,
+  { cats: ["Motherboard", "CPU"], test: (mb, cp) => !mb.c.s || !cp.c.s || sockOk(mb.c.s, cp.c.s),
     msg: (mb, cp, low) => low === cp ? `socket ${cp.c.s} – motherboard is ${mb.c.s}` : `socket ${mb.c.s} – CPU is ${cp.c.s}` },
   // 8 cooler ↔ socket (motherboard's, or the CPU's when there is no motherboard)
   { cats: ["Motherboard", "CPU Cooler"], test: (mb, cl) => !mb.c.s || !cl.c.ss || cl.c.ss.split("|").includes(mb.c.s),

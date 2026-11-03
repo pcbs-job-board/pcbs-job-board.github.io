@@ -331,7 +331,8 @@ function parseEmail(text, rules, smart) {
   const emailDate = (emailLineIdx >= 0 && (lines[emailLineIdx].match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/) || (lines[emailLineIdx + 1] || "").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) || raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   const pcFor = raw.match(/PC for\s+([\w.+-]+@[\w-]+(\.[\w-]+)+)/i);
   if (!job.sender && pcFor) job.sender = pcFor[1];
-  const lab = raw.match(/Labou?r[:;]?\s*\$?\s*([\d,]+)/i); if (lab) job.labour = +lab[1].replace(/,/g, "");
+  // "Labouk $249" – a letter hidden by the mouse pointer: any "Lab…" word followed by a $ amount
+  const lab = raw.match(/Labou?r[:;]?\s*\$?\s*([\d,]+)/i) || raw.match(/\bLab\w{1,4}[:;]?\s*\$\s*([\d,]+)/i); if (lab) job.labour = +lab[1].replace(/,/g, "");
   const bud = raw.match(/Budget[:;]?\s*\$?\s*([\d,]+)/i); if (bud) job.budget = +bud[1].replace(/,/g, "");
   const lev = raw.match(/Level\s*(\d+)/i); if (lev) job.level = +lev[1];
 

@@ -3,6 +3,14 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.11.1
+- Suggested swaps now appear right after a PC Stats capture in the new-job window.
+- Re-capturing PC Stats from a job card adds to the parts read before instead of doubling them.
+- "Diagnose and fix" + a favourite brand ("total Intel fanboy") suggests their part of that brand again.
+- Skylake CPUs and Kaby Lake motherboards count as fitting each other (as in the game).
+- A part name read only halfway that fits several parts is shown as read and marked for checking.
+- Fixed: labour not read when the mouse pointer covers "Labour"; model letters like "D" / "OC" at the end of a line were dropped.
+
 ## 0.11.0
 - Suggested part swaps in the new-job and PC Stats windows, based on objectives, hints and the PC's parts – unlocked, fitting, cheapest first within budget, with the board / PSU they need.
 - New Status row under T1–T3: 💰 budget, ⚡ power and ⚠️ fit as coloured tiles – details pop up on hover or keyboard focus.

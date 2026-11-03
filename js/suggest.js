@@ -180,6 +180,19 @@ function suggestSwaps(job, opts = {}) {
     const eq = sameOrBrand(cat, p0, ctx);
     add("hint:" + cat, `Customer hints the ${cat} is broken – same part again${cur(cat).length > 1 ? " (one of " + cur(cat).length + "; which one shows in the game)" : ""}`, pickOptions(job, ctx, eq, { replace: p0.name, base: p0 }), { cat, old: p0.name });
   }
+  // 15b Diagnose and fix + favourite brand ("I'm a total Intel fanboy"): the broken part is the one made by that
+  //     brand – the same part again, once per customer's part of that brand (which one is broken shows in the game)
+  if (objs.some(o => /diagnose|fix/i.test(o)) && ctx.brands.length) {
+    const mine = CATS.flatMap(cat => broken.has(cat) || handled.has(cat) ? [] : cur(cat)).filter(p => { const ix = INDEX.find(x => x.name === p.name); return ix && ctx.brands.some(b => brandMatch(ix, b)); });
+    if (!build.length) missing("brandfix", `${ctx.brands[0]} fan + "diagnose and fix" – the broken part is likely made by ${ctx.brands[0]}`, `capture PC Stats to get a suggestion`);
+    const seenP = new Set();
+    for (const p0 of mine) {
+      if (seenP.has(p0.cat + p0.name)) continue; seenP.add(p0.cat + p0.name);
+      const ix = INDEX.find(x => x.name === p0.name), b = ctx.brands.find(x => brandMatch(ix, x));
+      add("brandfix:" + p0.cat + ":" + p0.name, `${b} fan + "diagnose and fix" – the broken part is likely their ${b} ${p0.cat}: same part again${mine.length > 1 ? ` (one of ${mine.length} ${b} parts)` : ""}`,
+        pickOptions(job, ctx, sameOrBrand(p0.cat, p0, ctx), { replace: p0.name, base: p0 }), { cat: p0.cat, old: p0.name });
+    }
+  }
   // 19  water cooling requested (hidden) – AIO only
   if (opts.waterCooling && !handled.has("CPU Cooler")) out.push(...aioSuggestion(job, ctx, "Water cooling requested (hidden objective)", cur));
   // 18  Add RGB lighting – RGB case fans for free fan places
@@ -224,7 +237,7 @@ function similarTo(a, b) {
   const x = cInfo(a), y = cInfo(b);
   switch (a.cat) {
     case "Motherboard": return x.s === y.s && x.f === y.f;
-    case "CPU": return x.s === y.s;
+    case "CPU": return sockOk(x.s, y.s);
     case "PSU": return x.f === y.f;
     case "Storage": return x.t === y.t;
     case "Case": return (x.b || "") === (y.b || "");
@@ -259,7 +272,7 @@ function aioSuggestion(job, ctx, reason, cur) {
 function ocSuggestions(job, ctx, reason, cur) {
   const out = [], cpu = cur("CPU").pop(), board = cur("Motherboard").pop();
   if (cpu && cInfo(cpu).oc === "0") {
-    const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && cInfo(p).s === cInfo(cpu).s && rk(p) >= rk(cpu));
+    const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, cInfo(cpu).s) && rk(p) >= rk(cpu));
     const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }); if (o.length) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: o, cat: "CPU", old: cpu.name });
   }
   if (board && cInfo(board).oc === "0") {
