@@ -4,22 +4,13 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.12.0
-- 📦 PC Bay builds (career level 9+): capture a broken PC's Resale Value window, spot the broken part, fix it from your inventory, upgrade, XMP / overclock, 3DMark – with the expected sale price and profit at every step.
-- The Resale Value window and the inventory are found automatically on the first capture (any screen shape), like the email and PC Stats – adjustable on their step and in Settings.
-- 3DMark tile in the Status row: the PC's score with XMP off (as customer PCs come) and on, against the objective's target.
-- Suggested part sets for "3DMark score of N": XMP alone, more RAM sticks, GPU, second GPU, CPU, CPU + GPU, motherboard + CPU – cheapest first, in budget, favourite brand marked; one tick adds the whole set (and the XMP task when needed).
-- New builds from nothing ("3DMark score of N", no current parts): the cheapest CPU + motherboard + RAM (+ GPU) that reach it, with the PSU and cooler it needs, built around the parts you've ticked.
-- Overclock tile for overclock objectives: can it be done (locked CPU, board, GPU maximum), the clock to expect (90 % of the part's overclock potential), the temperature to stay under, PSU when overclocked – plus the parts it needs, favourite brand first.
-- Customer plans to overclock later (email text): a PSU that carries the overclocked PC is suggested – in budget only.
-- 💡 Tips on job cards (next to ✎): reminders for the job – thermal paste, XMP, "Diagnose and fix", story-job budget, OCCT, leak test.
-- Career unlocks button next to the career level: everything the game unlocks per level, green = unlocked, grey = still to come.
-- Help waits for the in-game unlock: CPU overclocking from level 6 (OCCT), GPU overclocking from 13 (GPU Tuner), custom water cooling parts from 16.
-- Score formula from Jacob Klein's PCBS calculator – matches the game's PC Stats benchmark.
-- With a 3DMark objective, "slow" in the email no longer adds the virus hint – it's about the score (other virus signs still count).
-- Story job added: HRH The Queen ("By Royal Appointment").
-- Fixed: overclocking now only counts when an objective asks for it (not tasks); "OC CPU to 4000MHz" objectives were dropped.
-- Fixed: water cooling was suggested when a favourite brand (e.g. GIGABYTE) also makes water cooling parts.
-- Fixed: "Install <case> or better" suggests that case – not a main-menu case that isn't sold in the shop.
+- 📦 PC Bay builds (level 9+): capture the broken PC and your inventory, fix and upgrade it, see the expected sale price and profit.
+- 3DMark helper: score tile (XMP off / on) and the cheapest part sets to reach the target – also for PCs built from nothing. Formula from Jacob Klein's PCBS calculator.
+- Overclock helper: whether the objective can be reached, the clock and temperature to expect, and a PSU that can carry it.
+- 💡 Tips on job cards – small reminders like thermal paste, XMP or the leak test.
+- Career unlocks list by level; help for overclocking and custom water cooling waits until the game unlocks it.
+- New story job: HRH The Queen.
+- Fixed: water cooling suggested for brand fans; case "or better" suggesting a case not sold in the shop; virus hint on 3DMark jobs; overclocking counted from tasks.
 
 ## 0.11.1
 - Suggested swaps now appear right after a PC Stats capture in the new-job window.
