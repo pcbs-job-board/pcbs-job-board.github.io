@@ -3,6 +3,30 @@
 Working notes for the job board (private – dev repository only).
 Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score + overclock helper – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
+## PC Bay build (0.12.0, agreed with Mariusz 2026-11-03 – being built)
+Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
+- Resale value (community formula, matches Mariusz's PC: $441 broken → $591 booted → $949 at 4288 points):
+  value = sum of used part values × multiplier + $100 when booted to the OS; multiplier 1.0× at ≤1,000 points rising
+  evenly to 3.0× at ≥10,000 (no more above). Used part value = workbook "Sell Price" = ⅓ of the shop price.
+  A broken part shows ~10 % of its used value (FSP Hydro G 850: $4 instead of $47) → that's how it's spotted.
+  The auction then moves the price up / down a bit (not part of the app).
+- Top-bar button 📦 next to Capture job / ＋ (only from level 9, compact). Build = a tile in Open jobs (own look:
+  stripe + "📦 PC Bay" badge, start value → now, est. profit), can go on T1–T3. Big step window like the new-job
+  window: every change saved, "Save and minimize" on every page, resume any time.
+- Step 1 Parts: capture the Resale Value window (several screenshots, PC Stats rules / limits) or type parts.
+- Step 2 Fix: broken part(s) + why; replacement typed or from captured inventory (USED first). Broken parts can't be
+  reused. Choosing a NEW part warns it loses ~66 % of its value.
+- Step 3 Hardware optimisation (optional): inventory alternatives (typed / captured per category); each with
+  est. 3DMark score (incl. overclocking where possible) and value; sets need all their parts (CPU + board + cooler).
+  Gentle warning for one RAM stick; locked CPU → suggest an unlocked one.
+- Step 4 Profit optimisation: boot to OS, XMP, overclock CPU (lv 6) / GPU (lv 13), run 3DMark – live estimate.
+  Resets: CPU change → CPU overclock, GPU change → GPU overclock, motherboard → everything, RAM → XMP (not
+  confirmed for PCBS – real BIOSes usually drop XMP with new RAM). Any change → 3DMark again.
+- Profit = value now − value as bought − price of NEW parts (inventory / used parts count $0).
+- Inventory is stored per build (incl. parts taken out of it) and deleted with "Finish build" (asks first).
+- 💡 tip on every build: the resale formula in general words.
+- Waiting for: a screenshot of the inventory with a NEW part in it (to check the reader).
+
 ## dev-0.12.0 – state (for picking up after a context reset)
 Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, flow 44, units 96, edgetest).
 - 3DMark: js/bench.js (Jacob Klein's formula, workbook "bench" column [11]); Status tile (score bars + "3D" icon),
@@ -12,8 +36,7 @@ Not released; backup-0.11.1 to be made at release. All tests pass (run.js 366, f
 - Career unlocks: js/unlocks.js (popup next to career box, columns Lv / In the game / In this app; gates cpuOC 6,
   pcBay 9, gpuOC 13, customWC 16).
 - 💡 Tips: js/hints.js. 3DMark + "slow" → no virus hint. Skylake/Kaby Lake fit each other.
-- Next: the final, biggest system of 0.12.0 (non-job; uses 3DMark + overclock formulas, PC Bay from level 9) –
-  being designed with Mariusz first, nothing built yet.
+- Next: PC Bay build (see above) – agreed, being built.
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
