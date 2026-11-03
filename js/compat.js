@@ -104,7 +104,7 @@ const COMPAT_RULES = [
   { cats: ["GPU", "GPU"], test: (a, b) => !a.c.l || !b.c.l ? true /* a GPU without data: can't tell */ : !!a.c.m && a.c.m === b.c.m && (!a.c.c || !b.c.c || a.c.c === b.c.c),
     msg: (a, b, low) => { const hi = low === a ? b : a; return !low.c.m ? `can't run as a pair (no SLI / CrossFire)` : low.c.m !== hi.c.m ? `${low.c.m} – the other GPU is ${hi.c.m || "single only"}` : `${low.c.c} can't pair with ${hi.c.c} – needs the same chipset`; } },
 ];
-const wantsOC = j => /overclock|\boc\b/i.test([...(j.objectives || []), ...(j.tasks || []).map(t => t.text)].join(" "));
+const wantsOC = j => /\b(overclock\w*|oc)\b/i.test(jobObjectives(j).join(" "));   // objectives only (an email-body mention is "later")
 // count rules: more parts than places → the lowest-priority ones get the warning
 const COMPAT_COUNTS = [
   { host: "Motherboard", item: p => p.cat === "RAM", cap: mb => numC(mb.c.ram), what: n => `motherboard has ${n} RAM slots` },

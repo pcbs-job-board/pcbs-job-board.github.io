@@ -18,6 +18,7 @@ Each CSV in data/parts/ has the columns:
              (board sizes, GPU length, socket, RAM, cores, watts, SLI/CrossFire, lighting...)
   - power  : CPU / GPU "watts>max watts when overclocked", PSU "watts" (power check)
   - compat : what other parts must fit, "key=value;…" (see tools/import_xlsx.py COMPAT)
+  - oc     : overclocking facts – OC base / max clocks (see OCF in tools/import_xlsx.py)
   - bench  : 3DMark score inputs – CPU factors, GPU graphics scores, motherboard RAM steps (see BENCH there)
   - source : where the row came from (calculator, wiki, report #12, ...)
 
@@ -89,8 +90,8 @@ def main():
                 row = [name, num(r.get("level")), num(r.get("price")), (r.get("spec") or "").strip(), dlc, ver, num(r.get("level_pct"))]
                 # optional extras, only written when there is something: [8] 1 = never in random jobs, [9] details
                 nj, det, pw, cp = 1 if (r.get("jobs") or "").strip().lower() == "no" else 0, (r.get("details") or "").strip(), (r.get("power") or "").strip(), (r.get("compat") or "").strip()
-                bn = (r.get("bench") or "").strip()
-                extra = [nj, det, pw, cp, bn]               # [7] never in random jobs, [8] details, [9] power, [10] compat, [11] 3DMark inputs
+                bn, oc = (r.get("bench") or "").strip(), (r.get("oc") or "").strip()
+                extra = [nj, det, pw, cp, bn, oc]           # [7] never in random jobs, [8] details, [9] power, [10] compat, [11] 3DMark inputs, [12] overclocking facts
                 while extra and not extra[-1]:
                     extra.pop()
                 row += extra

@@ -12,6 +12,7 @@ Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
   case board sizes / GPU length / fans, socket, RAM, cores, clock, watts, SLI/CrossFire, lighting.
 * "power" (POWER below): CPU / GPU "watts>watts when overclocked to the max", PSU "watts" – for the power check.
 * "bench" (BENCH below): 3DMark score inputs – CPU factors, GPU graphics scores, motherboard RAM speed steps.
+* "oc" (OCF below): overclocking facts – CPU / GPU / RAM overclock base and maximum clocks.
 * "compat" (COMPAT below): what other parts must fit – "key=value;…" (sizes, sockets, slots, lengths, SLI/CrossFire).
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
@@ -23,7 +24,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "compat", "bench", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "compat", "bench", "oc", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -169,6 +170,15 @@ BENCH = {
     "Motherboards": lambda r: "|".join(x.strip() for x in s(r.get("RAM Speed Steps")).split(",") if x.strip()),
 }
 
+# ---- overclocking facts ----
+# CPU "OC base MHz,OC base V,stock MHz,stock V,throttle °C" (only for CPUs that can overclock)
+# GPU "base core,OC base core,max core,base mem,OC base mem,max mem" (MHz)   RAM "MHz,OC base MHz,OC base V"
+OCF = {
+    "CPUs": lambda r: ",".join(g(r.get(k)) for k in ("OC Base Freq", "OC Base Voltage", "Frequency", "Voltage", "Thermal Throttling")) if s(r.get("Can Overclock")) == "Y" and s(r.get("OC Base Freq")) else "",
+    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Base Core Freq", "OC Base Core Freq", "Max Core Freq", "Base Mem Freq", "OC Base Mem Freq", "Max Mem Freq")) if s(r.get("Max Core Freq")) else "",
+    "Memory": lambda r: ",".join(g(r.get(k)) for k in ("Frequency", "OC Base Freq", "OC Base Voltage")) if s(r.get("OC Base Freq")) else "",
+}
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -194,7 +204,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "compat": COMPAT.get(sheet, lambda r: "")(r), "bench": BENCH.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "compat": COMPAT.get(sheet, lambda r: "")(r), "bench": BENCH.get(sheet, lambda r: "")(r), "oc": OCF.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

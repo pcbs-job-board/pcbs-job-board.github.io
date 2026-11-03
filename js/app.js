@@ -47,7 +47,7 @@ function powerHtml(j) {
   return `<div class="power ${over ? "over" : tight || ocOver ? "tight" : ""}" title="${esc(title)}">
     <div class="brow"><span>${over ? "⚠️ PSU too weak" : "⚡ Power"}${pc.ocWanted ? " <small>(overclocked)</small>" : ""}</span><b>${w(use)} / ${w(pc.psuW)}</b></div>
     <div class="bar"><i style="width:${pct}%"></i></div>
-    <small>${what ? what + " + " : ""}~${POWER_OTHER} W for the rest${pc.unknown.length ? ` · <span class="warn">${pc.unknown.length} part${pc.unknown.length > 1 ? "s" : ""} without watts</span>` : ""}${over ? ` · needs a PSU of at least <b>${w(Math.ceil(use / 50) * 50)}</b>` : ""}${ocOver ? ` · <span class="warn">too weak when overclocked (~${w(pc.oc)})</span>` : !pc.ocWanted && pc.oc > pc.stock ? ` · overclocked ~${w(pc.oc)}` : ""}</small></div>`;
+    <small>${what ? what + " + " : ""}~${POWER_OTHER} W for the rest${pc.unknown.length ? ` · <span class="warn">${pc.unknown.length} part${pc.unknown.length > 1 ? "s" : ""} without watts</span>` : ""}${over ? ` · needs a PSU of at least <b>${w(Math.ceil(use / 50) * 50)}</b>` : ""}${ocOver ? ` · <span class="warn">too weak when overclocked (~${w(pc.oc)})${pc.ocLater ? " – the customer plans to overclock" : ""}</span>` : !pc.ocWanted && pc.oc > pc.stock ? ` · overclocked ~${w(pc.oc)}` : ""}</small></div>`;
 }
 // ⚡ state for the Status tile: off (no PSU / watts unknown) · ok · warn (over 90 % or too weak overclocked) · bad
 function powerState(j) {
@@ -70,14 +70,24 @@ function benchHtml(bc) {
     ${bc.mixedGpus ? `<small class="warn">Two different GPUs – only one counts.</small>` : ""}
     <div class="bverdict">${verdict}</div></div>`;
 }
+// Overclock objective: can it be done (certain), how hard (rough guide), PSU when overclocked
+const OC_ICON = `<svg class="bicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 17a8.5 8.5 0 0 1 17 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".35"/><path d="M3.5 17a8.5 8.5 0 0 1 12.7-7.4" fill="none" stroke="#ff8a1f" stroke-width="2.6" stroke-linecap="round"/><path d="M12 17l5.2-6.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="2.1" fill="#fff"/></svg>`;
+function ocHtml(oc) {
+  const ic = { ok: "✓", warn: "!", bad: "✗", off: "–" };
+  return `<div class="ocbox st-${oc.state}"><div class="brow"><span>Overclock</span></div>
+    ${oc.items.map(i => `<div class="ocitem st-${i.state}"><b class="ocic">${ic[i.state]}</b><div><div class="octitle">${esc(i.text)}</div>${i.lines.map(l => `<small>${l}</small>`).join("")}</div></div>`).join("")}
+    ${oc.psu ? `<div class="ocitem st-${oc.psu.bad ? "bad" : "ok"}"><b class="ocic">${oc.psu.bad ? "✗" : "✓"}</b><div><small>Overclocked power ~${oc.psu.use.toLocaleString()} W of ${oc.psu.w.toLocaleString()} W${oc.psu.bad ? " – <b>the PSU is too weak</b>" : ""}</small></div></div>` : `<small>Power: add the PSU to check the overclocked watts.</small>`}
+    <small class="ocnote">Which cooler is enough can't be worked out – the game's temperature formula isn't known.</small></div>`;
+}
 // STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
 function statusHtml(j, { budgetHtml, budgetState, clashes }) {
-  const ps = powerState(j), pw = powerHtml(j), bc = benchCheck(j);
+  const ps = powerState(j), pw = powerHtml(j), bc = benchCheck(j), occ = ocCheck(j);
   const word = { off: "not active", ok: "fine", warn: "close to the limit", bad: "over the limit" };
   const tiles = [
     { k: "budget", icon: "💰", state: budgetState, label: "Budget", body: budgetHtml || `<div class="stoff">No budget for this job.</div>` },
     { k: "power", icon: "⚡", state: ps, label: "Power", body: pw || `<div class="stoff">⚡ Power check starts when a PSU is planned (PC Stats or a part swap).</div>` },
     ...(bc && !bc.missing.length ? [{ k: "bench", icon: BENCH_ICON, state: bc.state, label: "3DMark score", word: `${bc.off.toLocaleString()} of ${bc.target.toLocaleString()}${bc.state === "warn" ? ", enough with XMP on" : ""}`, body: benchHtml(bc) }] : []),
+    ...(occ && occ.state !== "off" ? [{ k: "oc", icon: OC_ICON, state: occ.state, label: "Overclock", word: { ok: "should be reachable", warn: "depends on cooling", bad: "can't be done as planned" }[occ.state], body: ocHtml(occ) }] : []),
     { k: "fit", icon: "⚠️", state: clashes.length ? "bad" : "ok", label: "Parts fit together", body: clashes.length ? compatHtml(clashes) : `<div class="stoff ok">✓ All planned parts fit together.</div>` },
   ];
   return `<div class="sec statussec"><h4>Status</h4><div class="stiles">${tiles.map(t => `<button class="stile st-${t.state}" data-stile="${t.k}" aria-label="${esc(t.label)}: ${t.word ? esc(t.word) : t.k === "fit" ? (clashes.length ? clashes.length + " problem" + (clashes.length > 1 ? "s" : "") : "fine") : word[t.state]}"><span aria-hidden="true">${t.icon}</span><template>${t.body}</template></button>`).join("")}</div></div>`;
@@ -518,7 +528,7 @@ function suggestInput() {
   }
   const hid = [...document.querySelectorAll("#fHidden input:checked")].map(c => d.hidden[c.dataset.h]).filter(Boolean);
   const budget = $("#fBudget") && $("#fBudget").value !== "" ? +$("#fBudget").value : d.budget;
-  return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid },
+  return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid, ocLater: ocLaterOf(d) },
     opts: { brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /rgb/i.test(h.task)), waterCooling: hid.some(h => /water cooling/i.test(h.task)) } };
 }
 function renderSuggestions() {
@@ -560,6 +570,8 @@ function pickedSuggestions() {
   });
   return { swaps, tasks };
 }
+// "I'm going to overclock it myself later" – the email body mentions overclocking (objectives decide on their own)
+const ocLaterOf = d => /\boverclock/i.test(d.body || "");
 function parseCompText(txt) { return txt.split("\n").map(s => s.trim()).filter(Boolean).map(s => { const m = s.match(/^([^:]{2,15}):\s*(.+)$/); return m && CATS.includes(m[1].trim()) ? { cat: m[1].trim(), name: m[2].trim() } : { cat: categorize(s), name: s }; }); }
 function saveReview() {
   const d = rev.draft, comps = parseCompText($("#fComps").value);
@@ -567,7 +579,7 @@ function saveReview() {
   const picked = pickedSuggestions(), capNames = comps.filter(c => rev.autoNames?.has(c.name.toLowerCase())).map(c => c.name);
   if (rev.forJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.capNames = capNames; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
   else {
-    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, capNames, story: !!$("#fStory")?.checked };
+    const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, capNames, story: !!$("#fStory")?.checked, ocLater: ocLaterOf(d) || !!d.ocLater };
     const table = +$("#fTable").value;
     let target;
     if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }

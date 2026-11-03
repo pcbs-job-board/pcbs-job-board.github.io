@@ -1,128 +1,128 @@
-name,level,level_pct,price,spec,dlc,version,jobs,details,power,compat,bench,source
-Mortoni EZStore 120GB,1,1,20,HDD,,1.0,,HDD,,t=sata;k=1;gb=120;sp=160,,xlsx v1.15.3
-Mortoni EZStore 250GB,1,1,30,HDD,,1.0,,HDD,,t=sata;k=1;gb=250;sp=150,,xlsx v1.15.3
-Mortoni EZStore 320GB,1,1,40,HDD,,1.0,,HDD,,t=sata;k=1;gb=320;sp=150,,xlsx v1.15.3
-Mortoni EZStore 500GB,1,1,50,HDD,,1.0,,HDD,,t=sata;k=1;gb=500;sp=140,,xlsx v1.15.3
-Seagate BarraCuda 1TB 64MB Cache,3,1,60,HDD,,1.0,,HDD,,t=sata;k=1;gb=1000;sp=210,,xlsx v1.15.3
-Seagate BarraCuda 2TB 64MB Cache,3,1,70,HDD,,1.0,,HDD,,t=sata;k=1;gb=2000;sp=210,,xlsx v1.15.3
-Seagate BarraCuda 3TB 64MB Cache,3,1,90,HDD,,1.0,,HDD,,t=sata;k=1;gb=3000;sp=210,,xlsx v1.15.3
-Seagate BarraCuda 4TB 256MB Cache,3,1,130,HDD,,1.0,,HDD,,t=sata;k=1;gb=4000;sp=190,,xlsx v1.15.3
-Seagate BarraCuda 500GB 32MB Cache,3,1,50,HDD,,1.0,,HDD,,t=sata;k=1;gb=500;sp=210,,xlsx v1.15.3
-ADATA XPG GAMMIX S11 M.2 240GB,19,1,130,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=1950,,xlsx v1.15.3
-ADATA XPG GAMMIX S11 M.2 480GB,19,1,210,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=1950,,xlsx v1.15.3
-ADATA XPG GAMMIX S11 M.2 960GB,19,1,400,M.2,,1.0,,M.2,,t=m2;k=3;gb=960;sp=1950,,xlsx v1.15.3
-ADATA XPG SPECTRIX S40G RGB M.2 1TB,18,45,370,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=1000;sp=3250;lt=1,,xlsx v1.15.3
-ADATA XPG SPECTRIX S40G RGB M.2 256GB,18,45,160,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=3250;lt=1,,xlsx v1.15.3
-ADATA XPG SPECTRIX S40G RGB M.2 2TB,18,45,440,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=2000;sp=3250;lt=1,,xlsx v1.15.3
-ADATA XPG SPECTRIX S40G RGB M.2 512GB,18,45,240,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=3250;lt=1,,xlsx v1.15.3
-ADATA XPG SX6000 M.2 128GB,12,1,100,M.2,,1.0,,M.2,,t=m2;k=3;gb=128;sp=900,,xlsx v1.15.3
-ADATA XPG SX6000 M.2 1TB,12,58,380,M.2,,1.0,,M.2,,t=m2;k=3;gb=1000;sp=900,,xlsx v1.15.3
-ADATA XPG SX6000 M.2 256GB,12,18,150,M.2,,1.0,,M.2,,t=m2;k=3;gb=256;sp=900,,xlsx v1.15.3
-ADATA XPG SX6000 M.2 512GB,12,38,200,M.2,,1.0,,M.2,,t=m2;k=3;gb=512;sp=900,,xlsx v1.15.3
-CORSAIR Force Series - MP500 M.2 120GB,29,1,150,M.2,,1.0,,M.2,,t=m2;k=3;gb=120;sp=2700,,xlsx v1.15.3
-CORSAIR Force Series - MP500 M.2 240GB,29,15,200,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=2700,,xlsx v1.15.3
-CORSAIR Force Series - MP500 M.2 480GB,29,30,300,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=2700,,xlsx v1.15.3
-CORSAIR Force Series - MP500 M.2 960GB,29,45,500,M.2,,1.0,,M.2,,t=m2;k=3;gb=960;sp=2650,,xlsx v1.15.3
-CORSAIR Force Series - MP600 M.2 1TB,20,1,370,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4600,,xlsx v1.15.3
-CORSAIR Force Series - MP600 M.2 2TB,20,1,440,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4600,,xlsx v1.15.3
-CORSAIR Force Series - MP600 M.2 512GB,20,1,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=3800,,xlsx v1.15.3
-GIGABYTE AORUS NVMe Gen4 SSD 1TB,22,70,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4700,,xlsx v1.15.3
-GIGABYTE AORUS NVMe Gen4 SSD 2TB,22,70,410,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4700,,xlsx v1.15.3
-GIGABYTE AORUS RGB M.2 NVMe SSD 256GB,22,50,80,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=1875;lt=1,,xlsx v1.15.3
-GIGABYTE AORUS RGB M.2 NVMe SSD 512GB,22,50,140,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=2740;lt=1,,xlsx v1.15.3
-GIGABYTE M.2 PCIe SSD 128GB,22,10,30,M.2,,1.6,,M.2,,t=m2;k=3;gb=128;sp=800,,xlsx v1.15.3
-GIGABYTE M.2 PCIe SSD 256GB,22,10,60,M.2,,1.6,,M.2,,t=m2;k=3;gb=256;sp=1000,,xlsx v1.15.3
-GIGABYTE M.2 PCIe SSD 512GB,22,50,120,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=1200,,xlsx v1.15.3
-Kingston A2000 NVMe PCIe SSD 1000GB,30,1,125,M.2,,1.8,,M.2,,t=m2;k=3;gb=1000;sp=2100,,xlsx v1.15.3
-Kingston A2000 NVMe PCIe SSD 250GB,30,1,50,M.2,,1.8,,M.2,,t=m2;k=3;gb=250;sp=2100,,xlsx v1.15.3
-Kingston A2000 NVMe PCIe SSD 500GB,30,1,80,M.2,,1.8,,M.2,,t=m2;k=3;gb=500;sp=2100,,xlsx v1.15.3
-Kingston KC2000 NVMe PCIe SSD 1000GB,30,1,200,M.2,,1.8,,M.2,,t=m2;k=3;gb=1000;sp=2800,,xlsx v1.15.3
-Kingston KC2000 NVMe PCIe SSD 2000GB,30,1,350,M.2,,1.8,,M.2,,t=m2;k=3;gb=2000;sp=2800,,xlsx v1.15.3
-Kingston KC2000 NVMe PCIe SSD 250GB,30,1,80,M.2,,1.8,,M.2,,t=m2;k=3;gb=250;sp=2800,,xlsx v1.15.3
-Kingston KC2000 NVMe PCIe SSD 500GB,30,1,125,M.2,,1.8,,M.2,,t=m2;k=3;gb=500;sp=2800,,xlsx v1.15.3
-Patriot Scorch M.2 128GB,15,1,110,M.2,,1.0,,M.2,,t=m2;k=3;gb=128;sp=1240,,xlsx v1.15.3
-Patriot Scorch M.2 256GB,15,1,160,M.2,,1.0,,M.2,,t=m2;k=3;gb=256;sp=1050,,xlsx v1.15.3
-Patriot Scorch M.2 512GB,15,1,240,M.2,,1.0,,M.2,,t=m2;k=3;gb=512;sp=1325,,xlsx v1.15.3
-Patriot Viper VP4100 M.2 1TB,17,35,400,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4800,,xlsx v1.15.3
-Patriot Viper VP4100 M.2 2TB,17,35,500,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4800,,xlsx v1.15.3
-Patriot Viper VP4300 M.2 1TB (Aluminum heatshield),31,1,200,M.2,,1.15,,M.2,,t=m2;k=3;gb=1000;sp=6600,,xlsx v1.15.3
-Patriot Viper VP4300 M.2 1TB (Graphene heatshield),31,1,200,M.2,,1.15,,M.2,,t=m2;k=3;gb=1000;sp=6600,,xlsx v1.15.3
-Patriot Viper VP4300 M.2 2TB (Aluminum heatshield),31,1,400,M.2,,1.15,,M.2,,t=m2;k=3;gb=2000;sp=7100,,xlsx v1.15.3
-Patriot Viper VP4300 M.2 2TB (Graphene heatshield),31,1,400,M.2,,1.15,,M.2,,t=m2;k=3;gb=2000;sp=7100,,xlsx v1.15.3
-Patriot Viper VPN100 M.2 1TB,17,20,370,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=3200,,xlsx v1.15.3
-Patriot Viper VPN100 M.2 256GB,17,20,160,M.2,,1.6,,M.2,,t=m2;k=3;gb=256;sp=3200,,xlsx v1.15.3
-Patriot Viper VPN100 M.2 2TB,17,20,440,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=3200,,xlsx v1.15.3
-Patriot Viper VPN100 M.2 512GB,17,20,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=3200,,xlsx v1.15.3
-Patriot Viper VPR100 M.2 1TB,17,20,350,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=1000;sp=3100;lt=1,,xlsx v1.15.3
-Patriot Viper VPR100 M.2 256GB,17,20,150,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=2200;lt=1,,xlsx v1.15.3
-Patriot Viper VPR100 M.2 2TB,17,20,420,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=2000;sp=3100;lt=1,,xlsx v1.15.3
-Patriot Viper VPR100 M.2 512GB,17,20,230,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=2700;lt=1,,xlsx v1.15.3
-Team Group CARDEA M.2 240GB,26,1,140,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=2000,,xlsx v1.15.3
-Team Group CARDEA M.2 480GB,26,1,220,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=2000,,xlsx v1.15.3
-Team Group CARDEA ZERO Z340 M.2 PCIe SSD 1TB,32,1,210,M.2,,1.14,,M.2,,t=m2;k=3;gb=1000;sp=3200,,xlsx v1.15.3
-Team Group CARDEA ZERO Z340 M.2 PCIe SSD 256GB,32,1,100,M.2,,1.14,,M.2,,t=m2;k=3;gb=256;sp=2000,,xlsx v1.15.3
-Team Group CARDEA ZERO Z340 M.2 PCIe SSD 4TB,32,1,750,M.2,,1.14,,M.2,,t=m2;k=3;gb=4000;sp=3200,,xlsx v1.15.3
-Team Group CARDEA ZERO Z340 M.2 PCIe SSD 512GB,32,1,140,M.2,,1.14,,M.2,,t=m2;k=3;gb=512;sp=2700,,xlsx v1.15.3
-ADATA Ultimate SU650 120GB,4,1,80,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=485,,xlsx v1.15.3
-ADATA Ultimate SU650 240GB,4,18,100,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=485,,xlsx v1.15.3
-ADATA Ultimate SU650 480GB,4,38,180,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=485,,xlsx v1.15.3
-ADATA Ultimate SU650 960GB,4,58,330,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=485,,xlsx v1.15.3
-ADATA XPG SX950U 120GB,10,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=540,,xlsx v1.15.3
-ADATA XPG SX950U 240GB,10,18,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=540,,xlsx v1.15.3
-ADATA XPG SX950U 480GB,10,38,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=540,,xlsx v1.15.3
-ADATA XPG SX950U 960GB,10,58,340,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=540,,xlsx v1.15.3
-Colorful SL500 1TB,33,1,360,SSD,,1.15,,SSD,,t=sata;k=2;gb=1000;sp=450,,xlsx v1.15.3
-Colorful SL500 1TB DDR,33,1,360,SSD,,1.15,,SSD,,t=sata;k=2;gb=1000;sp=450,,xlsx v1.15.3
-Colorful SL500 240GB,33,1,105,SSD,,1.15,,SSD,,t=sata;k=2;gb=240;sp=450,,xlsx v1.15.3
-Colorful SL500 256GB,33,1,115,SSD,,1.15,,SSD,,t=sata;k=2;gb=256;sp=450,,xlsx v1.15.3
-Colorful SL500 360GB,33,1,130,SSD,,1.15,,SSD,,t=sata;k=2;gb=360;sp=450,,xlsx v1.15.3
-Colorful SL500 480GB,33,1,160,SSD,,1.15,,SSD,,t=sata;k=2;gb=480;sp=450,,xlsx v1.15.3
-Colorful SL500 512GB,33,1,180,SSD,,1.15,,SSD,,t=sata;k=2;gb=512;sp=450,,xlsx v1.15.3
-Colorful SL500 512GB DDR,33,1,180,SSD,,1.15,,SSD,,t=sata;k=2;gb=512;sp=450,,xlsx v1.15.3
-Colorful SL500 720GB,33,1,250,SSD,,1.15,,SSD,,t=sata;k=2;gb=720;sp=450,,xlsx v1.15.3
-Colorful SL500 960GB,33,1,330,SSD,,1.15,,SSD,,t=sata;k=2;gb=960;sp=450,,xlsx v1.15.3
-Colorful SL500 960GB Blue.L.E,33,1,330,SSD,,1.15,,SSD,,t=sata;k=2;gb=960;sp=450,,xlsx v1.15.3
-CORSAIR Force Series - LE200 120GB,8,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=525,,xlsx v1.15.3
-CORSAIR Force Series - LE200 240GB,8,1,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=525,,xlsx v1.15.3
-CORSAIR Force Series - LE200 480GB,8,15,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=525,,xlsx v1.15.3
-CORSAIR Force Series - LE200 960GB,8,30,350,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=525,,xlsx v1.15.3
-GIGABYTE SSD 120GB,13,1,35,SSD,,1.6,,SSD,,t=sata;k=2;gb=120;sp=440,,xlsx v1.15.3
-GIGABYTE SSD 1TB,13,1,90,SSD,,1.6,,SSD,,t=sata;k=2;gb=1000;sp=525,,xlsx v1.15.3
-GIGABYTE SSD 240GB,13,1,40,SSD,,1.6,,SSD,,t=sata;k=2;gb=240;sp=460,,xlsx v1.15.3
-GIGABYTE SSD 256GB,13,1,50,SSD,,1.6,,SSD,,t=sata;k=2;gb=256;sp=510,,xlsx v1.15.3
-GIGABYTE SSD 480GB,13,1,60,SSD,,1.6,,SSD,,t=sata;k=2;gb=480;sp=515,,xlsx v1.15.3
-GIGABYTE UD PRO 256GB,13,15,60,SSD,,1.6,,SSD,,t=sata;k=2;gb=256;sp=515,,xlsx v1.15.3
-GIGABYTE UD PRO 512GB,13,15,150,SSD,,1.6,,SSD,,t=sata;k=2;gb=512;sp=515,,xlsx v1.15.3
-HyperX FURY RGB 240GB,11,40,100,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=240;sp=530;lt=1,,xlsx v1.15.3
-HyperX FURY RGB 480GB,11,40,180,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=480;sp=530;lt=1,,xlsx v1.15.3
-HyperX FURY RGB 960GB,11,40,310,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=960;sp=530;lt=1,,xlsx v1.15.3
-Kingston A400 SATA SSD 120GB,30,1,30,SSD,,1.8,,SSD,,t=sata;k=2;gb=120;sp=535,,xlsx v1.15.3
-Kingston A400 SATA SSD 240GB,30,1,50,SSD,,1.8,,SSD,,t=sata;k=2;gb=240;sp=535,,xlsx v1.15.3
-Kingston A400 SATA SSD 480GB,30,1,75,SSD,,1.8,,SSD,,t=sata;k=2;gb=480;sp=535,,xlsx v1.15.3
-Kingston A400 SATA SSD 960GB,30,1,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=960;sp=535,,xlsx v1.15.3
-Kingston KC600 SATA SSD 1024GB,30,1,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=1024;sp=535,,xlsx v1.15.3
-Kingston KC600 SATA SSD 2048GB,30,1,110,SSD,,1.8,,SSD,,t=sata;k=2;gb=2048;sp=535,,xlsx v1.15.3
-Kingston KC600 SATA SSD 256GB,30,1,50,SSD,,1.8,,SSD,,t=sata;k=2;gb=256;sp=525,,xlsx v1.15.3
-Kingston KC600 SATA SSD 512GB,30,1,75,SSD,,1.8,,SSD,,t=sata;k=2;gb=512;sp=535,,xlsx v1.15.3
-Patriot Burst 120GB,14,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=550,,xlsx v1.15.3
-Patriot Burst 240GB,14,1,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=525,,xlsx v1.15.3
-Patriot Burst 480GB,14,1,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=550,,xlsx v1.15.3
-Shean Mega 120GB,1,1,80,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=480,,xlsx v1.15.3
-Shean Mega 250GB,1,1,110,SSD,,1.0,,SSD,,t=sata;k=2;gb=250;sp=480,,xlsx v1.15.3
-Shean Mega 60GB,1,1,60,SSD,,1.0,,SSD,,t=sata;k=2;gb=60;sp=480,,xlsx v1.15.3
-Team Group DELTA Phantom Gaming RGB 1TB,32,1,120,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=1000;sp=535;lt=1,,xlsx v1.15.3
-Team Group DELTA Phantom Gaming RGB 500GB,32,1,75,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=500;sp=535;lt=1,,xlsx v1.15.3
-Team Group DELTA TUF Gaming Alliance RGB 1TB,32,1,120,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=1000;sp=535;lt=1,,xlsx v1.15.3
-Team Group DELTA TUF Gaming Alliance RGB 500GB,32,1,75,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=500;sp=535;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta MAX 1TB,24,30,150,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta MAX 250GB,24,30,80,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta MAX 500GB,24,30,110,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 1TB (Black),24,30,140,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 1TB (White),24,30,140,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 250GB (Black),24,30,70,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 250GB (White),24,30,70,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 500GB (Black),24,30,100,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Delta RGB 500GB (White),24,30,100,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,xlsx v1.15.3
-Team Group T-FORCE Vulcan 1TB,24,30,130,SSD,,1.8,,SSD,,t=sata;k=2;gb=1000;sp=560,,xlsx v1.15.3
-Team Group T-FORCE Vulcan 250GB,24,30,60,SSD,,1.8,,SSD,,t=sata;k=2;gb=250;sp=560,,xlsx v1.15.3
-Team Group T-FORCE Vulcan 500GB,24,30,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=500;sp=560,,xlsx v1.15.3
+name,level,level_pct,price,spec,dlc,version,jobs,details,power,compat,bench,oc,source
+Mortoni EZStore 120GB,1,1,20,HDD,,1.0,,HDD,,t=sata;k=1;gb=120;sp=160,,,xlsx v1.15.3
+Mortoni EZStore 250GB,1,1,30,HDD,,1.0,,HDD,,t=sata;k=1;gb=250;sp=150,,,xlsx v1.15.3
+Mortoni EZStore 320GB,1,1,40,HDD,,1.0,,HDD,,t=sata;k=1;gb=320;sp=150,,,xlsx v1.15.3
+Mortoni EZStore 500GB,1,1,50,HDD,,1.0,,HDD,,t=sata;k=1;gb=500;sp=140,,,xlsx v1.15.3
+Seagate BarraCuda 1TB 64MB Cache,3,1,60,HDD,,1.0,,HDD,,t=sata;k=1;gb=1000;sp=210,,,xlsx v1.15.3
+Seagate BarraCuda 2TB 64MB Cache,3,1,70,HDD,,1.0,,HDD,,t=sata;k=1;gb=2000;sp=210,,,xlsx v1.15.3
+Seagate BarraCuda 3TB 64MB Cache,3,1,90,HDD,,1.0,,HDD,,t=sata;k=1;gb=3000;sp=210,,,xlsx v1.15.3
+Seagate BarraCuda 4TB 256MB Cache,3,1,130,HDD,,1.0,,HDD,,t=sata;k=1;gb=4000;sp=190,,,xlsx v1.15.3
+Seagate BarraCuda 500GB 32MB Cache,3,1,50,HDD,,1.0,,HDD,,t=sata;k=1;gb=500;sp=210,,,xlsx v1.15.3
+ADATA XPG GAMMIX S11 M.2 240GB,19,1,130,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=1950,,,xlsx v1.15.3
+ADATA XPG GAMMIX S11 M.2 480GB,19,1,210,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=1950,,,xlsx v1.15.3
+ADATA XPG GAMMIX S11 M.2 960GB,19,1,400,M.2,,1.0,,M.2,,t=m2;k=3;gb=960;sp=1950,,,xlsx v1.15.3
+ADATA XPG SPECTRIX S40G RGB M.2 1TB,18,45,370,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=1000;sp=3250;lt=1,,,xlsx v1.15.3
+ADATA XPG SPECTRIX S40G RGB M.2 256GB,18,45,160,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=3250;lt=1,,,xlsx v1.15.3
+ADATA XPG SPECTRIX S40G RGB M.2 2TB,18,45,440,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=2000;sp=3250;lt=1,,,xlsx v1.15.3
+ADATA XPG SPECTRIX S40G RGB M.2 512GB,18,45,240,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=3250;lt=1,,,xlsx v1.15.3
+ADATA XPG SX6000 M.2 128GB,12,1,100,M.2,,1.0,,M.2,,t=m2;k=3;gb=128;sp=900,,,xlsx v1.15.3
+ADATA XPG SX6000 M.2 1TB,12,58,380,M.2,,1.0,,M.2,,t=m2;k=3;gb=1000;sp=900,,,xlsx v1.15.3
+ADATA XPG SX6000 M.2 256GB,12,18,150,M.2,,1.0,,M.2,,t=m2;k=3;gb=256;sp=900,,,xlsx v1.15.3
+ADATA XPG SX6000 M.2 512GB,12,38,200,M.2,,1.0,,M.2,,t=m2;k=3;gb=512;sp=900,,,xlsx v1.15.3
+CORSAIR Force Series - MP500 M.2 120GB,29,1,150,M.2,,1.0,,M.2,,t=m2;k=3;gb=120;sp=2700,,,xlsx v1.15.3
+CORSAIR Force Series - MP500 M.2 240GB,29,15,200,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=2700,,,xlsx v1.15.3
+CORSAIR Force Series - MP500 M.2 480GB,29,30,300,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=2700,,,xlsx v1.15.3
+CORSAIR Force Series - MP500 M.2 960GB,29,45,500,M.2,,1.0,,M.2,,t=m2;k=3;gb=960;sp=2650,,,xlsx v1.15.3
+CORSAIR Force Series - MP600 M.2 1TB,20,1,370,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4600,,,xlsx v1.15.3
+CORSAIR Force Series - MP600 M.2 2TB,20,1,440,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4600,,,xlsx v1.15.3
+CORSAIR Force Series - MP600 M.2 512GB,20,1,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=3800,,,xlsx v1.15.3
+GIGABYTE AORUS NVMe Gen4 SSD 1TB,22,70,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4700,,,xlsx v1.15.3
+GIGABYTE AORUS NVMe Gen4 SSD 2TB,22,70,410,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4700,,,xlsx v1.15.3
+GIGABYTE AORUS RGB M.2 NVMe SSD 256GB,22,50,80,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=1875;lt=1,,,xlsx v1.15.3
+GIGABYTE AORUS RGB M.2 NVMe SSD 512GB,22,50,140,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=2740;lt=1,,,xlsx v1.15.3
+GIGABYTE M.2 PCIe SSD 128GB,22,10,30,M.2,,1.6,,M.2,,t=m2;k=3;gb=128;sp=800,,,xlsx v1.15.3
+GIGABYTE M.2 PCIe SSD 256GB,22,10,60,M.2,,1.6,,M.2,,t=m2;k=3;gb=256;sp=1000,,,xlsx v1.15.3
+GIGABYTE M.2 PCIe SSD 512GB,22,50,120,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=1200,,,xlsx v1.15.3
+Kingston A2000 NVMe PCIe SSD 1000GB,30,1,125,M.2,,1.8,,M.2,,t=m2;k=3;gb=1000;sp=2100,,,xlsx v1.15.3
+Kingston A2000 NVMe PCIe SSD 250GB,30,1,50,M.2,,1.8,,M.2,,t=m2;k=3;gb=250;sp=2100,,,xlsx v1.15.3
+Kingston A2000 NVMe PCIe SSD 500GB,30,1,80,M.2,,1.8,,M.2,,t=m2;k=3;gb=500;sp=2100,,,xlsx v1.15.3
+Kingston KC2000 NVMe PCIe SSD 1000GB,30,1,200,M.2,,1.8,,M.2,,t=m2;k=3;gb=1000;sp=2800,,,xlsx v1.15.3
+Kingston KC2000 NVMe PCIe SSD 2000GB,30,1,350,M.2,,1.8,,M.2,,t=m2;k=3;gb=2000;sp=2800,,,xlsx v1.15.3
+Kingston KC2000 NVMe PCIe SSD 250GB,30,1,80,M.2,,1.8,,M.2,,t=m2;k=3;gb=250;sp=2800,,,xlsx v1.15.3
+Kingston KC2000 NVMe PCIe SSD 500GB,30,1,125,M.2,,1.8,,M.2,,t=m2;k=3;gb=500;sp=2800,,,xlsx v1.15.3
+Patriot Scorch M.2 128GB,15,1,110,M.2,,1.0,,M.2,,t=m2;k=3;gb=128;sp=1240,,,xlsx v1.15.3
+Patriot Scorch M.2 256GB,15,1,160,M.2,,1.0,,M.2,,t=m2;k=3;gb=256;sp=1050,,,xlsx v1.15.3
+Patriot Scorch M.2 512GB,15,1,240,M.2,,1.0,,M.2,,t=m2;k=3;gb=512;sp=1325,,,xlsx v1.15.3
+Patriot Viper VP4100 M.2 1TB,17,35,400,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=4800,,,xlsx v1.15.3
+Patriot Viper VP4100 M.2 2TB,17,35,500,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=4800,,,xlsx v1.15.3
+Patriot Viper VP4300 M.2 1TB (Aluminum heatshield),31,1,200,M.2,,1.15,,M.2,,t=m2;k=3;gb=1000;sp=6600,,,xlsx v1.15.3
+Patriot Viper VP4300 M.2 1TB (Graphene heatshield),31,1,200,M.2,,1.15,,M.2,,t=m2;k=3;gb=1000;sp=6600,,,xlsx v1.15.3
+Patriot Viper VP4300 M.2 2TB (Aluminum heatshield),31,1,400,M.2,,1.15,,M.2,,t=m2;k=3;gb=2000;sp=7100,,,xlsx v1.15.3
+Patriot Viper VP4300 M.2 2TB (Graphene heatshield),31,1,400,M.2,,1.15,,M.2,,t=m2;k=3;gb=2000;sp=7100,,,xlsx v1.15.3
+Patriot Viper VPN100 M.2 1TB,17,20,370,M.2,,1.6,,M.2,,t=m2;k=3;gb=1000;sp=3200,,,xlsx v1.15.3
+Patriot Viper VPN100 M.2 256GB,17,20,160,M.2,,1.6,,M.2,,t=m2;k=3;gb=256;sp=3200,,,xlsx v1.15.3
+Patriot Viper VPN100 M.2 2TB,17,20,440,M.2,,1.6,,M.2,,t=m2;k=3;gb=2000;sp=3200,,,xlsx v1.15.3
+Patriot Viper VPN100 M.2 512GB,17,20,240,M.2,,1.6,,M.2,,t=m2;k=3;gb=512;sp=3200,,,xlsx v1.15.3
+Patriot Viper VPR100 M.2 1TB,17,20,350,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=1000;sp=3100;lt=1,,,xlsx v1.15.3
+Patriot Viper VPR100 M.2 256GB,17,20,150,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=256;sp=2200;lt=1,,,xlsx v1.15.3
+Patriot Viper VPR100 M.2 2TB,17,20,420,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=2000;sp=3100;lt=1,,,xlsx v1.15.3
+Patriot Viper VPR100 M.2 512GB,17,20,230,M.2,,1.6,,M.2 · RGB,,t=m2;k=3;gb=512;sp=2700;lt=1,,,xlsx v1.15.3
+Team Group CARDEA M.2 240GB,26,1,140,M.2,,1.0,,M.2,,t=m2;k=3;gb=240;sp=2000,,,xlsx v1.15.3
+Team Group CARDEA M.2 480GB,26,1,220,M.2,,1.0,,M.2,,t=m2;k=3;gb=480;sp=2000,,,xlsx v1.15.3
+Team Group CARDEA ZERO Z340 M.2 PCIe SSD 1TB,32,1,210,M.2,,1.14,,M.2,,t=m2;k=3;gb=1000;sp=3200,,,xlsx v1.15.3
+Team Group CARDEA ZERO Z340 M.2 PCIe SSD 256GB,32,1,100,M.2,,1.14,,M.2,,t=m2;k=3;gb=256;sp=2000,,,xlsx v1.15.3
+Team Group CARDEA ZERO Z340 M.2 PCIe SSD 4TB,32,1,750,M.2,,1.14,,M.2,,t=m2;k=3;gb=4000;sp=3200,,,xlsx v1.15.3
+Team Group CARDEA ZERO Z340 M.2 PCIe SSD 512GB,32,1,140,M.2,,1.14,,M.2,,t=m2;k=3;gb=512;sp=2700,,,xlsx v1.15.3
+ADATA Ultimate SU650 120GB,4,1,80,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=485,,,xlsx v1.15.3
+ADATA Ultimate SU650 240GB,4,18,100,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=485,,,xlsx v1.15.3
+ADATA Ultimate SU650 480GB,4,38,180,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=485,,,xlsx v1.15.3
+ADATA Ultimate SU650 960GB,4,58,330,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=485,,,xlsx v1.15.3
+ADATA XPG SX950U 120GB,10,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=540,,,xlsx v1.15.3
+ADATA XPG SX950U 240GB,10,18,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=540,,,xlsx v1.15.3
+ADATA XPG SX950U 480GB,10,38,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=540,,,xlsx v1.15.3
+ADATA XPG SX950U 960GB,10,58,340,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=540,,,xlsx v1.15.3
+Colorful SL500 1TB,33,1,360,SSD,,1.15,,SSD,,t=sata;k=2;gb=1000;sp=450,,,xlsx v1.15.3
+Colorful SL500 1TB DDR,33,1,360,SSD,,1.15,,SSD,,t=sata;k=2;gb=1000;sp=450,,,xlsx v1.15.3
+Colorful SL500 240GB,33,1,105,SSD,,1.15,,SSD,,t=sata;k=2;gb=240;sp=450,,,xlsx v1.15.3
+Colorful SL500 256GB,33,1,115,SSD,,1.15,,SSD,,t=sata;k=2;gb=256;sp=450,,,xlsx v1.15.3
+Colorful SL500 360GB,33,1,130,SSD,,1.15,,SSD,,t=sata;k=2;gb=360;sp=450,,,xlsx v1.15.3
+Colorful SL500 480GB,33,1,160,SSD,,1.15,,SSD,,t=sata;k=2;gb=480;sp=450,,,xlsx v1.15.3
+Colorful SL500 512GB,33,1,180,SSD,,1.15,,SSD,,t=sata;k=2;gb=512;sp=450,,,xlsx v1.15.3
+Colorful SL500 512GB DDR,33,1,180,SSD,,1.15,,SSD,,t=sata;k=2;gb=512;sp=450,,,xlsx v1.15.3
+Colorful SL500 720GB,33,1,250,SSD,,1.15,,SSD,,t=sata;k=2;gb=720;sp=450,,,xlsx v1.15.3
+Colorful SL500 960GB,33,1,330,SSD,,1.15,,SSD,,t=sata;k=2;gb=960;sp=450,,,xlsx v1.15.3
+Colorful SL500 960GB Blue.L.E,33,1,330,SSD,,1.15,,SSD,,t=sata;k=2;gb=960;sp=450,,,xlsx v1.15.3
+CORSAIR Force Series - LE200 120GB,8,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=525,,,xlsx v1.15.3
+CORSAIR Force Series - LE200 240GB,8,1,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=525,,,xlsx v1.15.3
+CORSAIR Force Series - LE200 480GB,8,15,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=525,,,xlsx v1.15.3
+CORSAIR Force Series - LE200 960GB,8,30,350,SSD,,1.0,,SSD,,t=sata;k=2;gb=960;sp=525,,,xlsx v1.15.3
+GIGABYTE SSD 120GB,13,1,35,SSD,,1.6,,SSD,,t=sata;k=2;gb=120;sp=440,,,xlsx v1.15.3
+GIGABYTE SSD 1TB,13,1,90,SSD,,1.6,,SSD,,t=sata;k=2;gb=1000;sp=525,,,xlsx v1.15.3
+GIGABYTE SSD 240GB,13,1,40,SSD,,1.6,,SSD,,t=sata;k=2;gb=240;sp=460,,,xlsx v1.15.3
+GIGABYTE SSD 256GB,13,1,50,SSD,,1.6,,SSD,,t=sata;k=2;gb=256;sp=510,,,xlsx v1.15.3
+GIGABYTE SSD 480GB,13,1,60,SSD,,1.6,,SSD,,t=sata;k=2;gb=480;sp=515,,,xlsx v1.15.3
+GIGABYTE UD PRO 256GB,13,15,60,SSD,,1.6,,SSD,,t=sata;k=2;gb=256;sp=515,,,xlsx v1.15.3
+GIGABYTE UD PRO 512GB,13,15,150,SSD,,1.6,,SSD,,t=sata;k=2;gb=512;sp=515,,,xlsx v1.15.3
+HyperX FURY RGB 240GB,11,40,100,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=240;sp=530;lt=1,,,xlsx v1.15.3
+HyperX FURY RGB 480GB,11,40,180,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=480;sp=530;lt=1,,,xlsx v1.15.3
+HyperX FURY RGB 960GB,11,40,310,SSD,,1.5,,SSD · RGB,,t=sata;k=2;gb=960;sp=530;lt=1,,,xlsx v1.15.3
+Kingston A400 SATA SSD 120GB,30,1,30,SSD,,1.8,,SSD,,t=sata;k=2;gb=120;sp=535,,,xlsx v1.15.3
+Kingston A400 SATA SSD 240GB,30,1,50,SSD,,1.8,,SSD,,t=sata;k=2;gb=240;sp=535,,,xlsx v1.15.3
+Kingston A400 SATA SSD 480GB,30,1,75,SSD,,1.8,,SSD,,t=sata;k=2;gb=480;sp=535,,,xlsx v1.15.3
+Kingston A400 SATA SSD 960GB,30,1,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=960;sp=535,,,xlsx v1.15.3
+Kingston KC600 SATA SSD 1024GB,30,1,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=1024;sp=535,,,xlsx v1.15.3
+Kingston KC600 SATA SSD 2048GB,30,1,110,SSD,,1.8,,SSD,,t=sata;k=2;gb=2048;sp=535,,,xlsx v1.15.3
+Kingston KC600 SATA SSD 256GB,30,1,50,SSD,,1.8,,SSD,,t=sata;k=2;gb=256;sp=525,,,xlsx v1.15.3
+Kingston KC600 SATA SSD 512GB,30,1,75,SSD,,1.8,,SSD,,t=sata;k=2;gb=512;sp=535,,,xlsx v1.15.3
+Patriot Burst 120GB,14,1,90,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=550,,,xlsx v1.15.3
+Patriot Burst 240GB,14,1,105,SSD,,1.0,,SSD,,t=sata;k=2;gb=240;sp=525,,,xlsx v1.15.3
+Patriot Burst 480GB,14,1,190,SSD,,1.0,,SSD,,t=sata;k=2;gb=480;sp=550,,,xlsx v1.15.3
+Shean Mega 120GB,1,1,80,SSD,,1.0,,SSD,,t=sata;k=2;gb=120;sp=480,,,xlsx v1.15.3
+Shean Mega 250GB,1,1,110,SSD,,1.0,,SSD,,t=sata;k=2;gb=250;sp=480,,,xlsx v1.15.3
+Shean Mega 60GB,1,1,60,SSD,,1.0,,SSD,,t=sata;k=2;gb=60;sp=480,,,xlsx v1.15.3
+Team Group DELTA Phantom Gaming RGB 1TB,32,1,120,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=1000;sp=535;lt=1,,,xlsx v1.15.3
+Team Group DELTA Phantom Gaming RGB 500GB,32,1,75,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=500;sp=535;lt=1,,,xlsx v1.15.3
+Team Group DELTA TUF Gaming Alliance RGB 1TB,32,1,120,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=1000;sp=535;lt=1,,,xlsx v1.15.3
+Team Group DELTA TUF Gaming Alliance RGB 500GB,32,1,75,SSD,,1.14,,SSD · RGB,,t=sata;k=2;gb=500;sp=535;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta MAX 1TB,24,30,150,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta MAX 250GB,24,30,80,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta MAX 500GB,24,30,110,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 1TB (Black),24,30,140,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 1TB (White),24,30,140,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=1000;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 250GB (Black),24,30,70,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 250GB (White),24,30,70,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=250;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 500GB (Black),24,30,100,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Delta RGB 500GB (White),24,30,100,SSD,,1.8,,SSD · RGB,,t=sata;k=2;gb=500;sp=560;lt=1,,,xlsx v1.15.3
+Team Group T-FORCE Vulcan 1TB,24,30,130,SSD,,1.8,,SSD,,t=sata;k=2;gb=1000;sp=560,,,xlsx v1.15.3
+Team Group T-FORCE Vulcan 250GB,24,30,60,SSD,,1.8,,SSD,,t=sata;k=2;gb=250;sp=560,,,xlsx v1.15.3
+Team Group T-FORCE Vulcan 500GB,24,30,90,SSD,,1.8,,SSD,,t=sata;k=2;gb=500;sp=560,,,xlsx v1.15.3

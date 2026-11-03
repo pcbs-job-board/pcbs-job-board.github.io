@@ -346,7 +346,8 @@ function parseEmail(text, rules, smart) {
       const m = l.match(/^\W{0,3}?[•*+·°»«©¢®\-–\[\]{}|:;]\s*(.+)/) || l.match(/^[oe]\s+([A-Z0-9].+)/);
       // real objectives always have a word of 4+ letters – "[fae se ee ee]" is the button bar read as text;
       // a lone capital at the end is a crumb ("Diagnose and fix R")
-      if (m) { const o = trimLead(trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, ""))).replace(/\s+[A-Z]$/, ""); if (o.length > 2 && /[A-Za-z]{4,}/.test(o)) { job.objectives.push(o); junk = 0; continue; } }
+      if (m) { const o = trimLead(trimJunk(m[1].replace(/\s+PC Stats$/i, "").replace(/^[^A-Za-z0-9(]+/, ""))).replace(/\s+[A-Z]$/, ""); if (o.length > 2 && (/[A-Za-z]{4,}/.test(o) || /^OC\s+(CPU|GPU|RAM)\b/i.test(o))) {   // "OC CPU to 4000MHz" has no long word
+        job.objectives.push(o); junk = 0; continue; } }
       if (job.objectives.length && /^[a-z(]/.test(l) && l.length > 3 && looksLikeText(l)) { job.objectives[job.objectives.length - 1] += " " + trimJunk(l); continue; }
       junk++;
     }

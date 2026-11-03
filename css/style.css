@@ -414,3 +414,13 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .sopt.multi .bscore{color:#ffb066}
 .sopt.multi .sset li{display:block;line-height:1.4}.sopt.multi .sset li small{display:inline;font-size:11.5px}
 .stile .bicon{width:25px;height:25px}
+
+/* Overclock tile details */
+.ocbox{display:flex;flex-direction:column;gap:5px;padding:6px 9px;border-radius:7px;background:#14232f;border:1px solid #2b5672;font-size:12px}
+.ocbox .brow{color:#9fd2ef;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.ocitem{display:grid;grid-template-columns:18px 1fr;gap:6px;align-items:start}
+.ocitem .ocic{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;background:#2e8a54;color:#fff}
+.ocitem.st-warn .ocic{background:var(--warn);color:#211600}.ocitem.st-bad .ocic{background:var(--bad)}.ocitem.st-off .ocic{background:#4a5160}
+.ocitem .octitle{font-weight:700;color:var(--text)}.ocitem small{display:block;color:#c7cedb;line-height:1.4}
+.ocbox .ocnote{color:var(--muted);font-size:11px;font-style:italic}
+.stip .ocbox{margin:0}

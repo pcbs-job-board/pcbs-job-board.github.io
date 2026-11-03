@@ -367,8 +367,9 @@ function powerCheck(j) {
   const P = powerOf(psu.name), cpu = b.filter(c => c.cat === "CPU").pop(), gpus = b.filter(c => c.cat === "GPU");
   const parts = [cpu, ...gpus].filter(Boolean).map(c => ({ ...c, p: powerOf(c.name) }));
   const need = k => POWER_OTHER + parts.reduce((t, c) => t + (c.p ? c.p[k] : 0), 0);
-  const ocWanted = /overclock|\boc\b/i.test([...(j.objectives || []), ...(j.tasks || []).map(t => t.text), ...(j.hidden || []).map(h => h.task || h)].join(" "));
-  return { psu: psu.name, psuW: P ? P.w : null, cpu, gpus, parts, stock: need("w"), oc: need("oc"), ocWanted, unknown: parts.filter(c => !c.p).map(c => c.name) };
+  // overclocked watts count only when an OBJECTIVE asks for an overclock; "I'll overclock it later" in the email → ocLater
+  const ocWanted = /\b(overclock\w*|oc)\b/i.test(jobObjectives(j).join(" ")), ocLater = !ocWanted && !!j.ocLater;
+  return { psu: psu.name, psuW: P ? P.w : null, cpu, gpus, parts, stock: need("w"), oc: need("oc"), ocWanted, ocLater, unknown: parts.filter(c => !c.p).map(c => c.name) };
 }
 function priceOf(name) {
   if (!PRICE) { PRICE = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) if (r[2] != null) PRICE.set(r[0].toLowerCase(), r[2]); }

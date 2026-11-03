@@ -154,7 +154,7 @@ function suggestSwaps(job, opts = {}) {
     // 10  Install AIO water cooling (not custom loops)
     if (/water cooling|aio|liquid cool/i.test(o) && !/custom/i.test(o)) { out.push(...aioSuggestion(job, ctx, o, cur)); handled.add("CPU Cooler"); continue; }
     // 12  overclocking
-    if (/overclock/i.test(o)) { out.push(...ocSuggestions(job, ctx, o, cur)); continue; }
+    if (/\b(overclock\w*|oc)\b/i.test(o)) { out.push(...ocSuggestions(job, ctx, o, cur)); continue; }
     // 5  Replace <part>  ·  6  Upgrade <part>
     m = ol.match(/^\W*(replace|upgrade)\s+(the\s+)?(.+)$/);
     if (m && !/\bto\b\s+\d/.test(ol)) {
@@ -211,6 +211,12 @@ function suggestSwaps(job, opts = {}) {
   }
   // 3DMark score of N (0.12.0): XMP, or the cheapest set of parts that reaches it – one tick adds the whole set
   out.push(...benchSuggestions(job, ctx));
+  // 20b the customer plans to overclock LATER (email body, not an objective): a PSU that carries the overclocked PC –
+  //     only inside the budget (it's not something the job asks for)
+  if (pc && pc.psuW != null && pc.ocLater && pc.oc > pc.psuW && !(pc.stock > pc.psuW)) {
+    const curPsu = cur("PSU").pop(), o = pickOptions(job, ctx, shopParts("PSU").filter(p => (powerOf(p.name)?.w || 0) >= pc.oc), { replace: curPsu?.name || "" }).filter(x => !x.over);
+    add("fix:oclater", `The customer plans to overclock – overclocked the PC needs ~${pc.oc} W, the PSU has ${pc.psuW} W (optional, in budget)`, o, { cat: "PSU", old: curPsu?.name || "" });
+  }
   // 21  a customer's part that clashes with a planned swap → the cheapest part that fits (never worse)
   for (const cl of jobCompatIssues(job)) {
     const p = cl.part; if (p.src !== "stats" || p.req) continue;
@@ -248,12 +254,12 @@ function similarTo(a, b) {
   }
 }
 // no CPU fits the current socket: the cheapest CPU + motherboard pair that fits the rest of the PC
-function cpuWithBoard(job, ctx, cands, curP, cur) {
+function cpuWithBoard(job, ctx, cands, curP, cur, boardOk = () => true) {
   const board = cur("Motherboard").pop(), pairs = [];
   for (const sock of new Set(cands.map(p => cInfo(p).s))) {
     const cpu = cands.filter(p => cInfo(p).s === sock).sort((a, b) => a.price - b.price)[0]; if (!cpu) continue;
     const sw = [{ cat: "CPU", old: curP?.name || "", new: cpu.name }];
-    const nb = shopParts("Motherboard").filter(p => cInfo(p).s === sock).filter(p => fitsBuild(withSwaps(job, sw), p, board?.name)).sort((a, b) => a.price - b.price)[0];
+    const nb = shopParts("Motherboard").filter(p => cInfo(p).s === sock && boardOk(p)).filter(p => fitsBuild(withSwaps(job, sw), p, board?.name)).sort((a, b) => a.price - b.price)[0];
     if (nb) pairs.push({ cpu, nb, total: cpu.price + nb.price });
   }
   return pairs.sort((a, b) => a.total - b.total).slice(0, 2).map((x, i) => {
@@ -271,15 +277,40 @@ function aioSuggestion(job, ctx, reason, cur) {
   const opts = pickOptions(job, ctx, c, { replace: old?.name || "" });
   return opts.length ? [{ key: "obj:aio", reason, options: opts, cat: "CPU Cooler", old: old?.name || "" }] : [];
 }
+// an overclock objective: the parts it can't be done with (locked CPU, board that can't overclock, a GPU whose maximum
+// clock is under the target) → the cheapest that can; a CPU target above its overclock base → optional CPUs that reach
+// it at their overclock base (in budget only). Favourite brand first, as everywhere (pickOptions).
 function ocSuggestions(job, ctx, reason, cur) {
-  const out = [], cpu = cur("CPU").pop(), board = cur("Motherboard").pop();
-  if (cpu && cInfo(cpu).oc === "0") {
-    const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, cInfo(cpu).s) && rk(p) >= rk(cpu));
-    const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }); if (o.length) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: o, cat: "CPU", old: cpu.name });
-  }
-  if (board && cInfo(board).oc === "0") {
-    const bc = cInfo(board), c = shopParts("Motherboard").filter(p => cInfo(p).oc === "1" && cInfo(p).s === bc.s && cInfo(p).f === bc.f);
-    const o = pickOptions(job, ctx, c, { replace: board.name }); if (o.length) out.push({ key: "obj:oc-board", reason: reason + " – the motherboard can't overclock", options: o, cat: "Motherboard", old: board.name });
+  const out = [], t = ocTargets({ objectives: [reason] })[0] || { part: "CPU", mhz: null }, cpu = cur("CPU").pop(), board = cur("Motherboard").pop();
+  if (t.part === "CPU") {
+    const reach = p => t.mhz == null || (ocOf(p.name)?.ocMhz || 0) >= t.mhz;
+    if (cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) {
+      const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && sockOk(cInfo(p).s, cInfo(cpu).s) && rk(p) >= rk(cpu) && reach(p));
+      const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }); if (o.length) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: o, cat: "CPU", old: cpu.name });
+      else { const w = cpuWithBoard(job, ctx, shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && rk(p) >= rk(cpu) && reach(p)), cpu, cur, p => cInfo(p).oc === "1"); if (w.length) out.push({ key: "obj:oc-cpu", reason: reason + (cInfo(board || {}).oc === "0" ? " – the CPU is locked and the motherboard can't overclock: an unlocked CPU + a board that can" : " – the CPU is locked: an unlocked CPU with the motherboard it needs"), options: w, cat: "CPU", old: cpu.name }); }
+    } else if (cpu && t.mhz && t.mhz > (ocOf(cpu.name)?.ocMhz || 0) && t.mhz > (ocOf(cpu.name)?.mhz || 0)) {
+      const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, cInfo(cpu).s) && reach(p) && rk(p) >= rk(cpu));
+      const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }).filter(x => !x.over);
+      if (o.length) out.push({ key: "obj:oc-cpu-easier", reason: `${reason} – optional: ${t.mhz.toLocaleString()} MHz is above this CPU's overclock base (${ocOf(cpu.name).ocMhz.toLocaleString()} MHz); these reach it at theirs`, options: o, cat: "CPU", old: cpu.name });
+    }
+    if (board && cInfo(board).oc === "0" && !out.some(x => x.options.some(o => (o.extras || []).some(e => e.cat === "Motherboard")))) {
+      const bc = cInfo(board), c = shopParts("Motherboard").filter(p => cInfo(p).oc === "1" && sockOk(cInfo(p).s, bc.s) && cInfo(p).f === bc.f);
+      const o = pickOptions(job, ctx, c, { replace: board.name }); if (o.length) out.push({ key: "obj:oc-board", reason: reason + " – the motherboard can't overclock", options: o, cat: "Motherboard", old: board.name });
+    }
+  } else if (t.part === "GPU" && t.mhz) {
+    const gpu = cur("GPU")[0], d = gpu && ocOf(gpu.name), max = g => t.mem ? g.maxMem : g.maxCore;
+    if (gpu && d && t.mhz > max(d)) {
+      const c = shopParts("GPU").filter(p => { const x = ocOf(p.name); return x && max(x) >= t.mhz; });
+      const o = pickOptions(job, ctx, c, { replace: gpu.name, base: gpu });
+      out.push({ key: "obj:oc-gpu", reason: `${reason} – this GPU's maximum ${t.mem ? "memory" : "core"} clock is ${max(d).toLocaleString()} MHz`, options: o, cat: "GPU", old: gpu.name, hint: o.length ? "" : "No unlocked GPU reaches that clock." });
+    }
+  } else if (t.part === "RAM" && t.mhz) {
+    const ram = cur("RAM"), ds = ram.map(r => ocOf(r.name)).filter(Boolean);
+    if (ds.length && t.mhz > Math.min(...ds.map(d => d.ocMhz))) {
+      const r0 = ram[0], c = shopParts("RAM").filter(p => +cInfo(p).mhz >= t.mhz && +cInfo(p).gb >= +(cInfo(r0).gb || 0));
+      const o = pickOptions(job, ctx, c, { replace: r0.name, count: ram.length }).filter(x => !x.over);
+      if (o.length) out.push({ key: "obj:oc-ram", reason: `${reason} – optional: RAM that runs at ${t.mhz.toLocaleString()} MHz with XMP (replaces ${ram.length} stick${ram.length > 1 ? "s" : ""})`, options: o, cat: "RAM", old: r0.name });
+    }
   }
   return out;
 }
