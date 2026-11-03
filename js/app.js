@@ -533,12 +533,12 @@ function suggestInput() {
   const components = $("#fComps") ? parseCompText($("#fComps").value) : d.components;
   if (fj) {
     const hid = (fj.tasks || []).filter(t => t.src === "hid").map(t => t.text);
-    return { job: { ...fj, components }, opts: { brands: fj.brands || [], broken: hid.map(t => (t.match(/replace the (.+?) – customer hints/i) || [])[1]).filter(Boolean), rgb: hid.some(t => /rgb/i.test(t)), waterCooling: hid.some(t => /water cooling/i.test(t)) } };
+    return { job: { ...fj, components }, opts: { brands: fj.brands || [], broken: hid.map(t => (t.match(/replace the (.+?) – customer hints/i) || [])[1]).filter(Boolean), rgb: hid.some(t => /^add rgb/i.test(t)), waterCooling: hid.some(t => /^water cooling requested/i.test(t)) } };
   }
   const hid = [...document.querySelectorAll("#fHidden input:checked")].map(c => d.hidden[c.dataset.h]).filter(Boolean);
   const budget = $("#fBudget") && $("#fBudget").value !== "" ? +$("#fBudget").value : d.budget;
   return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid, ocLater: ocLaterOf(d) },
-    opts: { brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /rgb/i.test(h.task)), waterCooling: hid.some(h => /water cooling/i.test(h.task)) } };
+    opts: { brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /^add rgb/i.test(h.task)), waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)) } };
 }
 function renderSuggestions() {
   const box = $("#fSugg"); if (!box || !rev) return;
