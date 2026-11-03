@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.10.0** (dev: `dev-0.11.0` – suggested swaps, Status tiles, level % in part reports – waiting for the go-ahead) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.11.0** (no dev branch open; backup of 0.10.0: `backup-0.10.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -66,6 +66,7 @@ _None open. The last five are done in `dev-0.10.0`._
   - unclear PC Stats model numbers shown as read, for checking
   - 💡 suggested swaps in the new-job / PC Stats windows (0.11.0)
   - STATUS row: 💰 ⚡ ⚠️ tiles, colours, details on hover / keyboard focus (0.11.0)
+  - slimmer top bar: screen box (live preview = change screen, red ■ = stop), Capture job + ＋ manual job, icon-only ⚙️ (0.11.0)
 - Add anything 1.0 brings. New screenshots where they help (compressed WebP, loaded only when the window opens).
   Check every button name against the app.
 
