@@ -30,7 +30,7 @@ _None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
 
 ## Bigger updates (waiting for the go-ahead)
 
-### 3DMark score: estimate + suggestions for "3DMark score of N" (not planned for a version yet)
+### 3DMark score: estimate, Status tile + suggestions for "3DMark score of N" (agreed – waiting for the go-ahead)
 Formula found in Jacob Klein's PCBS HTML Calculator (v1.15.3); all inputs are columns of our parts workbook
 (CPUs: CoreClockMultiplier, MemChannelsMultiplier, MemClockMultiplier, FinalAdjustment, Frequency,
 Max Memory Channels, Default Memory Speed; GPUs: Single / Double GPU Graphics Score (+ GT1/GT2 values for OC);
@@ -42,9 +42,17 @@ Motherboards: RAM Speed Steps). Our 126 CPUs, 316 GPUs and 145 motherboards all 
 - RAM MHz: XMP off = the CPU's default memory speed; XMP on = highest motherboard step ≤ the stick's MHz.
 - Checked against the game: Azuka 4327 and DullGirl 4730 match the PC Stats "Benchmark" exactly (XMP off).
   EfficientR (broken PSU + RAM) shows 2859, the formula gives 2892 – broken parts probably change it.
-Plan (to agree with Mariusz): show the estimate (XMP off / on), "Turn on XMP" when that is enough, else the
-cheapest upgrades that reach the score (RAM stick for dual channel, GPU, CPU, CPU + GPU, board + CPU…), in budget.
-Overclocking formulas are there too (GPU GT1/GT2, CPU MHz) – maybe later.
+Agreed with Mariusz (2026-11-03):
+- Status row order: 💰 Budget, ⚡ Power, 3DMark, ⚠️ Fit. The 3DMark tile only shows when an objective asks for a
+  3DMark score AND the parts it needs are known (CPU, GPU, RAM, motherboard). Popup: score XMP off / on vs target.
+- Tile icon: an original orange-on-white benchmark icon (not a copy of the 3DMark logo).
+- Customer PCs always come with XMP off; whether XMP changes the score depends on the RAM speed and the
+  motherboard's speed steps – show both numbers, suggest "Turn on XMP" when that alone is enough.
+- Suggestions: cheapest upgrades that reach the score, in budget – RAM stick for dual channel, GPU, two GPUs,
+  CPU, CPU + GPU, motherboard + CPU. Unlocked, fitting, PSU checked. Respect a favourite brand.
+- A 3DMark suggestion often changes several parts: make it obvious that ticking it adds ALL its parts
+  (one box per combination, the parts listed under it, "adds N parts", new score shown).
+- Overclocking formulas are there too (GPU GT1/GT2, CPU MHz) – later, not in this update.
 
 ### Story job list: compare with the report sheet (planned for 1.0, the final build)
 - Small updates already add story jobs seen on screenshots (see the rules at the top).
