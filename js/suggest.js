@@ -209,6 +209,8 @@ function suggestSwaps(job, opts = {}) {
     const need = pc.ocWanted ? pc.oc : pc.stock, curPsu = cur("PSU").pop();
     add("fix:power", `PSU too weak – needs ~${need} W`, pickOptions(job, ctx, shopParts("PSU").filter(p => (powerOf(p.name)?.w || 0) >= need), { replace: curPsu?.name || "" }), { cat: "PSU", old: curPsu?.name || "" });
   }
+  // 3DMark score of N (0.12.0): XMP, or the cheapest set of parts that reaches it – one tick adds the whole set
+  out.push(...benchSuggestions(job, ctx));
   // 21  a customer's part that clashes with a planned swap → the cheapest part that fits (never worse)
   for (const cl of jobCompatIssues(job)) {
     const p = cl.part; if (p.src !== "stats" || p.req) continue;
@@ -281,4 +283,94 @@ function ocSuggestions(job, ctx, reason, cur) {
   }
   return out;
 }
-if (typeof module !== "undefined") module.exports = { suggestSwaps };
+// ---------- 3DMark score ----------
+// does a set of new parts fit the planned PC (with each other too)? – compatibility incl. slot counts
+function planFits(job, swaps) {
+  const j2 = withSwaps(job, swaps), b = compatBuild(j2), mine = p => p && p.src === "swap" && /^sg\d/.test(p.swapId || "");
+  return !compatIssues(j2, b).some(i => mine(i.part) || mine(i.other));
+}
+const BENCH_LABEL = { "RAM": "More RAM sticks (more channels)", "GPU": "New GPU", "GPU + RAM": "New GPU + RAM sticks", "2 GPUs": "Two new GPUs", "2 GPUs + RAM": "Two new GPUs + RAM sticks",
+  "2nd GPU": "Second GPU (same card)", "2nd GPU + RAM": "Second GPU + RAM sticks", "CPU": "New CPU", "CPU + RAM": "New CPU + RAM sticks", "CPU + GPU": "New CPU + GPU",
+  "CPU + GPU + RAM": "New CPU + GPU + RAM sticks", "Motherboard + CPU": "New motherboard + CPU", "Motherboard + CPU + RAM": "New motherboard + CPU + RAM sticks" };
+const XMP_TASK = "Turn on XMP in the BIOS (RAM settings) – needed for the 3DMark score";
+function benchSuggestions(job, ctx) {
+  const target = benchTarget(job); if (!target) return [];
+  const build = plannedBuild(job), now = benchScore(build), n = x => x.toLocaleString();
+  const reason = `3DMark score of ${n(target)}`;
+  if (now.missing.length) return [{ key: "bench", reason, options: [], hint: `capture PC Stats to get a suggestion (needs ${now.missing.join(", ")})` }];
+  if (now.off >= target) return [];
+  const why = `${reason} – now ${n(now.off)} (XMP off) / ${n(now.on)} (XMP on)`;
+  const set = (label, tag, swaps, sc, extras = []) => {
+    const parts = swaps.reduce((t, s) => t + (s.price || 0), 0), total = parts + extras.reduce((t, e) => t + (e.price || 0), 0);
+    return { multi: true, name: label, cat: "3DMark", tag, swaps, extras, tasks: sc.off >= target ? [] : [XMP_TASK], score: sc.off >= target ? sc.off : sc.on, xmp: sc.off < target,
+      total, price: total, count: 1, lvl: Math.max(0, ...swaps.map(s => s.lvl || 0)), over: !priceOk({ price: total }, ctx.left), nParts: swaps.length + extras.filter(e => e.name).length };
+  };
+  if (now.on >= target) return [{ key: "bench", reason: why, cat: "3DMark", options: [set("Turn on XMP – no new parts", "free", [], now)] }];
+
+  // what can change: parts an objective asks for stay
+  const locked = new Set(compatBuild(job).filter(p => p.req).map(p => p.cat));
+  const cur = c => build.filter(p => p.cat === c), cpu0 = cur("CPU")[0], mb0 = cur("Motherboard")[0], gpus0 = cur("GPU"), ram0 = cur("RAM");
+  const mbB = benchOf(mb0.name), cpuB = benchOf(cpu0.name), stick = Math.min(...ram0.map(r => +(cInfo(r).mhz || 0)).filter(Boolean)), sticks = ram0.length;
+  const nG = gpus0.length > 1 && gpus0[1].name === gpus0[0].name ? 2 : 1;
+  const score = (c, steps, gpu, k) => {   // c: CPU factors, steps: board RAM steps, gpu: graphics score, k: RAM sticks
+    const ch = Math.min(k, c.maxCh || 1), off = sysBench(cpuBench(c, ch, Math.min(c.defMem || stick, stick)), gpu), on = sysBench(cpuBench(c, ch, xmpSpeed(stick, steps)), gpu);
+    return { off, on };
+  };
+  const sw = (p, old) => ({ cat: p.cat, old: old || "", new: p.name, price: p.price, lvl: p.lvl });
+  const withB = (cat, f) => shopParts(cat).map(p => ({ p, b: benchOf(p.name) })).filter(x => x.b && (!f || f(x.p, x.b)));
+  // RAM: fill the free channels with the same stick (or the cheapest one like it)
+  let ramFill = null;
+  if (!locked.has("RAM") && sticks < (cpuB.maxCh || 1)) {
+    const r0 = ram0[0], same = shopParts("RAM").filter(sameAs(r0.name))[0] || shopParts("RAM").filter(p => +cInfo(p).mhz === stick && +cInfo(p).gb === +cInfo(r0).gb).sort((a, b) => a.price - b.price)[0];
+    if (same) ramFill = { k: (cpuB.maxCh || 1) - sticks, p: same };
+  }
+  const fillSw = () => ramFill ? Array.from({ length: ramFill.k }, () => sw(ramFill.p)) : [];
+  const cands = [];   // { type, swaps, sc, cost }
+  const push = (type, swaps, sc) => { if (sc.on >= target) cands.push({ type, swaps, sc, cost: swaps.reduce((t, s) => t + s.price, 0) }); };
+  const both = (type, swaps, c, steps, gpu) => {   // without and with the RAM channels filled
+    push(type, swaps, score(c, steps, gpu, sticks));
+    if (ramFill) push(type + " + RAM", [...swaps, ...fillSw()], score(c, steps, gpu, sticks + ramFill.k));
+  };
+  const gNow = nG === 2 ? benchOf(gpus0[0].name).two : benchOf(gpus0[0].name).one;
+  if (ramFill) push("RAM", fillSw(), score(cpuB, mbB.steps, gNow, sticks + ramFill.k));
+  const gpusNew = locked.has("GPU") ? [] : withB("GPU");
+  const gpuSw = g => nG === 2 ? [sw(g, gpus0[0].name), sw(g, gpus0[1].name)] : [sw(g, gpus0[0].name)];
+  for (const { p: g, b } of gpusNew) {
+    both("GPU", gpuSw(g), cpuB, mbB.steps, nG === 2 ? b.two : b.one);
+    if (nG === 1 && b.two && cInfo(g).m) both("2 GPUs", [sw(g, gpus0[0].name), sw(g)], cpuB, mbB.steps, b.two);
+  }
+  if (nG === 1 && !locked.has("GPU") && benchOf(gpus0[0].name).two && cInfo(gpus0[0]).m) { const same = shopParts("GPU").filter(sameAs(gpus0[0].name))[0]; if (same) both("2nd GPU", [sw(same)], cpuB, mbB.steps, benchOf(same.name).two); }
+  const cpus = locked.has("CPU") ? [] : withB("CPU");
+  for (const { p: c, b } of cpus) if (sockOk(cInfo(mb0).s, cInfo(c).s)) {
+    both("CPU", [sw(c, cpu0.name)], b, mbB.steps, gNow);
+    for (const { p: g, b: gb } of gpusNew) both("CPU + GPU", [sw(c, cpu0.name), ...gpuSw(g)], b, mbB.steps, nG === 2 ? gb.two : gb.one);
+  }
+  if (!locked.has("CPU") && !locked.has("Motherboard")) for (const { p: m, b: mbN } of withB("Motherboard")) for (const { p: c, b } of cpus)
+    if (sockOk(cInfo(m).s, cInfo(c).s)) both("Motherboard + CPU", [sw(m, mb0.name), sw(c, cpu0.name)], b, mbN.steps, gNow);
+  cands.sort((a, b) => a.cost - b.cost || b.sc.on - a.sc.on);
+  // cheapest that fits (+ the PSU it needs) for each kind of change; inside the budget when possible
+  const best = new Map(), brandBest = { o: null }; let checks = 0;
+  const isBrand = c => ctx.brands.length && c.swaps.filter(s => s.cat !== "RAM").every(s => { const ix = INDEX.find(x => x.name === s.new); return ix && ctx.brands.some(b => brandMatch(ix, b)); });
+  for (const c of cands) {
+    const have = best.get(c.type);
+    if (have && !have.over && (!isBrand(c) || brandBest.o)) continue;
+    if (++checks > 400) break;
+    if (!planFits(job, c.swaps)) continue;
+    const psu = psuFor(job, c.swaps.map(({ cat, old, new: nw }) => ({ cat, old, new: nw })));
+    if (psu && !psu.name) continue;
+    const o = set(BENCH_LABEL[c.type] || c.type, "", c.swaps, c.sc, psu ? [psu] : []);
+    if (isBrand(c) && !brandBest.o && !o.over) brandBest.o = o;
+    if (!have || (have.over && !o.over)) best.set(c.type, o);
+    if ([...best.values()].filter(x => !x.over).length >= 5 && brandBest.o) break;
+  }
+  let options = [...best.values()].sort((a, b) => a.over - b.over || a.total - b.total);
+  // a set that only adds parts to a cheaper set already shown is no real choice ("2nd GPU + RAM" after "2nd GPU")
+  const key = o => o.swaps.map(x => x.cat + ">" + x.new);
+  options = options.filter(o => !options.some(x => x !== o && x.total <= o.total && !x.over && key(x).length < key(o).length && key(x).every(k => key(o).includes(k))));
+  options = options.filter((o, i) => !o.over || !options.some(x => !x.over)).slice(0, 4);
+  options.forEach((o, i) => o.tag = i === 0 ? "cheapest" : "");
+  if (brandBest.o && !options.some(o => o.swaps.map(s => s.new).join() === brandBest.o.swaps.map(s => s.new).join())) { brandBest.o.tag = `★ ${ctx.brands[0]}`; options.push(brandBest.o); }
+  else if (brandBest.o) { const o = options.find(o => o.swaps.map(s => s.new).join() === brandBest.o.swaps.map(s => s.new).join()); o.tag = (o.tag ? o.tag + " · " : "") + `★ ${ctx.brands[0]}`; }
+  return [{ key: "bench", reason: why, cat: "3DMark", options, hint: options.length ? "" : "No unlocked parts reach this score – check the budget or your career level." }];
+}
+if (typeof module !== "undefined") module.exports = { suggestSwaps, benchSuggestions };

@@ -55,16 +55,32 @@ function powerState(j) {
   const use = pc.ocWanted ? pc.oc : pc.stock;
   return use > pc.psuW ? "bad" : use > pc.psuW * 0.9 || (!pc.ocWanted && pc.oc > pc.psuW) ? "warn" : "ok";
 }
+// 3DMark: the planned PC's score (XMP off – how customer PCs come – and on) against the objective's target
+const BENCH_ICON = `<svg class="bicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 17a8.5 8.5 0 0 1 17 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".35"/><path d="M3.5 17a8.5 8.5 0 0 1 12.7-7.4" fill="none" stroke="#ff8a1f" stroke-width="2.6" stroke-linecap="round"/><path d="M12 17l5.2-6.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="2.1" fill="#fff"/><text x="12" y="23.6" text-anchor="middle" font-size="5.6" font-weight="800" fill="#ffb066" font-family="Segoe UI,system-ui,sans-serif">3D</text></svg>`;
+function benchHtml(bc) {
+  const n = x => x.toLocaleString(), t = bc.target, pct = Math.min(100, bc.off / t * 100), pctOn = Math.min(100, bc.on / t * 100);
+  const verdict = bc.state === "ok" ? `<span class="okc">✓ Reaches the target${bc.off >= t ? " as it is" : " with XMP on (task ticked off)"}.</span>`
+    : bc.state === "warn" ? `<b>Turn on XMP</b> (BIOS → RAM) – that alone reaches it.`
+    : `<span class="badc">${n(t - bc.on)} short even with XMP</span> – see the suggested swaps.`;
+  return `<div class="bench st-${bc.state}">
+    <div class="brow"><span>3DMark score</span><b>${n(bc.off)} / ${n(t)}</b></div>
+    <div class="bar"><i class="on" style="width:${pctOn}%"></i><i style="width:${pct}%"></i></div>
+    <small>XMP off (how customer PCs come): <b>${n(bc.off)}</b> · XMP on: <b>${n(bc.on)}</b>${bc.mhzOn === bc.mhzOff ? " (no difference – RAM already at its speed)" : ""}</small>
+    <small>CPU ${n(bc.cpuOff)}${bc.cpuOn !== bc.cpuOff ? "→" + n(bc.cpuOn) : ""} · GPU ${n(bc.gpu)}${bc.gpus > 1 ? " (2 cards)" : ""} · RAM ${bc.sticks} stick${bc.sticks > 1 ? "s" : ""}, ${bc.channels} of ${bc.maxCh} channel${bc.maxCh > 1 ? "s" : ""}, ${bc.mhzOff}${bc.mhzOn !== bc.mhzOff ? "→" + bc.mhzOn : ""} MHz</small>
+    ${bc.mixedGpus ? `<small class="warn">Two different GPUs – only one counts.</small>` : ""}
+    <div class="bverdict">${verdict}</div></div>`;
+}
 // STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
 function statusHtml(j, { budgetHtml, budgetState, clashes }) {
-  const ps = powerState(j), pw = powerHtml(j);
+  const ps = powerState(j), pw = powerHtml(j), bc = benchCheck(j);
   const word = { off: "not active", ok: "fine", warn: "close to the limit", bad: "over the limit" };
   const tiles = [
     { k: "budget", icon: "💰", state: budgetState, label: "Budget", body: budgetHtml || `<div class="stoff">No budget for this job.</div>` },
     { k: "power", icon: "⚡", state: ps, label: "Power", body: pw || `<div class="stoff">⚡ Power check starts when a PSU is planned (PC Stats or a part swap).</div>` },
+    ...(bc && !bc.missing.length ? [{ k: "bench", icon: BENCH_ICON, state: bc.state, label: "3DMark score", word: `${bc.off.toLocaleString()} of ${bc.target.toLocaleString()}${bc.state === "warn" ? ", enough with XMP on" : ""}`, body: benchHtml(bc) }] : []),
     { k: "fit", icon: "⚠️", state: clashes.length ? "bad" : "ok", label: "Parts fit together", body: clashes.length ? compatHtml(clashes) : `<div class="stoff ok">✓ All planned parts fit together.</div>` },
   ];
-  return `<div class="sec statussec"><h4>Status</h4><div class="stiles">${tiles.map(t => `<button class="stile st-${t.state}" data-stile="${t.k}" aria-label="${esc(t.label)}: ${t.k === "fit" ? (clashes.length ? clashes.length + " problem" + (clashes.length > 1 ? "s" : "") : "fine") : word[t.state]}"><span aria-hidden="true">${t.icon}</span><template>${t.body}</template></button>`).join("")}</div></div>`;
+  return `<div class="sec statussec"><h4>Status</h4><div class="stiles">${tiles.map(t => `<button class="stile st-${t.state}" data-stile="${t.k}" aria-label="${esc(t.label)}: ${t.word ? esc(t.word) : t.k === "fit" ? (clashes.length ? clashes.length + " problem" + (clashes.length > 1 ? "s" : "") : "fine") : word[t.state]}"><span aria-hidden="true">${t.icon}</span><template>${t.body}</template></button>`).join("")}</div></div>`;
 }
 // the popup with a tile's details: shown after ~0.5 s of hover or keyboard focus, never focusable itself;
 // leaving the tile, moving with the keyboard or clicking elsewhere closes it (a click / tap on the tile opens it at once)
@@ -513,7 +529,7 @@ function renderSuggestions() {
   if (!list.length) { box.innerHTML = ""; return; }
   const money = o => o.total != null ? "$" + o.total.toLocaleString() : "";
   box.innerHTML = `<label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label>` + list.map((sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
-    ${sg.options.length ? sg.options.map((o, k) => { const pick = sg.key + "|" + o.name + "|" + o.tag; return `<label class="sopt ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
+    ${sg.options.length ? sg.options.map((o, k) => { const pick = sg.key + "|" + o.name + "|" + o.tag + "|" + (o.swaps || []).map(x => x.new).join("+"); if (o.multi) return benchOptHtml(o, i, k, pick, keep); return `<label class="sopt ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
       <span><span class="sname">${sg.old && o.swaps[0]?.old ? `<span class="old">${esc(sg.old)}</span> → ` : o.swaps[0]?.old === "" && o.cat !== "RAM" ? "<span class=\"old\">(empty slot)</span> → " : ""}<span class="new">${o.count > 1 ? o.count + " × " : ""}${esc(o.name)}</span></span>
       <small class="stag">${esc(o.tag)}${o.lvl != null ? ` · Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
       ${o.det ? `<small class="sdet">${esc(o.det)}</small>` : ""}
@@ -523,6 +539,15 @@ function renderSuggestions() {
   // one choice per suggestion
   box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; }); }));
 }
+// a 3DMark suggestion is a SET of parts: one box adds all of them (+ the XMP task when the score needs it)
+function benchOptHtml(o, i, k, pick, keep) {
+  const n = o.nParts, all = [...o.swaps.map(x => ({ ...x, name: x.new })), ...(o.extras || []).filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, name: e.name, price: e.price, why: e.why }))];
+  return `<label class="sopt multi ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
+    <span><span class="sname"><b>${esc(o.name)}</b> → score <b class="bscore">${o.score.toLocaleString()}</b></span>
+    <small class="stag">${n > 1 ? `one tick adds <b>all ${n} parts</b> below` : n ? "one tick adds the part below" : "no parts needed"}${o.tag ? " · " + esc(o.tag) : ""}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
+    ${n ? `<ul class="sset">${all.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.name)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.why ? ` <small>– ${esc(x.why)}</small>` : ""}</li>`).join("")}</ul>` : ""}
+    ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
+}
 // the ticked suggestions → part swaps (+ tasks for sticks to take out)
 function pickedSuggestions() {
   const swaps = [], tasks = [];
@@ -530,6 +555,7 @@ function pickedSuggestions() {
     const o = rev.sugg?.[+c.dataset.sg]?.options[+c.dataset.so]; if (!o) return;
     o.swaps.forEach(s => swaps.push({ id: uid(), cat: s.cat, old: s.old || "", new: s.new, done: false }));
     (o.extras || []).filter(e => e.name).forEach(e => swaps.push({ id: uid(), cat: e.cat, old: e.old || "", new: e.name, done: false }));
+    (o.tasks || []).forEach(t => { if (!tasks.some(x => x.text === t)) tasks.push({ id: uid(), text: t, src: "add", done: false }); });
     if (o.removeOld?.length) tasks.push({ id: uid(), text: `Take out ${o.removeOld.length} old RAM stick${o.removeOld.length > 1 ? "s" : ""} (${o.removeOld[0]})`, src: "add", done: false });
   });
   return { swaps, tasks };

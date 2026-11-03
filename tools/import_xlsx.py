@@ -11,6 +11,7 @@ Usage:  python tools/import_xlsx.py path/to/workbook.xlsx [--keep-reports]
 * "details": the facts shown under a part in the suggestions and on part swaps (DETAILS below):
   case board sizes / GPU length / fans, socket, RAM, cores, clock, watts, SLI/CrossFire, lighting.
 * "power" (POWER below): CPU / GPU "watts>watts when overclocked to the max", PSU "watts" – for the power check.
+* "bench" (BENCH below): 3DMark score inputs – CPU factors, GPU graphics scores, motherboard RAM speed steps.
 * "compat" (COMPAT below): what other parts must fit – "key=value;…" (sizes, sockets, slots, lengths, SLI/CrossFire).
 * Rows whose source starts with "report" (added from missing-part reports) are kept
   unless the workbook now contains the same name, so manual additions survive re-imports.
@@ -22,7 +23,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PARTS = ROOT / "data" / "parts"
-FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "compat", "source"]
+FIELDS = ["name", "level", "level_pct", "price", "spec", "dlc", "version", "jobs", "details", "power", "compat", "bench", "source"]
 
 # paid DLC with its own parts (names checked against the store pages)
 OVERCLOCKED = {"NZXT H700i - Extinction Wars", "NZXT H700i - Organ Collector", "NZXT H500 - Re-Animator", "NZXT H500 - Split"}
@@ -155,6 +156,19 @@ COMPAT = {k: with_light(v) for k, v in COMPAT.items()}
 for sh in ("WC Radiators", "WC Reservoirs", "WC Pipe Connectors"):
     COMPAT.setdefault(sh, with_light(lambda r: ""))
 
+# ---- 3DMark score inputs (formula as in Jacob Klein's PCBS HTML Calculator) ----
+# CPU "clock factor,channel factor,memory factor,adjustment,MHz,max RAM channels,default RAM MHz"
+# GPU "graphics score with one card,with two cards"    motherboard "RAM speed steps" (MHz, "|" between)
+def g(v):
+    x = s(v)
+    try: return repr(float(x)).rstrip("0").rstrip(".") if "." in x else x
+    except ValueError: return x
+BENCH = {
+    "CPUs": lambda r: ",".join(g(r.get(k)) for k in ("CoreClockMultiplier", "MemChannelsMultiplier", "MemClockMultiplier", "FinalAdjustment", "Frequency", "Max Memory Channels", "Default Memory Speed")) if s(r.get("CoreClockMultiplier")) else "",
+    "GPUs": lambda r: ",".join(g(r.get(k)) for k in ("Single GPU Graphics Score", "Double GPU Graphics Score")) if s(r.get("Single GPU Graphics Score")) else "",
+    "Motherboards": lambda r: "|".join(x.strip() for x in s(r.get("RAM Speed Steps")).split(",") if x.strip()),
+}
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__); sys.exit(1)
@@ -180,7 +194,7 @@ def main():
             sp = spec(r)
             out.setdefault(fn, []).append({
                 "name": name, "level": s(r.get("Level")), "level_pct": s(r.get("Level %")), "price": s(r.get("Price")),
-                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "compat": COMPAT.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
+                "spec": ", ".join(x for x in [sp, note] if x), "dlc": dlc, "version": sv(r.get("Steam Version")), "jobs": "no" if s(r.get("Exclude From Random Jobs")) == "Y" else "", "details": DETAILS.get(sheet, lambda r: "")(r), "power": POWER.get(sheet, lambda r: "")(r), "compat": COMPAT.get(sheet, lambda r: "")(r), "bench": BENCH.get(sheet, lambda r: "")(r), "source": f"xlsx {ver}",
             })
     for fn, rows in out.items():
         path = PARTS / f"{fn}.csv"

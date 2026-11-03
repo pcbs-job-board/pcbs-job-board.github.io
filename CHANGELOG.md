@@ -3,6 +3,11 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.12.0
+- 3DMark tile in the Status row: the PC's score with XMP off (as customer PCs come) and on, against the objective's target.
+- Suggested part sets for "3DMark score of N": XMP alone, more RAM sticks, GPU, second GPU, CPU, CPU + GPU, motherboard + CPU – cheapest first, in budget, favourite brand marked; one tick adds the whole set (and the XMP task when needed).
+- Score formula from Jacob Klein's PCBS calculator – matches the game's PC Stats benchmark.
+
 ## 0.11.1
 - Suggested swaps now appear right after a PC Stats capture in the new-job window.
 - Re-capturing PC Stats from a job card adds to the parts read before instead of doubling them.

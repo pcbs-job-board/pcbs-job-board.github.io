@@ -392,6 +392,25 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .stile.st-bad{background:#6a1f1f;border-color:var(--bad);box-shadow:0 0 8px #ef535040}
 .stile:hover,.stile:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .stip{position:fixed;z-index:120;overflow:hidden;background:#0f131a;border:1px solid var(--accent);border-radius:9px;padding:6px;box-shadow:0 10px 30px #000a;font-size:12.5px;pointer-events:none}
-.stip .budget,.stip .power,.stip .compat{margin:0}
+.stip .budget,.stip .power,.stip .compat,.stip .bench{margin:0}
+/* 3DMark tile + its details */
+.stile .bicon{width:22px;height:22px;display:block}
+.bench{margin:4px 0 6px;padding:6px 9px 6px;border-radius:7px;background:#1f1a12;border:1px solid #6b4a14;font-size:12px;display:flex;flex-direction:column;gap:2px}
+.bench .brow{display:flex;justify-content:space-between;align-items:baseline;color:#ffc58a;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.bench .brow b{font-size:14px;color:#ffe2c4;letter-spacing:0}
+.bench .bar{position:relative;height:6px;border-radius:3px;background:#0e1218;margin:3px 0;overflow:hidden}
+.bench .bar i{position:absolute;left:0;top:0;bottom:0;background:#ff8a1f}.bench .bar i.on{background:#ff8a1f55}
+.bench small{color:var(--muted);line-height:1.4}.bench small b{color:var(--text)}.bench .warn{color:var(--warn)}
+.bench .bverdict{margin-top:2px;font-size:12.5px}.bench .okc{color:#9fdcb6}.bench .badc{color:#ff8a87;font-weight:700}
+.bench.st-ok{background:#12291b;border-color:#2e6b45}.bench.st-ok .bar i{background:var(--good)}.bench.st-ok .bar i.on{background:#3ccf7a55}
+.bench.st-bad{background:#2c1416;border-color:#7a2a2a}
 .stip .stoff{color:var(--muted);padding:6px 8px}.stip .stoff.ok{color:#9fdcb6}
 .stip.cut::after{content:"… more – the swap rows with an amber border are the ones that don't fit";position:absolute;left:0;right:0;bottom:0;padding:14px 10px 6px;font-size:11px;color:#ffcf8a;background:linear-gradient(transparent,#0f131a 45%)}
+
+/* 3DMark suggestion = a set of parts added together */
+.sopt.multi .sset{list-style:none;margin:3px 0 2px;padding:4px 0 4px 8px;border-left:3px solid #ff8a1f;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.sopt.multi .sset .scat{display:inline-block;min-width:74px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.sopt.multi .sset small{color:var(--muted)}
+.sopt.multi .bscore{color:#ffb066}
+.sopt.multi .sset li{display:block;line-height:1.4}.sopt.multi .sset li small{display:inline;font-size:11.5px}
+.stile .bicon{width:25px;height:25px}
