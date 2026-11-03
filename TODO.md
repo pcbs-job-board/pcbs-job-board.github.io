@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.10.0** (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.10.0** (dev: `dev-0.11.0` – suggested swaps, waiting for the go-ahead) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -87,6 +87,7 @@ _None open. The last five are done in `dev-0.10.0`._
   - compatibility: fitting parts first in the suggestions, warning box under part swaps, swap order decides
     who wins (drag ⠿ / Alt + ↑ ↓), parts named in the objectives win over all
   - unclear PC Stats model numbers shown as read, for checking
+  - 💡 suggested swaps in the new-job / PC Stats windows (0.11.0)
 - Add anything 1.0 brings. New screenshots where they help (compressed WebP, loaded only when the window opens).
   Check every button name against the app.
 
