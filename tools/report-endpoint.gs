@@ -25,7 +25,7 @@
 const MAX_PER_HOUR = 40;               // simple flood protection for the public form
 const KINDS = {
   story: { sheet: "Story jobs", title: "Story Quest Report", cols: ["Report #", "Received", "Sender email", "Subject", "Signed name", "Details", "App version"] },
-  part: { sheet: "Missing parts", title: "Missing Part Report", cols: ["Report #", "Received", "Part name", "Category", "Content", "Level", "Price", "Notes", "App version"] },
+  part: { sheet: "Missing parts", title: "Missing Part Report", cols: ["Report #", "Received", "Part name", "Category", "Content", "Level", "Price", "Notes", "App version", "Level %"] },
 };
 
 function doPost(e) {
@@ -46,16 +46,18 @@ function doPost(e) {
       const ss = reportBook();
       let sh = ss.getSheetByName(kind.sheet);
       if (!sh) { sh = ss.insertSheet(kind.sheet); sh.appendRow(kind.cols); sh.setFrozenRows(1); }
+      // a sheet made by an older version of this script: add the new heading(s) at the end
+      else if (sh.getLastColumn() < kind.cols.length) sh.getRange(1, 1, 1, kind.cols.length).setValues([kind.cols]);
       const cut = v => String(v == null ? "" : v).slice(0, 5000);
       const row = d.kind === "story"
         ? [number, new Date(), cut(d.email), cut(d.subject), cut(d.name), cut(d.details), cut(d.version)]
-        : [number, new Date(), cut(d.name), cut(d.cat), cut(d.dlc), cut(d.level), cut(d.price), cut(d.notes), cut(d.version)];
+        : [number, new Date(), cut(d.name), cut(d.cat), cut(d.dlc), cut(d.level), cut(d.price), cut(d.notes), cut(d.version), cut(d.pct)];   // Level % last – older sheets keep their columns
       sh.appendRow(row);
     } finally { lock.releaseLock(); }
 
     const body = d.kind === "story"
       ? `Sender's email: ${d.email || "?"}\nSubject: ${d.subject || "?"}\nSigned: ${d.name || "?"}\n\n${d.details || ""}\n\n(PCBS Job Board ${d.version || ""})`
-      : `Part: ${d.name || "?"}\nCategory: ${d.cat || "?"}\nContent: ${d.dlc || "?"}\nLevel: ${d.level || "?"}\nPrice: ${d.price || "?"}\nNotes: ${d.notes || "-"}\n\n(PCBS Job Board ${d.version || ""})`;
+      : `Part: ${d.name || "?"}\nCategory: ${d.cat || "?"}\nContent: ${d.dlc || "?"}\nLevel: ${d.level || "?"}${d.pct ? " (" + d.pct + "%)" : ""}\nPrice: ${d.price || "?"}\nNotes: ${d.notes || "-"}\n\n(PCBS Job Board ${d.version || ""})`;
     MailApp.sendEmail(Session.getEffectiveUser().getEmail(), `${kind.title} #${number}`, body);
     return reply({ ok: true, number });
   } catch (err) {

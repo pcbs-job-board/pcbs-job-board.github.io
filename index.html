@@ -133,7 +133,7 @@
   <div class="dlg-b form">
     <label>Exact part name (as shown in the game)</label><input id="rName" placeholder="e.g. Corsair RM850x">
     <div class="grid2"><div><label>Category</label><select id="rCat"><option value="">— choose —</option><option>CPU</option><option>CPU Cooler</option><option>Motherboard</option><option>RAM</option><option>GPU</option><option>Storage</option><option>PSU</option><option>Case</option><option>Case Fan</option><option>Cables</option><option>Water Cooling</option><option>Other</option></select></div><div><label>From</label><select id="rDlc"></select></div></div>
-    <div class="grid2"><div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1"></div><div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0"></div></div>
+    <div class="grid3"><div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1" max="99"></div><div><label>Level % (if known)</label><input id="rPct" type="number" min="0" max="100" placeholder="e.g. 40" title="How far into that level the part unlocks – the in-game shop shows it as a bar under the level"></div><div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0"></div></div>
     <label>Notes</label><textarea id="rNotes" rows="3" placeholder="Where did you see it? Shop, PC Bay, customer PC…"></textarea>
     <p class="hint" id="rRepoHint"></p>
     <div class="btnrow"><button class="primary" id="rDirect">📨 Send report</button><button class="primary" id="rSend">Open report on GitHub</button><button id="rCopy">Copy report</button></div>

@@ -49,6 +49,46 @@ function powerHtml(j) {
     <div class="bar"><i style="width:${pct}%"></i></div>
     <small>${what ? what + " + " : ""}~${POWER_OTHER} W for the rest${pc.unknown.length ? ` · <span class="warn">${pc.unknown.length} part${pc.unknown.length > 1 ? "s" : ""} without watts</span>` : ""}${over ? ` · needs a PSU of at least <b>${w(Math.ceil(use / 50) * 50)}</b>` : ""}${ocOver ? ` · <span class="warn">too weak when overclocked (~${w(pc.oc)})</span>` : !pc.ocWanted && pc.oc > pc.stock ? ` · overclocked ~${w(pc.oc)}` : ""}</small></div>`;
 }
+// ⚡ state for the Status tile: off (no PSU / watts unknown) · ok · warn (over 90 % or too weak overclocked) · bad
+function powerState(j) {
+  const pc = powerCheck(j); if (!pc || pc.psuW == null) return "off";
+  const use = pc.ocWanted ? pc.oc : pc.stock;
+  return use > pc.psuW ? "bad" : use > pc.psuW * 0.9 || (!pc.ocWanted && pc.oc > pc.psuW) ? "warn" : "ok";
+}
+// STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
+function statusHtml(j, { budgetHtml, budgetState, clashes }) {
+  const ps = powerState(j), pw = powerHtml(j);
+  const word = { off: "not active", ok: "fine", warn: "close to the limit", bad: "over the limit" };
+  const tiles = [
+    { k: "budget", icon: "💰", state: budgetState, label: "Budget", body: budgetHtml || `<div class="stoff">No budget for this job.</div>` },
+    { k: "power", icon: "⚡", state: ps, label: "Power", body: pw || `<div class="stoff">⚡ Power check starts when a PSU is planned (PC Stats or a part swap).</div>` },
+    { k: "fit", icon: "⚠️", state: clashes.length ? "bad" : "ok", label: "Parts fit together", body: clashes.length ? compatHtml(clashes) : `<div class="stoff ok">✓ All planned parts fit together.</div>` },
+  ];
+  return `<div class="sec statussec"><h4>Status</h4><div class="stiles">${tiles.map(t => `<button class="stile st-${t.state}" data-stile="${t.k}" aria-label="${esc(t.label)}: ${t.k === "fit" ? (clashes.length ? clashes.length + " problem" + (clashes.length > 1 ? "s" : "") : "fine") : word[t.state]}"><span aria-hidden="true">${t.icon}</span><template>${t.body}</template></button>`).join("")}</div></div>`;
+}
+// the popup with a tile's details: shown after ~0.5 s of hover or keyboard focus, never focusable itself;
+// leaving the tile, moving with the keyboard or clicking elsewhere closes it (a click / tap on the tile opens it at once)
+const stip = Object.assign(document.createElement("div"), { id: "stip", className: "stip", role: "tooltip", hidden: true });
+document.body.append(stip);
+let stipTimer = null, stipFor = null;
+function stipShow(tile) {
+  clearTimeout(stipTimer); stipFor = tile;
+  stip.innerHTML = tile.querySelector("template").innerHTML; stip.hidden = false; tile.setAttribute("aria-describedby", "stip");
+  const r = tile.getBoundingClientRect(), w = Math.min(340, innerWidth - 16); stip.style.width = w + "px";
+  const h = stip.offsetHeight, below = r.bottom + 6 + h <= innerHeight - 8 || r.top - 6 - h < 8;
+  stip.style.left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 8)) + "px";
+  stip.style.top = (below ? r.bottom + 6 : r.top - 6 - h) + "px";
+}
+function stipHide() { clearTimeout(stipTimer); if (stipFor) stipFor.removeAttribute("aria-describedby"); stipFor = null; stip.hidden = true; }
+const stipLater = tile => { clearTimeout(stipTimer); stipTimer = setTimeout(() => stipShow(tile), 500); };
+document.addEventListener("mouseover", e => { const t = e.target.closest?.(".stile"); if (t && t !== stipFor) stipLater(t); });
+document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
+document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile"); if (t) stipLater(t); else stipHide(); });
+document.addEventListener("focusout", e => { if (e.target.closest?.(".stile")) stipHide(); });
+document.addEventListener("keydown", () => { if (!stip.hidden || stipTimer) stipHide(); }, true);
+document.addEventListener("click", e => { const t = e.target.closest?.(".stile"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
+addEventListener("scroll", stipHide, true); addEventListener("resize", stipHide);
+
 // 🔧 parts that don't fit together – only shown when there is a clash with a planned swap / required part
 function compatHtml(clashes) {
   if (!clashes.length) return "";
@@ -63,6 +103,7 @@ function moveSwap(j, id, to) {
   const [s] = j.swaps.splice(i, 1); j.swaps.splice(k, 0, s); save(); render();
 }
 function render() {
+  if (typeof stipHide === "function") stipHide();
   $("#tables").innerHTML = [1, 2, 3].map(n => {
     const j = jobs.find(j => j.table === n);
     return `<section class="slot" style="--c:${TCOL[n]}" data-table="${n}"><h2>Table ${n}<small>${j ? "in progress" : "free"}</small></h2>
@@ -84,16 +125,18 @@ function jobCard(j) {
   const clashes = jobCompatIssues(j), bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
   const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true">⠿</span><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
-  let budgetHtml = "";
+  let budgetHtml = "", budgetState = "off";
   const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
   if (j.budget != null && loose) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0);
+    budgetState = spent > j.budget ? "warn" : "ok";   // story job: going over is allowed – never red
     budgetHtml = `<div class="budget loose" title="Story job – you can go over the budget and still get full marks">
       <div class="brow"><span>💰 Budget <small>(story job – can go over)</small></span><b>$${j.budget.toLocaleString()}</b></div>
       <small>$${spent.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}</small></div>`;
   } else if (j.budget != null) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0), noPrice = j.swaps.filter(s => swapPrice(s) == null).length;
     const left = j.budget - spent, over = left < 0, pct = j.budget > 0 ? Math.min(100, spent / j.budget * 100) : (spent > 0 ? 100 : 0);
+    budgetState = over ? "bad" : pct >= 85 ? "warn" : "ok";
     budgetHtml = `<div class="budget ${over ? "over" : pct >= 85 ? "tight" : ""}">
       <div class="brow"><span>${over ? "⚠️ Over budget" : "💰 Budget left"}</span><b>${over ? "−$" + (-left).toLocaleString() : "$" + left.toLocaleString()}</b></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
@@ -103,12 +146,13 @@ function jobCard(j) {
   return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
-    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>${budgetHtml}
+    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
+    ${statusHtml(j, { budgetHtml, budgetState, clashes })}
     ${hidHtml}${mainHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
-    <div class="sec"><h4>Part swaps</h4>${powerHtml(j)}${swaps}${compatHtml(clashes)}
+    <div class="sec"><h4>Part swaps</h4>${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
@@ -560,18 +604,18 @@ function reportRepo() {
 function openReport(pre = {}) {
   $("#rName").value = pre.name || ""; $("#rCat").value = CATS.includes(pre.cat) && pre.cat !== "Other" ? pre.cat : "";
   $("#rDlc").innerHTML = `<option value="Base game">Base game</option>` + DLCS.map(d => `<option>${esc(d.label)}</option>`).join("") + `<option>Other / not sure</option>`;
-  ["#rLevel", "#rPrice", "#rNotes"].forEach(id => $(id).value = "");
+  ["#rLevel", "#rPct", "#rPrice", "#rNotes"].forEach(id => $(id).value = "");
   const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
   $("#rDirect").hidden = !direct; $("#rSend").hidden = direct; $("#rCopy").hidden = direct;
   $("#rRepoHint").textContent = direct ? "" : reportRepo() ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).` : "No GitHub repository set – use “Copy report” and post it yourself, or set repo in js/config.js.";
   $("#dlgReport").showModal(); $("#rName").focus();
 }
-function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }
-function reportText(r) { return `Missing part: ${r.name}\nCategory: ${r.cat || "?"}\nContent: ${r.dlc}\nUnlock level: ${r.level || "?"}\nPrice: ${r.price ? "$" + r.price : "?"}\nNotes: ${r.notes || "-"}\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""}, database ${(window.PARTS_META || {}).built || "?"})`; }
+function reportData() { return { name: $("#rName").value.trim(), cat: $("#rCat").value, dlc: $("#rDlc").value, level: $("#rLevel").value.trim(), pct: $("#rPct").value.trim(), price: $("#rPrice").value.trim(), notes: $("#rNotes").value.trim() }; }
+function reportText(r) { return `Missing part: ${r.name}\nCategory: ${r.cat || "?"}\nContent: ${r.dlc}\nUnlock level: ${r.level || "?"}${r.pct ? " (" + r.pct + "%)" : ""}\nPrice: ${r.price ? "$" + r.price : "?"}\nNotes: ${r.notes || "-"}\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""}, database ${(window.PARTS_META || {}).built || "?"})`; }
 $("#rSend").onclick = () => {
   const r = reportData(); if (!r.name) { $("#rName").focus(); return; }
   const repo = reportRepo(); if (!repo) { $("#rCopy").click(); return; }
-  const q = new URLSearchParams({ template: "missing-part.yml", title: `[Missing part] ${r.name}`, part_name: r.name, category: r.cat, content: r.dlc, level: r.level, price: r.price, notes: r.notes, app_version: `${(window.PCBS_CONFIG || {}).version || ""} / db ${(window.PARTS_META || {}).built || ""}` });
+  const q = new URLSearchParams({ template: "missing-part.yml", title: `[Missing part] ${r.name}`, part_name: r.name, category: r.cat, content: r.dlc, level: r.level + (r.pct ? ` (${r.pct}%)` : ""), price: r.price, notes: r.notes, app_version: `${(window.PCBS_CONFIG || {}).version || ""} / db ${(window.PARTS_META || {}).built || ""}` });
   window.open(`https://github.com/${repo}/issues/new?${q}`, "_blank", "noopener");
   const log = LS.get("pcbs.reports", []); log.unshift({ ...r, at: Date.now() }); LS.set("pcbs.reports", log.slice(0, 100));
   $("#dlgReport").close(); toast("Report opened on GitHub – press “Create” there to submit");

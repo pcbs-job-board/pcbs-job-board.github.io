@@ -54,7 +54,7 @@ const clickIn = (sel) => { const el = document.querySelector(`.job[data-job="${s
 const typing = el => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) && !(el.tagName === "INPUT" && /checkbox|radio|button/.test(el.type));
 
 // ---- moving inside a card: the card is split into lines (rows), each with one or more controls ----
-const ROW_SEL = ".top, .tables, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
+const ROW_SEL = ".top, .tables, .stiles, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
 const CTRL_SEL = "input, select, button, summary";
 const shown = el => !el.closest("[hidden]") && el.getClientRects().length > 0;
 function cardRows(card) {

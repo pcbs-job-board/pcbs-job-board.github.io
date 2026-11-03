@@ -28,7 +28,8 @@ body:
   - type: input
     id: level
     attributes:
-      label: Unlock level (if known)
+      label: Unlock level and % (if known)
+      placeholder: "e.g. 12 (40%)"
   - type: input
     id: price
     attributes:

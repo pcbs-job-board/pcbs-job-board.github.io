@@ -365,3 +365,16 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .sopt .stag{color:#9fd2ef}.sopt .sextra{color:#ffcf8a}
 .sopt .sprice{white-space:nowrap;color:#c9f5da;font-size:12.5px;margin-left:auto}
 .sopt.over .sprice{color:#ff8a87}.sopt b.overtag{color:var(--bad);font-weight:700}
+
+/* STATUS: icon tiles under T1–T3 – equal widths, always one row, colour = state */
+.stiles{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px}
+.stile{width:100%;min-width:0;height:34px;padding:0;font-size:17px;border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.stile template{display:none}
+.stile.st-off{background:#262b35;border-color:#353b47;filter:grayscale(1);opacity:.75}
+.stile.st-ok{background:#1f5a37;border-color:#2e8a54}
+.stile.st-warn{background:#6b4a14;border-color:var(--warn)}
+.stile.st-bad{background:#6a1f1f;border-color:var(--bad);box-shadow:0 0 8px #ef535040}
+.stile:hover,.stile:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.stip{position:fixed;z-index:120;background:#0f131a;border:1px solid var(--accent);border-radius:9px;padding:6px;box-shadow:0 10px 30px #000a;font-size:12.5px;pointer-events:none}
+.stip .budget,.stip .power,.stip .compat{margin:0}
+.stip .stoff{color:var(--muted);padding:6px 8px}.stip .stoff.ok{color:#9fdcb6}
