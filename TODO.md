@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.10.0** (dev: `dev-0.11.0` – suggested swaps, waiting for the go-ahead) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.10.0** (dev: `dev-0.11.0` – suggested swaps, Status tiles, level % in part reports – waiting for the go-ahead) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -43,29 +43,6 @@ _None open. The last five are done in `dev-0.10.0`._
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
 
-### Job card: "Status" section with icon tiles (replaces the budget, power and "don't fit" boxes)
-- Concept agreed with Mariusz (sketch `status_tiles_concept.png`, 2026-11-03). Remove the 💰 budget box, the
-  ⚡ power box and the ⚠️ "Parts that don't fit together" box from the card.
-- New section **STATUS** (small label, same style as the other section labels) **right under the T1 / T2 / T3
-  row, above the hidden objectives**. One row of tiles: 💰 budget · ⚡ power · ⚠️ fit.
-- Tiles: icon only, no text; rounded like T1–T3 but a bit taller. They **fill the whole width** like every other
-  section, all equal width (with 3 tiles = same width as T1/T2/T3). More tiles may come later → sizes adjust
-  automatically and always stay **in one row** (flex / grid with equal columns, not fixed widths).
-- Colour = state: **grey** not active · **green** active, fine · **orange** active, close to the limit ·
-  **red** active, over the limit / something doesn't fit.
-  - 💰 grey when the job has no budget; story job with a loose budget: decide colour rules (probably never red).
-  - ⚡ grey until a PSU is planned; orange over 90 % or too weak only when overclocked; red when too weak.
-  - ⚠️ always active: green when everything fits, red when there is a clash (orange: maybe for "unclear" cases).
-- Details in a **small popup** (what the boxes show today: bar + numbers / the clash list with the swap-order hint):
-  - mouse: shown after hovering the tile for about **0.5 s**, closes when the mouse leaves.
-  - keyboard: every tile is **focusable** (part of the card's keyboard movement, one line with 3 items);
-    details show after the same ~0.5 s delay when a tile gets focus. Focus **never enters the popup**; any
-    navigation key (arrows, Tab, Esc…) moves on as usual and closes the popup.
-  - popup stays inside the window (flips above / left when there is no room), readable on narrow screens;
-    give the tile an aria-label / aria-describedby so screen readers get the same text.
-- Keep: the amber border on swap rows that clash, power / compat logic unchanged. Update the flow test
-  (tiles, colours, hover delay, keyboard focus) and the "How to use it" window (see the 1.0 item).
-
 ### 1.0: re-analyse keyboard shortcuts and navigation (especially inside a job card)
 - The card got many new parts since the keyboard design (0.8.x): part details, ⚡ power, ⚠️ clash box →
   Status tiles, swap ⠿ order with Alt + ↑ ↓, ranked suggestions with warnings, swap form selects.
@@ -88,10 +65,7 @@ _None open. The last five are done in `dev-0.10.0`._
     who wins (drag ⠿ / Alt + ↑ ↓), parts named in the objectives win over all
   - unclear PC Stats model numbers shown as read, for checking
   - 💡 suggested swaps in the new-job / PC Stats windows (0.11.0)
+  - STATUS row: 💰 ⚡ ⚠️ tiles, colours, details on hover / keyboard focus (0.11.0)
 - Add anything 1.0 brings. New screenshots where they help (compressed WebP, loaded only when the window opens).
   Check every button name against the app.
 
-### Missing part reports: also ask for the unlock level %
-- The parts database has `level_pct` since 0.9.0, but the report form only asks for the level.
-- Needs a form change plus new Apps Script columns (`tools/report-endpoint.gs`, then redeploy as a new
-  version). Could count as a small fix, but it's listed here because it needs the Google script redeployed.
