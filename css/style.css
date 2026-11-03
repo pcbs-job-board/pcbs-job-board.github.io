@@ -441,3 +441,13 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .ulgrid .ok{color:#7ee2a6}.ulgrid .no{color:#7b8496}.ulgrid .ulnone{color:#3d4554}
 .ulgrid .now{background:#1f5a3733}
 .stip.big.cut::after{content:"… more – make the window taller to see all levels"}
+
+/* 💡 tips on a job card (next to ✎) */
+.top .topbtns{display:flex;align-items:center;gap:2px;flex:none}
+.hintbtn{background:transparent;border:1px solid transparent;padding:1px 5px;font-size:15px;line-height:1.2;border-radius:6px;filter:drop-shadow(0 0 4px #ffd24a88)}
+.hintbtn:hover,.hintbtn:focus-visible{border-color:#ffd24a;background:#3a301333;outline:none}
+.hintbox{padding:6px 9px;border-radius:7px;background:#2a2412;border:1px solid #7a5a17;font-size:12.5px}
+.hintbox .brow{color:#ffd27a;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.hintbox ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:5px;color:#f1e6cf;line-height:1.4}
+.stip .hintbox{margin:0}
+.stip.tips.cut::after{content:"… more – make the window taller to see all tips"}

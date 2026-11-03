@@ -79,6 +79,11 @@ function ocHtml(oc) {
     ${oc.psu ? `<div class="ocitem st-${oc.psu.bad ? "bad" : "ok"}"><b class="ocic">${oc.psu.bad ? "✗" : "✓"}</b><div><small>Overclocked power ~${oc.psu.use.toLocaleString()} W of ${oc.psu.w.toLocaleString()} W${oc.psu.bad ? " – <b>the PSU is too weak</b>" : ""}</small></div></div>` : `<small>Power: add the PSU to check the overclocked watts.</small>`}
     <small class="ocnote">Clocks are estimated at 90 % of each part's overclock potential – your in-game result can differ with the cooling and power. Watts are counted at the full overclock.</small></div>`;
 }
+// 💡 tips for this job (js/hints.js) – only shown when at least one applies; the list pops up like a Status tile's details
+function hintBtn(j) {
+  const hs = jobHints(j); if (!hs.length) return "";
+  return `<button class="hintbtn" aria-label="${hs.length} tip${hs.length > 1 ? "s" : ""} for this job"><span aria-hidden="true">💡</span><template><div class="hintbox"><div class="brow">💡 Tips for this job</div><ul>${hs.map(h => `<li>${esc(h.text)}</li>`).join("")}</ul></div></template></button>`;
+}
 // STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
 function statusHtml(j, { budgetHtml, budgetState, clashes }) {
   const ps = powerState(j), pw = powerHtml(j), bc = benchCheck(j), occ = ocCheck(j);
@@ -101,13 +106,13 @@ function stipShow(tile) {
   clearTimeout(stipTimer); stipFor = tile;
   const big = tile.id === "btnUnlocks";   // the career unlocks list: wider and taller than a Status tile's details
   stip.innerHTML = big ? unlocksHtml() : tile.querySelector("template").innerHTML; stip.hidden = false; tile.setAttribute("aria-describedby", "stip");
-  stip.classList.toggle("big", big);
+  stip.classList.toggle("big", big); stip.classList.toggle("tips", tile.classList.contains("hintbtn"));
   // always fully inside the window: width capped, pushed in from the left / right edge, below the tile or – when
   // there is more room – above it; taller than the room on that side (or than 260 px) → cut to fit with a note (the popup can't scroll)
   const r = tile.getBoundingClientRect(), M = 8, w = Math.min(big ? 540 : 340, innerWidth - 2 * M);
   Object.assign(stip.style, { width: w + "px", maxHeight: "", left: "0px", top: "0px" }); stip.classList.remove("cut");
   const roomBelow = innerHeight - r.bottom - 6 - M, roomAbove = r.top - 6 - M, h = stip.offsetHeight;
-  const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.min(big ? 640 : 260, Math.max(60, below ? roomBelow : roomAbove));
+  const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.min(big ? 640 : tile.classList.contains("hintbtn") ? 480 : 260, Math.max(60, below ? roomBelow : roomAbove));
   if (h > room) { stip.style.maxHeight = room + "px"; stip.classList.add("cut"); }
   const hh = Math.min(h, room);
   stip.style.left = Math.max(M, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - M)) + "px";
@@ -115,12 +120,12 @@ function stipShow(tile) {
 }
 function stipHide() { clearTimeout(stipTimer); if (stipFor) stipFor.removeAttribute("aria-describedby"); stipFor = null; stip.hidden = true; }
 const stipLater = tile => { clearTimeout(stipTimer); stipTimer = setTimeout(() => stipShow(tile), 500); };
-document.addEventListener("mouseover", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t && t !== stipFor) stipLater(t); });
-document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
-document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t) stipLater(t); else stipHide(); });
-document.addEventListener("focusout", e => { if (e.target.closest?.(".stile,.ulbtn")) stipHide(); });
+document.addEventListener("mouseover", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t && t !== stipFor) stipLater(t); });
+document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
+document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t) stipLater(t); else stipHide(); });
+document.addEventListener("focusout", e => { if (e.target.closest?.(".stile,.ulbtn,.hintbtn")) stipHide(); });
 document.addEventListener("keydown", () => { if (!stip.hidden || stipTimer) stipHide(); }, true);
-document.addEventListener("click", e => { const t = e.target.closest?.(".stile,.ulbtn"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
+document.addEventListener("click", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
 // scrolling / resizing closes an open popup but doesn't cancel one about to open
 // (keyboard moves scroll the focused tile into view – the popup is placed after that)
 const stipClose = () => { if (!stip.hidden) stipHide(); };
@@ -167,8 +172,8 @@ function jobCard(j) {
   if (j.budget != null && loose) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0);
     budgetState = spent > j.budget ? "warn" : "ok";   // story job: going over is allowed – never red
-    budgetHtml = `<div class="budget loose" title="Story job – you can go over the budget and still get full marks">
-      <div class="brow"><span>💰 Budget <small>(story job – can go over)</small></span><b>$${j.budget.toLocaleString()}</b></div>
+    budgetHtml = `<div class="budget loose">
+      <div class="brow"><span>💰 Budget <small>(story job – see 💡)</small></span><b>$${j.budget.toLocaleString()}</b></div>
       <small>$${spent.toLocaleString()} spent on ${j.swaps.length} part${j.swaps.length === 1 ? "" : "s"}</small></div>`;
   } else if (j.budget != null) {
     const spent = j.swaps.reduce((t, s) => t + (swapPrice(s) || 0), 0), noPrice = j.swaps.filter(s => swapPrice(s) == null).length;
@@ -182,7 +187,7 @@ function jobCard(j) {
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
   return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
-    <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div>
+    <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}<button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
     ${statusHtml(j, { budgetHtml, budgetState, clashes })}

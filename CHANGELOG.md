@@ -8,6 +8,7 @@ Within each version, changes are listed from most to least important.
 - Suggested part sets for "3DMark score of N": XMP alone, more RAM sticks, GPU, second GPU, CPU, CPU + GPU, motherboard + CPU – cheapest first, in budget, favourite brand marked; one tick adds the whole set (and the XMP task when needed).
 - Overclock tile for overclock objectives: can it be done (locked CPU, board, GPU maximum), the clock to expect (90 % of the part's overclock potential), the temperature to stay under, PSU when overclocked – plus the parts it needs, favourite brand first.
 - Customer plans to overclock later (email text): a PSU that carries the overclocked PC is suggested – in budget only.
+- 💡 Tips on job cards (next to ✎): reminders for the job – thermal paste, XMP, "Diagnose and fix", story-job budget, OCCT, leak test.
 - Career unlocks button next to the career level: everything the game unlocks per level, green = unlocked, grey = still to come.
 - Help waits for the in-game unlock: CPU overclocking from level 6 (OCCT), GPU overclocking from 13 (GPU Tuner), custom water cooling parts from 16.
 - Score formula from Jacob Klein's PCBS calculator – matches the game's PC Stats benchmark.
