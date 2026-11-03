@@ -432,10 +432,12 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .stip.big{padding:8px}
 .ulbox{display:flex;flex-direction:column;gap:3px;font-size:12px}
 .ulhead{font-weight:700;color:#9fd2ef;text-transform:uppercase;letter-spacing:.5px;font-size:11.5px;margin-bottom:3px}.ulhead small{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400}
-.ulrow{display:grid;grid-template-columns:40px 1fr;gap:6px;align-items:start;padding:3px 5px;border-radius:6px}
-.ulrow .ullv{font-size:11px;padding-top:1px}
-.ulrow .ulnames{display:flex;flex-wrap:wrap;gap:3px 10px}
-.ulrow.ok .ullv,.ulrow.ok .ul{color:#7ee2a6}.ulrow.no .ullv,.ulrow.no .ul{color:#7b8496}
-.ulrow .ul small{color:inherit;opacity:.8}
-.ulrow.now{background:#1f5a3733;outline:1px solid #2e8a54}
+.ulgrid{display:grid;grid-template-columns:26px minmax(0,1.25fr) minmax(0,1fr);gap:0 8px;align-items:stretch}
+.ulgrid .ulth{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:0 0 4px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.ulgrid>.ullv,.ulgrid>.ulnames,.ulgrid>.ulapp{padding:3px 0;border-bottom:1px solid #232a37}
+.ulgrid .ullv{font-size:11px;text-align:right}
+.ulnames,.ulapp{display:flex;flex-wrap:wrap;gap:1px 9px;align-content:flex-start}
+.ulapp .ul{font-size:11.5px}
+.ulgrid .ok{color:#7ee2a6}.ulgrid .no{color:#7b8496}.ulgrid .ulnone{color:#3d4554}
+.ulgrid .now{background:#1f5a3733}
 .stip.big.cut::after{content:"… more – make the window taller to see all levels"}

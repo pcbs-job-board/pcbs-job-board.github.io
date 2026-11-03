@@ -104,7 +104,7 @@ function stipShow(tile) {
   stip.classList.toggle("big", big);
   // always fully inside the window: width capped, pushed in from the left / right edge, below the tile or – when
   // there is more room – above it; taller than the room on that side (or than 260 px) → cut to fit with a note (the popup can't scroll)
-  const r = tile.getBoundingClientRect(), M = 8, w = Math.min(big ? 420 : 340, innerWidth - 2 * M);
+  const r = tile.getBoundingClientRect(), M = 8, w = Math.min(big ? 540 : 340, innerWidth - 2 * M);
   Object.assign(stip.style, { width: w + "px", maxHeight: "", left: "0px", top: "0px" }); stip.classList.remove("cut");
   const roomBelow = innerHeight - r.bottom - 6 - M, roomAbove = r.top - 6 - M, h = stip.offsetHeight;
   const below = h <= roomBelow || roomBelow >= roomAbove, room = Math.min(big ? 640 : 260, Math.max(60, below ? roomBelow : roomAbove));
