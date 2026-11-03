@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.11.0** (no dev branch open; backup of 0.10.0: `backup-0.10.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.11.0** (dev: `dev-0.11.1` – fixes from the 0.11.0 test – waiting for the go-ahead; backup of 0.10.0: `backup-0.10.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -22,26 +22,9 @@ Live version: **0.11.0** (no dev branch open; backup of 0.10.0: `backup-0.10.0`)
 
 ---
 
-## Small fixes (3)
+## Small fixes (0)
 
-Reported by Mariusz while testing 0.11.0 (2026-11-03).
-
-1. **Suggested swaps don't appear after a PC Stats capture in the new-job window.** Seen on the EfficientR
-   ("Replace PSU / Replace RAM") and DullGirl ("Upgrade to 16 GB of RAM") jobs: the box keeps saying
-   "capture PC Stats to get a … suggestion". It works in a saved job's Parts window.
-   Cause: `rebuildParts()` fills the parts box from code, which fires no `input` event, so
-   `renderSuggestions()` never runs. Fix: call it at the end of `rebuildParts()`.
-2. **The Parts window of a saved job doubles parts.** DullGirl: re-capturing PC Stats from the job card gave
-   2 motherboards, 2 GPUs and 2 drives (15 parts instead of about 12). The parts captured in the new-job window
-   count as "typed by hand", so they're kept next to the new reading. Fix: save which parts were captured with
-   the job and replace those; for jobs saved before the fix, treat all their parts as captured.
-3. **Misreads on DullGirl's PC Stats (second capture, 11:26):** "ASUS ROG Strix Z370-G Gaming (Wi-Fi AC)" was
-   read as "Z370-E Gaming", and "MSI Radeon RX 580 GAMING X+ 8G" as "GAMING X 8G". The 11:25 capture read both
-   correctly. Screenshot (scaled down in the chat): `fixtures-pending/dullgirl_pcstats_1126.png`. Add it to
-   the tests and check why the near-identical name won.
-
-Not a bug: Azuka ("I'm a total Intel fanboy") gets no CPU suggestion because the CPU is already an Intel
-i7-6700K – nothing to change. Possible extra: show "already Intel ✓" in the suggestions box (ask Mariusz).
+_None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
 
 ---
 
