@@ -300,7 +300,7 @@ function ocSuggestions(job, ctx, reason, cur) {
   } else if (t.part === "GPU" && t.mhz) {
     const gpu = cur("GPU")[0], d = gpu && ocOf(gpu.name), max = g => t.mem ? g.maxMem : g.maxCore;
     if (gpu && d && t.mhz > max(d)) {
-      const c = shopParts("GPU").filter(p => { const x = ocOf(p.name); return x && max(x) >= t.mhz; });
+      const c = shopParts("GPU").filter(p => { const x = ocOf(p.name); return x && max(x) >= t.mhz && rk(p) >= rk(gpu); });   // never worse
       const o = pickOptions(job, ctx, c, { replace: gpu.name, base: gpu });
       out.push({ key: "obj:oc-gpu", reason: `${reason} – this GPU's maximum ${t.mem ? "memory" : "core"} clock is ${max(d).toLocaleString()} MHz`, options: o, cat: "GPU", old: gpu.name, hint: o.length ? "" : "No unlocked GPU reaches that clock." });
     }
