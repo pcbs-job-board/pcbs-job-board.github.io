@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.11.0** (dev: `dev-0.11.1` – fixes from the 0.11.0 test – waiting for the go-ahead; backup of 0.10.0: `backup-0.10.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.11.1** (no dev branch open; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
