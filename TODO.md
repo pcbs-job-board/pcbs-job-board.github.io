@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
+Live version: **0.11.1** (dev: `dev-0.12.0` – 3DMark score + overclock helper – waiting for the go-ahead; backup of 0.11.0: `backup-0.11.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-board.github.io/).
 
 ## How this list is used
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
@@ -29,6 +29,13 @@ _None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
 ---
 
 ## Bigger updates (waiting for the go-ahead)
+
+Notes for later (not tasks yet):
+- Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published;
+  could be fitted from ~20–30 in-game readings: CPU, cooler, voltage, MHz, °C, with / without case fans).
+- Mariusz plans a non-job system (part of the 0.12.0 line) that uses both the 3DMark and the overclock formulas.
+- Overclock objective wording seen so far only on Steam ("OC CPU to 4000MHz", "OC GPU to 2133MHz") – check against a
+  real screenshot when one comes in.
 
 ### Story job list: compare with the report sheet (planned for 1.0, the final build)
 - Small updates already add story jobs seen on screenshots (see the rules at the top).
@@ -65,6 +72,7 @@ _None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
     who wins (drag ⠿ / Alt + ↑ ↓), parts named in the objectives win over all
   - unclear PC Stats model numbers shown as read, for checking
   - 💡 suggested swaps in the new-job / PC Stats windows (0.11.0)
+  - Overclock tile + suggestions for overclock objectives; "plans to overclock" PSU check (0.12.0)
   - 3DMark tile + suggested part sets for "3DMark score of N" (0.12.0)
   - STATUS row: 💰 ⚡ ⚠️ tiles, colours, details on hover / keyboard focus (0.11.0)
   - slimmer top bar: screen box (live preview = change screen, red ■ = stop), Capture job + ＋ manual job, icon-only ⚙️ (0.11.0)
