@@ -37,7 +37,7 @@ function buildIndex() {
   const db = window.PARTS_DB || {};
   for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct, , det] of db[cat]) {
     if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
-    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, det, dlc, ver, n, c: n.replace(/ /g, ""), w: n.split(" ") });
+    const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, det, dlc, ver, noShop: /not in shop/i.test(spec || ""), n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
   for (const h of partsHistory) if (!known.has(h.name.toLowerCase())) { const n = normP(h.name); INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") }); }

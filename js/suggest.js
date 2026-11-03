@@ -21,7 +21,7 @@ const priceOk = (p, left) => left == null || p.price == null || p.price <= left;
 
 // parts the player can buy now (G1), by category
 function shopParts(cat) {
-  return INDEX.filter(p => !p.hist && p.cat === cat && p.price != null && unlocked(p));
+  return INDEX.filter(p => !p.hist && !p.noShop && p.cat === cat && p.price != null && unlocked(p));   // menu cases etc. can't be bought
 }
 // would this part fit the planned PC (in place of `replace`)? – compatibility only (G3)
 function fitsBuild(job, cand, replace) {
@@ -91,7 +91,7 @@ function suggestSwaps(job, opts = {}) {
     let m = o.match(/^\W*install\s+(.+?)(\s+or better)?\s*$/i);
     if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
       const chip = chipFromText(m[1]), r = chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]); if (!r) continue;
-      const cat = r.cat, curP = cur(cat).pop(), better = !!m[2];
+      const cat = r.cat, curP = cur(cat).pop(), better = !!m[2] && cat !== "Case";   // "or better" for a case: no way to rank cases – the one asked for
       let cands;
       const size = (m[1].match(/(\d+(?:\.\d+)?)\s*(tb|gb)\b/i) || []), gbWant = size[1] ? +size[1] * (/tb/i.test(size[2]) ? 1000 : 1) : 0;
       if (better && cat === "Storage" && gbWant) cands = shopParts(cat).filter(p => { const c = cInfo(p), rc = cInfo(r); return +c.gb >= gbWant && +c.k >= +(rc.k || 1); });
