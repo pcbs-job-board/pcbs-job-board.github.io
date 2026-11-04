@@ -5,6 +5,7 @@ Within each version, changes are listed from most to least important.
 
 ## 0.12.2
 - "How to use it" updated: suggested swaps, 3DMark, overclock, tips, career unlocks and PC Bay builds.
+- Fixed: PC Stats lost a model number wrapped onto its own line ("Cooler Master MWE Bronze" + "450").
 
 ## 0.12.1
 - Fixed: a saved PC Bay build stopped the page from loading; the 📦 button only showed after re-entering the level; unlocks list called PC Bay "coming later".

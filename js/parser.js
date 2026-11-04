@@ -133,8 +133,11 @@ function componentLines(text) {
   for (const raw of start >= 0 ? lines.slice(start + 1) : lines) {
     if (/^\W*(ok|pc status|benchmark|invoiceable)\b/i.test(raw)) continue;
     const { text: t, branded } = cleanPartLine(raw);
-    const txt = branded ? t : t.replace(/^[^A-Za-z0-9(]+/, "").replace(/^(?:[a-z]{1,2}|[^A-Za-z0-9\s]+)\s+(?=[A-Z0-9])/, "").replace(/\s+[^A-Za-z0-9)]{1,2}$/, "").trim();
-    if ((txt.match(/[A-Za-z0-9]/g) || []).length < 4) continue;
+    let txt = branded ? t : t.replace(/^[^A-Za-z0-9(]+/, "").replace(/^(?:[a-z]{1,2}|[^A-Za-z0-9\s]+)\s+(?=[A-Z0-9])/, "").replace(/\s+[^A-Za-z0-9)]{1,2}$/, "").trim();
+    // short lines are crumbs – except a bare model number wrapped onto its own line ("Cooler Master MWE Bronze" / "450");
+    // whether it really ends the name above is decided later against the parts database
+    if (/^(?=.*\d)[\dOo]{3}$/.test(txt)) txt = txt.replace(/[Oo]/g, "0");   // "45O" = 450
+    if ((txt.match(/[A-Za-z0-9]/g) || []).length < 4 && !/^\d{3}$/.test(txt)) continue;
     out.push({ text: txt, branded });
   }
   return out;
