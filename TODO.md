@@ -65,24 +65,24 @@ _None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
 ## Bigger updates (waiting for the go-ahead)
 
 Notes for later (not tasks yet):
-- Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published;
-  could be fitted from ~20–30 in-game readings: CPU, cooler, voltage, MHz, °C, with / without case fans).
+- Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published).
+  **Very low priority**: only if Mariusz happens to collect enough readings before 1.0 (~20–30, see the list of what
+  each reading needs, sent 2026-11-04); otherwise drop it.
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
-- PC Bay unlocks at career level 9 – the gate `pcBay` is ready in js/unlocks.js for the coming system.
-- Mariusz plans a non-job system (part of the 0.12.0 line) that uses both the 3DMark and the overclock formulas.
-- Overclock objective wording seen so far only on Steam ("OC CPU to 4000MHz", "OC GPU to 2133MHz") – check against a
-  real screenshot when one comes in.
+- Overclock objectives: Mariusz has had "OC CPU to <MHz>" twice (CPU only – no GPU overclock objective seen yet).
+  The parser already reads it; a screenshot for the tests is welcome but not needed.
 
-### Story job list: compare with the report sheet (planned for 1.0, the final build)
-- Small updates already add story jobs seen on screenshots (see the rules at the top).
-- For 1.0: compare the entries in `data/story-jobs.csv` with the "Story jobs" tab of the report sheet and
-  add / correct what's missing.
-- Reports arrive in the "PCBS reports" Google Sheet (tabs "Story jobs" / "Missing parts") and as
-  "Story Quest Report #N" emails. Add confirmed ones to `data/story-jobs.csv`.
-- Added in 0.10.0: Dynabeard – `IT@dynabeard.org`, subject "Important: Computer
-  required", signed Kinsley Hackett, IT Supervisor – a build request, Req: Level 14, no star requirement.
-- Added in 0.12.0: HRH The Queen – `maj@hrh.royals.org`, "By Royal Appointment" (build from nothing, Req: Level 21).
-- **Waiting to be added** (reported 2026-11-03, goes in with the next small update): Giovanna Sciarra, PhD –
+### 1.0: story jobs + missing parts from the report sheet, then local "my story jobs / my parts"
+1. Story jobs: compare `data/story-jobs.csv` with the "Story jobs" tab of the "PCBS reports" Google Sheet (and the
+   "Story Quest Report #N" emails) and add / correct what's missing. Missing parts: same with the "Missing parts" tab.
+2. After that, reporting ends:
+   - The 📖 Report story job button is **removed from the top bar**.
+   - Neither form sends anything to Mariusz's email / spreadsheet any more (Apps Script no longer used by the app).
+   - "Report story job" becomes something like **"Treat future jobs from this sender as a story job"** and
+     "Report missing part" becomes something like **"Save custom part"** – saved in the user's browser and used
+     alongside the built-in story job list / parts database.
+- Already in the app: Dynabeard (0.10.0), HRH The Queen (0.12.0).
+- **Waiting to be added – no rush, goes in whenever there's a release** (reported 2026-11-03): Giovanna Sciarra, PhD –
   `giovanna@giosci.lab`, subject "A minor setback", signed "Giovanna Sciarra, PhD". Particle accelerator magnet
   quench – parts overheated, PC won't turn on. Objectives: Diagnose and fix; Complete by end of day (tomorrow).
   Labour $150, Budget $600, Req: Level 13, no star requirement.
@@ -103,8 +103,10 @@ Notes for later (not tasks yet):
 - Propose the changes to Mariusz first (list), then build, update the shortcuts window and the "How to use it"
   window, and add keyboard checks to the flow test.
 
-### 1.0: bring the "How to use it" window up to date
-- The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) is up to date with 0.12.x (done in
-  dev-0.12.2 from the updated Steam guide: suggested swaps, 3DMark sets + tile, overclock tile, tips, career unlocks,
-  PC Bay builds). Pictures come from `scratchpad/guide3.js` (real screenshots through the real capture flow).
-- For 1.0: add anything 1.0 brings, check every button name against the app, and update the Steam guide the same way.
+### After 1.0: new Steam guide, then the "How to use it" window from it
+- The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) is up to date with 0.12.x.
+- Once 1.0 is released: rewrite the Steam guide with **one section per system** – e.g. career unlocks, random job,
+  story job, 3DMark request, overclock request, PC Bay builds, keyboard navigation… (specifics to be discussed
+  with Mariusz first).
+- Then update "How to use it" on the website from the same text and pictures (pictures: `scratchpad/guide3.js` –
+  real screenshots through the real capture flow; WebP, loaded only when the window opens).
