@@ -56,9 +56,17 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (2)
 
-_None open. The three from the 0.11.0 test are done in `dev-0.11.1`._
+1. **Builds from nothing: storage + "Install Parts with Lights: N coloured"** (reported 2026-11-04 on the HRH The
+   Queen job – `maj@hrh.royals.org`, "By Royal Appointment").
+   - The 3DMark set for a PC built from nothing has no storage at all. When no objective names a drive, add the
+     cheapest one (HDD, SSD or M.2 – whatever fits) to the set, instead of only "also needs: storage".
+   - "Install Parts with Lights: 6 coloured (255,0,255)" was ignored. It means **6 parts with RGB lighting** (set
+     to that colour), not one part with 6 colours. Count the lit parts already planned (the case asked for in the
+     objectives counts) and suggest the cheapest RGB parts that fit (case fans, RAM, cooler, GPU…) for the rest.
+2. **Edit a part swap** – each swap in "Part swaps" gets an edit option (change the new part, and the old part /
+   category if needed). Today a change of mind means deleting the swap and adding it again.
 
 ---
 
@@ -113,6 +121,14 @@ Notes for later (not tasks yet):
   browsers outside a focused control), and that every mouse-only action has a keyboard way.
 - Propose the changes to Mariusz first (list), then build, update the shortcuts window and the "How to use it"
   window, and add keyboard checks to the flow test.
+
+### 1.0: speed + "working on it" notices
+- Some calculations take a couple of seconds before anything shows – e.g. the 3DMark set for a PC built from
+  nothing (newBuildBench in js/suggest.js; suggestions are also re-worked on every tick in the new-job window).
+  Measure where the time goes (suggestSwaps, benchSuggestions, newBuildBench, planFits / compat checks,
+  PC Bay upgrades) and make the slow ones faster (e.g. cache per input, fewer fit checks, work in pieces).
+- Anything that can still take long shows a loading notice (spinner / "Working out the cheapest set…") so the
+  user knows the page hasn't frozen – and the page stays usable meanwhile.
 
 ### After 1.0: new Steam guide, then the "How to use it" window from it
 - The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) is up to date with 0.12.x.
