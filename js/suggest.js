@@ -70,6 +70,8 @@ function atLeast(ref, cat) {
   if (cat === "Storage" && r.gb) return p => { const c = cInfo(p); return +c.k >= +r.k && +c.gb >= +r.gb && +c.sp >= +r.sp; };
   if (cat === "RAM" && r.gb) return p => { const c = cInfo(p); return +c.gb >= +r.gb && +c.mhz >= +r.mhz; };
   if (cat === "PSU") return p => (powerOf(p.name)?.w || 0) >= (powerOf(ref.name)?.w || 0);
+  // coolers and fans: never less air flow (the game calls a weaker one a "worse part" and won't finish the job)
+  if ((cat === "CPU Cooler" || cat === "Case Fan" || cat === "Water Cooling") && r.af) return p => { const c = cInfo(p); return +(c.af || 0) >= +r.af && (cat !== "Case Fan" || !r.z || c.z === r.z); };
   return () => true;
 }
 const sameAs = name => p => p.name.toLowerCase() === String(name).toLowerCase();
@@ -262,6 +264,7 @@ function suggestSwaps(job, opts = {}) {
 function sameOrBrand(cat, p0, ctx) {
   const same = shopParts(cat).filter(sameAs(p0.name)), alike = shopParts(cat).filter(atLeast(p0, cat)).filter(p => similarTo(p0, p));
   const brand = ctx.brands.length ? alike.filter(p => ctx.brands.some(b => brandMatch(p, b))) : [];
+  // the identical part (or, without it, similar ones) + favourite-brand parts – all at least as good (atLeast: rating, air flow…)
   return [...new Set([...(same.length ? same : alike), ...brand])];
 }
 const norm = s => " " + String(s).toLowerCase().replace(/[^a-z0-9+]+/g, " ").trim() + " ";

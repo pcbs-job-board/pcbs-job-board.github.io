@@ -260,7 +260,8 @@ const fixSize = t => /^[\dOoSsIl]{1,5}(gb|tb|mhz|mm|w)$/i.test(t) && /\d/.test(t
 function denoisePartLines(lines) {
   const out = [];
   for (const l of lines) {
-    const toks = l.text.split(/\s+/).filter(Boolean).map(fixSize), good = toks.map(wordOk);
+    // a size ("8 GB", "1 TB") is one word here, never a crumb – it tells the 4 GB and 8 GB versions apart
+    const toks = l.text.replace(/\b(\d{1,4})\s+(GB|TB|MB)\b/gi, "$1\u00a0$2").split(/[ \t\r\n]+/).filter(Boolean).map(fixSize), good = toks.map(t => /^\d{1,4}\u00a0(gb|tb|mb)$/i.test(t) || wordOk(t));
     // at the ends, 1–2 letter bits ("Se", "a") are picture crumbs even when they happen to be real words
     const edgeOk = i => good[i] && !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
     let a = 0, z = toks.length - 1;
@@ -280,7 +281,7 @@ function denoisePartLines(lines) {
       if (num.length === 1) out.push({ ...l, text: num[0], num: true });
       continue;
     }
-    out.push({ ...l, text: keep.join(" ") });
+    out.push({ ...l, text: keep.join(" ").replace(/\u00a0/g, " ") });
   }
   return out;
 }

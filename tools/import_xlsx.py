@@ -143,14 +143,14 @@ COMPAT = {
     "Motherboards": lambda r: kv(s=s(r.get("CPU Socket")), f=BCODE.get(s(r.get("Size")), s(r.get("Size"))), ram=n(r.get("RAM Slots")), m2=n(r.get("M.2 Slots")), sata=n(r.get("SATA Slots Usable")),
                                  sli="1" if s(r.get("Support SLI")) == "Y" else "", cf="1" if s(r.get("Support CrossFire")) == "Y" else "", ds=n(r.get("Dual GPU Max Slot Size")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0"),
     "CPUs": lambda r: kv(s=s(r.get("Socket")), oc="1" if s(r.get("Can Overclock")) == "Y" else "0", rk=n(r.get("Part Ranking Score"))),
-    "CPU Coolers": lambda r: kv(aio="1" if "Liquid" in s(r.get("Type")) else "", ss=sock_list(r.get("CPU Socket List")), h=n(r.get("Height")) if "Air" in s(r.get("Type")) else "", r=rad(r.get("Size"), r.get("Slots")) if "Liquid" in s(r.get("Type")) else ""),
+    "CPU Coolers": lambda r: kv(aio="1" if "Liquid" in s(r.get("Type")) else "", ss=sock_list(r.get("CPU Socket List")), h=n(r.get("Height")) if "Air" in s(r.get("Type")) else "", r=rad(r.get("Size"), r.get("Slots")) if "Liquid" in s(r.get("Type")) else "", af=n(r.get("Air Flow"))),   # af = air flow (CFM): never suggest a weaker one
     "WC CPU Blocks": lambda r: kv(ss=sock_list(r.get("CPU Socket List"))),
-    "WC Radiators": lambda r: kv(r=rad(r.get("Size"), r.get("Slots"))),
+    "WC Radiators": lambda r: kv(r=rad(r.get("Size"), r.get("Slots")), af=n(r.get("Air Flow"))),
     "GPUs": lambda r: kv(l=n(r.get("Length")), m=s(r.get("Multi-GPU")), c=s(r.get("Chipset")), sl=n(r.get("Slot Size")), rk=n(r.get("Part Ranking Score"))),
     "Power Supplies": lambda r: kv(f=s(r.get("Size")), l=n(r.get("Length"))),
     "Storage": lambda r: kv(t="m2" if s(r.get("Type")) == "M.2" else "sata", k={"HDD": "1", "SSD": "2", "M.2": "3"}.get(s(r.get("Type")), ""), gb=n(r.get("Size (GB)")), sp=n(r.get("Transfer Speed (MB/s)"))),
     "Memory": lambda r: kv(gb=n(r.get("Size (GB)")), mhz=n(r.get("Frequency"))),
-    "Case Fans": lambda r: kv(z=n(r.get("Size"))),
+    "Case Fans": lambda r: kv(z=n(r.get("Size")), af=n(r.get("Air Flow"))),
 }
 
 COMPAT = {k: with_light(v) for k, v in COMPAT.items()}
