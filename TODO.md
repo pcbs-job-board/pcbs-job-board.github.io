@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.12.1** (released 2026-11-03; backups: `backup-0.11.1`, `backup-0.12.0`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io` – remote `origin` of the app checkout points there directly now, site https://pcbs-job-board.github.io/).
+Live version: **0.12.2** (released 2026-11-04; backups: `backup-0.11.1`, `backup-0.12.0`, `backup-0.12.1`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io` – remote `origin` of the app checkout points there directly now, site https://pcbs-job-board.github.io/).
 
 ## PC Bay build (released in 0.12.0)
 Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
