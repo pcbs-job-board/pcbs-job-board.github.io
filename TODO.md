@@ -56,7 +56,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (4)
 
 1. **"Same part again" suggests a different model** (reported 2026-11-04, CarefreeDenise@DSinghModifications.ly,
    "Fix for PC": SilverStone fan + "Diagnose and fix" → "SilverStone NT06-PRO → SilverStone AR08", tagged "same part again").
@@ -85,6 +85,24 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
      a line that is only the start of many parts (here 9 Delta drives + the Delta II RAM) shouldn't be matched alone
      while the next lines can complete it – join first, then match; "GB … MHz" in the joined text points to RAM, not
      storage. Then add the 3 screenshots to the run.js tests with the expected 15 parts.
+
+3. **PC Stats: "8 GB" lost from a wrapped RAM name** (reported 2026-11-04, Borland.Amanda@ExpensiveCatHousekeeping.net,
+   "upgrade"; screenshots in the tests branch `fixtures/pending/amanda_*.png`). "Patriot Viper LED (Red LED)" /
+   "8 GB 3000 MHz" became "Patriot Viper LED (Red LED) 3000 MHz" (not found – 4 GB and 8 GB versions exist).
+   - Cause (found, reproduced): the junk trimming in `denoisePartLines()` (js/parts.js) treats 1–2 letter words at the
+     start of a line as picture crumbs – "8" then "GB" are cut, leaving "3000 MHz".
+   - Fix: keep a size ("8 GB", "1 TB", "512 MB") together before trimming – a number followed by GB / TB / MB is
+     never a crumb. Unit test with this case; add the screenshots to run.js.
+4. **GPU pair suggested without the motherboard it needs** (same job: "Upgrade Graphics Card" + "Install dual graphics
+   cards" + AIO; board ASUS ROG Strix Z370-G Gaming (Wi-Fi AC), GPU GTX 1060).
+   - The "best in budget" pair, 2× MSI GeForce GTX 1080 Ti GAMING 11G ($1,610), was offered with no warning and no
+     board – after ticking it, the ⚠️ tile says the board only fits **2-slot** cards for two GPUs, this one is 2.5-slot.
+   - Cause (found): `pairExtras()` (js/suggest.js, new in 0.12.3) only checks that the board has SLI / CrossFire, not
+     the board's slot spacing (`ds`) against the card's width (`sl`); and the pair options skip the full fit check
+     (`planFits`).
+   - Fix: a board with the right SLI / CrossFire **and** room for two cards of that width – else add the cheapest board
+     that has it (same socket, fits the case) to the option, counted in the total and the budget; run planFits on
+     every pair option and drop / mark the ones that still don't fit.
 
 ---
 
