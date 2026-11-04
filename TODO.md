@@ -56,7 +56,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **Builds from nothing: storage + "Install Parts with Lights: N coloured"** (reported 2026-11-04 on the HRH The
    Queen job – `maj@hrh.royals.org`, "By Royal Appointment").
@@ -67,6 +67,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
      objectives counts) and suggest the cheapest RGB parts that fit (case fans, RAM, cooler, GPU…) for the rest.
 2. **Edit a part swap** – each swap in "Part swaps" gets an edit option (change the new part, and the old part /
    category if needed). Today a change of mind means deleting the swap and adding it again.
+3. **Alt + E / Alt + P don't work in the open "New job from capture" window** (reported 2026-11-04) – the shortcuts
+   for 📸 Add email capture / 📸 Add PC parts capture do nothing once the window is already open. Handled in
+   js/keys.js (`#btnCapEmail` / `#btnCapParts`, review-window branch) – check focus in text fields, the Mac Option
+   key (Alt + E / P types characters there, `e.code` vs `e.key`) and that the buttons exist when the keys are pressed.
 
 ---
 
