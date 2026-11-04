@@ -58,10 +58,15 @@ main{padding:14px;display:flex;flex-direction:column;gap:18px}
 .task.done span{text-decoration:line-through;color:var(--muted)}
 .task .src{font-size:10px;border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px;font-style:normal}
 .src.obj{background:#1d3a4d;color:#8fd6ff}.src.hid{background:#4a3416;color:#ffc77a}.src.add{background:#2d2a4a;color:#c8b6ff}
-.task .x,.swap .x{margin-left:auto;opacity:0}.task:hover .x,.swap:hover .x{opacity:1}
+.task .x{margin-left:auto;opacity:0}.task:hover .x{opacity:1}
 .addrow{display:flex;gap:5px;margin-top:5px}
 .addrow input{flex:1;min-width:0}
-.swap{font-size:12.5px;background:#191e28;border:1px solid var(--line);border-radius:6px;padding:5px 7px;margin:4px 0;display:flex;gap:6px;align-items:center}
+.swap{font-size:12.5px;background:#191e28;border:1px solid var(--line);border-radius:8px;padding:6px 0 6px 9px;margin:4px 0;display:flex;gap:8px;align-items:center}
+.swap .sbody{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.swap .old,.swap .new{overflow-wrap:anywhere}
+.swap .arr{color:#e6edf5;font-weight:700;font-size:14px;line-height:1.1;margin:1px 0}
+.swap .sacts{display:flex;flex-direction:column;gap:8px;align-items:center}
+.swap .sx{padding:2px 5px;font-size:13px;line-height:1;color:var(--muted)}.swap .sx:hover,.swap .sx:focus-visible{color:var(--text,#e6edf5)}
 .swap.done{opacity:.55}
 .swap .cat{font-size:10px;color:var(--muted);display:block}
 .swap .old{color:#ff9a9a}.swap .new{color:#93f0b8}
@@ -363,7 +368,9 @@ dialog.helpdlg{width:min(860px,96vw);max-width:none}
 .compat li small{display:block;color:var(--muted);font-size:11px}
 .compat .cpart{color:#ffd3a8;font-weight:600}
 .compat .chint{color:var(--muted);font-size:11px}
-.swap .grip{cursor:grab;color:var(--muted);font-size:26px;line-height:1;padding:4px 2px;margin:0 -2px 0 0;user-select:none;opacity:.55}
+/* drag handle: two columns of dots from the top of the tile to the bottom */
+.swap .grip{cursor:grab;align-self:stretch;width:16px;margin:-6px 0 -6px 0;flex:none;user-select:none;opacity:.55;border-radius:0 8px 8px 0;
+  background:radial-gradient(circle,var(--muted) 1.6px,transparent 1.8px) 0 50%/8px 8px repeat-y,radial-gradient(circle,var(--muted) 1.6px,transparent 1.8px) 7px 50%/8px 8px repeat-y;background-origin:content-box;padding:6px 2px 6px 0}
 .swap:hover .grip{opacity:1}
 .swap.clash{border-color:var(--warn)}
 .swap.dragging{opacity:.4}

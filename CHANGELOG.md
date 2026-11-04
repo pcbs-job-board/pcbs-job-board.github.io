@@ -6,7 +6,7 @@ Within each version, changes are listed from most to least important.
 ## 0.12.3
 - Builds from nothing now include a drive, and "Install Parts with Lights: N coloured" suggests the RGB parts it needs.
 - "Upgrade Graphics Card" + "Install dual graphics cards" suggests pairs of cards that can run together.
-- Part swaps can be edited (✎) instead of removed and added again.
+- Part swaps: new tile layout, and they can be edited (✎) instead of removed and added again.
 - Capture buttons in the new-job window show their shortcuts (Alt+E / Alt+P).
 - Builds from nothing are worked out much faster.
 - New story job: Giovanna Sciarra ("A minor setback").
