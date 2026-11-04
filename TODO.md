@@ -27,6 +27,16 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
+## dev-0.13.0 – in progress (2026-11-04, waiting for Mariusz's look at the design)
+- New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
+  also for manual jobs); parts on the right: one field per type (`PART_SLOTS` in js/app.js – Case, Motherboard, CPU,
+  CPU Cooling, RAM ≤4, GPU ≤2, PSU, Storage, Other), autofill per category, "(empty)" placeholders, orange "!" when
+  the name isn't exactly a database part. The hidden `#fComps` textarea stays the single source for the rest of the app.
+  Captured parts the user changes / removes don't come back on the next capture (`rev.dropAuto`).
+- ↻ Refresh button on the suggested swaps.
+- Tests pass (run 366, flow 44, startup). Screenshots: `scratchpad/newjob-0.13/` (script `scratchpad/newjob.js`).
+- Next: Mariusz's feedback on the design, then the 4 small fixes (still open below) can go into this version too.
+
 ## 0.12.0 – where things are (released 2026-11-03)
 All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 - 3DMark: js/bench.js (Jacob Klein's formula, workbook "bench" column [11]); Status tile; suggestion sets in suggest.js
