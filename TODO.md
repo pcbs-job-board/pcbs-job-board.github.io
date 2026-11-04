@@ -56,7 +56,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (3)
+## Small fixes (4)
 
 1. **Builds from nothing: storage + "Install Parts with Lights: N coloured"** (reported 2026-11-04 on the HRH The
    Queen job – `maj@hrh.royals.org`, "By Royal Appointment").
@@ -71,6 +71,15 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    a mix-up with main-screen keys like C). Add "(Alt+E)" to 📸 Add email capture (top of the form) and "(Alt+P)" to
    📸 Add PC parts capture (under "Add a part"), on the right side of each button where the red X was on Mariusz's
    screenshot. **If the 1.0 keyboard re-analysis changes these keys, update the labels too.**
+4. **"Upgrade Graphics Card" + "Install dual graphics cards" in one job → suggest pairs** (reported 2026-11-04,
+   CleverMarge@NelsonPaper.gov, "Need upgrade work done": RX 580 → upgrade + dual GPUs + AIO, ZOTAC fan).
+   - Today the upgrade group offers single cards and the dual-GPU group says "isn't in the shop – pick a pair yourself".
+   - When both objectives are there, each upgrade option is a **pair**: old GPU → new card plus (empty) → the same
+     card, one tick adds both – handled together, so the dual-GPU group doesn't suggest anything on top.
+   - Only cards that can run as a pair (SLI / CrossFire flag + a 2-card score in the parts data) on a motherboard
+     that supports it (`sli` / `cf`); otherwise add the board too, or say why. Note: the ZOTAC GTX 1050 Ti OC Edition
+     from the screenshot can't run as a pair in the game (no SLI) – the cheapest ZOTAC pair would be suggested instead.
+   - Price, budget and the PSU check count both cards.
 
 ---
 
