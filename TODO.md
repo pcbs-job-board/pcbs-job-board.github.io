@@ -91,7 +91,7 @@ Notes for later (not tasks yet):
        2. "Use in suggested swaps / builds from nothing" – unticked by default and **disabled until every detail is
           filled in** (say so next to it). Uses the same "available in shop" flag as the built-in parts (not in shop
           = never suggested).
-     - Custom story jobs and parts go into the export / import backup (default, not discussed).
+     - Custom story jobs and parts go into the export / import backup (confirmed by Mariusz).
 - Already in the app: Dynabeard (0.10.0), HRH The Queen (0.12.0).
 - **Waiting to be added – no rush, goes in whenever there's a release** (reported 2026-11-03): Giovanna Sciarra, PhD –
   `giovanna@giosci.lab`, subject "A minor setback", signed "Giovanna Sciarra, PhD". Particle accelerator magnet
