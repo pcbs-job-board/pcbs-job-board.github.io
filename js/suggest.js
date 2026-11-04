@@ -79,9 +79,11 @@ const sameAs = name => p => p.name.toLowerCase() === String(name).toLowerCase();
 // two of the same card: the board must have SLI / CrossFire (the card's kind), the PSU must carry both – extras for a pair
 function pairExtras(job, card, swaps, board) {
   const extra = [], mc = cInfo(card).m;
-  if (board && mc && !(mc === "SLI" ? cInfo(board).sli === "1" : cInfo(board).cf === "1")) {
+  // the board needs the right kind (SLI / CrossFire) AND room for two cards this wide (ds = widest card it fits two of)
+  const bi = board ? cInfo(board) : {}, room = c => !c.ds || !cInfo(card).sl || +c.ds >= +cInfo(card).sl;
+  if (board && mc && !((mc === "SLI" ? bi.sli === "1" : bi.cf === "1") && room(bi))) {
     const bc = cInfo(board), nb = shopParts("Motherboard").filter(p => { const c = cInfo(p); return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(card).sl || 0)); }).filter(p => fitsBuild(withSwaps(job, swaps), p, board.name)).sort((a, b) => a.price - b.price)[0];
-    extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc}` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} – none unlocked` });
+    extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc} and room for two ${cInfo(card).sl || ""}-slot cards` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} and room for two of these cards – none unlocked` });
   }
   const psu = psuFor(job, [...swaps, ...extra.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))]);
   if (psu) extra.push(psu);
@@ -162,9 +164,11 @@ function suggestSwaps(job, opts = {}) {
       // the board may need SLI / CrossFire, the PSU more watts – offered together (G3)
       const pairSw = [{ cat: "GPU", old: "", new: shop.name }], extra = [];
       const board = cur("Motherboard").pop(), mc = cInfo(shop).m;
-      if (board && mc && !(mc === "SLI" ? cInfo(board).sli === "1" : cInfo(board).cf === "1")) {
+      // the board needs the right kind (SLI / CrossFire) AND room for two cards this wide (ds = widest card it fits two of)
+  const bi = board ? cInfo(board) : {}, room = c => !c.ds || !cInfo(card).sl || +c.ds >= +cInfo(card).sl;
+  if (board && mc && !((mc === "SLI" ? bi.sli === "1" : bi.cf === "1") && room(bi))) {
         const bc = cInfo(board), nb = shopParts("Motherboard").filter(p => { const c = cInfo(p); return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(shop).sl || 0)); }).filter(p => fitsBuild(withSwaps(job, pairSw), p, board.name)).sort((a, b) => a.price - b.price)[0];
-        extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc}` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} – none unlocked` });
+        extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc} and room for two ${cInfo(card).sl || ""}-slot cards` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} and room for two of these cards – none unlocked` });
       }
       const psu = psuFor(job, [...pairSw, ...extra.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))]);
       if (psu) extra.push(psu);
@@ -195,8 +199,10 @@ function suggestSwaps(job, opts = {}) {
           const opts2 = pickOptions(job, half, duo, { replace: hdd.name, upgrade: true, base: hdd }).map(op => {
             const card = INDEX.find(x => x.name === op.name), swaps = [{ cat: "GPU", old: hdd.name, new: op.name }, { cat: "GPU", old: "", new: op.name }];
             const extras = pairExtras(job, card, swaps, board), total = op.price * 2 + extras.reduce((t, e) => t + (e.price || 0), 0);
+            const all = [...swaps, ...extras.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))];
+            if (extras.some(e => !e.name) || !planFits(job, all)) return null;   // can't be made to fit
             return { ...op, count: 2, tag: op.tag + " · pair (" + cInfo(card).m + ")", swaps, extras, total, over: !priceOk({ price: total }, ctx.left) };
-          });
+          }).filter(Boolean);
           add("obj:" + o, o + " – as a pair (dual graphics cards)", opts2, { cat, old: hdd.name });
           if (!opts2.length) missing("obj:" + o, o + " – as a pair", "No better SLI / CrossFire card fits – pick a pair yourself.");
         } else

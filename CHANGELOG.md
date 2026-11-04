@@ -8,7 +8,8 @@ Within each version, changes are listed from most to least important.
 - One Edit window per job (✎ Edit): details, objectives, tasks and parts in the same layout – replaces the ✎ and 📸 Parts windows.
 - Suggested swaps can be worked out again (↻ Refresh).
 - Replacement coolers and fans are never weaker than the old part (air flow from the parts workbook).
-- Fixed: PC Stats lost a RAM size wrapped onto its own line ("8 GB 3000 MHz").
+- Fixed: PC Stats lost a RAM size wrapped onto its own line ("8 GB 3000 MHz"), and read "Delta II" RAM as an SSD.
+- Fixed: GPU pairs are only suggested with a motherboard that has room for both cards (added to the price when needed).
 
 ## 0.12.3
 - Builds from nothing now include a drive, and "Install Parts with Lights: N coloured" suggests the RGB parts it needs.

@@ -261,9 +261,10 @@ function denoisePartLines(lines) {
   const out = [];
   for (const l of lines) {
     // a size ("8 GB", "1 TB") is one word here, never a crumb – it tells the 4 GB and 8 GB versions apart
-    const toks = l.text.replace(/\b(\d{1,4})\s+(GB|TB|MB)\b/gi, "$1\u00a0$2").split(/[ \t\r\n]+/).filter(Boolean).map(fixSize), good = toks.map(t => /^\d{1,4}\u00a0(gb|tb|mb)$/i.test(t) || wordOk(t));
+    // "II" (Delta II, Mk II…) is read as "||" / "ll" / "Il" – a real word of part names, also at the start of a line
+    const toks = l.text.replace(/\b(\d{1,4})\s+(GB|TB|MB)\b/gi, "$1\u00a0$2").split(/[ \t\r\n]+/).filter(Boolean).map(fixSize).map(t => /^[|Il]{2}$/.test(t) && partVocab().has("ii") ? "II" : t), good = toks.map(t => /^\d{1,4}\u00a0(gb|tb|mb)$/i.test(t) || wordOk(t));
     // at the ends, 1–2 letter bits ("Se", "a") are picture crumbs even when they happen to be real words
-    const edgeOk = i => good[i] && !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
+    const edgeOk = i => good[i] && (toks[i] === "II" || !(/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, ""))));
     let a = 0, z = toks.length - 1;
     while (a <= z && !edgeOk(a)) a++;
     // …except a capital model letter / suffix right after a real word ("Phantom Gaming D", "RX580 8G OC") – it can decide
