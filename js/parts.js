@@ -47,7 +47,8 @@ function buildIndex() {
 function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
   const toks = normP(q).split(" ").filter(Boolean); searchParts.hidden = 0; if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
-  const all = INDEX.filter(p => (anyCat || p.cat === cat) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
+  const cats = cat && cat.includes("|") ? cat.split("|") : null;   // "Case Fan|Cables|…" – several categories
+  const all = INDEX.filter(p => (anyCat || (cats ? cats.includes(p.cat) : p.cat === cat)) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
   const ok = buyable ? all.filter(p => p.hist || unlocked(p)) : all;
   searchParts.hidden = all.length - ok.length;
   return ok

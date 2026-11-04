@@ -506,6 +506,8 @@ async function runOcr() {
 const PART_SLOTS = [{ k: "Case", label: "Case", max: 1 }, { k: "Motherboard", label: "Motherboard", max: 1 }, { k: "CPU", label: "CPU", max: 1 },
   { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2 }, { k: "PSU", label: "PSU", max: 1 },
   { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
+// "Other" = every category no other field takes (case fans, cables, custom water cooling…)
+const OTHER_CATS = () => CATS.filter(c => !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
 const slotOf = cat => PART_SLOTS.find(sl => sl.k === cat && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
 let DBNAMES = null;
 function inPartsDb(name) {   // exactly a part of the database (any DLC / version – a customer PC can have anything)
@@ -515,7 +517,7 @@ function inPartsDb(name) {   // exactly a part of the database (any DLC / versio
 function partFieldsHtml(comps) {
   return `<div id="fParts">${PART_SLOTS.map(sl => {
     const rows = comps.filter(c => slotOf(c.cat) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
-    const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? "" : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
+    const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more = sl.other || rows.length < sl.max ? (rows.length ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>` : sl.other ? row({ cat: "Other", name: "" }) : "") : "";
     return `<div class="pslot${!sl.other && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
@@ -539,21 +541,22 @@ function bindPartFields() {
   wrap.addEventListener("input", e => { if (e.target.matches("#fParts input[data-slot]")) { const ta = $("#fComps"); clearTimeout(bindPartFields.t); bindPartFields.t = setTimeout(partsFromFields, 400); } });
   wrap.addEventListener("click", e => {
     const rm = e.target.closest("[data-prm]"); if (rm) { rm.closest(".prow").querySelector("input").value = ""; partsFromFields(); renderPartFields(); return; }
-    const add = e.target.closest("[data-padd]"); if (add) { add.insertAdjacentHTML("beforebegin", `<div class="prow"><input data-ac data-ac-cat="${add.dataset.padd === "Other" ? "" : esc(add.dataset.padd)}" data-slot="${esc(add.dataset.padd)}" data-cat="${esc(add.dataset.padd)}" placeholder="(empty)" autocomplete="off"></div>`); add.previousElementSibling.querySelector("input").focus(); if (add.closest(".pslot").querySelectorAll(".prow").length >= (slotOf(add.dataset.padd).max)) add.remove(); }
+    const add = e.target.closest("[data-padd]"); if (add) { add.insertAdjacentHTML("beforebegin", `<div class="prow"><input data-ac data-ac-cat="${add.dataset.padd === "Other" ? OTHER_CATS() : esc(add.dataset.padd)}" data-slot="${esc(add.dataset.padd)}" data-cat="${esc(add.dataset.padd)}" placeholder="(empty)" autocomplete="off"></div>`); add.previousElementSibling.querySelector("input").focus(); if (add.closest(".pslot").querySelectorAll(".prow").length >= (slotOf(add.dataset.padd).max)) add.remove(); }
   });
 }
 function renderForm() {
   const d = rev.draft, f = $("#revForm"), jb = $("#revJob");
-  const parts = `<label>Parts of this PC</label>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>
-    <button id="btnCapParts" class="capparts">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>`;
-  const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
+  const parts = `<button id="btnCapParts" class="capparts captop">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>
+    <label>Parts of this PC</label>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>`;
+  const emailAdder = `<button id="btnCapEmail" class="capparts capemail captop">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
   if (rev.forJob) {
-    jb.innerHTML = "";
+    jb.innerHTML = ""; $("#revCapE").innerHTML = "";
     f.innerHTML = `${parts}
       <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); parts you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
-    jb.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
+    $("#revCapE").innerHTML = isEdit ? "" : emailAdder;
+    jb.innerHTML = `<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
