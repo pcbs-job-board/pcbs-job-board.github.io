@@ -67,10 +67,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
      objectives counts) and suggest the cheapest RGB parts that fit (case fans, RAM, cooler, GPU…) for the rest.
 2. **Edit a part swap** – each swap in "Part swaps" gets an edit option (change the new part, and the old part /
    category if needed). Today a change of mind means deleting the swap and adding it again.
-3. **Alt + E / Alt + P don't work in the open "New job from capture" window** (reported 2026-11-04) – the shortcuts
-   for 📸 Add email capture / 📸 Add PC parts capture do nothing once the window is already open. Handled in
-   js/keys.js (`#btnCapEmail` / `#btnCapParts`, review-window branch) – check focus in text fields, the Mac Option
-   key (Alt + E / P types characters there, `e.code` vs `e.key`) and that the buttons exist when the keys are pressed.
+3. **Show the shortcuts on the capture buttons of the new-job window** – Alt + E / Alt + P work fine (the report was
+   a mix-up with main-screen keys like C). Add "(Alt+E)" to 📸 Add email capture (top of the form) and "(Alt+P)" to
+   📸 Add PC parts capture (under "Add a part"), on the right side of each button where the red X was on Mariusz's
+   screenshot. **If the 1.0 keyboard re-analysis changes these keys, update the labels too.**
 
 ---
 
@@ -123,6 +123,7 @@ Notes for later (not tasks yet):
   opening / closing the swap form, deleting a swap, "Current parts", the review window and dialogs.
 - Check shortcuts for clashes with the browser / screen readers (Alt + arrows = back / forward in some
   browsers outside a focused control), and that every mouse-only action has a keyboard way.
+- The new-job window shows "(Alt+E)" / "(Alt+P)" on its capture buttons – keep those labels in step with any key change.
 - Propose the changes to Mariusz first (list), then build, update the shortcuts window and the "How to use it"
   window, and add keyboard checks to the flow test.
 
