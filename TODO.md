@@ -104,19 +104,7 @@ Notes for later (not tasks yet):
   window, and add keyboard checks to the flow test.
 
 ### 1.0: bring the "How to use it" window up to date
-- The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) was written from the Steam guide
-  before the later 0.10.0 features. For 1.0, add the important functions added since then, up to and including
-  everything released in 1.0. From 0.10.0 so far:
-  - part details in the suggestions and on swaps (board sizes, GPU length, socket, RAM, watts, SLI/CrossFire, lighting)
-  - ⚡ power check (shows once a PSU is planned; overclocking)
-  - compatibility: fitting parts first in the suggestions, warning box under part swaps, swap order decides
-    who wins (drag ⠿ / Alt + ↑ ↓), parts named in the objectives win over all
-  - unclear PC Stats model numbers shown as read, for checking
-  - 💡 suggested swaps in the new-job / PC Stats windows (0.11.0)
-  - Overclock tile + suggestions for overclock objectives; "plans to overclock" PSU check (0.12.0)
-  - 3DMark tile + suggested part sets for "3DMark score of N" (0.12.0)
-  - STATUS row: 💰 ⚡ ⚠️ tiles, colours, details on hover / keyboard focus (0.11.0)
-  - slimmer top bar: screen box (live preview = change screen, red ■ = stop), Capture job + ＋ manual job, icon-only ⚙️ (0.11.0)
-- Add anything 1.0 brings. New screenshots where they help (compressed WebP, loaded only when the window opens).
-  Check every button name against the app.
-
+- The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) is up to date with 0.12.x (done in
+  dev-0.12.2 from the updated Steam guide: suggested swaps, 3DMark sets + tile, overclock tile, tips, career unlocks,
+  PC Bay builds). Pictures come from `scratchpad/guide3.js` (real screenshots through the real capture flow).
+- For 1.0: add anything 1.0 brings, check every button name against the app, and update the Steam guide the same way.
