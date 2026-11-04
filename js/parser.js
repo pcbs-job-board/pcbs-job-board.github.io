@@ -424,6 +424,8 @@ function detectHidden(body, rules, smart, objectives, emailDate, hasDeadline) {
   }
   // "used parts are fine" cancels the new-parts rule
   if (/used parts (are|is) (fine|ok|okay)|don't mind used|happy with used|used is fine/.test(b)) hidden = hidden.filter(h => !/new parts only/i.test(h.task));
+  // "Install Parts with Lights: N coloured" already in the objectives → the RGB hint adds nothing
+  if (objectives.some(o => /parts with lights?/i.test(o))) hidden = hidden.filter(h => !/\brgb\b/i.test(h.task));
   // 3DMark already in the listed objectives → no extra hint
   if (objectives.some(o => /3d ?mark|benchmark/i.test(o))) hidden = hidden.filter(h => !/3dmark/i.test(h.task));
   // …and "slow" is then about the score, not viruses: the virus hint stays only when something else points to viruses

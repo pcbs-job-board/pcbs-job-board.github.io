@@ -15,7 +15,7 @@ const KEYMAP = [
     ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
     ["Space / Enter", "Tick the box · press the button"], ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"], ["Esc", "Back to choosing jobs"]] },
   { group: "New job window", keys: [
-    ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"], ["Alt + A", "🎯 Adjust areas"]] },
+    ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"]   /* also shown on those buttons (js/app.js .capkey) */, ["Alt + A", "🎯 Adjust areas"]] },
   { group: "Screen area window", keys: [["Ctrl + Enter", "✓ Use this area"], ["Esc", "Skip for now"]] },
 ];
 let keysOn = LS.get("pcbs.keys", true);

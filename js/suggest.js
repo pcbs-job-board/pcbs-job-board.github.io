@@ -74,20 +74,38 @@ function atLeast(ref, cat) {
 }
 const sameAs = name => p => p.name.toLowerCase() === String(name).toLowerCase();
 
+// two of the same card: the board must have SLI / CrossFire (the card's kind), the PSU must carry both – extras for a pair
+function pairExtras(job, card, swaps, board) {
+  const extra = [], mc = cInfo(card).m;
+  if (board && mc && !(mc === "SLI" ? cInfo(board).sli === "1" : cInfo(board).cf === "1")) {
+    const bc = cInfo(board), nb = shopParts("Motherboard").filter(p => { const c = cInfo(p); return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(card).sl || 0)); }).filter(p => fitsBuild(withSwaps(job, swaps), p, board.name)).sort((a, b) => a.price - b.price)[0];
+    extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc}` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} – none unlocked` });
+  }
+  const psu = psuFor(job, [...swaps, ...extra.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))]);
+  if (psu) extra.push(psu);
+  return extra;
+}
 // ---------- the rules ----------
 function suggestSwaps(job, opts = {}) {
   const out = [], build = plannedBuild(job), cur = cat => build.filter(c => c.cat === cat);
   const spent = (job.swaps || []).reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0);
-  const ctx = { left: job.budget != null ? job.budget - spent : null, brands: (opts.brands || []).filter(Boolean), picked: opts.picked || [] };
+  const ctx = { left: job.budget != null ? job.budget - spent : null, brands: (opts.brands || []).filter(Boolean), picked: opts.picked || [], pickedLights: opts.pickedLights || [] };
   const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o));
   const add = (key, reason, items, extra = {}) => { if (items.length) out.push({ key, reason, options: items, ...extra }); };
   const missing = (key, reason, need) => out.push({ key, reason, options: [], hint: need });
   const ref = name => { const m = bestPartMatch(name); return m ? INDEX.find(p => p.name === m.name) || { name: m.name, cat: m.cat } : null; };
-  const handled = new Set(); ctx.objCats = handled;   // categories an objective picks a part for (the 3DMark set leaves them to it)
+  const handled = new Set(); ctx.objCats = handled;
+  // "Upgrade Graphics Card" + "Install dual graphics cards": the upgrade is offered as a PAIR of new cards (one tick
+  // adds both), and the dual-GPU rule adds nothing on top
+  const DUAL = /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i;
+  const pairMode = objs.some(o => DUAL.test(o)) && objs.some(o => /^\W*upgrade\s+(the\s+)?(graphics|gpu|video)/i.test(o)) && cur("GPU").length < 2;   // categories an objective picks a part for (the 3DMark set leaves them to it)
   const newBuild = !(job.components || []).length;   // "build one from nothing" jobs
 
   for (const o of objs) {
     const ol = o.toLowerCase();
+    // 3b  "Install Parts with Lights: 6 coloured (255,0,255)" – 6 parts with RGB lighting (colour set in the game)
+    const mL = o.match(/parts with lights?\s*:?\s*(\d+)/i);
+    if (mL) { const sg = lightsSuggestion(job, ctx, +mL[1], o); if (sg) out.push(sg); continue; }
     // 1 / 2 / 4  Install <part> [or better]
     let m = o.match(/^\W*install\s+(.+?)(\s+or better)?\s*$/i);
     if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
@@ -133,8 +151,8 @@ function suggestSwaps(job, opts = {}) {
       add("obj:" + o, o, opts2.slice(0, 3), { cat: "RAM" }); handled.add("RAM"); continue;
     }
     // 9  Install dual graphics cards
-    if (/dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i.test(o)) {
-      const gpus = cur("GPU"); if (gpus.length >= 2) continue;
+    if (DUAL.test(o)) {
+      const gpus = cur("GPU"); if (gpus.length >= 2 || pairMode) continue;
       if (!gpus.length) { missing("obj:" + o, o, "capture PC Stats to get a second-GPU suggestion"); continue; }
       const g = gpus[0], shop = shopParts("GPU").find(sameAs(g.name));
       if (!shop) { missing("obj:" + o, o, `${g.name} isn't in the shop (locked or not sold) – pick a pair yourself`); continue; }
@@ -168,6 +186,18 @@ function suggestSwaps(job, opts = {}) {
         add("obj:" + o, o, pickOptions(job, ctx, eq, { replace: hdd.name, base: hdd }), { cat, old: hdd.name });
       } else {
         const better = shopParts(cat).filter(p => RATED.has(cat) ? rk(p) > rk(hdd) : atLeast(hdd, cat)(p) && !sameAs(hdd.name)(p));
+        if (cat === "GPU" && pairMode) {
+          // only cards that run as a pair in the game (SLI / CrossFire)
+          const board = cur("Motherboard").pop(), duo = better.filter(p => cInfo(p).m);
+          const half = { ...ctx, left: ctx.left == null ? null : ctx.left / 2 };   // two cards share the budget
+          const opts2 = pickOptions(job, half, duo, { replace: hdd.name, upgrade: true, base: hdd }).map(op => {
+            const card = INDEX.find(x => x.name === op.name), swaps = [{ cat: "GPU", old: hdd.name, new: op.name }, { cat: "GPU", old: "", new: op.name }];
+            const extras = pairExtras(job, card, swaps, board), total = op.price * 2 + extras.reduce((t, e) => t + (e.price || 0), 0);
+            return { ...op, count: 2, tag: op.tag + " · pair (" + cInfo(card).m + ")", swaps, extras, total, over: !priceOk({ price: total }, ctx.left) };
+          });
+          add("obj:" + o, o + " – as a pair (dual graphics cards)", opts2, { cat, old: hdd.name });
+          if (!opts2.length) missing("obj:" + o, o + " – as a pair", "No better SLI / CrossFire card fits – pick a pair yourself.");
+        } else
         add("obj:" + o, o, pickOptions(job, ctx, better, { replace: hdd.name, upgrade: true, base: hdd }), { cat, old: hdd.name });
       }
       handled.add(cat); continue;
@@ -197,7 +227,7 @@ function suggestSwaps(job, opts = {}) {
   // 19  water cooling requested (hidden) – AIO only
   if (opts.waterCooling && !handled.has("CPU Cooler")) out.push(...aioSuggestion(job, ctx, "Water cooling requested (hidden objective)", cur));
   // 18  Add RGB lighting – RGB case fans for free fan places
-  if (opts.rgb) {
+  if (opts.rgb && !objs.some(o => /parts with lights?/i.test(o))) {   // the lights objective has its own set
     const cs = cur("Case").pop(), cc = cs ? cInfo(cs) : {};
     for (const z of ["120", "140"]) {
       const places = +(cc["r" + z] || 0), used = cur("Case Fan").filter(f => cInfo(f).z === z).length, free = places - used;
@@ -331,6 +361,38 @@ const BENCH_LABEL = { "RAM": "More RAM sticks (more channels)", "GPU": "New GPU"
   "2nd GPU": "Second GPU (same card)", "2nd GPU + RAM": "Second GPU + RAM sticks", "CPU": "New CPU", "CPU + RAM": "New CPU + RAM sticks", "CPU + GPU": "New CPU + GPU",
   "CPU + GPU + RAM": "New CPU + GPU + RAM sticks", "Motherboard + CPU": "New motherboard + CPU", "Motherboard + CPU + RAM": "New motherboard + CPU + RAM sticks" };
 const XMP_TASK = "Turn on XMP in the BIOS (RAM settings) – needed for the 3DMark score";
+// RGB = lighting whose colour can be set ("· RGB" in the details); "White lighting" etc. can't be coloured
+function isRGB(p) { const ix = INDEX.find(x => x.name === p.name); return !!ix && /(^|·\s*)RGB(\s*·|$)/.test(ix.det || ""); }
+// N parts with coloured lighting: count the RGB parts planned, then the cheapest way to the rest – RGB fans for free
+// fan places first, then RGB versions of fans / RAM / cooler / drive / GPU already there (never worse, must fit)
+function lightsSuggestion(job, ctx, want, reason) {
+  if (ctx.pickedLights && ctx.pickedLights.length) job = { ...job, swaps: [...(job.swaps || []), ...ctx.pickedLights.map((x, i) => ({ id: "pl" + i, ...x }))] };
+  const build = plannedBuild(job), lit = build.filter(isRGB).length, need = want - lit;
+  if (need <= 0) return null;
+  const rgbShop = cat => shopParts(cat).filter(isRGB).sort((a, b) => a.price - b.price), items = [];
+  const cs = build.filter(p => p.cat === "Case").pop(), cc = cs ? cInfo(cs) : {}, fans = build.filter(p => p.cat === "Case Fan");
+  for (const z of ["120", "140"]) {
+    const fan = rgbShop("Case Fan").find(p => cInfo(p).z === z); if (!fan || !cs) continue;
+    const free = +(cc["r" + z] || 0) - fans.filter(f => cInfo(f).z === z).length;
+    for (let i = 0; i < free; i++) items.push({ n: 1, cost: fan.price, swaps: [{ cat: "Case Fan", old: "", new: fan.name, price: fan.price, lvl: fan.lvl }] });
+    for (const f of fans.filter(f => cInfo(f).z === z && !isRGB(f))) items.push({ n: 1, cost: fan.price, swaps: [{ cat: "Case Fan", old: f.name, new: fan.name, price: fan.price, lvl: fan.lvl }] });
+  }
+  const ram = build.filter(p => p.cat === "RAM" && !isRGB(p));
+  if (ram.length) { const r0 = cInfo(ram[0]), st = rgbShop("RAM").find(p => +cInfo(p).gb >= +(r0.gb || 0) && +cInfo(p).mhz >= +(r0.mhz || 0));
+    if (st) items.push({ n: ram.length, cost: st.price * ram.length, swaps: ram.map(r => ({ cat: "RAM", old: r.name, new: st.name, price: st.price, lvl: st.lvl })) }); }
+  for (const cat of ["CPU Cooler", "Storage", "GPU"]) for (const p of build.filter(x => x.cat === cat && !isRGB(x) && !x.req)) {
+    const better = atLeast(INDEX.find(x => x.name === p.name) || p, cat), c = rgbShop(cat).find(x => better(x) && fitsBuild(job, x, p.name));
+    if (c) items.push({ n: 1, cost: c.price, swaps: [{ cat, old: p.name, new: c.name, price: c.price, lvl: c.lvl }] });
+  }
+  items.sort((a, b) => a.cost / a.n - b.cost / b.n || a.cost - b.cost);
+  const take = []; let got = 0; for (const it of items) { if (got >= need) break; take.push(it); got += it.n; }
+  const lead = `${reason} – ${lit} of ${want} planned`;
+  if (got < need) return { key: "lights", reason: lead, options: [], hint: `Only ${got} more RGB part${got === 1 ? "" : "s"} found for this PC – pick a case with more fan places or RGB parts yourself.` };
+  const swaps = take.flatMap(t => t.swaps), total = swaps.reduce((t, x) => t + x.price, 0), colour = (reason.match(/\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/) || [])[0];
+  return { key: "lights", reason: lead, cat: "Lights", options: [{ multi: true, name: `${need} more RGB part${need > 1 ? "s" : ""}`, cat: "Lights", tag: "cheapest", swaps, extras: [],
+    tasks: [`Set the lighting of ${want} parts to ${colour ? "colour " + colour : "the colour asked for"}`], score: null, total, price: total, count: 1,
+    lvl: Math.max(0, ...swaps.map(x => x.lvl || 0)), over: !priceOk({ price: total }, ctx.left), nParts: swaps.length }] };
+}
 function benchSuggestions(job, ctx) {
   const target = benchTarget(job); if (!target) return [];
   if (ctx.picked && ctx.picked.length) job = { ...job, swaps: [...(job.swaps || []), ...ctx.picked.map((x, i) => ({ id: "pk" + i, ...x }))] };   // ticked in the new-job window
@@ -458,17 +520,24 @@ function newBuildBench(job, ctx, target, build, why, set) {
   }
   cands.sort((a, b) => a.cost - b.cost || b.sc.on - a.sc.on);
   // what it still needs to run: a PSU that carries it and a CPU cooler that fits (cheapest)
+  const cheap = {}, cheapFirst = cat => cheap[cat] || (cheap[cat] = shopParts(cat).sort((a, b) => a.price - b.price));   // fit checks are slow: cheapest first, stop at the first that fits
   const runParts = swaps => {
     const extras = [], j2 = withSwaps(job, swaps), b2 = plannedBuild(j2), w = name => (powerOf(name) || {}).w || 0;
     if (!have("PSU").length) {
       const need = POWER_OTHER + b2.filter(p => p.cat === "CPU" || p.cat === "GPU").reduce((t, p) => t + w(p.name), 0);
-      const psu = shopParts("PSU").filter(p => w(p.name) >= need && fitsBuild(j2, p, "")).sort((a, b) => a.price - b.price)[0];
+      const psu = cheapFirst("PSU").find(p => w(p.name) >= need && fitsBuild(j2, p, ""));
       if (!psu) return null; extras.push({ cat: "PSU", old: "", name: psu.name, price: psu.price, why: `PSU for ~${need} W` });
     }
     if (!have("CPU Cooler").length) {
       const j3 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]);
-      const cool = shopParts("CPU Cooler").filter(p => fitsBuild(j3, p, "")).sort((a, b) => a.price - b.price)[0];
+      const cool = cheapFirst("CPU Cooler").find(p => fitsBuild(j3, p, ""));
       if (!cool) return null; extras.push({ cat: "CPU Cooler", old: "", name: cool.name, price: cool.price, why: "CPU cooler" });
+    }
+    // a drive to boot from – the cheapest that fits, unless an objective picks it
+    if (!have("Storage").length && !(ctx.objCats && ctx.objCats.has("Storage"))) {
+      const j4 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]);
+      const drive = cheapFirst("Storage").find(p => fitsBuild(j4, p, ""));
+      if (drive) extras.push({ cat: "Storage", old: "", name: drive.name, price: drive.price, why: "drive for the OS" });
     }
     return extras;
   };
@@ -490,7 +559,7 @@ function newBuildBench(job, ctx, target, build, why, set) {
   if (picks.length && picks[0].o.xmp) tryPick(c => c.sc.off >= target, "no XMP needed");
   if (picks.length && picks[0].c.nG === 2) tryPick(c => c.nG === 1, "one GPU");
   if (ctx.brands.length) tryPick(isBrand, `★ ${ctx.brands[0]}`);
-  const still = ["Case", "Storage"].filter(c => !have(c).length).map(c => c.toLowerCase());
+  const still = ["Case"].filter(c => !have(c).length).map(c => c.toLowerCase());
   return [{ key: "bench", reason: why + (still.length ? ` · also needs: ${still.join(", ")}` : ""), cat: "3DMark", options: picks.map(p => p.o),
     hint: picks.length ? "" : !cands.length && g0.length ? `The ${g0[0].name} can't reach this score with any CPU – pick a stronger GPU.` : "No unlocked parts reach this score – check the budget or your career level." }];
 }

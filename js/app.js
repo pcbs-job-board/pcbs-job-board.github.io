@@ -167,7 +167,7 @@ function jobCard(j) {
   const foundHtml = found.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}</span>${del(k)}</div>`).join("");
   const swapPrice = s => s.price ?? priceOf(s.new);
   const clashes = jobCompatIssues(j), bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
-  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true">⠿</span><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
+  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div style="flex:1"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span> → <span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true">⠿</span><button class="ghost x" data-act="editSwap" data-id="${j.id}" data-k="${s.id}" title="Edit this swap" aria-label="Edit this swap">✎</button><button class="ghost x" data-act="delSwap" data-id="${j.id}" data-k="${s.id}">✕</button></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "", budgetState = "off";
   const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
@@ -225,6 +225,17 @@ document.addEventListener("click", e => {
   else if (a === "toggleSwap") { j.swaps.find(s => s.id === b.dataset.k).done = b.checked; }
   else if (a === "setPrice") { const s = j.swaps.find(s => s.id === b.dataset.k); const cur = s.price ?? priceOf(s.new); const v = prompt(`Price of ${s.new} in $ (leave empty to use the shop price):`, cur ?? ""); if (v === null) return; s.price = v.trim() === "" ? undefined : Math.max(0, Math.round(+v.replace(/[^\d.]/g, "")) || 0); if (s.price === undefined) delete s.price; }
   else if (a === "delSwap") { j.swaps = j.swaps.filter(s => s.id !== b.dataset.k); }
+  else if (a === "editSwap") {   // the swap form, filled in, right under that swap – saving changes it in place
+    const sw = j.swaps.find(x => x.id === b.dataset.k); if (!sw) return;
+    const f = document.querySelector(`[data-swapform="${j.id}"]`), row = b.closest(".swap"), sel = f.querySelector('[data-f="old"]');
+    row.after(f); f.hidden = false; f.dataset.edit = sw.id; document.querySelector(`[data-act="openSwap"][data-id="${j.id}"]`).hidden = true;
+    let i = j.components.findIndex(c => c.name === sw.old && c.cat === sw.cat); if (i < 0) i = j.components.findIndex(c => c.name === sw.old);
+    if (sw.old && i < 0) { sel.insertAdjacentHTML("beforeend", `<option value="keep">${esc(sw.cat)}: ${esc(sw.old)}</option>`); sel.value = "keep"; } else sel.value = sw.old ? String(i) : "new";
+    f.querySelector('[data-f="cat"]').value = CATS.includes(sw.cat) ? sw.cat : "Other";
+    const inp = f.querySelector('[data-f="new"]'); inp.value = sw.new;
+    const save = f.querySelector('[data-act="saveSwap"]'); save.textContent = "Save change";
+    sel.onchange = ev => { const c = j.components[ev.target.value]; if (c) f.querySelector('[data-f="cat"]').value = CATS.includes(c.cat) ? c.cat : "Other"; };
+    inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc; return; }
   else if (a === "openSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); f.hidden = false; b.hidden = true;
     f.querySelector('[data-f="old"]').onchange = ev => {
       // copy the chosen part (name + category) into "New part", selected so typing replaces it
@@ -238,7 +249,10 @@ document.addEventListener("click", e => {
   else if (a === "cancelSwap") { render(); return; }
   else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = f.querySelector('[data-f="cat"]').value;
     if (!nw) { f.querySelector('[data-f="new"]').focus(); return; }
-    j.swaps.push({ id: uid(), old: j.components[o]?.name || "", cat, new: nw, done: false }); rememberPart(nw, cat); }
+    const ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
+    if (ed) { const was = ed.new; ed.old = o === "keep" ? ed.old : j.components[o]?.name || ""; ed.cat = cat; ed.new = nw; if (nw !== was) { delete ed.price; ed.done = false; } }
+    else j.swaps.push({ id: uid(), old: j.components[o]?.name || "", cat, new: nw, done: false });
+    rememberPart(nw, cat); }
   else if (a === "complete") { const idx = jobs.indexOf(j); jobs.splice(idx, 1); save(); render(); toast(`Completed: ${j.sender || "job"}`, () => { if (j.table && jobs.some(o => o.table === j.table)) j.table = 0; jobs.splice(idx, 0, j); save(); render(); }); return; }
   else if (a === "edit") { openReview(null, j); return; }
   else if (a === "addParts") { startCapture(j); return; }
@@ -490,8 +504,8 @@ async function runOcr() {
 function renderForm() {
   const d = rev.draft, f = $("#revForm");
   const partAdder = `<div class="addrow"><input id="fPartAdd" data-ac data-ac-cat="" placeholder="Add a part – type to search (e.g. 8700, Vega 64)" autocomplete="off"><button id="fPartAddBtn">＋</button></div>
-    <button id="btnCapParts" class="capparts">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small></button>`;
-  const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small></button>`;
+    <button id="btnCapParts" class="capparts">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>`;
+  const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
   if (rev.forJob) {
     f.innerHTML = `<label>Parts of this PC (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
       <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); lines you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
@@ -538,15 +552,17 @@ function suggestInput() {
   const hid = [...document.querySelectorAll("#fHidden input:checked")].map(c => d.hidden[c.dataset.h]).filter(Boolean);
   const budget = $("#fBudget") && $("#fBudget").value !== "" ? +$("#fBudget").value : d.budget;
   return { job: { components, swaps: [], objectives: $("#fObj") ? lines("#fObj") : d.objectives || [], budget, suspect: $("#fSuspect")?.value.trim() || "", story: !!$("#fStory")?.checked, tasks: [], hidden: hid, ocLater: ocLaterOf(d) },
-    opts: { picked: tickedForBench(), brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /^add rgb/i.test(h.task)), waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)) } };
+    opts: { picked: tickedForBench(), pickedLights: tickedSwaps("lights"), brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand), broken: hid.filter(h => h.part).map(h => h.part), rgb: hid.some(h => /^add rgb/i.test(h.task)), waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)) } };
 }
-// parts ticked in other suggestions (an objective's GPU, case…) – a 3DMark set for a new build is worked out around them
-function tickedForBench() {
+// parts ticked in other suggestions (an objective's GPU, case…) – the 3DMark set for a new build and the coloured-lights
+// set are worked out around them (each leaves its own group out)
+function tickedSwaps(skipKey) {
   const out = [];
-  document.querySelectorAll("#fSugg input[data-sg]:checked").forEach(c => { const sg = rev?.sugg?.[+c.dataset.sg], o = sg?.options[+c.dataset.so]; if (!o || sg.key === "bench") return;
+  document.querySelectorAll("#fSugg input[data-sg]:checked").forEach(c => { const sg = rev?.sugg?.[+c.dataset.sg], o = sg?.options[+c.dataset.so]; if (!o || sg.key === skipKey) return;
     o.swaps.forEach(s => out.push({ cat: s.cat, old: s.old || "", new: s.new })); (o.extras || []).filter(e => e.name).forEach(e => out.push({ cat: e.cat, old: e.old || "", new: e.name })); });
   return out;
 }
+const tickedForBench = () => tickedSwaps("bench");
 function renderSuggestions() {
   const box = $("#fSugg"); if (!box || !rev) return;
   const keep = new Set([...box.querySelectorAll("input:checked")].map(c => c.dataset.pick));
@@ -563,15 +579,16 @@ function renderSuggestions() {
       ${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${money(o)}</b></label>`; }).join("")
       : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`}</div>`).join("");
   // one choice per suggestion
-  const newBench = list.some(sg => sg.key === "bench" && / – new build/.test(sg.reason));
+  // sets that follow the other ticks: the 3DMark set of a new build, the coloured-lights set
+  const follows = list.filter(sg => (sg.key === "bench" && / – new build/.test(sg.reason)) || sg.key === "lights").map(sg => sg.key);
   box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; });
-    if (newBench && list[+c.dataset.sg]?.key !== "bench") renderSuggestions(); }));   // new build: the 3DMark set follows the parts ticked
+    const k = list[+c.dataset.sg]?.key; if (follows.some(f => f !== k)) renderSuggestions(); }));
 }
 // a 3DMark suggestion is a SET of parts: one box adds all of them (+ the XMP task when the score needs it)
 function benchOptHtml(o, i, k, pick, keep) {
   const n = o.nParts, all = [...o.swaps.map(x => ({ ...x, name: x.new })), ...(o.extras || []).filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, name: e.name, price: e.price, why: e.why }))];
   return `<label class="sopt multi ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
-    <span><span class="sname"><b>${esc(o.name)}</b> → score <b class="bscore">${o.score.toLocaleString()}</b></span>
+    <span><span class="sname"><b>${esc(o.name)}</b>${o.score != null ? ` → score <b class="bscore">${o.score.toLocaleString()}</b>` : ""}</span>
     <small class="stag">${n > 1 ? `one tick adds <b>all ${n} parts</b> below` : n ? "one tick adds the part below" : "no parts needed"}${o.tag ? " · " + esc(o.tag) : ""}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
     ${n ? `<ul class="sset">${all.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.name)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.why ? ` <small>– ${esc(x.why)}</small>` : ""}</li>`).join("")}</ul>` : ""}
     ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
