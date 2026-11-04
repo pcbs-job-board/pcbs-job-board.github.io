@@ -56,10 +56,16 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
 
-_None open. The four from 2026-11-04 (drive + lit parts in new builds, edit swaps, Alt+E / Alt+P labels, GPU pairs)
-are done in `dev-0.12.3`, with the Giovanna Sciarra story job._
+1. **"Same part again" suggests a different model** (reported 2026-11-04, CarefreeDenise@DSinghModifications.ly,
+   "Fix for PC": SilverStone fan + "Diagnose and fix" → "SilverStone NT06-PRO → SilverStone AR08", tagged "same part again").
+   - Cause (found): `sameOrBrand()` in js/suggest.js returns the identical part **plus** every similar part of the
+     favourite brand; `pickOptions()` then sorts by price, so the cheaper AR08 ($40) wins over the NT06-PRO ($60) and
+     the identical part isn't shown at all. Both are SilverStone, so the brand doesn't decide anything here.
+   - Fix: when the identical part is in the shop (unlocked), offer it first / only it for "same part again"; other
+     parts of the brand only when the identical one can't be bought. Check rules 15 (customer hints / suspects) and
+     15b (brand + "Diagnose and fix") – both use sameOrBrand. Add this case to the unit tests.
 
 ---
 
