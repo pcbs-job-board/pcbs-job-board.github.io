@@ -81,6 +81,9 @@ Notes for later (not tasks yet):
    - "Report story job" becomes something like **"Treat future jobs from this sender as a story job"** and
      "Report missing part" becomes something like **"Save custom part"** – saved in the user's browser and used
      alongside the built-in story job list / parts database.
+   - Open questions (asked 2026-11-04): match a custom story job by sender address only, or address or subject
+     (like the built-in list)? Custom part fields: name + category only, + price / unlock level (suggestions, budget),
+     or full specs (fit + power checks)? Default: custom story jobs and parts go into the export / import backup.
 - Already in the app: Dynabeard (0.10.0), HRH The Queen (0.12.0).
 - **Waiting to be added – no rush, goes in whenever there's a release** (reported 2026-11-03): Giovanna Sciarra, PhD –
   `giovanna@giosci.lab`, subject "A minor setback", signed "Giovanna Sciarra, PhD". Particle accelerator magnet
