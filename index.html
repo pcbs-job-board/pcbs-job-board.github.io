@@ -73,11 +73,11 @@
         <div class="ctrls">
           <div class="seg" id="shotTabs"></div>
           <span class="spacer"></span>
-          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button><button id="btnReOcr">↻ Read again</button>
+          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button>
         </div>
         <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
         <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
-        <div id="shotWrap"><img id="shot" alt="capture"><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
+        <div id="shotWrap"><img id="shot" alt="capture"><button id="btnReOcr" class="reocr" title="Read this screenshot again" aria-label="Read this screenshot again">↻</button><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
         <div class="progress"><div id="prog"></div></div>
         <div class="hint" id="ocrState"></div>
         <p class="ocrnote">ℹ️ Works with the <b>English</b> version of the game only. Text is read automatically and mistakes can happen – always double-check the fields and hidden objectives against the email.</p>

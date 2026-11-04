@@ -510,3 +510,9 @@ dialog.flipdlg{width:min(1000px,97vw);max-width:none}
 .sugghead{display:flex;align-items:center;gap:8px}.sugghead label{flex:1}#suggRefresh{padding:2px 8px;font-size:12px}
 .capparts.captop{margin:0 0 10px}
 #revCapE:empty{display:none}
+/* screenshot tabs + Adjust areas: compact; "Read again" = round ↻ over the picture */
+#shotPane .ctrls button,#shotTabs button{padding:3px 9px;font-size:12.5px;min-height:0}
+#shotWrap{position:relative}
+.reocr{position:absolute;top:8px;right:8px;z-index:3;width:38px;height:38px;border-radius:50%;padding:0;font-size:20px;line-height:1;
+  background:rgba(10,14,20,.55);color:#fff;border:1px solid rgba(255,255,255,.35);opacity:.75;backdrop-filter:blur(2px)}
+.reocr:hover,.reocr:focus-visible{opacity:1;background:rgba(10,14,20,.8)}
