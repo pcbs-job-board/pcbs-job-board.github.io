@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PCBS Job Board</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css?v=0.12.1">
+<link rel="stylesheet" href="css/style.css?v=0.12.2">
 </head>
 <body>
 <header>
@@ -166,37 +166,52 @@
 <dialog id="dlgHelp" class="helpdlg">
   <div class="dlg-h"><h3>❓ How to use it</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
   <div class="dlg-b help">
-    <img class="hbanner" data-src="img/help/banner.webp" width="1100" height="385" alt="PCBS Job Board – read job emails from a screenshot, spot hidden objectives and keep every workbench organised">
+    <img class="hbanner" data-src="img/help/banner.webp" width="1100" height="385" alt="PCBS Job Board – reads job emails, spots hidden objectives, plans the parts and helps you flip PC Bay builds for profit">
 
     <h4>1. Set your career level</h4>
-    <p>Enter your <b>career level</b> and <b>%</b> in the top bar, so part suggestions only show parts you have unlocked. It updates by itself after your first capture.</p>
+    <p>Enter your <b>career level</b> and <b>%</b> in the top bar, so suggestions only show parts you have unlocked. It updates by itself after your first capture. The badge next to it lists what every level unlocks – in the game and in this app.</p>
 
     <h4>2. Connect the game screen</h4>
     <p>Click <b>🖥️ Connect screen</b> and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste (<b>Ctrl+V</b>) or drop a screenshot instead. Once connected, the button turns into a small live preview – click it to change the screen, the red <b>■</b> next to it stops capturing.</p>
 
     <h4>3. Capture the job email</h4>
-    <p>Open the job email in the game and click <b>📸 Capture job</b>. On your very first capture a large window shows where the app found the email – drag the box if needed and press <b>Use this area</b>. This is only needed once.</p>
+    <p>Open the job email in the game and click <b>📸 Capture job</b> (<b>＋</b> next to it adds a job by hand). On your very first capture a large window shows where the app found the email – adjust the box if needed and press <b>Use this area</b>. This is only needed once.</p>
     <img data-src="img/help/area-setup.webp" width="1100" height="688" alt="The screen area window with the email found">
 
     <h4>4. Check the new job</h4>
     <p>The new job window shows everything that was read. Fix anything that looks off, tick the hidden objectives you want to keep, then press <b>Create job</b>. Email too long for one screen? Scroll in the game and press <b>📸 Add email capture</b> – the parts are joined.</p>
     <img data-src="img/help/new-job.webp" width="1100" height="688" alt="The new job window with suggested hidden objectives">
 
-    <h4>5. Add the customer's parts (optional)</h4>
-    <p>When the PC is on your bench, open <b>PC Stats</b> in the game and press <b>📸 Parts</b> on the job card (or <b>📸 Add PC parts capture</b> in the new job window). Take more screenshots if the list is long. The parts appear under <b>Current parts</b> on the job card.</p>
+    <h4>5. Add the customer's parts and pick swaps</h4>
+    <p>When the PC is on your bench, open <b>PC Stats</b> in the game and press <b>📸 Parts</b> on the job card (or <b>📸 Add PC parts capture</b> in the new job window). Take more screenshots if the list is long. <b>Suggested swaps</b> appear right away – only unlocked parts that fit the PC, cheapest first within budget. Tick the ones you want and they're added to the job.</p>
+    <p>For a <b>3DMark score</b> objective you get whole part sets – XMP, more RAM sticks, a new or second GPU, a new CPU… – each with the score it reaches. One tick adds the whole set. It works for PCs built from nothing too.</p>
+    <div class="hpair"><img data-src="img/help/swaps.webp" width="758" height="1010" alt="Suggested swaps in the new job window"><img data-src="img/help/bench-sets.webp" width="1100" height="359" alt="Part sets for a 3DMark score"></div>
 
     <h4>6. Work the job</h4>
-    <p>Put the job on a workbench (drag it, or press T1 / T2 / T3). Tick objectives as you go, add things you find while working, and use <b>⇄ Add part replacement</b> to plan swaps – start typing and pick from the list. The budget bar tells you how much is left.</p>
-    <div class="hpair"><img data-src="img/help/job-card.webp" width="687" height="1338" alt="A job card on a workbench"><img data-src="img/help/suggestions.webp" width="797" height="738" alt="Part suggestions while planning a swap"></div>
+    <p>Put the job on a workbench (drag it, or press T1 / T2 / T3). Tick objectives as you go, add things you find while working, and use <b>⇄ Add part replacement</b> to plan more swaps – start typing and pick from the list.</p>
+    <p>The <b>Status</b> row shows the budget, power, 3DMark score, overclock and whether the planned parts fit together – hover or tap a tile for details. The <b>💡</b> next to ✎ has tips for the job, like thermal paste, XMP or the leak test.</p>
+    <div class="hpair"><img data-src="img/help/job-card.webp" width="687" height="1094" alt="A job card on a workbench"><div><img data-src="img/help/bench-tile.webp" width="546" height="315" alt="The 3DMark tile"><img data-src="img/help/oc-tile.webp" width="546" height="369" alt="The overclock tile"><img data-src="img/help/tips.webp" width="546" height="255" alt="Tips for a job"></div></div>
     <p>Now you can order parts, save, quit and come back tomorrow knowing exactly which part goes where.</p>
     <img data-src="img/help/open-jobs.webp" width="1100" height="688" alt="The board with workbenches and open jobs">
 
     <h4>7. Finish</h4>
     <p>Press <b>✔ Job completed</b> when the job is done.</p>
 
+    <h4>📦 PC Bay builds (career level 9+)</h4>
+    <p>Bought a broken PC on PC Bay? Click <b>📦</b> in the top bar. The build gets its own tile and can be saved and minimised at any time.</p>
+    <p><b>1. Parts</b> – look at the PC in the game, open its <b>Resale Value</b> window and capture it. The parts and their values are read, and a part worth far less than it should be is marked as broken.</p>
+    <img data-src="img/help/pcbay-parts.webp" width="1100" height="826" alt="Step 1: the parts read from the Resale Value window">
+    <p><b>2. Fix</b> – open your <b>Inventory</b> in the game, pick a category and capture it. Used, new and broken parts are read from the cards. Pick the replacement for the broken part – used parts are best, because a new part keeps only about a third of its price in the sale value.</p>
+    <img data-src="img/help/pcbay-fix.webp" width="1100" height="631" alt="Step 2: replacing the broken part from the inventory">
+    <p><b>3. Hardware</b> – capture more inventory categories (GPU, CPU, RAM…) to see which parts you already own raise the 3DMark score – and so the sale price – with the profit for each.</p>
+    <img data-src="img/help/pcbay-hardware.webp" width="1100" height="892" alt="Step 3: upgrades from the inventory">
+    <p><b>4. Profit</b> – a short checklist in the right order: boot to the OS, XMP, overclocking, 3DMark – with the expected score and sale price. Press <b>✔ Finish build</b> once it's sold.</p>
+    <div class="hpair"><img data-src="img/help/pcbay-profit.webp" width="1100" height="624" alt="Step 4: the profit checklist"><img data-src="img/help/pcbay-tile.webp" width="512" height="321" alt="A PC Bay build tile"></div>
+
     <h4>Tweak it</h4>
     <p>In <b>⚙️ Settings</b> you'll find the hidden objective rules, screen areas, keyboard shortcuts, DLC &amp; promo parts, game version, backup and reset.</p>
     <div class="hpair"><img data-src="img/help/rules.webp" width="1100" height="784" alt="The hidden objective rules table"><img data-src="img/help/settings.webp" width="992" height="1134" alt="The Settings window"></div>
+    <img data-src="img/help/unlocks.webp" width="840" height="903" alt="The career unlocks list" style="max-width:420px">
 
     <p class="htip">💡 Text reading is never 100% perfect – always give the new job a quick look before adding it.</p>
   </div>
@@ -228,24 +243,24 @@
   </div>
 </dialog>
 
-<script src="js/config.js?v=0.12.1"></script>
-<script src="js/util.js?v=0.12.1"></script>
-<script src="data/parts-db.js?v=0.12.1"></script>
-<script src="js/parser.js?v=0.12.1"></script>
-<script src="js/parts.js?v=0.12.1"></script>
-<script src="js/compat.js?v=0.12.1"></script>
-<script src="js/unlocks.js?v=0.12.1"></script>
-<script src="js/bench.js?v=0.12.1"></script>
-<script src="js/oc.js?v=0.12.1"></script>
-<script src="js/hints.js?v=0.12.1"></script>
-<script src="js/suggest.js?v=0.12.1"></script>
-<script src="js/flip.js?v=0.12.1"></script>
-<script src="js/flipui.js?v=0.12.1"></script>   <!-- before app.js: saved PC Bay builds are drawn at start-up -->
-<script src="js/app.js?v=0.12.1"></script>
-<script src="js/rules.js?v=0.12.1"></script>
-<script src="js/areas.js?v=0.12.1"></script>
-<script src="js/story.js?v=0.12.1"></script>
-<script src="js/notify.js?v=0.12.1"></script>
-<script src="js/keys.js?v=0.12.1"></script>
+<script src="js/config.js?v=0.12.2"></script>
+<script src="js/util.js?v=0.12.2"></script>
+<script src="data/parts-db.js?v=0.12.2"></script>
+<script src="js/parser.js?v=0.12.2"></script>
+<script src="js/parts.js?v=0.12.2"></script>
+<script src="js/compat.js?v=0.12.2"></script>
+<script src="js/unlocks.js?v=0.12.2"></script>
+<script src="js/bench.js?v=0.12.2"></script>
+<script src="js/oc.js?v=0.12.2"></script>
+<script src="js/hints.js?v=0.12.2"></script>
+<script src="js/suggest.js?v=0.12.2"></script>
+<script src="js/flip.js?v=0.12.2"></script>
+<script src="js/flipui.js?v=0.12.2"></script>   <!-- before app.js: saved PC Bay builds are drawn at start-up -->
+<script src="js/app.js?v=0.12.2"></script>
+<script src="js/rules.js?v=0.12.2"></script>
+<script src="js/areas.js?v=0.12.2"></script>
+<script src="js/story.js?v=0.12.2"></script>
+<script src="js/notify.js?v=0.12.2"></script>
+<script src="js/keys.js?v=0.12.2"></script>
 </body>
 </html>
