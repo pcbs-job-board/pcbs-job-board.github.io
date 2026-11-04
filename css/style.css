@@ -516,3 +516,9 @@ dialog.flipdlg{width:min(1000px,97vw);max-width:none}
 .reocr{position:absolute;top:8px;right:8px;z-index:3;width:38px;height:38px;border-radius:50%;padding:0;font-size:20px;line-height:1;
   background:rgba(10,14,20,.55);color:#fff;border:1px solid rgba(255,255,255,.35);opacity:.75;backdrop-filter:blur(2px)}
 .reocr:hover,.reocr:focus-visible{opacity:1;background:rgba(10,14,20,.8)}
+/* swap tile (0.13.0): bigger checkbox and ✕ / ✎; the dot handle sits inside the tile with the checkbox's side gap */
+.swap{padding:6px 0 6px 9px}
+.swap>input[type=checkbox]{width:20px;height:20px;flex:none;margin:0}
+.swap .sx{font-size:26px;padding:0 6px;line-height:1}
+.swap .sacts{gap:10px}
+.swap .grip{margin:3px 9px 3px 0;padding:0;align-self:stretch;border-radius:0}

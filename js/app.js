@@ -205,7 +205,7 @@ function jobCard(j) {
       </div>
       <button data-act="openSwap" data-id="${j.id}" style="width:100%;margin-top:4px">⇄ Add part replacement</button></div>
     <div class="sec">${comp}</div>
-    <div class="foot"><button data-act="edit" data-id="${j.id}" title="Edit the job: details, objectives, tasks, parts – and capture PC Stats again (P)">✎ Edit / Parts</button><button class="good" data-act="complete" data-id="${j.id}">✔ Job completed</button></div>
+    <div class="foot"><button data-act="edit" data-id="${j.id}" title="Edit the job: details, objectives, tasks, parts – and capture PC Stats again (E)">✎ Edit</button><button class="good" data-act="complete" data-id="${j.id}">✔ Job completed</button></div>
   </article>`;
 }
 const job = id => jobs.find(j => j.id === id);
