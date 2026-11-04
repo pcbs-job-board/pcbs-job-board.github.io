@@ -9,7 +9,7 @@ const KEYMAP = [
   { group: "Selected job", keys: [
     ["1 / 2 / 3", "Put on Table 1 / 2 / 3 (again = back to open jobs)"], ["0", "Back to open jobs"],
     ["H", "Tick the next hidden objective"], ["N", "Type a new task"], ["R", "Add part replacement"],
-    ["P", "📸 Capture PC parts for this job"], ["E", "Edit job"], ["Enter", "Go into the card"],
+    ["E / P", "✎ Edit job – details, tasks and parts (capture PC Stats there)"], ["Enter", "Go into the card"],
     ["D", "Job completed (Undo stays available)"]] },
   { group: "Inside a card", keys: [
     ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
@@ -178,7 +178,7 @@ document.addEventListener("keydown", e => {
     case k === "h": return act(() => { const t2 = j.tasks.find(x => x.src === "hid" && !x.done); if (t2) { t2.done = true; save(); render(); toast(`Done: ${t2.text}`, () => { t2.done = false; save(); render(); }); } });
     case k === "n": return act(() => document.querySelector(`.job[data-job="${selJob}"] [data-input="task"]`)?.focus());
     case k === "r": return act(() => clickIn('[data-act="openSwap"]:not([hidden])'));
-    case k === "p": return act(() => clickIn('[data-act="addParts"]'));
+    case k === "p": return act(() => clickIn('[data-act="edit"]'));
     case k === "e": return act(() => clickIn('[data-act="edit"]'));
     case k === "d": return act(() => clickIn('[data-act="complete"]'));
     case k === "Enter": return act(() => { const c = document.querySelector(`.job[data-job="${selJob}"]`); if (c) enterCard(c); });

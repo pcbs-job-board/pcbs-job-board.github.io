@@ -190,7 +190,7 @@ function jobCard(j) {
   const comp = j.components.length ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>` : `<div class="hint" style="margin:0">No parts list yet</div>`;
   return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
-    <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}<button class="ghost" data-act="edit" data-id="${j.id}" title="Edit">✎</button></div></div>
+    <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}</div></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
     ${statusHtml(j, { budgetHtml, budgetState, clashes })}
@@ -205,7 +205,7 @@ function jobCard(j) {
       </div>
       <button data-act="openSwap" data-id="${j.id}" style="width:100%;margin-top:4px">⇄ Add part replacement</button></div>
     <div class="sec">${comp}</div>
-    <div class="foot"><button data-act="addParts" data-id="${j.id}" title="Capture the PC Stats popup again (e.g. after scrolling)">📸 Parts</button><button class="good" data-act="complete" data-id="${j.id}">✔ Job completed</button></div>
+    <div class="foot"><button data-act="edit" data-id="${j.id}" title="Edit the job: details, objectives, tasks, parts – and capture PC Stats again (P)">✎ Edit / Parts</button><button class="good" data-act="complete" data-id="${j.id}">✔ Job completed</button></div>
   </article>`;
 }
 const job = id => jobs.find(j => j.id === id);
@@ -256,7 +256,7 @@ document.addEventListener("click", e => {
     rememberPart(nw, cat); }
   else if (a === "complete") { const idx = jobs.indexOf(j); jobs.splice(idx, 1); save(); render(); toast(`Completed: ${j.sender || "job"}`, () => { if (j.table && jobs.some(o => o.table === j.table)) j.table = 0; jobs.splice(idx, 0, j); save(); render(); }); return; }
   else if (a === "edit") { openReview(null, j); return; }
-  else if (a === "addParts") { startCapture(j); return; }
+  else if (a === "addParts") { openReview(null, j); return; }   // old shortcut target – now the Edit window
   else return;
   save(); render();
 });
@@ -400,7 +400,14 @@ async function ocr(img, kind) {
 let rev = null;
 function openReview(dataUrl, editJob, forJob) {
   const dlg = $("#dlgReview");
+  if (editJob) forJob = editJob;   // 0.13.0: one Edit window for the job's details AND its parts (the old Parts window is gone)
   rev = { editJob, forJob, shots: [], cur: -1, draft: editJob ? structuredClone(editJob) : blankDraft() };
+  if (editJob) {   // the job's tasks back into the form's three lists
+    const t = editJob.tasks || [];
+    rev.draft.objectives = t.filter(x => x.src === "obj").map(x => x.text);
+    rev.draft.hidden = t.filter(x => x.src === "hid").map(x => ({ task: x.text, because: [], keep: true }));
+    rev.draft.extra = t.filter(x => x.src !== "obj" && x.src !== "hid").map(x => x.text);
+  }
   if (forJob) rev.draft.components = structuredClone(forJob.components || []);
   // parts that came from a PC Stats capture are replaced by a new capture (typed ones are kept);
   // jobs saved before 0.11.1 don't know which were captured – all their parts count as captured
@@ -408,7 +415,7 @@ function openReview(dataUrl, editJob, forJob) {
   rev.autoNames = new Set(known ? (known.capNames || (known.components || []).map(c => c.name)).map(n => n.toLowerCase()) : []);
   // a new capture in a saved job's Parts window adds to the parts captured before instead of standing next to them
   rev.prevCap = forJob ? (forJob.components || []).filter(c => rev.autoNames.has(c.name.toLowerCase())).map(({ cat, name }) => ({ cat, name })) : [];
-  $("#revTitle").textContent = editJob ? "Edit job" : forJob ? "Add parts from PC Stats" : dataUrl ? "New job from capture" : "New job";
+  $("#revTitle").textContent = editJob ? `Edit job: ${editJob.sender || "unknown customer"}` : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
   renderForm(); showBlack(false); renderShots(); dlg.showModal();
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
@@ -549,23 +556,23 @@ function renderForm() {
   const parts = `<button id="btnCapParts" class="capparts captop">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>
     <label>Parts of this PC</label>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>`;
   const emailAdder = `<button id="btnCapEmail" class="capparts capemail captop">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
-  if (rev.forJob) {
+  if (rev.forJob && !rev.editJob) {   // (no longer opened – kept for safety)
     jb.innerHTML = ""; $("#revCapE").innerHTML = "";
     f.innerHTML = `${parts}
       <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); parts you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
-    $("#revCapE").innerHTML = isEdit ? "" : emailAdder;
+    $("#revCapE").innerHTML = emailAdder;
     jb.innerHTML = `<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
-      ${isEdit ? "" : `<label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
+      <label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
       ${storyBanner(d)}
-      <label>Hidden objectives found in email${d.story ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${d.story ? "" : "checked"} data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
-      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}`;
+      <label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>
+      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2">${esc((d.extra || []).join("\n"))}</textarea>`;
     f.innerHTML = `${parts}
-      ${isEdit ? "" : `<div id="fSugg"></div>`}
+      <div id="fSugg"></div>
       ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
       <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
   }
@@ -656,12 +663,22 @@ function saveReview() {
   const d = rev.draft, comps = parseCompText($("#fComps").value);
   comps.forEach(c => rememberPart(c.name, c.cat));
   const picked = pickedSuggestions(), capNames = comps.filter(c => rev.autoNames?.has(c.name.toLowerCase())).map(c => c.name);
-  if (rev.forJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.capNames = capNames; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
+  if (rev.forJob && !rev.editJob) { const fj = job(rev.forJob.id); fj.components = comps; fj.capNames = capNames; fj.swaps.push(...picked.swaps); fj.tasks.push(...picked.tasks); }
   else {
     const fields = { sender: $("#fSender").value.trim(), subject: $("#fSubject").value.trim(), labour: $("#fLabour").value === "" ? null : +$("#fLabour").value, budget: $("#fBudget").value === "" ? null : +$("#fBudget").value, deadline: $("#fDeadline").value.trim(), softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline, suspect: $("#fSuspect").value.trim(), components: comps, capNames, story: !!$("#fStory")?.checked, ocLater: ocLaterOf(d) || !!d.ocLater };
     const table = +$("#fTable").value;
     let target;
-    if (rev.editJob) { target = job(rev.editJob.id); Object.assign(target, fields); }
+    if (rev.editJob) {
+      target = job(rev.editJob.id); Object.assign(target, fields);
+      const old = [...target.tasks], take = (src, text) => { const i = old.findIndex(x => (x.src === src || (src === "add" && x.src !== "obj" && x.src !== "hid")) && x.text === text); return i >= 0 ? old.splice(i, 1)[0] : { id: uid(), text, src, done: false }; };
+      const lines = id => $(id).value.split("\n").map(x => x.trim()).filter(Boolean), tasks = [];
+      lines("#fObj").filter(x => !/^complete by/i.test(x)).forEach(t => tasks.push(take("obj", t)));
+      document.querySelectorAll("#fHidden input:checked").forEach(c => tasks.push(take("hid", d.hidden[c.dataset.h].task)));
+      lines("#fExtra").forEach(t => tasks.push(take("add", t)));
+      target.tasks = [...tasks, ...picked.tasks]; target.swaps.push(...picked.swaps);
+      // a favourite-brand hint that was unticked: the brand no longer steers the suggestions
+      target.brands = (target.brands || []).filter(br => target.tasks.some(t => t.src === "hid" && t.text.toLowerCase().includes(br.toLowerCase())));
+    }
     else {
       const tasks = [];
       $("#fObj").value.split("\n").map(s => s.trim()).filter(Boolean).filter(s => !/^complete by/i.test(s)).forEach(t => tasks.push({ id: uid(), text: t, src: "obj", done: false }));
