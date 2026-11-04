@@ -66,24 +66,11 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (4)
+## Small fixes (2)
 
-1. **"Same part again" suggests a different model** (reported 2026-11-04, CarefreeDenise@DSinghModifications.ly,
-   "Fix for PC": SilverStone fan + "Diagnose and fix" → "SilverStone NT06-PRO → SilverStone AR08", tagged "same part again").
-   - Cause (found): `sameOrBrand()` in js/suggest.js returns the identical part **plus** every similar part of the
-     favourite brand; `pickOptions()` then sorts by price, so the cheaper AR08 ($40) wins over the NT06-PRO ($60) and
-     the identical part isn't shown at all. Both are SilverStone, so the brand doesn't decide anything here.
-   - **Rule (Mariusz): same item, or better – never worse.** The game refuses to complete a job with a worse part
-     installed. Here the AR08 has an Air Flow of 49.5 CFM vs the NT06-PRO's 73.969 CFM, so it is worse, not "alike".
-   - Underlying gap: coolers have no "better / worse" measure in our data – `atLeast()` lets every CPU Cooler (and
-     Case Fan) through. The workbook has **Air Flow** on the CPU Coolers, Case Fans and WC Radiators sheets (also
-     Air Pressure on fans / radiators) – import it in tools/import_xlsx.py (compat field, e.g. `af=`), rebuild the DB.
-   - Fix: `atLeast()` for CPU Cooler / Case Fan (and radiators) requires Air Flow ≥ the old part's. "Same part again"
-     offers the identical part when it's unlocked in the shop; otherwise only same-brand parts that are at least as
-     good. Check every rule that uses sameOrBrand / atLeast (15 hints / suspects, 15b brand + diagnose, "or better",
-     upgrade, AIO, PC Bay fixes) and add unit tests (NT06-PRO must never become AR08).
+_Done in dev-0.13.0: "same part again" never weaker (air flow imported), "8 GB" kept at a line start._
 
-2. **PC Stats: RAM "Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz" read as storage + junk RAM**
+1. **PC Stats: RAM "Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz" read as storage + junk RAM**
    (reported 2026-11-04 – HRH The Queen's second job, "Diagnose and fix" + 3DMark 7000; 3 screenshots saved in the
    tests branch under `fixtures/pending/queen2_stats1–3.png`). Result: 2× "Storage: Team Group T-FORCE Delta MAX 1TB",
    2× "RAM: RGB Series (Black) 2400 MHz", sometimes "RAM: DFL MOTIV8OR 4 GB 2400 MHz".
@@ -96,14 +83,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
      while the next lines can complete it – join first, then match; "GB … MHz" in the joined text points to RAM, not
      storage. Then add the 3 screenshots to the run.js tests with the expected 15 parts.
 
-3. **PC Stats: "8 GB" lost from a wrapped RAM name** (reported 2026-11-04, Borland.Amanda@ExpensiveCatHousekeeping.net,
-   "upgrade"; screenshots in the tests branch `fixtures/pending/amanda_*.png`). "Patriot Viper LED (Red LED)" /
-   "8 GB 3000 MHz" became "Patriot Viper LED (Red LED) 3000 MHz" (not found – 4 GB and 8 GB versions exist).
-   - Cause (found, reproduced): the junk trimming in `denoisePartLines()` (js/parts.js) treats 1–2 letter words at the
-     start of a line as picture crumbs – "8" then "GB" are cut, leaving "3000 MHz".
-   - Fix: keep a size ("8 GB", "1 TB", "512 MB") together before trimming – a number followed by GB / TB / MB is
-     never a crumb. Unit test with this case; add the screenshots to run.js.
-4. **GPU pair suggested without the motherboard it needs** (same job: "Upgrade Graphics Card" + "Install dual graphics
+2. **GPU pair suggested without the motherboard it needs** (same job: "Upgrade Graphics Card" + "Install dual graphics
    cards" + AIO; board ASUS ROG Strix Z370-G Gaming (Wi-Fi AC), GPU GTX 1060).
    - The "best in budget" pair, 2× MSI GeForce GTX 1080 Ti GAMING 11G ($1,610), was offered with no warning and no
      board – after ticking it, the ⚠️ tile says the board only fits **2-slot** cards for two GPUs, this one is 2.5-slot.
