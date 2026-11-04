@@ -56,30 +56,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (4)
+## Small fixes (0)
 
-1. **Builds from nothing: storage + "Install Parts with Lights: N coloured"** (reported 2026-11-04 on the HRH The
-   Queen job – `maj@hrh.royals.org`, "By Royal Appointment").
-   - The 3DMark set for a PC built from nothing has no storage at all. When no objective names a drive, add the
-     cheapest one (HDD, SSD or M.2 – whatever fits) to the set, instead of only "also needs: storage".
-   - "Install Parts with Lights: 6 coloured (255,0,255)" was ignored. It means **6 parts with RGB lighting** (set
-     to that colour), not one part with 6 colours. Count the lit parts already planned (the case asked for in the
-     objectives counts) and suggest the cheapest RGB parts that fit (case fans, RAM, cooler, GPU…) for the rest.
-2. **Edit a part swap** – each swap in "Part swaps" gets an edit option (change the new part, and the old part /
-   category if needed). Today a change of mind means deleting the swap and adding it again.
-3. **Show the shortcuts on the capture buttons of the new-job window** – Alt + E / Alt + P work fine (the report was
-   a mix-up with main-screen keys like C). Add "(Alt+E)" to 📸 Add email capture (top of the form) and "(Alt+P)" to
-   📸 Add PC parts capture (under "Add a part"), on the right side of each button where the red X was on Mariusz's
-   screenshot. **If the 1.0 keyboard re-analysis changes these keys, update the labels too.**
-4. **"Upgrade Graphics Card" + "Install dual graphics cards" in one job → suggest pairs** (reported 2026-11-04,
-   CleverMarge@NelsonPaper.gov, "Need upgrade work done": RX 580 → upgrade + dual GPUs + AIO, ZOTAC fan).
-   - Today the upgrade group offers single cards and the dual-GPU group says "isn't in the shop – pick a pair yourself".
-   - When both objectives are there, each upgrade option is a **pair**: old GPU → new card plus (empty) → the same
-     card, one tick adds both – handled together, so the dual-GPU group doesn't suggest anything on top.
-   - Only cards that can run as a pair (SLI / CrossFire flag + a 2-card score in the parts data) on a motherboard
-     that supports it (`sli` / `cf`); otherwise add the board too, or say why. Note: the ZOTAC GTX 1050 Ti OC Edition
-     from the screenshot can't run as a pair in the game (no SLI) – the cheapest ZOTAC pair would be suggested instead.
-   - Price, budget and the PSU check count both cards.
+_None open. The four from 2026-11-04 (drive + lit parts in new builds, edit swaps, Alt+E / Alt+P labels, GPU pairs)
+are done in `dev-0.12.3`, with the Giovanna Sciarra story job._
 
 ---
 
@@ -114,10 +94,7 @@ Notes for later (not tasks yet):
           = never suggested).
      - Custom story jobs and parts go into the export / import backup (confirmed by Mariusz).
 - Already in the app: Dynabeard (0.10.0), HRH The Queen (0.12.0).
-- **Waiting to be added – no rush, goes in whenever there's a release** (reported 2026-11-03): Giovanna Sciarra, PhD –
-  `giovanna@giosci.lab`, subject "A minor setback", signed "Giovanna Sciarra, PhD". Particle accelerator magnet
-  quench – parts overheated, PC won't turn on. Objectives: Diagnose and fix; Complete by end of day (tomorrow).
-  Labour $150, Budget $600, Req: Level 13, no star requirement.
+- Added in 0.12.3: Giovanna Sciarra, PhD – `giovanna@giosci.lab`, "A minor setback" (Diagnose and fix, Req: Level 13).
 - Candidate from an older screenshot, **not confirmed yet**: `scottyB@dongermail.com`, subject
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
@@ -138,7 +115,7 @@ Notes for later (not tasks yet):
 
 ### 1.0: speed + "working on it" notices
 - Some calculations take a couple of seconds before anything shows – e.g. the 3DMark set for a PC built from
-  nothing (newBuildBench in js/suggest.js; suggestions are also re-worked on every tick in the new-job window).
+  nothing (0.12.3 already made that one ~100× faster: cheapest-first fit checks for PSU / cooler / drive) (newBuildBench in js/suggest.js; suggestions are also re-worked on every tick in the new-job window).
   Measure where the time goes (suggestSwaps, benchSuggestions, newBuildBench, planFits / compat checks,
   PC Bay upgrades) and make the slow ones faster (e.g. cache per input, fewer fit checks, work in pieces).
 - Anything that can still take long shows a loading notice (spinner / "Working out the cheapest set…") so the
