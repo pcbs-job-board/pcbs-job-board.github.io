@@ -56,7 +56,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (2)
 
 1. **"Same part again" suggests a different model** (reported 2026-11-04, CarefreeDenise@DSinghModifications.ly,
    "Fix for PC": SilverStone fan + "Diagnose and fix" → "SilverStone NT06-PRO → SilverStone AR08", tagged "same part again").
@@ -72,6 +72,19 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
      offers the identical part when it's unlocked in the shop; otherwise only same-brand parts that are at least as
      good. Check every rule that uses sameOrBrand / atLeast (15 hints / suspects, 15b brand + diagnose, "or better",
      upgrade, AIO, PC Bay fixes) and add unit tests (NT06-PRO must never become AR08).
+
+2. **PC Stats: RAM "Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz" read as storage + junk RAM**
+   (reported 2026-11-04 – HRH The Queen's second job, "Diagnose and fix" + 3DMark 7000; 3 screenshots saved in the
+   tests branch under `fixtures/pending/queen2_stats1–3.png`). Result: 2× "Storage: Team Group T-FORCE Delta MAX 1TB",
+   2× "RAM: RGB Series (Black) 2400 MHz", sometimes "RAM: DFL MOTIV8OR 4 GB 2400 MHz".
+   - Cause (found): the name wraps over 3 lines – "Team Group T-Force Delta" / "II RGB Series (Black) 4 GB" /
+     "2400 MHz". The text reader reads "II" as "||", which is cut off as picture junk, so the 2nd line becomes
+     "RGB Series (Black) 4 GB". The 1st line alone already matches the SSD "Team Group T-FORCE Delta MAX 1TB" (0.92)
+     and the join with the damaged 2nd line doesn't beat it, so the RAM is split into an SSD + a nameless RAM line.
+   - Fix ideas: read "||" / "ll" / "Il" between words as "II" (or keep it when the parts database has "II" there);
+     a line that is only the start of many parts (here 9 Delta drives + the Delta II RAM) shouldn't be matched alone
+     while the next lines can complete it – join first, then match; "GB … MHz" in the joined text points to RAM, not
+     storage. Then add the 3 screenshots to the run.js tests with the expected 15 parts.
 
 ---
 
