@@ -1,7 +1,7 @@
 # PCBS Job Board – ToDo & notes
 
 Working notes for the job board (private – dev repository only).
-Live version: **0.12.3** (released 2026-11-04; backups: `backup-0.11.1`, `backup-0.12.0`, `backup-0.12.1`, `backup-0.12.2`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io` – remote `origin` of the app checkout points there directly now, site https://pcbs-job-board.github.io/).
+Live version: **0.13.0** (released 2026-11-04; backups: `backup-0.11.1` … `backup-0.12.3`) (`main` in the public repository `pcbs-job-board/pcbs-job-board.github.io` – remote `origin` of the app checkout points there directly now, site https://pcbs-job-board.github.io/).
 
 ## PC Bay build (released in 0.12.0)
 Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3DMark → sell. Unlocked with PC Bay (level 9).
@@ -27,7 +27,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
-## dev-0.13.0 – in progress (2026-11-04, waiting for Mariusz's look at the design)
+## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
   also for manual jobs); parts on the right: one field per type (`PART_SLOTS` in js/app.js – Case, Motherboard, CPU,
   CPU Cooling, RAM ≤4, GPU ≤2, PSU, Storage, Other), autofill per category, "(empty)" placeholders, orange "!" when
