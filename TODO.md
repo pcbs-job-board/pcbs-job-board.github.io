@@ -35,7 +35,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   Captured parts the user changes / removes don't come back on the next capture (`rev.dropAuto`).
 - ↻ Refresh button on the suggested swaps.
 - Tests pass (run 366, flow 44, startup). Screenshots: `scratchpad/newjob-0.13/` (script `scratchpad/newjob.js`).
-- Next: Mariusz's feedback on the design, then the 4 small fixes (still open below) can go into this version too.
+- Also in it: all four small fixes from 2026-11-04. Next: Mariusz's test, then release (backup-0.12.3 first).
 
 ## 0.12.0 – where things are (released 2026-11-03)
 All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
@@ -66,33 +66,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (0)
 
-_Done in dev-0.13.0: "same part again" never weaker (air flow imported), "8 GB" kept at a line start._
-
-1. **PC Stats: RAM "Team Group T-Force Delta II RGB Series (Black) 4 GB 2400 MHz" read as storage + junk RAM**
-   (reported 2026-11-04 – HRH The Queen's second job, "Diagnose and fix" + 3DMark 7000; 3 screenshots saved in the
-   tests branch under `fixtures/pending/queen2_stats1–3.png`). Result: 2× "Storage: Team Group T-FORCE Delta MAX 1TB",
-   2× "RAM: RGB Series (Black) 2400 MHz", sometimes "RAM: DFL MOTIV8OR 4 GB 2400 MHz".
-   - Cause (found): the name wraps over 3 lines – "Team Group T-Force Delta" / "II RGB Series (Black) 4 GB" /
-     "2400 MHz". The text reader reads "II" as "||", which is cut off as picture junk, so the 2nd line becomes
-     "RGB Series (Black) 4 GB". The 1st line alone already matches the SSD "Team Group T-FORCE Delta MAX 1TB" (0.92)
-     and the join with the damaged 2nd line doesn't beat it, so the RAM is split into an SSD + a nameless RAM line.
-   - Fix ideas: read "||" / "ll" / "Il" between words as "II" (or keep it when the parts database has "II" there);
-     a line that is only the start of many parts (here 9 Delta drives + the Delta II RAM) shouldn't be matched alone
-     while the next lines can complete it – join first, then match; "GB … MHz" in the joined text points to RAM, not
-     storage. Then add the 3 screenshots to the run.js tests with the expected 15 parts.
-
-2. **GPU pair suggested without the motherboard it needs** (same job: "Upgrade Graphics Card" + "Install dual graphics
-   cards" + AIO; board ASUS ROG Strix Z370-G Gaming (Wi-Fi AC), GPU GTX 1060).
-   - The "best in budget" pair, 2× MSI GeForce GTX 1080 Ti GAMING 11G ($1,610), was offered with no warning and no
-     board – after ticking it, the ⚠️ tile says the board only fits **2-slot** cards for two GPUs, this one is 2.5-slot.
-   - Cause (found): `pairExtras()` (js/suggest.js, new in 0.12.3) only checks that the board has SLI / CrossFire, not
-     the board's slot spacing (`ds`) against the card's width (`sl`); and the pair options skip the full fit check
-     (`planFits`).
-   - Fix: a board with the right SLI / CrossFire **and** room for two cards of that width – else add the cheapest board
-     that has it (same socket, fits the case) to the option, counted in the total and the budget; run planFits on
-     every pair option and drop / mark the ones that still don't fit.
+_None open. All six from 2026-11-04 are done in dev-0.13.0 (never-worse coolers / fans, "8 GB" kept, Delta II RAM,
+GPU pairs with a board that has room) – plus the new-job / Edit window redesign._
 
 ---
 
