@@ -3,6 +3,10 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.13.0
+- New-job window: job details under the screenshot, parts on the right – one field per part type with autofill, "!" on parts not found in the database.
+- Suggested swaps can be worked out again (↻ Refresh).
+
 ## 0.12.3
 - Builds from nothing now include a drive, and "Install Parts with Lights: N coloured" suggests the RGB parts it needs.
 - "Upgrade Graphics Card" + "Install dual graphics cards" suggests pairs of cards that can run together.

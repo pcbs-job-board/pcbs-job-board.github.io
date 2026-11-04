@@ -496,3 +496,15 @@ dialog.flipdlg{width:min(1000px,97vw);max-width:none}
 .fstep .addrow .fval{flex:0 0 90px}.fstep .addrow .fbrk{flex:none}
 .fscore input{flex:0 0 150px}
 .tag.broken{background:var(--bad);color:#fff}
+
+/* new-job window (0.13.0): job fields under the screenshot, parts on the right – one field per part type */
+#revJob{margin-top:10px}#revJob:empty{display:none}
+#fParts{display:grid;gap:6px;margin:4px 0 6px}
+.pslot{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:#151a23}
+.pslot>label{margin:0 0 4px;display:flex;gap:6px;align-items:baseline}.pslot>label small{color:var(--muted);text-transform:none;letter-spacing:0}
+.pslot.pempty{border-style:dashed}
+.prow{display:flex;gap:6px;align-items:center;margin-top:4px}.prow:first-of-type{margin-top:0}.prow input{flex:1;min-width:0}
+.prow input::placeholder{color:var(--muted);font-style:italic}
+.pwarn{flex:none;width:22px;height:22px;border-radius:50%;background:var(--warn);color:#1a1205;font-weight:800;display:grid;place-items:center;cursor:help}
+.prow .px{padding:2px 6px;color:var(--muted)}.padd{margin-top:4px;padding:2px 8px;font-size:12px;color:var(--accent)}
+.sugghead{display:flex;align-items:center;gap:8px}.sugghead label{flex:1}#suggRefresh{padding:2px 8px;font-size:12px}

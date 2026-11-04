@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PCBS Job Board</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css?v=0.12.3">
+<link rel="stylesheet" href="css/style.css?v=0.13.0">
 </head>
 <body>
 <header>
@@ -69,7 +69,7 @@
   <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
     <div class="review">
-      <div id="shotPane">
+      <div class="revleft"><div id="shotPane">
         <div class="ctrls">
           <div class="seg" id="shotTabs"></div>
           <span class="spacer"></span>
@@ -83,6 +83,7 @@
         <p class="ocrnote">ℹ️ Works with the <b>English</b> version of the game only. Text is read automatically and mistakes can happen – always double-check the fields and hidden objectives against the email.</p>
         <details><summary>Raw text read from screen</summary><div class="rawtxt" id="rawTxt"></div></details>
       </div>
+      <div class="form" id="revJob"></div></div>   <!-- the job's fields (email, objectives, tasks) – under the screenshot -->
       <div class="form" id="revForm"></div>
     </div>
   </div>
@@ -243,24 +244,24 @@
   </div>
 </dialog>
 
-<script src="js/config.js?v=0.12.3"></script>
-<script src="js/util.js?v=0.12.3"></script>
-<script src="data/parts-db.js?v=0.12.3"></script>
-<script src="js/parser.js?v=0.12.3"></script>
-<script src="js/parts.js?v=0.12.3"></script>
-<script src="js/compat.js?v=0.12.3"></script>
-<script src="js/unlocks.js?v=0.12.3"></script>
-<script src="js/bench.js?v=0.12.3"></script>
-<script src="js/oc.js?v=0.12.3"></script>
-<script src="js/hints.js?v=0.12.3"></script>
-<script src="js/suggest.js?v=0.12.3"></script>
-<script src="js/flip.js?v=0.12.3"></script>
-<script src="js/flipui.js?v=0.12.3"></script>   <!-- before app.js: saved PC Bay builds are drawn at start-up -->
-<script src="js/app.js?v=0.12.3"></script>
-<script src="js/rules.js?v=0.12.3"></script>
-<script src="js/areas.js?v=0.12.3"></script>
-<script src="js/story.js?v=0.12.3"></script>
-<script src="js/notify.js?v=0.12.3"></script>
-<script src="js/keys.js?v=0.12.3"></script>
+<script src="js/config.js?v=0.13.0"></script>
+<script src="js/util.js?v=0.13.0"></script>
+<script src="data/parts-db.js?v=0.13.0"></script>
+<script src="js/parser.js?v=0.13.0"></script>
+<script src="js/parts.js?v=0.13.0"></script>
+<script src="js/compat.js?v=0.13.0"></script>
+<script src="js/unlocks.js?v=0.13.0"></script>
+<script src="js/bench.js?v=0.13.0"></script>
+<script src="js/oc.js?v=0.13.0"></script>
+<script src="js/hints.js?v=0.13.0"></script>
+<script src="js/suggest.js?v=0.13.0"></script>
+<script src="js/flip.js?v=0.13.0"></script>
+<script src="js/flipui.js?v=0.13.0"></script>   <!-- before app.js: saved PC Bay builds are drawn at start-up -->
+<script src="js/app.js?v=0.13.0"></script>
+<script src="js/rules.js?v=0.13.0"></script>
+<script src="js/areas.js?v=0.13.0"></script>
+<script src="js/story.js?v=0.13.0"></script>
+<script src="js/notify.js?v=0.13.0"></script>
+<script src="js/keys.js?v=0.13.0"></script>
 </body>
 </html>

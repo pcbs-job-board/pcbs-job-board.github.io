@@ -128,7 +128,7 @@ function acMore() {
   list.classList.toggle("scrolls", list.scrollHeight > list.clientHeight + 1);
   more.hidden = !below; more.textContent = `▼ ${below} more – scroll or use ↓`;
 }
-function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.value = p.name; const f = acInput.closest("[data-swapform]"); if (f && p.cat && CATS.includes(p.cat)) f.querySelector('[data-f="cat"]').value = p.cat; acEl.hidden = true; acInput.focus(); }
+function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.value = p.name; const f = acInput.closest("[data-swapform]"); if (f && p.cat && CATS.includes(p.cat)) f.querySelector('[data-f="cat"]').value = p.cat; acEl.hidden = true; acInput.focus(); acInput.dispatchEvent(new Event("change", { bubbles: true })); }
 function initAutocomplete() {
   acEl = $("#ac");
   document.addEventListener("input", e => { if (e.target.matches("[data-ac]")) acShow(e.target); });

@@ -425,7 +425,7 @@ function showShot(i, read) {
 }
 function renderShots() {
   const has = rev && rev.shots.length; const dlg = $("#dlgReview");
-  dlg.querySelector(".review").style.gridTemplateColumns = has ? "" : "1fr";
+  dlg.querySelector(".review").style.gridTemplateColumns = has || $("#revJob").innerHTML.trim() ? "" : "1fr";   // job fields left, parts right
   $("#shotPane").hidden = !has;
   $("#shotTabs").innerHTML = has ? rev.shots.map((sh, i) => { const n = rev.shots.slice(0, i + 1).filter(x => x.kind === "parts").length; const e = rev.shots.slice(0, i + 1).filter(x => x.kind === "email").length; return `<button class="${i === rev.cur ? "sel" : ""}" data-shot="${i}">${sh.kind === "email" ? "✉ Email " + e : "🧩 Parts " + n}</button>`; }).join("") : "";
   const k = rev && rev.cur >= 0 ? rev.shots[rev.cur].kind : "email";
@@ -447,11 +447,11 @@ function rebuildParts() {
   const prevAuto = rev.autoNames || new Set();
   const lists = rev.shots.filter(s => s.kind === "parts" && s.parts).map(s => s.parts);
   // the earlier captured parts come first: a category is only replaced when a new screenshot shows more of it
-  const auto = mergePCStats(rev.prevCap?.length ? [rev.prevCap, ...lists] : lists);
+  const auto = mergePCStats(rev.prevCap?.length ? [rev.prevCap, ...lists] : lists).filter(p => !rev.dropAuto?.has(p.name.toLowerCase()));
   rev.autoNames = new Set(auto.map(p => p.name.toLowerCase()));
   const manual = rev.draft.components.filter(c => !prevAuto.has(c.name.toLowerCase()) && !rev.autoNames.has(c.name.toLowerCase()));
   rev.draft.components = [...auto.map(({ name, cat }) => ({ name, cat })), ...manual];
-  const ta = $("#fComps"); if (ta) ta.value = rev.draft.components.map(c => c.cat + ": " + c.name).join("\n");
+  const ta = $("#fComps"); if (ta) { ta.value = rev.draft.components.map(c => c.cat + ": " + c.name).join("\n"); renderPartFields(); }
   renderSuggestions();   // setting the box from code fires no "input" event
   return auto;
 }
@@ -502,43 +502,82 @@ async function runOcr() {
     if (!/labou?r|budget|objectives|[\w.]+@[\w-]+\.|regards|thanks/i.test(text)) areaWarn("This doesn't look like a job email. Is an email open in-game? If it is, the box may be in the wrong place.");
   } catch (err) { $("#ocrState").textContent = "⚠ " + err.message; }
 }
+// the PC's parts, one field per part type (the hidden #fComps text box stays the single source for the rest of the app)
+const PART_SLOTS = [{ k: "Case", label: "Case", max: 1 }, { k: "Motherboard", label: "Motherboard", max: 1 }, { k: "CPU", label: "CPU", max: 1 },
+  { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2 }, { k: "PSU", label: "PSU", max: 1 },
+  { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
+const slotOf = cat => PART_SLOTS.find(sl => sl.k === cat && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
+let DBNAMES = null;
+function inPartsDb(name) {   // exactly a part of the database (any DLC / version – a customer PC can have anything)
+  if (!DBNAMES) { DBNAMES = new Set(); for (const c in window.PARTS_DB || {}) for (const r of window.PARTS_DB[c]) DBNAMES.add(r[0].toLowerCase()); }
+  return DBNAMES.has(String(name || "").trim().toLowerCase());
+}
+function partFieldsHtml(comps) {
+  return `<div id="fParts">${PART_SLOTS.map(sl => {
+    const rows = comps.filter(c => slotOf(c.cat) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
+    const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? "" : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
+    const more = sl.other || rows.length < sl.max ? (rows.length ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>` : sl.other ? row({ cat: "Other", name: "" }) : "") : "";
+    return `<div class="pslot${!sl.other && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
+  }).join("")}</div>`;
+}
+// fields → hidden text box (+ "input" so the suggestions follow); text box → fields
+function partsFromFields() {
+  const ta = $("#fComps"), box = $("#fParts"); if (!ta || !box) return;
+  const list = [...box.querySelectorAll("input[data-slot]")].map(i => { const v = i.value.trim(); if (!v) return null;
+    const m = INDEX.find(p => p.name.toLowerCase() === v.toLowerCase()) || (inPartsDb(v) ? { name: v, cat: categorize(v) } : null);
+    const cat = i.dataset.slot === "Other" ? (m && m.cat) || (i.dataset.cat !== "Other" ? i.dataset.cat : categorize(v)) : i.dataset.slot;
+    return { cat, name: m ? m.name : v }; }).filter(Boolean);
+  // a captured part the user changed or removed must not come back with the next capture
+  if (rev) { const now = new Set(list.map(c => c.name.toLowerCase())); rev.dropAuto = rev.dropAuto || new Set(); for (const n of rev.autoNames || []) if (!now.has(n)) rev.dropAuto.add(n); }
+  ta.value = list.map(c => c.cat + ": " + c.name).join("\n");
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function renderPartFields() { const ta = $("#fComps"), box = $("#fParts"); if (ta && box) box.outerHTML = partFieldsHtml(parseCompText(ta.value)); }
+function bindPartFields() {
+  const wrap = $("#revForm");
+  wrap.addEventListener("change", e => { if (e.target.matches("#fParts input[data-slot]")) { partsFromFields(); renderPartFields(); } });
+  wrap.addEventListener("input", e => { if (e.target.matches("#fParts input[data-slot]")) { const ta = $("#fComps"); clearTimeout(bindPartFields.t); bindPartFields.t = setTimeout(partsFromFields, 400); } });
+  wrap.addEventListener("click", e => {
+    const rm = e.target.closest("[data-prm]"); if (rm) { rm.closest(".prow").querySelector("input").value = ""; partsFromFields(); renderPartFields(); return; }
+    const add = e.target.closest("[data-padd]"); if (add) { add.insertAdjacentHTML("beforebegin", `<div class="prow"><input data-ac data-ac-cat="${add.dataset.padd === "Other" ? "" : esc(add.dataset.padd)}" data-slot="${esc(add.dataset.padd)}" data-cat="${esc(add.dataset.padd)}" placeholder="(empty)" autocomplete="off"></div>`); add.previousElementSibling.querySelector("input").focus(); if (add.closest(".pslot").querySelectorAll(".prow").length >= (slotOf(add.dataset.padd).max)) add.remove(); }
+  });
+}
 function renderForm() {
-  const d = rev.draft, f = $("#revForm");
-  const partAdder = `<div class="addrow"><input id="fPartAdd" data-ac data-ac-cat="" placeholder="Add a part – type to search (e.g. 8700, Vega 64)" autocomplete="off"><button id="fPartAddBtn">＋</button></div>
+  const d = rev.draft, f = $("#revForm"), jb = $("#revJob");
+  const parts = `<label>Parts of this PC</label>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>
     <button id="btnCapParts" class="capparts">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>`;
   const emailAdder = `<button id="btnCapEmail" class="capparts capemail">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
   if (rev.forJob) {
-    f.innerHTML = `<label>Parts of this PC (one per line, “Category: name”)</label><textarea id="fComps" rows="12">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
-      <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); lines you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
+    jb.innerHTML = "";
+    f.innerHTML = `${parts}
+      <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); parts you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
   } else {
     const isEdit = !!rev.editJob;
-    f.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
+    jb.innerHTML = `${isEdit ? "" : emailAdder}<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[1, 2, 3].map(n => { const o = jobs.find(j => j.table === n && j.id !== d.id); return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`; }).join("")}</select></div></div>
       ${isEdit ? "" : `<label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
       ${storyBanner(d)}
       <label>Hidden objectives found in email${d.story ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${d.story ? "" : "checked"} data-h="${i}"><div>${esc(h.task)}<br><small>because: “${esc(h.because.join("”, “"))}”</small></div></div>`).join("") : `<div class="hint">None detected.</div>`}</div>
-      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}
-      <label>Current parts (one per line, “Category: name”)</label><textarea id="fComps" rows="7">${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>${partAdder}
+      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2"></textarea>`}`;
+    f.innerHTML = `${parts}
       ${isEdit ? "" : `<div id="fSugg"></div>`}
       ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
       <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
   }
+  if (!f.dataset.pf) { f.dataset.pf = "1"; bindPartFields(); }
   $("#fSave").onclick = saveReview;
   // switching "Story job" unticks / ticks the hidden objectives in one go
   $("#fStory")?.addEventListener("change", e => { rev.storyTouched = true; rev.draft.story = e.target.checked; document.querySelectorAll("#fHidden input").forEach(c => c.checked = !e.target.checked); const b = $("#storyBanner"); if (b) b.outerHTML = storyBanner(rev.draft); bindStoryBanner(); });
   bindStoryBanner();
-  const addPart = () => { const v = $("#fPartAdd").value.trim(); if (!v) return; const m = INDEX.find(p => p.name === v) || matchPart(v); const line = (m ? m.cat + ": " + m.name : categorize(v) + ": " + v); const ta = $("#fComps"); ta.value = (ta.value.trim() ? ta.value.trim() + "\n" : "") + line; $("#fPartAdd").value = ""; };
-  $("#fPartAddBtn").onclick = addPart;
   $("#btnCapParts").onclick = capParts;
   if ($("#btnCapEmail")) $("#btnCapEmail").onclick = capEmail;
-  $("#fPartAdd").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPart(); } });
   // suggested swaps follow what is typed / ticked in the form
   let t = null; const later = () => { clearTimeout(t); t = setTimeout(renderSuggestions, 350); };
   ["#fComps", "#fObj", "#fBudget", "#fSuspect"].forEach(id => $(id)?.addEventListener("input", later));
   $("#fHidden")?.addEventListener("change", renderSuggestions); $("#fStory")?.addEventListener("change", renderSuggestions);
-  $("#fPartAddBtn").addEventListener("click", renderSuggestions);
+
   renderSuggestions();
 }
 // ================= suggested swaps (new-job window and "Add parts from PC Stats") =================
@@ -571,7 +610,7 @@ function renderSuggestions() {
   rev.sugg = list;
   if (!list.length) { box.innerHTML = ""; return; }
   const money = o => o.total != null ? "$" + o.total.toLocaleString() : "";
-  box.innerHTML = `<label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label>` + list.map((sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
+  box.innerHTML = `<div class="sugghead"><label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label><button class="ghost" id="suggRefresh" title="Work out all suggestions again">↻ Refresh</button></div>` + list.map((sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
     ${sg.options.length ? sg.options.map((o, k) => { const pick = sg.key + "|" + o.name + "|" + o.tag + "|" + (o.swaps || []).map(x => x.new).join("+"); if (o.multi) return benchOptHtml(o, i, k, pick, keep); return `<label class="sopt ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
       <span><span class="sname">${sg.old && o.swaps[0]?.old ? `<span class="old">${esc(sg.old)}</span> → ` : o.swaps[0]?.old === "" && o.cat !== "RAM" ? "<span class=\"old\">(empty slot)</span> → " : ""}<span class="new">${o.count > 1 ? o.count + " × " : ""}${esc(o.name)}</span></span>
       <small class="stag">${esc(o.tag)}${o.lvl != null ? ` · Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
@@ -581,6 +620,7 @@ function renderSuggestions() {
       : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`}</div>`).join("");
   // one choice per suggestion
   // sets that follow the other ticks: the 3DMark set of a new build, the coloured-lights set
+  $("#suggRefresh").onclick = () => renderSuggestions();
   const follows = list.filter(sg => (sg.key === "bench" && / – new build/.test(sg.reason)) || sg.key === "lights").map(sg => sg.key);
   box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; });
     const k = list[+c.dataset.sg]?.key; if (follows.some(f => f !== k)) renderSuggestions(); }));
