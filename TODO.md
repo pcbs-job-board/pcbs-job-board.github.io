@@ -63,9 +63,15 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    - Cause (found): `sameOrBrand()` in js/suggest.js returns the identical part **plus** every similar part of the
      favourite brand; `pickOptions()` then sorts by price, so the cheaper AR08 ($40) wins over the NT06-PRO ($60) and
      the identical part isn't shown at all. Both are SilverStone, so the brand doesn't decide anything here.
-   - Fix: when the identical part is in the shop (unlocked), offer it first / only it for "same part again"; other
-     parts of the brand only when the identical one can't be bought. Check rules 15 (customer hints / suspects) and
-     15b (brand + "Diagnose and fix") – both use sameOrBrand. Add this case to the unit tests.
+   - **Rule (Mariusz): same item, or better – never worse.** The game refuses to complete a job with a worse part
+     installed. Here the AR08 has an Air Flow of 49.5 CFM vs the NT06-PRO's 73.969 CFM, so it is worse, not "alike".
+   - Underlying gap: coolers have no "better / worse" measure in our data – `atLeast()` lets every CPU Cooler (and
+     Case Fan) through. The workbook has **Air Flow** on the CPU Coolers, Case Fans and WC Radiators sheets (also
+     Air Pressure on fans / radiators) – import it in tools/import_xlsx.py (compat field, e.g. `af=`), rebuild the DB.
+   - Fix: `atLeast()` for CPU Cooler / Case Fan (and radiators) requires Air Flow ≥ the old part's. "Same part again"
+     offers the identical part when it's unlocked in the shop; otherwise only same-brand parts that are at least as
+     good. Check every rule that uses sameOrBrand / atLeast (15 hints / suspects, 15b brand + diagnose, "or better",
+     upgrade, AIO, PC Bay fixes) and add unit tests (NT06-PRO must never become AR08).
 
 ---
 
