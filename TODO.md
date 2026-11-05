@@ -60,6 +60,8 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
   repository only gets `main`.
 - Before a release: back up the live `main` as `backup-<live version>` here. Then **ask Mariusz before
   merging a dev version into `main`**, merge, and check the live site.
+- **Version bump = 4 places**: `js/config.js` version, every `?v=` in `index.html`, `--css-ver` at the top of
+  `css/style.css` (the app reloads a stale stylesheet when it doesn't match – 0.14.0), and a new CHANGELOG.md section.
 - Changelog: very short lines, most important change first. Versions are X.Y.Z (X major, Y features, Z fixes).
 - Tests: branch `tests` here (`node run.js --app <app checkout>`). Run it on every dev branch before
   asking to release – 0 failed. New screenshots from Mariusz go into `fixtures/` with checked expectations.
