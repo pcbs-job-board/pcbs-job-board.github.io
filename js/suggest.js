@@ -193,7 +193,10 @@ function suggestSwaps(job, opts = {}) {
       } else {
         // a GPU "upgrade" must also not score lower in 3DMark (RX 480: higher ranking than a GTX 1060, but a lower score)
         const g0 = cat === "GPU" && benchOf(hdd.name), scoreOk = p => !g0 || !benchOf(p.name) || benchOf(p.name).one >= g0.one;
-        const better = shopParts(cat).filter(p => (RATED.has(cat) ? rk(p) > rk(hdd) : atLeast(hdd, cat)(p) && !sameAs(hdd.name)(p)) && scoreOk(p));
+        // GPUs: "better" = a higher in-game 3DMark score (Mariusz: the game counts the score, not the model year);
+        // without score data the ranking decides
+        const gBetter = p => { const b = benchOf(p.name); return g0 && b ? b.one > g0.one : rk(p) > rk(hdd); };
+        const better = shopParts(cat).filter(p => cat === "GPU" ? gBetter(p) : (RATED.has(cat) ? rk(p) > rk(hdd) : atLeast(hdd, cat)(p) && !sameAs(hdd.name)(p)) && scoreOk(p));
         if (cat === "GPU" && pairMode) {
           // only cards that run as a pair in the game (SLI / CrossFire)
           // a board that takes two of this card as it is (kind + room): first choice – and the only one when the board must stay
