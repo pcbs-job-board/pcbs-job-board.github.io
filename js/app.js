@@ -706,6 +706,31 @@ $("#dlgReview").addEventListener("close", () => { acEl.hidden = true; document.b
 // ================= settings: content packs (DLC) + rules =================
 // DLC that only add workshops, modes or music – listed for information, no parts to filter
 const DLC_NO_PARTS = ["Career Power Pack", "Esports Expansion", "NZXT Workshop", "Republic of Gamers Workshop", "Fractal Design Workshop", "AORUS Workshop", "EVGA Workshop", "Overclockers UK Workshop", "Razer Workshop", "PC Building Simulator Soundtrack"];
+// 📜 Changelog window: CHANGELOG.md from the site itself (published with the app – always the same file as on GitHub)
+function changelogHtml(md) {
+  const out = []; let list = null;
+  const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`(.+?)`/g, "<code>$1</code>");
+  const close = () => { if (list) { out.push(`<ul>${list.join("")}</ul>`); list = null; } };
+  let first = true;
+  for (const line of md.split(/\r?\n/)) {
+    const h = line.match(/^##\s+(.+)$/), li = line.match(/^\s*[-*]\s+(.+)$/);
+    if (/^#\s/.test(line)) continue;   // the file's own title
+    if (h) { close(); out.push(`${first ? "" : "</section>"}<section class="clver"><h4>${inline(h[1])}${h[1].trim() === (window.PCBS_CONFIG || {}).version ? ' <span class="clnow">your version</span>' : ""}</h4>`); first = false; }
+    else if (li) (list = list || []).push(`<li>${inline(li[1])}</li>`);
+    else if (line.trim()) { close(); out.push(`<p class="hint">${inline(line.trim())}</p>`); }
+  }
+  close(); if (!first) out.push("</section>");
+  return out.join("");
+}
+async function openChangelog(e) {
+  e?.preventDefault?.();
+  const dlg = $("#dlgChangelog"), body = $("#clBody");
+  try {
+    const r = await fetch("CHANGELOG.md", { cache: "no-store" }); if (!r.ok) throw new Error(r.status);
+    body.innerHTML = changelogHtml(await r.text());
+  } catch { window.open(changelogUrl(), "_blank", "noopener"); return; }   // e.g. opened as a local file
+  if (!dlg.open) dlg.showModal(); body.scrollTo(0, 0);
+}
 function changelogUrl() { const r = reportRepo(); return r ? `https://github.com/${r}/blob/main/CHANGELOG.md` : "CHANGELOG.md"; }
 function renderSettings() {
   const m = window.PARTS_META || {};
@@ -715,7 +740,7 @@ function renderSettings() {
   $("#dlcOther").textContent = "No extra parts (workshops, game modes, music – nothing to switch): " + DLC_NO_PARTS.join(", ") + ".";
   $("#gameVersion").innerHTML = VERSIONS.slice().reverse().map(v => `<option value="${esc(v.v)}" ${v.v === gameVersion ? "selected" : ""}>${esc(v.label)}</option>`).join("");
   $("#appVersion").textContent = "PCBS Job Board v" + ((window.PCBS_CONFIG || {}).version || "?");
-  $("#appVersion").href = changelogUrl();
+  $("#appVersion").href = changelogUrl(); $("#appVersion").onclick = openChangelog;
   if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
   $("#dbInfo").textContent = m.counts ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.` : "Parts database not loaded.";
 }

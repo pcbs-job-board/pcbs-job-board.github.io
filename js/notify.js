@@ -40,12 +40,13 @@ function renderNotify() {
     <div class="btnrow"><button class="primary" id="notiReload">↻ Reload now</button></div></div>`);
   if (noti.updated) items.push(`<div class="noti upd"><b>✨ Updated to version ${esc(noti.updated)}</b>
     ${noti.whatsNew?.length ? `<ul>${noti.whatsNew.map(w => `<li>${esc(w)}</li>`).join("")}</ul>${noti.more ? `<small>…and ${noti.more} more.</small>` : ""}` : ""}
-    <div class="btnrow"><a href="${esc(changelogUrl())}" target="_blank" rel="noopener">Full changelog ↗</a><span class="spacer"></span><button id="notiSeen">Got it</button></div></div>`);
+    <div class="btnrow"><a href="${esc(changelogUrl())}" id="notiLog">📜 Full changelog</a><span class="spacer"></span><button id="notiSeen">Got it</button></div></div>`);
   box.hidden = !items.length;
   if (!items.length) { panel.hidden = true; return; }
   panel.innerHTML = items.join("");
   $("#btnNotify").title = items.length + " notification" + (items.length > 1 ? "s" : "");
   $("#notiReload")?.addEventListener("click", () => { location.href = location.pathname + "?v=" + encodeURIComponent(noti.newer); });
+  $("#notiLog")?.addEventListener("click", e => openChangelog(e));
   $("#notiSeen")?.addEventListener("click", () => { LS.set("pcbs.seenVersion", APP_VER); noti.updated = null; renderNotify(); });
 }
 $("#btnNotify").onclick = e => { e.stopPropagation(); $("#notiPanel").hidden = !$("#notiPanel").hidden; };

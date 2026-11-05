@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
 - Part swap tiles: tidier sizes – ✕ / ✎ and the price box match the checkbox.
 
 ## 0.13.0
