@@ -5,6 +5,7 @@ Within each version, changes are listed from most to least important.
 
 ## 0.14.0
 - Custom water cooling has its own part types: Reservoir, Radiator and CPU Block – as fields in the job window and in the swap categories.
+- Watercooled GPUs are marked 💧, unlock with the Custom Water Cooling Shop, and are suggested for "water cooling for the GPU" objectives.
 - New hidden objective: coolant colour ("blue coolant" → fill the loop with Blue coolant, e.g. Blue Clear Coolant) – can be switched off in the rules.
 - Looks-only parts (cables, and the pipes, fittings and coolants of custom water cooling) are no longer offered when typing a part; "Cables" is gone from the swap categories.
 - "Install dual graphics cards" jobs keep the customer's motherboard: GPU pairs that fit it come first, no board swaps are suggested (unless an objective asks for a new board).

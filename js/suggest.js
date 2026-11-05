@@ -176,6 +176,14 @@ function suggestSwaps(job, opts = {}) {
       add("obj:" + o, o, [{ name: shop.name, cat: "GPU", price: shop.price, count: 1, det: shop.det, lvl: shop.lvl, pct: shop.pct, tag: "same GPU again", swaps: pairSw, extras: extra, total, over: !priceOk({ price: total }, ctx.left) }], { cat: "GPU" });
       continue;
     }
+    // 10b "watercooled GPU" / "custom water cooling for the GPU": a watercooled version (Custom Water Cooling Shop), never worse
+    if (/\b(gpu|graphics)\b/i.test(o) && /water ?cool/i.test(o)) {
+      const g = cur("GPU")[0]; if (g && isWaterGPU(g)) { handled.add("GPU"); continue; }
+      const c = shopParts("GPU").filter(p => isWaterGPU(p) && (!g || rk(p) >= rk(g)));
+      if (!c.length) missing("obj:" + o, o, hasUnlock("customWC") ? "No watercooled GPU unlocked yet." : gateMsg("customWC").replace(/<\/?b>/g, "") + ".");
+      else add("obj:" + o, o, pickOptions(job, ctx, c, { replace: g?.name || "", base: g || null }), { cat: "GPU", old: g?.name || "" });
+      handled.add("GPU"); continue;
+    }
     // 10  Install AIO water cooling (not custom loops)
     if (/water cooling|aio|liquid cool/i.test(o) && !/custom/i.test(o)) { out.push(...aioSuggestion(job, ctx, o, cur)); handled.add("CPU Cooler"); continue; }
     // 12  overclocking

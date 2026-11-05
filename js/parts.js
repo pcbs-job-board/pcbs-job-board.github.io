@@ -24,7 +24,11 @@ function setCareer(level, pct) {
 }
 // unlocked at the player's progress? Parts listed at 0–1 % unlock right at the level-up.
 // Custom water cooling parts come from their own shop, unlocked at career level 16 (js/unlocks.js)
-const unlocked = p => career.level == null || ((p.cat !== "Water Cooling" || typeof hasUnlock !== "function" || hasUnlock("customWC")) && (p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct)));
+// watercooled GPUs (Custom Water Cooling Shop: "NVIDIA GeForce GTX 1080 | EKWB EK-FC Plexi") – still GPUs, but sold in the
+// custom water cooling shop, so they unlock with it (level 16)
+function isWaterGPU(p) { if (!p || p.cat !== "GPU") return false; const ix = p.spec != null ? p : INDEX.find(x => x.name === p.name); return /\bwater\b/i.test((ix && ix.spec) || "") || /\|/.test(p.name || ""); }
+const WATER_GPU_TAG = "💧 Watercooled – Custom Water Cooling Shop";
+const unlocked = p => career.level == null || (((p.cat !== "Water Cooling" && !isWaterGPU(p)) || typeof hasUnlock !== "function" || hasUnlock("customWC")) && (p.lvl == null || p.lvl < career.level || (p.lvl === career.level && (p.pct == null || p.pct <= 1 ? 0 : p.pct) <= career.pct)));
 const dlcCount = k => Object.values(window.PARTS_DB || {}).reduce((n, rows) => n + rows.filter(r => r[4] === k).length, 0);
 
 // parts the user typed that are not in the database
@@ -35,8 +39,9 @@ let INDEX = [];
 function buildIndex() {
   INDEX = [];
   const db = window.PARTS_DB || {};
-  for (const cat in db) for (const [name, lvl, price, spec, dlc, ver, pct, , det] of db[cat]) {
+  for (const cat in db) for (let [name, lvl, price, spec, dlc, ver, pct, , det] of db[cat]) {
     if (!dlcEnabled(dlc) || !versionOk(ver)) continue;
+    if (cat === "GPU" && /\bwater\b/i.test(spec || "")) det = WATER_GPU_TAG + (det ? " · " + det : "");   // recognisable in every list
     const n = normP(name); INDEX.push({ cat, name, lvl, pct, price, spec, det, dlc, ver, noShop: /not in shop/i.test(spec || ""), n, c: n.replace(/ /g, ""), w: n.split(" ") });
   }
   const known = new Set(Object.values(db).flat().map(r => r[0].toLowerCase()));
@@ -345,7 +350,7 @@ let PRICE = null;
 // longer facts for a part (board sizes, socket, RAM, watts, SLI/CrossFire, lighting…) – shown on swaps
 let DETAILS = null;
 function detailsOf(name) {
-  if (!DETAILS) { DETAILS = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) DETAILS.set(r[0].toLowerCase(), r[8] || r[3] || ""); }
+  if (!DETAILS) { DETAILS = new Map(); for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) DETAILS.set(r[0].toLowerCase(), (cat === "GPU" && /\bwater\b/i.test(r[3] || "") ? WATER_GPU_TAG + " · " : "") + (r[8] || r[3] || "")); }
   return DETAILS.get(String(name || "").trim().toLowerCase()) || "";
 }
 // ---------- power check ----------
