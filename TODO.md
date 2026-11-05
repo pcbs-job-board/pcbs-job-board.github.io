@@ -66,12 +66,11 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (1)
 
-1. **Swap tile, more adjustments** (Mariusz, 2026-11-04, after 0.13.0):
-   - ✕ (remove) and ✎ (edit) are a bit too big now → the same size as the checkbox (20 px).
-   - The price inside the price box: same height as the checkbox (20 px) – tighten its padding / line height.
-2. **Changelog on the website instead of GitHub**
+_Swap tile sizes: done in dev-0.14.0._
+
+1. **Changelog on the website instead of GitHub**
    - Design and add a changelog window (a dialog like Settings / "How to use it"): versions newest first, short
      lines, readable on a phone too.
    - Every link that opens the changelog on GitHub today – the one in ⚙ Settings and the one in the "new version"
