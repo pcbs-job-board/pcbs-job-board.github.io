@@ -519,6 +519,7 @@ dialog.flipdlg{width:min(1000px,97vw);max-width:none}
 /* swap tile (0.13.0): bigger checkbox and ✕ / ✎; the dot handle sits inside the tile with the checkbox's side gap */
 .swap{padding:6px 0 6px 9px}
 .swap>input[type=checkbox]{width:20px;height:20px;flex:none;margin:0}
-.swap .sx{font-size:26px;padding:0 6px;line-height:1}
+.swap .sx{font-size:20px;padding:0 5px;line-height:20px;height:20px}   /* ✕ / ✎ as big as the checkbox */
 .swap .sacts{gap:10px}
 .swap .grip{margin:3px 9px 3px 0;padding:0;align-self:stretch;border-radius:0}
+.swap .price{font-size:14px;line-height:18px;height:20px;padding:0 8px;box-sizing:border-box}   /* the price box as tall as the checkbox (20 px) */
