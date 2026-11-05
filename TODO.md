@@ -66,18 +66,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (0)
 
-_Swap tile sizes: done in dev-0.14.0._
-
-1. **Changelog on the website instead of GitHub**
-   - Design and add a changelog window (a dialog like Settings / "How to use it"): versions newest first, short
-     lines, readable on a phone too.
-   - Every link that opens the changelog on GitHub today – the one in ⚙ Settings and the one in the "new version"
-     notification – opens this window instead.
-   - The GitHub `CHANGELOG.md` and the website's changelog must always match: the window reads `CHANGELOG.md`
-     from the site itself (it's published with the app) and renders it, so there's one file to keep up to date.
-     (If fetching fails – e.g. opened as a local file – fall back to the GitHub link.)
+_None open. Swap tile sizes and the changelog window are done in dev-0.14.0._
 
 ---
 
