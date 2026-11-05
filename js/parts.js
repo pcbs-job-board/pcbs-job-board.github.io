@@ -52,8 +52,11 @@ function buildIndex() {
 // custom water cooling split by what the part is (0.14.0): Reservoir, Radiator, CPU Block (the data keeps "Water Cooling")
 const WC_KINDS = [["Reservoir", /^reservoir/i], ["Radiator", /^radiator/i], ["CPU Block", /^cpu block/i]];
 function wcKind(p) { const ix = p && (p.spec != null ? p : INDEX.find(x => x.name === p.name)); if (!ix || ix.cat !== "Water Cooling") return null; const k = WC_KINDS.find(([, re]) => re.test(ix.spec || "")); return k ? k[0] : null; }
-const SWAP_CATS = () => CATS.filter(c => c !== "Cables").flatMap(c => c === "Water Cooling" ? WC_KINDS.map(([k]) => "WC:" + k) : [c]);   // the swap form's categories
-const catKey = p => { const k = wcKind(p); return k ? "WC:" + k : p.cat; }, catLabel = k => String(k).replace(/^WC:/, ""), catData = k => /^WC:/.test(k) ? "Water Cooling" : k;
+// one order everywhere (job window fields + swap categories); "Other" = Any part (the swap form's default)
+const PART_ORDER = ["Case", "Motherboard", "CPU", "CPU Cooler", "RAM", "GPU", "PSU", "Storage", "Case Fan", "WC:Reservoir", "WC:Radiator", "WC:CPU Block"];
+const SWAP_CATS = () => ["Other", ...PART_ORDER];
+const CAT_LABEL = { "CPU Cooler": "CPU Cooling", "Case Fan": "Case Fans", Other: "Any" };
+const catKey = p => { const k = wcKind(p); return k ? "WC:" + k : p.cat; }, catLabel = k => CAT_LABEL[k] || String(k).replace(/^WC:/, ""), catData = k => /^WC:/.test(k) ? "Water Cooling" : k;
 // looks only – cables, and the pipes / fittings / coolants of a custom loop: never offered in the part lists
 function cosmeticPart(p) { return p.cat === "Cables" || (p.cat === "Water Cooling" && /^(coolant|fitting|pipe)/i.test(p.spec || "")); }
 function searchParts(q, cat, limit = 14, brands = [], buyable = false) {

@@ -515,10 +515,11 @@ async function runOcr() {
 }
 // the PC's parts, one field per part type (the hidden #fComps text box stays the single source for the rest of the app)
 const PART_SLOTS = [{ k: "Case", label: "Case", max: 1 }, { k: "Motherboard", label: "Motherboard", max: 1 }, { k: "CPU", label: "CPU", max: 1 },
-  { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2 }, { k: "PSU", label: "PSU", max: 1 },
-  { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" },
-  { k: "WC:Reservoir", label: "Reservoir", max: 1, opt: true, hint: "custom water cooling" }, { k: "WC:Radiator", label: "Radiator", max: 99, opt: true },
-  { k: "WC:CPU Block", label: "CPU Block", max: 1, opt: true }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
+  { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2, hint: "💧 = watercooled" }, { k: "PSU", label: "PSU", max: 1 },
+  { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" }, { k: "Case Fan", label: "Case Fans", max: 99, opt: true },
+  { k: "WC:Reservoir", label: "Reservoir", max: 1, opt: true, hint: "custom water cooling" }, { k: "WC:Radiator", label: "Radiator", max: 1, opt: true },
+  { k: "WC:CPU Block", label: "CPU Block", max: 1, opt: true },
+  { k: "Other", label: "Other", max: 99, other: true, onlyIfUsed: true, hint: "parts of no other type – shown only when there are some" }];
 // "Other" = every category no other field takes (case fans, cables, custom water cooling…)
 const OTHER_CATS = () => CATS.filter(c => c !== "Cables" && c !== "Water Cooling" && !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
 const slotOf = (cat, name) => PART_SLOTS.find(sl => sl.k === (cat === "Water Cooling" ? catKey({ name, cat }) : cat) && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
@@ -530,6 +531,7 @@ function inPartsDb(name) {   // exactly a part of the database (any DLC / versio
 function partFieldsHtml(comps) {
   return `<div id="fParts">${PART_SLOTS.map(sl => {
     const rows = comps.filter(c => slotOf(c.cat, c.name) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
+    if (sl.onlyIfUsed && !rows.length) return "";
     const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more = sl.other || rows.length < sl.max ? (rows.length ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>` : sl.other ? row({ cat: "Other", name: "" }) : "") : "";
     return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
