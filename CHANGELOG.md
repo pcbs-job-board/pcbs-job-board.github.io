@@ -3,6 +3,8 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.0
+
 ## 0.13.0
 - New-job window: job details under the screenshot, parts on the right – one field per part type with autofill, "!" on parts not found in the database.
 - One Edit window per job (✎ Edit): details, objectives, tasks and parts in the same layout – replaces the ✎ and 📸 Parts windows.
