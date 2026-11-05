@@ -33,7 +33,13 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   #9 Reservoir / Radiator / CPU Block types + 💧 watercooled GPUs, #10 one part order + "Any", #11 water cooling fit
   (radiator ↔ case, CPU block ↔ socket) – **Reservoir ↔ case still open**:
   Mariusz sends the game's compatible reservoirs per case (one message per case, screenshots, selected case has a
-  yellowish border). Collect them in `scratchpad/reservoir-cases/reservoir-cases.csv` (case, compatible reservoirs).
+  yellowish border). Collected in `data-wip/reservoir-cases.csv` on this branch (case, compatible reservoirs joined
+  with "|", source; "NONE" = game says "Custom water cooling not supported").
+  **Paused 2026-11-05 after 96 cases (ADATA … Kolink Big Chungus). Next session starts with the Lian Li cases.**
+  Variant rule (Mariusz, applies to all brands): if a case has several colour variants but only one is on the list,
+  all variants get the same compatibility; same for window / no-window versions of one model when only one is listed.
+  Apply this when importing (match by model name with colour / "Window" / "TG" suffixes stripped, but a listed
+  variant always wins over an inferred one).
   After the last one: put it into the parts data (case compat field), add the case ↔ reservoir fit rule, and add the note
   "the game checks 3D collision in real time – even a compatible reservoir might not fit in a compatible case".
 
