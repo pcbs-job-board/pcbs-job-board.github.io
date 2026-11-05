@@ -27,6 +27,16 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
+## dev-0.14.0 – in progress (2026-11-05): 15 items from Mariusz + 1 special task at the end
+- Done so far: #1 swap tile sizes, #2 changelog window, #3 stale CSS / ?v= fix, #4 scroll up on table, #5 Overclock CPU keeps
+  the CPU, #6 dual GPUs keep the board + GPU upgrade = higher score, #7 no cosmetic parts in autofill, #8 coolant colour,
+  #9 Reservoir / Radiator / CPU Block types + 💧 watercooled GPUs, #10 one part order + "Any", #11 water cooling fit
+  (radiator ↔ case, CPU block ↔ socket) – **Reservoir ↔ case still open**:
+  Mariusz sends the game's compatible reservoirs per case (one message per case, screenshots, selected case has a
+  yellowish border). Collect them in `scratchpad/reservoir-cases/reservoir-cases.csv` (case, compatible reservoirs).
+  After the last one: put it into the parts data (case compat field), add the case ↔ reservoir fit rule, and add the note
+  "the game checks 3D collision in real time – even a compatible reservoir might not fit in a compatible case".
+
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
   also for manual jobs); parts on the right: one field per type (`PART_SLOTS` in js/app.js – Case, Motherboard, CPU,
