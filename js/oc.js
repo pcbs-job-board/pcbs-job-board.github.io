@@ -44,6 +44,12 @@ function ocTargets(j) {
   });
 }
 // one line per objective + the PSU; state: ok · warn (above the overclock base – depends on cooling) · bad (can't be done)
+// "Overclock CPU to N MHz" means the customer's own CPU – it can't be swapped, unless an objective also asks to replace /
+// upgrade the CPU (then the new one is overclocked)
+function cpuIsFixed(j) {
+  const objs = jobObjectives(j);
+  return ocTargets(j).some(t => t.part === "CPU") && !objs.some(o => /\b(replace|upgrade)\b.*\b(cpu|processor)\b/i.test(o));
+}
 function ocCheck(j) {
   const targets = ocTargets(j); if (!targets.length) return null;
   const build = plannedBuild(j), first = cat => build.find(p => p.cat === cat), mhz = x => x.toLocaleString() + " MHz";
@@ -55,6 +61,8 @@ function ocCheck(j) {
       const cpu = first("CPU"), mb = first("Motherboard");
       if (!cpu) { missing.add("CPU"); it.state = "off"; continue; }
       it.name = cpu.name;
+      const own = (j.components || []).find(p => p.cat === "CPU");
+      if (cpuIsFixed(j) && own && own.name !== cpu.name) { it.state = "bad"; it.lines.push(`This job overclocks the customer's own CPU (<b>${esc(own.name)}</b>) – swapping it for ${esc(cpu.name)} fails the objective. Remove the CPU swap.`); continue; }
       if (!hasUnlock("cpuOC")) { it.state = "bad"; it.lines.push(gateMsg("cpuOC") + "."); continue; }
       const d = ocOf(cpu.name), c = compatOf(cpu.name) || {};
       if (!d || c.oc === "0") { it.state = "bad"; it.lines.push(`<b>${esc(cpu.name)}</b> is locked – it can't be overclocked. An unlocked CPU is needed.`); }
@@ -99,4 +107,4 @@ function ocCheck(j) {
   if (items.every(i => i.state === "off")) state = "off";
   return { items, psu, missing: [...missing], state };
 }
-if (typeof module !== "undefined") module.exports = { ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };
+if (typeof module !== "undefined") module.exports = { cpuIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };

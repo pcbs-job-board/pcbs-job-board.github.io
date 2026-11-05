@@ -214,7 +214,7 @@ function suggestSwaps(job, opts = {}) {
   // 15  Diagnose and fix + broken-part hint / "customer suspects": identical replacement
   const broken = new Set([...(opts.broken || []), ...(job.suspect ? [job.suspect] : [])].map(x => catOfText(String(x).toLowerCase()) || x).filter(c => CATS.includes(c)));
   if (objs.some(o => /diagnose|fix/i.test(o))) for (const cat of broken) {
-    if (handled.has(cat)) continue;
+    if (handled.has(cat) || (cat === "CPU" && cpuIsFixed(job))) continue;
     const p0 = cur(cat)[0]; if (!p0) { missing("hint:" + cat, `Customer hints the ${cat} is broken`, `capture PC Stats to get a ${cat} suggestion`); continue; }
     const eq = sameOrBrand(cat, p0, ctx);
     add("hint:" + cat, `Customer hints the ${cat} is broken – same part again${cur(cat).length > 1 ? " (one of " + cur(cat).length + "; which one shows in the game)" : ""}`, pickOptions(job, ctx, eq, { replace: p0.name, base: p0 }), { cat, old: p0.name });
@@ -222,7 +222,7 @@ function suggestSwaps(job, opts = {}) {
   // 15b Diagnose and fix + favourite brand ("I'm a total Intel fanboy"): the broken part is the one made by that
   //     brand – the same part again, once per customer's part of that brand (which one is broken shows in the game)
   if (objs.some(o => /diagnose|fix/i.test(o)) && ctx.brands.length) {
-    const mine = CATS.flatMap(cat => broken.has(cat) || handled.has(cat) ? [] : cur(cat)).filter(p => { const ix = INDEX.find(x => x.name === p.name); return ix && ctx.brands.some(b => brandMatch(ix, b)); });
+    const mine = CATS.flatMap(cat => broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : cur(cat)).filter(p => { const ix = INDEX.find(x => x.name === p.name); return ix && ctx.brands.some(b => brandMatch(ix, b)); });
     if (!build.length) missing("brandfix", `${ctx.brands[0]} fan + "diagnose and fix" – the broken part is likely made by ${ctx.brands[0]}`, `capture PC Stats to get a suggestion`);
     const seenP = new Set();
     for (const p0 of mine) {
@@ -327,7 +327,10 @@ function ocSuggestions(job, ctx, reason, cur) {
   if (gate && !hasUnlock(gate)) return [{ key: "obj:oc-locked", reason, options: [], hint: gateMsg(gate).replace(/<\/?b>/g, "") + "." }];
   if (t.part === "CPU") {
     const reach = p => t.mhz == null || (ocReach(p.name) || 0) >= t.mhz;   // 90 % of the overclock potential
-    if (cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) {
+    const fixed = cpuIsFixed(job);   // the customer's own CPU must be overclocked – no CPU swaps
+    if (fixed && cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: [], hint: `This job overclocks the customer's own CPU, and ${cpu.name} is locked. Check the CPU name read from PC Stats – the game doesn't swap it for you.` });
+    else if (fixed) { /* no CPU suggestions: the board below is all that can be changed */ }
+    else if (cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name))) {
       const c = shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && sockOk(cInfo(p).s, cInfo(cpu).s) && rk(p) >= rk(cpu) && reach(p));
       const o = pickOptions(job, ctx, c, { replace: cpu.name, base: cpu }); if (o.length) out.push({ key: "obj:oc-cpu", reason: reason + " – the CPU is locked", options: o, cat: "CPU", old: cpu.name });
       else { const w = cpuWithBoard(job, ctx, shopParts("CPU").filter(p => cInfo(p).oc === "1" && ocOf(p.name) && rk(p) >= rk(cpu) && reach(p)), cpu, cur, p => cInfo(p).oc === "1"); if (w.length) out.push({ key: "obj:oc-cpu", reason: reason + (cInfo(board || {}).oc === "0" ? " – the CPU is locked and the motherboard can't overclock: an unlocked CPU + a board that can" : " – the CPU is locked: an unlocked CPU with the motherboard it needs"), options: w, cat: "CPU", old: cpu.name }); }
@@ -421,6 +424,7 @@ function benchSuggestions(job, ctx) {
 
   // what can change: parts an objective asks for stay
   const locked = new Set(compatBuild(job).filter(p => p.req).map(p => p.cat));
+  if (cpuIsFixed(job)) locked.add("CPU");   // "Overclock CPU": the customer's CPU stays
   const cur = c => build.filter(p => p.cat === c), cpu0 = cur("CPU")[0], mb0 = cur("Motherboard")[0], gpus0 = cur("GPU"), ram0 = cur("RAM");
   const mbB = benchOf(mb0.name), cpuB = benchOf(cpu0.name), stick = Math.min(...ram0.map(r => +(cInfo(r).mhz || 0)).filter(Boolean)), sticks = ram0.length;
   const nG = gpus0.length > 1 && gpus0[1].name === gpus0[0].name ? 2 : 1;
