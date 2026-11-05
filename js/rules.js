@@ -3,6 +3,7 @@
    backups and the parser are unchanged: "add when" = keys, "ignore when" = keys starting with "-". */
 const SMART_ROWS = [
   ["cables", "🔌 Cable requests", "“braided red cables”, “saw … cables on PC Bay” → change all cables"],
+  ["coolant", "💧 Coolant colour", "“blue coolant”, “green opaque coolant” → fill the custom loop with that coolant"],
   ["brands", "★ Favourite brands", "“total NZXT fanboy”, “my brother swears by MSI” → use that brand"],
   ["broken", "🛠️ Broken parts", "“I think I broke some RAM” → check / replace that part"],
 ];

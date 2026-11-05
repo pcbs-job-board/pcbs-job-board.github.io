@@ -496,6 +496,8 @@ async function runOcr() {
     const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules, smart);
     p.hidden.forEach(h => { if (h.brand && !h.avoid) { const c = brandCategories(h.brand); if (c.length) h.task += " (makes: " + c.join(", ") + ")"; } });
     // suggest matching in-game cable sets for cable colour requests
+    // coolant: name a matching coolant from the game ("Blue Clear Coolant")
+    p.hidden.forEach(h => { if (h.coolant) { const c = h.coolant, ex = INDEX.filter(x => x.cat === "Water Cooling" && /^coolant/i.test(x.spec || "") && !/not in shop/i.test(x.spec || "")).map(x => x.name).find(n => c.col === "clear" ? /^clear coolant$/i.test(n) : new RegExp("^" + c.col.replace(/\s+/g, " ") + "\\b" + (c.kind ? ".*" + c.kind : ""), "i").test(n)); if (ex) h.task += " (e.g. " + ex + ")"; } });
     p.hidden.forEach(h => { if (h.want) { const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean); if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")"; } });
     Object.assign(rev.draft, { sender: p.sender, subject: p.subject, labour: p.labour, budget: p.budget, level: p.level, deadline: p.deadline, softDeadline: !!p.softDeadline, suspect: p.suspect, objectives: p.objectives, hidden: p.hidden, body: p.body, signature: p.signature, noStars: p.noStars, words: p.words });
     // story job? known from the list (sender email / subject / name) or looks like one (no star requirement, long text)

@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- New hidden objective: coolant colour ("blue coolant" → fill the loop with Blue coolant, e.g. Blue Clear Coolant) – can be switched off in the rules.
 - Looks-only parts (cables, and the pipes, fittings and coolants of custom water cooling) are no longer offered when typing a part; "Cables" is gone from the swap categories.
 - "Install dual graphics cards" jobs keep the customer's motherboard: GPU pairs that fit it come first, no board swaps are suggested (unless an objective asks for a new board).
 - A GPU "upgrade" means a higher 3DMark score than the old card (the ranking only decides when there is no score).

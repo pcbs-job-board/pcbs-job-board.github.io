@@ -203,6 +203,16 @@ function detectBrands(body) {
 const CABLE_COL = "red|blue|green|yellow|orange|purple|pink|white|black|gray|grey|silver|gold|cyan|teal|brown|lime|magenta|violet|navy|beige|turquoise|aqua|rainbow";
 const CABLE_SHADE = "(?:(?:light|dark|bright|pale|deep|neon|sky|baby|royal|hot)\\s+)?";
 const CABLE_TYPE = "plastic|braided|plain|sleeved|ribbon|duo|loose|tight";
+// ---- Coolant colour (custom water cooling): "blue coolant", "clear coolant", "green opaque coolant" ----
+// The game's coolants are "<Colour> <Clear|Flecked|Opaque> Coolant" (+ "Clear Coolant")
+function detectCoolant(body) {
+  const b = " " + String(body || "").toLowerCase().replace(/[’`]/g, "'") + " ";
+  const m = b.match(new RegExp("\\b(" + CABLE_SHADE + "(?:" + CABLE_COL + "|clear))\\s+(?:(clear|flecked|opaque|see-through|transparent)\\s+)?coolant\\b"));
+  if (!m) return null;
+  const col = m[1].trim(), kind = m[2] && m[2] !== "see-through" && m[2] !== "transparent" ? m[2] : m[2] ? "clear" : "";
+  const label = (col === "clear" ? "Clear" : col.replace(/\b\w/g, x => x.toUpperCase()) + (kind ? " " + kind[0].toUpperCase() + kind.slice(1) : ""));
+  return { label, col, kind, quote: m[0].trim() };
+}
 function detectCables(body) {
   const b = " " + String(body || "").toLowerCase().replace(/[’`]/g, "'") + " ";
   const types = new Set(), cols = [], quotes = [];
@@ -408,7 +418,7 @@ function storyLooks(job) {
 const budgetInObjectives = objs => (objs || []).some(o => /budget|\$\s?\d/i.test(typeof o === "string" ? o : o.text));
 
 // Built-in ("smart") detections that can be switched off in the rules window
-const SMART_DEFAULT = { cables: true, brands: true, broken: true };
+const SMART_DEFAULT = { cables: true, coolant: true, brands: true, broken: true };
 // hidden objectives for an email body – also used by the "Try it" box in the rules window
 function detectHidden(body, rules, smart, objectives, emailDate, hasDeadline) {
   rules = rules || DEFAULT_RULES; smart = Object.assign({}, SMART_DEFAULT, smart); objectives = objectives || [];
@@ -441,6 +451,9 @@ function detectHidden(body, rules, smart, objectives, emailDate, hasDeadline) {
   // cables: colour and/or type, all in one task
   const cab = smart.cables && detectCables(body);
   if (cab) hidden.unshift({ task: "Change all cables → " + cab.label, because: cab.quotes.length ? cab.quotes : ["cables on PC Bay"], want: cab.want, smart: "cables" });
+  // coolant colour (custom loop): its own task, like the cables
+  const cool = smart.coolant !== false && detectCoolant(body);
+  if (cool) hidden.unshift({ task: "Fill the loop with " + cool.label + " coolant", because: [cool.quote], coolant: cool, smart: "coolant" });
   // brand: "I'm a total NZXT fanboy", "my brother swears by MSI", "Have you heard of FSP?"
   if (smart.brands) for (const p of detectBrands(body)) hidden.push({ task: `Use ${p.brand} for as many parts as possible`, because: [p.quote], brand: p.brand, smart: "brands" });
   // customer suspects: broken-sounding parts become a task, all guesses fill the field
