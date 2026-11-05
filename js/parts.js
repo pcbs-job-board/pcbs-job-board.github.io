@@ -44,13 +44,19 @@ function buildIndex() {
 }
 // buyable = only parts unlocked at the player's career progress (parts to buy for a swap);
 // searchParts.hidden tells how many matches were left out because of that
+// custom water cooling split by what the part is (0.14.0): Reservoir, Radiator, CPU Block (the data keeps "Water Cooling")
+const WC_KINDS = [["Reservoir", /^reservoir/i], ["Radiator", /^radiator/i], ["CPU Block", /^cpu block/i]];
+function wcKind(p) { const ix = p && (p.spec != null ? p : INDEX.find(x => x.name === p.name)); if (!ix || ix.cat !== "Water Cooling") return null; const k = WC_KINDS.find(([, re]) => re.test(ix.spec || "")); return k ? k[0] : null; }
+const SWAP_CATS = () => CATS.filter(c => c !== "Cables").flatMap(c => c === "Water Cooling" ? WC_KINDS.map(([k]) => "WC:" + k) : [c]);   // the swap form's categories
+const catKey = p => { const k = wcKind(p); return k ? "WC:" + k : p.cat; }, catLabel = k => String(k).replace(/^WC:/, ""), catData = k => /^WC:/.test(k) ? "Water Cooling" : k;
 // looks only – cables, and the pipes / fittings / coolants of a custom loop: never offered in the part lists
 function cosmeticPart(p) { return p.cat === "Cables" || (p.cat === "Water Cooling" && /^(coolant|fitting|pipe)/i.test(p.spec || "")); }
 function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
   const toks = normP(q).split(" ").filter(Boolean); searchParts.hidden = 0; if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
   const cats = cat && cat.includes("|") ? cat.split("|") : null;   // "Case Fan|Cables|…" – several categories
-  const all = INDEX.filter(p => !cosmeticPart(p) && (anyCat || (cats ? cats.includes(p.cat) : p.cat === cat)) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
+  const wk = /^WC:/.test(cat || "") ? catLabel(cat) : null;   // "WC:Radiator" – one kind of water cooling part
+  const all = INDEX.filter(p => !cosmeticPart(p) && (anyCat || (wk ? wcKind(p) === wk : cats ? cats.includes(p.cat) : p.cat === cat)) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
   const ok = buyable ? all.filter(p => p.hist || unlocked(p)) : all;
   searchParts.hidden = all.length - ok.length;
   return ok
@@ -131,7 +137,7 @@ function acMore() {
   list.classList.toggle("scrolls", list.scrollHeight > list.clientHeight + 1);
   more.hidden = !below; more.textContent = `▼ ${below} more – scroll or use ↓`;
 }
-function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.value = p.name; const f = acInput.closest("[data-swapform]"); if (f && p.cat && CATS.includes(p.cat)) f.querySelector('[data-f="cat"]').value = p.cat; acEl.hidden = true; acInput.focus(); acInput.dispatchEvent(new Event("change", { bubbles: true })); }
+function acPick(i) { const p = acItems[i]; if (!p || !acInput) return; acInput.value = p.name; const f = acInput.closest("[data-swapform]"); if (f && p.cat && CATS.includes(p.cat)) f.querySelector('[data-f="cat"]').value = catKey(p); acEl.hidden = true; acInput.focus(); acInput.dispatchEvent(new Event("change", { bubbles: true })); }
 function initAutocomplete() {
   acEl = $("#ac");
   document.addEventListener("input", e => { if (e.target.matches("[data-ac]")) acShow(e.target); });

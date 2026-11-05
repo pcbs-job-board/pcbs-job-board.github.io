@@ -168,7 +168,7 @@ function jobCard(j) {
   const swapPrice = s => s.price ?? priceOf(s.new);
   const clashes = jobCompatIssues(j), bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
   // tile: ☐ | category / old (red) / ↓ / new (green) / details | price | ✕ over ✎ | drag handle (full height)
-  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div class="sbody"><span class="cat">${esc(s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span><span class="arr" aria-label="replaced by">↓</span><span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><div class="sacts"><button class="ghost sx" data-act="delSwap" data-id="${j.id}" data-k="${s.id}" title="Remove this swap" aria-label="Remove this swap">✕</button><button class="ghost sx" data-act="editSwap" data-id="${j.id}" data-k="${s.id}" title="Edit this swap" aria-label="Edit this swap">✎</button></div><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true"></span></div>`; }).join("");
+  const swaps = j.swaps.map(s => { const pr = swapPrice(s); return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div class="sbody"><span class="cat">${esc(s.cat === "Water Cooling" ? wcKind({ name: s.new }) || s.cat : s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span><span class="arr" aria-label="replaced by">↓</span><span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><div class="sacts"><button class="ghost sx" data-act="delSwap" data-id="${j.id}" data-k="${s.id}" title="Remove this swap" aria-label="Remove this swap">✕</button><button class="ghost sx" data-act="editSwap" data-id="${j.id}" data-k="${s.id}" title="Edit this swap" aria-label="Edit this swap">✎</button></div><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true"></span></div>`; }).join("");
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "", budgetState = "off";
   const loose = j.story && !budgetInObjectives(main); // story job: the budget only counts when an objective says so
@@ -200,7 +200,7 @@ function jobCard(j) {
     <div class="sec"><h4>Part swaps</h4>${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
-        <div class="grid2"><select data-f="cat">${CATS.filter(c => c !== "Cables").map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
+        <div class="grid2"><select data-f="cat">${SWAP_CATS().map(c => `<option value="${esc(c)}" ${c === "Other" ? "selected" : ""}>${esc(catLabel(c))}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
       </div>
       <button data-act="openSwap" data-id="${j.id}" style="width:100%;margin-top:4px">⇄ Add part replacement</button></div>
@@ -234,23 +234,23 @@ document.addEventListener("click", e => {
     row.after(f); f.hidden = false; f.dataset.edit = sw.id; document.querySelector(`[data-act="openSwap"][data-id="${j.id}"]`).hidden = true;
     let i = j.components.findIndex(c => c.name === sw.old && c.cat === sw.cat); if (i < 0) i = j.components.findIndex(c => c.name === sw.old);
     if (sw.old && i < 0) { sel.insertAdjacentHTML("beforeend", `<option value="keep">${esc(sw.cat)}: ${esc(sw.old)}</option>`); sel.value = "keep"; } else sel.value = sw.old ? String(i) : "new";
-    f.querySelector('[data-f="cat"]').value = CATS.includes(sw.cat) ? sw.cat : "Other";
+    f.querySelector('[data-f="cat"]').value = CATS.includes(sw.cat) ? catKey({ name: sw.new, cat: sw.cat }) : "Other";
     const inp = f.querySelector('[data-f="new"]'); inp.value = sw.new;
     const save = f.querySelector('[data-act="saveSwap"]'); save.textContent = "Save change";
-    sel.onchange = ev => { const c = j.components[ev.target.value]; if (c) f.querySelector('[data-f="cat"]').value = CATS.includes(c.cat) ? c.cat : "Other"; };
+    sel.onchange = ev => { const c = j.components[ev.target.value]; if (c) f.querySelector('[data-f="cat"]').value = CATS.includes(c.cat) ? catKey(c) : "Other"; };
     inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc; return; }
   else if (a === "openSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); f.hidden = false; b.hidden = true;
     f.querySelector('[data-f="old"]').onchange = ev => {
       // copy the chosen part (name + category) into "New part", selected so typing replaces it
       const c = j.components[ev.target.value], inp = f.querySelector('[data-f="new"]');
-      f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? c.cat : "Other";
+      f.querySelector('[data-f="cat"]').value = c && CATS.includes(c.cat) ? catKey(c) : "Other";
       inp.value = c ? c.name : "";
       if (ev.target.dataset.kb) return; // changed with ← → : stay on the dropdown
       inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc;
     };
     f.querySelector('[data-f="new"]').focus(); return; }
   else if (a === "cancelSwap") { render(); return; }
-  else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = f.querySelector('[data-f="cat"]').value;
+  else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = catData(f.querySelector('[data-f="cat"]').value);
     if (!nw) { f.querySelector('[data-f="new"]').focus(); return; }
     const ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
     if (ed) { const was = ed.new; ed.old = o === "keep" ? ed.old : j.components[o]?.name || ""; ed.cat = cat; ed.new = nw; if (nw !== was) { delete ed.price; ed.done = false; } }
@@ -516,10 +516,12 @@ async function runOcr() {
 // the PC's parts, one field per part type (the hidden #fComps text box stays the single source for the rest of the app)
 const PART_SLOTS = [{ k: "Case", label: "Case", max: 1 }, { k: "Motherboard", label: "Motherboard", max: 1 }, { k: "CPU", label: "CPU", max: 1 },
   { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2 }, { k: "PSU", label: "PSU", max: 1 },
-  { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
+  { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" },
+  { k: "WC:Reservoir", label: "Reservoir", max: 1, opt: true, hint: "custom water cooling" }, { k: "WC:Radiator", label: "Radiator", max: 99, opt: true },
+  { k: "WC:CPU Block", label: "CPU Block", max: 1, opt: true }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
 // "Other" = every category no other field takes (case fans, cables, custom water cooling…)
-const OTHER_CATS = () => CATS.filter(c => c !== "Cables" && !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
-const slotOf = cat => PART_SLOTS.find(sl => sl.k === cat && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
+const OTHER_CATS = () => CATS.filter(c => c !== "Cables" && c !== "Water Cooling" && !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
+const slotOf = (cat, name) => PART_SLOTS.find(sl => sl.k === (cat === "Water Cooling" ? catKey({ name, cat }) : cat) && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
 let DBNAMES = null;
 function inPartsDb(name) {   // exactly a part of the database (any DLC / version – a customer PC can have anything)
   if (!DBNAMES) { DBNAMES = new Set(); for (const c in window.PARTS_DB || {}) for (const r of window.PARTS_DB[c]) DBNAMES.add(r[0].toLowerCase()); }
@@ -527,10 +529,10 @@ function inPartsDb(name) {   // exactly a part of the database (any DLC / versio
 }
 function partFieldsHtml(comps) {
   return `<div id="fParts">${PART_SLOTS.map(sl => {
-    const rows = comps.filter(c => slotOf(c.cat) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
+    const rows = comps.filter(c => slotOf(c.cat, c.name) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
     const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more = sl.other || rows.length < sl.max ? (rows.length ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>` : sl.other ? row({ cat: "Other", name: "" }) : "") : "";
-    return `<div class="pslot${!sl.other && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
+    return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
 }
 // fields → hidden text box (+ "input" so the suggestions follow); text box → fields
@@ -538,7 +540,7 @@ function partsFromFields() {
   const ta = $("#fComps"), box = $("#fParts"); if (!ta || !box) return;
   const list = [...box.querySelectorAll("input[data-slot]")].map(i => { const v = i.value.trim(); if (!v) return null;
     const m = INDEX.find(p => p.name.toLowerCase() === v.toLowerCase()) || (inPartsDb(v) ? { name: v, cat: categorize(v) } : null);
-    const cat = i.dataset.slot === "Other" ? (m && m.cat) || (i.dataset.cat !== "Other" ? i.dataset.cat : categorize(v)) : i.dataset.slot;
+    const cat = i.dataset.slot === "Other" ? (m && m.cat) || (i.dataset.cat !== "Other" ? catData(i.dataset.cat) : categorize(v)) : catData(i.dataset.slot);
     return { cat, name: m ? m.name : v }; }).filter(Boolean);
   // a captured part the user changed or removed must not come back with the next capture
   if (rev) { const now = new Set(list.map(c => c.name.toLowerCase())); rev.dropAuto = rev.dropAuto || new Set(); for (const n of rev.autoNames || []) if (!now.has(n)) rev.dropAuto.add(n); }
