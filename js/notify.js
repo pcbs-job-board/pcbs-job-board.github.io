@@ -45,7 +45,8 @@ function renderNotify() {
   if (!items.length) { panel.hidden = true; return; }
   panel.innerHTML = items.join("");
   $("#btnNotify").title = items.length + " notification" + (items.length > 1 ? "s" : "");
-  $("#notiReload")?.addEventListener("click", () => { location.href = location.pathname + "?v=" + encodeURIComponent(noti.newer); });
+  // a one-off address skips every cached copy of the page; the start-up code below removes it from the address bar again
+  $("#notiReload")?.addEventListener("click", () => { location.href = location.pathname + "?fresh=" + Date.now(); });
   $("#notiLog")?.addEventListener("click", e => openChangelog(e));
   $("#notiSeen")?.addEventListener("click", () => { LS.set("pcbs.seenVersion", APP_VER); noti.updated = null; renderNotify(); });
 }
@@ -56,3 +57,15 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 setInterval(checkForUpdate, 30 * 60e3);
 if (noti.updated) loadWhatsNew(); else renderNotify();
 checkForUpdate();
+
+// ---- never run on a stale stylesheet / address ----
+// 1) "?v=0.12.2" / "?fresh=…" in the address only forced a fresh load – remove it, so a bookmark or a restored tab
+//    never keeps pointing at an old version's address
+if (/[?&](v|fresh)=/.test(location.search) && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
+// 2) the stylesheet carries its version (--css-ver); if the browser handed us an older cached one, load it again fresh
+(function cssCheck() {
+  const link = document.querySelector('link[rel="stylesheet"][href*="style.css"]'); if (!link || !APP_VER) return;
+  const ok = () => getComputedStyle(document.documentElement).getPropertyValue("--css-ver").replace(/["'\s]/g, "") === APP_VER;
+  const fix = () => { if (ok()) return; const n = link.cloneNode(); n.href = "css/style.css?v=" + APP_VER + "&t=" + Date.now(); n.onload = () => link.remove(); link.after(n); };
+  if (link.sheet) fix(); else link.addEventListener("load", fix, { once: true });
+})();
