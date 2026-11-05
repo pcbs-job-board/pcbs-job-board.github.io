@@ -90,6 +90,9 @@ const COMPAT_RULES = [
   // 9 water-cooling CPU block ↔ socket
   { cats: ["Motherboard", "Water Cooling"], test: (mb, w) => !mb.c.s || !w.c.ss || w.c.ss.split("|").includes(mb.c.s),
     msg: (mb, w, low) => low === w ? `water block doesn't support socket ${mb.c.s}` : `socket ${mb.c.s} isn't supported by the water block` },
+  // 9b …also with only the CPU known (no motherboard yet)
+  { cats: ["CPU", "Water Cooling"], only: b => !b.some(p => p.cat === "Motherboard"), test: (cp, w) => !cp.c.s || !w.c.ss || w.c.ss.split("|").some(x => sockOk(x, cp.c.s)),
+    msg: (cp, w, low) => low === w ? `CPU block doesn't support socket ${cp.c.s}` : `socket ${cp.c.s} isn't supported by the CPU block` },
   // 12 motherboard ↔ two GPUs (SLI / CrossFire, slot size)
   { cats: ["Motherboard", "GPU"], only: b => b.filter(p => p.cat === "GPU").length > 1,
     test: (mb, g) => !g.c.m || (g.c.m === "SLI" ? mb.c.sli === "1" : mb.c.cf === "1"),
