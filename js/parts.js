@@ -44,11 +44,13 @@ function buildIndex() {
 }
 // buyable = only parts unlocked at the player's career progress (parts to buy for a swap);
 // searchParts.hidden tells how many matches were left out because of that
+// looks only – cables, and the pipes / fittings / coolants of a custom loop: never offered in the part lists
+function cosmeticPart(p) { return p.cat === "Cables" || (p.cat === "Water Cooling" && /^(coolant|fitting|pipe)/i.test(p.spec || "")); }
 function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
   const toks = normP(q).split(" ").filter(Boolean); searchParts.hidden = 0; if (!toks.length) return [];
   const anyCat = !cat || cat === "Other";
   const cats = cat && cat.includes("|") ? cat.split("|") : null;   // "Case Fan|Cables|…" – several categories
-  const all = INDEX.filter(p => (anyCat || (cats ? cats.includes(p.cat) : p.cat === cat)) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
+  const all = INDEX.filter(p => !cosmeticPart(p) && (anyCat || (cats ? cats.includes(p.cat) : p.cat === cat)) && toks.every(t => p.n.includes(t) || p.c.includes(t)));
   const ok = buyable ? all.filter(p => p.hist || unlocked(p)) : all;
   searchParts.hidden = all.length - ok.length;
   return ok

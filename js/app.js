@@ -200,7 +200,7 @@ function jobCard(j) {
     <div class="sec"><h4>Part swaps</h4>${swaps}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
-        <div class="grid2"><select data-f="cat">${CATS.map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
+        <div class="grid2"><select data-f="cat">${CATS.filter(c => c !== "Cables").map(c => `<option ${c === "Other" ? "selected" : ""}>${c}</option>`).join("")}</select><input data-f="new" data-ac placeholder="New part – type e.g. 1700X" autocomplete="off"></div>
         <div class="addrow" style="margin:0"><button class="primary" data-act="saveSwap" data-id="${j.id}" style="flex:1">Add swap</button><button data-act="cancelSwap" data-id="${j.id}">Cancel</button></div>
       </div>
       <button data-act="openSwap" data-id="${j.id}" style="width:100%;margin-top:4px">⇄ Add part replacement</button></div>
@@ -516,7 +516,7 @@ const PART_SLOTS = [{ k: "Case", label: "Case", max: 1 }, { k: "Motherboard", la
   { k: "CPU Cooler", label: "CPU Cooling", max: 1 }, { k: "RAM", label: "RAM", max: 4 }, { k: "GPU", label: "GPU", max: 2 }, { k: "PSU", label: "PSU", max: 1 },
   { k: "Storage", label: "Storage", max: 99, hint: "HDD, SSD, M.2" }, { k: "Other", label: "Other", max: 99, other: true, hint: "case fans, custom water cooling…" }];
 // "Other" = every category no other field takes (case fans, cables, custom water cooling…)
-const OTHER_CATS = () => CATS.filter(c => !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
+const OTHER_CATS = () => CATS.filter(c => c !== "Cables" && !PART_SLOTS.some(sl => !sl.other && sl.k === c)).join("|");
 const slotOf = cat => PART_SLOTS.find(sl => sl.k === cat && !sl.other) || PART_SLOTS[PART_SLOTS.length - 1];
 let DBNAMES = null;
 function inPartsDb(name) {   // exactly a part of the database (any DLC / version – a customer PC can have anything)
