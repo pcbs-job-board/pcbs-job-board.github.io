@@ -89,8 +89,10 @@ Notes for later (not tasks yet):
   **Very low priority**: only if Mariusz happens to collect enough readings before 1.0 (~20–30, see the list of what
   each reading needs, sent 2026-11-04); otherwise drop it.
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
-- Overclock objectives: Mariusz has had "OC CPU to <MHz>" twice (CPU only – no GPU overclock objective seen yet).
-  The parser already reads it; a screenshot for the tests is welcome but not needed.
+- Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
+  Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
+  the Overclock tile read it correctly (target 4125 MHz). Screenshot: tests branch `fixtures/pending/oc_cpu_4125.png`.
+  No GPU overclock objective seen yet. Note: "Install custom water cooling for CPU" has no part suggestion yet.
 
 ### 1.0: story jobs + missing parts from the report sheet, then local "my story jobs / my parts"
 1. Story jobs: compare `data/story-jobs.csv` with the "Story jobs" tab of the "PCBS reports" Google Sheet (and the
