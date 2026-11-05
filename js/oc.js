@@ -50,6 +50,12 @@ function cpuIsFixed(j) {
   const objs = jobObjectives(j);
   return ocTargets(j).some(t => t.part === "CPU") && !objs.some(o => /\b(replace|upgrade)\b.*\b(cpu|processor)\b/i.test(o));
 }
+// "Install dual graphics cards" keeps the customer's motherboard (the game doesn't allow a board swap for it), unless an
+// objective also asks to replace / upgrade / swap the motherboard
+function boardIsFixed(j) {
+  const objs = jobObjectives(j);
+  return objs.some(o => /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i.test(o)) && !objs.some(o => /\b(replace|upgrade|swap|change)\b.*\b(motherboard|mobo|mainboard|board)\b/i.test(o));
+}
 function ocCheck(j) {
   const targets = ocTargets(j); if (!targets.length) return null;
   const build = plannedBuild(j), first = cat => build.find(p => p.cat === cat), mhz = x => x.toLocaleString() + " MHz";
@@ -107,4 +113,4 @@ function ocCheck(j) {
   if (items.every(i => i.state === "off")) state = "off";
   return { items, psu, missing: [...missing], state };
 }
-if (typeof module !== "undefined") module.exports = { cpuIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };
+if (typeof module !== "undefined") module.exports = { cpuIsFixed, boardIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };

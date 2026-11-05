@@ -4,6 +4,8 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- "Install dual graphics cards" jobs keep the customer's motherboard: GPU pairs that fit it come first, no board swaps are suggested (unless an objective asks for a new board).
+- A GPU "upgrade" never scores lower in 3DMark than the old card.
 - "Overclock CPU" jobs keep the customer's own CPU: no CPU swaps are suggested (unless an objective also asks to replace / upgrade it), and a CPU swap turns the Overclock tile red.
 - Putting a job on a table scrolls the page up to the workbenches.
 - Fixed: after an update the page could keep an old style sheet (wrong looks) – it's now reloaded automatically, and old "?v=" addresses are cleaned up.

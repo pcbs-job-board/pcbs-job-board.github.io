@@ -191,10 +191,15 @@ function suggestSwaps(job, opts = {}) {
         const eq = sameOrBrand(cat, hdd, ctx);
         add("obj:" + o, o, pickOptions(job, ctx, eq, { replace: hdd.name, base: hdd }), { cat, old: hdd.name });
       } else {
-        const better = shopParts(cat).filter(p => RATED.has(cat) ? rk(p) > rk(hdd) : atLeast(hdd, cat)(p) && !sameAs(hdd.name)(p));
+        // a GPU "upgrade" must also not score lower in 3DMark (RX 480: higher ranking than a GTX 1060, but a lower score)
+        const g0 = cat === "GPU" && benchOf(hdd.name), scoreOk = p => !g0 || !benchOf(p.name) || benchOf(p.name).one >= g0.one;
+        const better = shopParts(cat).filter(p => (RATED.has(cat) ? rk(p) > rk(hdd) : atLeast(hdd, cat)(p) && !sameAs(hdd.name)(p)) && scoreOk(p));
         if (cat === "GPU" && pairMode) {
           // only cards that run as a pair in the game (SLI / CrossFire)
-          const board = cur("Motherboard").pop(), duo = better.filter(p => cInfo(p).m);
+          // a board that takes two of this card as it is (kind + room): first choice – and the only one when the board must stay
+          const board = cur("Motherboard").pop(), bi = board ? cInfo(board) : {};
+          const onBoard = p => !board || ((cInfo(p).m === "SLI" ? bi.sli === "1" : bi.cf === "1") && (!bi.ds || !cInfo(p).sl || +bi.ds >= +cInfo(p).sl));
+          const duo0 = better.filter(p => cInfo(p).m), duo = boardIsFixed(job) || duo0.some(onBoard) ? duo0.filter(onBoard) : duo0;
           const half = { ...ctx, left: ctx.left == null ? null : ctx.left / 2 };   // two cards share the budget
           const opts2 = pickOptions(job, half, duo, { replace: hdd.name, upgrade: true, base: hdd }).map(op => {
             const card = INDEX.find(x => x.name === op.name), swaps = [{ cat: "GPU", old: hdd.name, new: op.name }, { cat: "GPU", old: "", new: op.name }];
@@ -255,6 +260,11 @@ function suggestSwaps(job, opts = {}) {
   if (pc && pc.psuW != null && pc.ocLater && pc.oc > pc.psuW && !(pc.stock > pc.psuW)) {
     const curPsu = cur("PSU").pop(), o = pickOptions(job, ctx, shopParts("PSU").filter(p => (powerOf(p.name)?.w || 0) >= pc.oc), { replace: curPsu?.name || "" }).filter(x => !x.over);
     add("fix:oclater", `The customer plans to overclock – overclocked the PC needs ~${pc.oc} W, the PSU has ${pc.psuW} W (optional, in budget)`, o, { cat: "PSU", old: curPsu?.name || "" });
+  }
+  // "Install dual graphics cards" (no board objective): the customer's motherboard stays – no option may change it
+  if (boardIsFixed(job)) for (const sg of out) {
+    const n = sg.options.length; sg.options = sg.options.filter(o => !(o.swaps || []).some(w => w.cat === "Motherboard") && !(o.extras || []).some(e => e.cat === "Motherboard"));
+    if (n && !sg.options.length) sg.hint = "Every option here needs a new motherboard – this job keeps the customer's board (dual GPUs). Pick parts that fit it.";
   }
   // 21  a customer's part that clashes with a planned swap → the cheapest part that fits (never worse)
   for (const cl of jobCompatIssues(job)) {
