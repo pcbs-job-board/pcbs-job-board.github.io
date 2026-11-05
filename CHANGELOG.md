@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- Putting a job on a table scrolls the page up to the workbenches.
 - Fixed: after an update the page could keep an old style sheet (wrong looks) – it's now reloaded automatically, and old "?v=" addresses are cleaned up.
 - 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
 - Part swap tiles: tidier sizes – ✕ / ✎ and the price box match the checkbox.

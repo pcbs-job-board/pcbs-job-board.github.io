@@ -214,6 +214,8 @@ function moveToTable(j, n) {
   const occ = jobs.find(o => o.table === n && o !== j);
   if (occ) { occ.table = j.table || 0; toast(occ.table ? `Swapped – ${occ.sender || "other job"} moved to Table ${occ.table}` : `${occ.sender || "Previous job"} moved back to open jobs`); }
   j.table = n;
+  // the workbenches are at the top of the page – show the job where it went (after the board is drawn again)
+  if (n) setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0);
 }
 
 document.addEventListener("click", e => {
