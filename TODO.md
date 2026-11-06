@@ -27,7 +27,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
-## dev-0.14.0 – in progress (2026-11-05): 15 items from Mariusz + 1 special task at the end
+## 0.14.0 – released 2026-11-06 (backup-0.13.0 made first): 15 items + the stability check (#16, the special task)
 - Done so far: #1 swap tile sizes, #2 changelog window, #3 stale CSS / ?v= fix, #4 scroll up on table, #5 Overclock CPU keeps
   the CPU, #6 dual GPUs keep the board + GPU upgrade = higher score, #7 no cosmetic parts in autofill, #8 coolant colour,
   #9 Reservoir / Radiator / CPU Block types + 💧 watercooled GPUs, #10 one part order + "Any", #11 water cooling fit
@@ -54,7 +54,6 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   saved data / speed flat). Found + fixed: "2400 MHz" PC Stats line, no suggestion for custom water cooling / "Install an
   SSD" / reachable overclock (now options or a reason for every objective), part fields redraw error. All suites pass
   (units 163, flow 56, run 431 + 11 known, pcbay 30, startup, systems 40, soak). Chromium only – no Firefox here.
-- Then: the special task.
 
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
