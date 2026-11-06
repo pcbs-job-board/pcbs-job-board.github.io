@@ -554,3 +554,6 @@ dialog.pdbdlg .dlg-b{display:flex;flex-direction:column;gap:10px;max-height:none
 .pdbtable td.pdbdet{white-space:normal;min-width:260px;color:var(--muted);font-size:12px}
 @media (max-width:700px){.pdbtable td.pdbname{min-width:150px}}
 .pdbnote{margin:-4px 0 0;font-size:12px}.pdbnote:empty{display:none}
+/* "working on it" line over the suggested swaps (0.14.0) */
+.sbusy{font-size:13px;color:var(--accent);padding:6px 2px;display:flex;align-items:center;gap:6px}
+#fSugg.working>:not(.sbusy){opacity:.45;pointer-events:none}

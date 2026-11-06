@@ -323,7 +323,7 @@ $("#btnShare").onclick = async () => {
     $("#video").srcObject = stream;
     stream.getVideoTracks()[0].onended = () => { stream = null; setStatus(); };
     try { await $("#video").play(); } catch {}
-    setStatus();
+    setStatus(); warmReader();
   } catch (err) { toast("Screen sharing was cancelled or blocked."); }
 };
 function stopStream() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } $("#video").srcObject = null; }
@@ -379,14 +379,35 @@ window.addEventListener("drop", e => { if (!e.dataTransfer.files.length) return;
 function readImg(f) { const r = new FileReader(); r.onload = () => { if (typeof flipTakeImage === "function" && flipTakeImage(r.result)) return; if ($("#dlgReview").open && rev) addShot(r.result, rev.forJob ? "parts" : "auto"); else openReview(r.result, null); }; r.readAsDataURL(f); }
 
 // ================= OCR =================
-let worker = null;
-async function getWorker() {
-  if (worker) return worker;
-  if (!window.Tesseract) throw new Error("Text reader didn't load – check internet connection (needed the first time).");
-  worker = await Tesseract.createWorker("eng", 1, { logger: m => { if (m.status === "recognizing text") $("#prog").style.width = Math.round(m.progress * 100) + "%"; } });
-  await worker.setParameters({ tessedit_pageseg_mode: "6", preserve_interword_spaces: "0" });
-  return worker;
+let worker = null, workerP = null;
+// "working on it" line of whichever window is reading: the job window (#ocrState) or the PC Bay window (.fstate)
+function ocrNote(msg) {
+  if ($("#dlgReview").open) $("#ocrState").textContent = msg;
+  const fs = $("#dlgFlip").open && $("#dlgFlip .fstate"); if (fs) fs.textContent = msg;
 }
+// the text reader starts once per visit (the first time it also downloads a few MB, then the browser keeps them);
+// it is started early in the background (screen connected, job / PC Bay window opened) so a capture doesn't wait for it
+function getWorker(quiet) {
+  if (worker) return Promise.resolve(worker);
+  if (!workerP) {
+    if (!window.Tesseract) return Promise.reject(new Error("Text reader didn't load – check internet connection (needed the first time)."));
+    const first = !LS.get("pcbs.ocrUsed", false);
+    workerP = (async () => {
+      const w = await Tesseract.createWorker("eng", 1, { logger: m => {
+        if (m.status === "recognizing text") $("#prog").style.width = Math.round(m.progress * 100) + "%";
+        else if (/^loading/.test(m.status) && !workerQuiet) ocrNote(`⏳ ${first ? "Downloading" : "Starting"} the text reader${first ? " (first time only, a few MB)" : ""}… ${m.progress ? Math.round(m.progress * 100) + "%" : ""}`);
+      } });
+      await w.setParameters({ tessedit_pageseg_mode: "6", preserve_interword_spaces: "0" });
+      LS.set("pcbs.ocrUsed", true); worker = w; return w;
+    })().catch(e => { workerP = null; throw e; });
+  }
+  if (!quiet) { workerQuiet = false; ocrNote("⏳ Starting the text reader…"); }   // a capture is waiting for it: say so
+  return workerP;
+}
+let workerQuiet = true;   // messages only once a capture waits for the reader
+const warmReader = () => { if (window.Tesseract) getWorker(true).catch(() => {}); };   // background start, no messages
+// people who have captured before get the reader started right after the page has loaded
+if (LS.get("pcbs.ocrUsed", false)) setTimeout(() => (window.requestIdleCallback || setTimeout)(warmReader), 1500);
 function cropCanvas(img, r) {
   const W = img.naturalWidth, H = img.naturalHeight, sx = r.x * W, sy = r.y * H, sw = r.w * W, sh = r.h * H;
   const scale = sw < 1300 ? Math.min(2.5, 1300 / sw) : 1;
@@ -434,7 +455,7 @@ function openReview(dataUrl, editJob, forJob) {
   rev.prevCap = forJob ? (forJob.components || []).filter(c => rev.autoNames.has(c.name.toLowerCase())).map(({ cat, name }) => ({ cat, name })) : [];
   $("#revTitle").textContent = editJob ? `Edit job: ${editJob.sender || "unknown customer"}` : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
-  renderForm(); showBlack(false); renderShots(); dlg.showModal();
+  renderForm(); showBlack(false); renderShots(); dlg.showModal(); warmReader();
   $("#fSender")?.focus({ preventScroll: true });   // not the ✕ in the corner (Enter would close the window)
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
 }
@@ -649,11 +670,24 @@ function tickedSwaps(skipKey) {
   return out;
 }
 const tickedForBench = () => tickedSwaps("bench");
-function renderSuggestions() {
+// Working them out can take a moment (a 3DMark set for a PC built from nothing tries many part sets): a "working on it"
+// line shows first, the list follows a moment later. Nothing changed since the last time → the same list again (↻ Refresh: always new).
+let suggRun = 0;
+function renderSuggestions(force) {
   const box = $("#fSugg"); if (!box || !rev) return;
+  let input = null; try { input = suggestInput(); } catch (e) { console.warn("suggestions", e); }
+  const key = JSON.stringify([input, career, dlcOn, gameVersion]);
+  if (!force && key === rev.suggKey && !suggRun) return;
+  const run = ++suggRun;
+  if (!box.querySelector(".sbusy")) box.insertAdjacentHTML("afterbegin", `<div class="sbusy" role="status">⏳ Working out suggested swaps…</div>`);
+  box.classList.add("working");
+  setTimeout(() => { if (run !== suggRun || !rev || !box.isConnected) return; suggRun = 0; drawSuggestions(box, input, key); }, 30);
+}
+function drawSuggestions(box, input, key) {
+  box.classList.remove("working");
   const keep = new Set([...box.querySelectorAll("input:checked")].map(c => c.dataset.pick));
-  let list = []; try { const { job: j, opts } = suggestInput(); list = suggestSwaps(j, opts); } catch (e) { console.warn("suggestions", e); }
-  rev.sugg = list;
+  let list = []; try { if (input) list = suggestSwaps(input.job, input.opts); } catch (e) { console.warn("suggestions", e); }
+  rev.sugg = list; rev.suggKey = key;
   if (!list.length) { box.innerHTML = ""; return; }
   const money = o => o.total != null ? "$" + o.total.toLocaleString() : "";
   box.innerHTML = `<div class="sugghead"><label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label><button class="ghost" id="suggRefresh" title="Work out all suggestions again">↻ Refresh</button></div>` + list.map((sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
@@ -666,7 +700,7 @@ function renderSuggestions() {
       : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`}</div>`).join("");
   // one choice per suggestion
   // sets that follow the other ticks: the 3DMark set of a new build, the coloured-lights set
-  $("#suggRefresh").onclick = () => renderSuggestions();
+  $("#suggRefresh").onclick = () => renderSuggestions(true);
   const follows = list.filter(sg => (sg.key === "bench" && / – new build/.test(sg.reason)) || sg.key === "lights").map(sg => sg.key);
   box.querySelectorAll("input[data-sg]").forEach(c => c.addEventListener("change", () => { if (c.checked) box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => { if (o !== c) o.checked = false; });
     const k = list[+c.dataset.sg]?.key; if (follows.some(f => f !== k)) renderSuggestions(); }));

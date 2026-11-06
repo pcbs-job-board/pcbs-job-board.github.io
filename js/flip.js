@@ -93,12 +93,14 @@ function cardLabels(px, colX, colW, nameMidY, W, H) {
   return { used: dark > 0.05, broken: red > 0.035, dark, red };
 }
 // a whole inventory screenshot (browser): the 3 card columns of the "inv" area → [{name, cat, price, used, broken}]
-async function readInventory(img, grid) {
+async function readInventory(img, grid, onStep) {
   const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height, fc = document.createElement("canvas"); fc.width = W; fc.height = H;
   const fg = fc.getContext("2d", { willReadFrequently: true }); fg.drawImage(img, 0, 0); const pd = fg.getImageData(0, 0, W, H).data;
   const px = (x, y) => { const i = (Math.min(H - 1, Math.max(0, Math.round(y * H))) * W + Math.min(W - 1, Math.max(0, Math.round(x * W)))) * 4; return [pd[i], pd[i + 1], pd[i + 2]]; };
   const items = [];
-  for (const b of invColumns(grid)) {
+  const cols = invColumns(grid);
+  for (const [ci, b] of cols.entries()) {
+    if (onStep) onStep(ci + 1, cols.length);
     const c = cropCanvas(img, b), got = parseInventoryColumn((await readText(c)).lines);
     for (const it of got) {
       if (it.nameY != null) { const L = cardLabels(px, b.x, b.w, b.y + it.nameY / c.height * b.h, W, H); it.used = L.used; it.broken = L.broken;

@@ -30,7 +30,7 @@ document.addEventListener("click", e => {
 // ---------- the window ----------
 function openFlip(id) {
   const f = flipJob(id); if (!f) return;
-  flipCur = f; flipRender(); const d = $("#dlgFlip"); if (!d.open) d.showModal();
+  flipCur = f; flipRender(); const d = $("#dlgFlip"); if (!d.open) d.showModal(); if (typeof warmReader === "function") warmReader();
 }
 function flipSave() { if (flipCur) { save(); render(); } }
 function flipRender() {
@@ -180,7 +180,7 @@ async function flipImage(url, kind, again) {
       markBroken(f); f.lastShot = flipThumb(img);
       toast(`Read ${r.items.length} parts${r.total != null ? ` · resale value $${r.total}` : ""}`);
     } else {
-      const items = await readInventory(img, crops.inv);
+      const items = await readInventory(img, crops.inv, (i, n) => { if (st) st.textContent = `Reading the inventory… column ${i} of ${n}`; });
       if (!items.length) { if (st) st.innerHTML = '⚠ No inventory cards found – is the Inventory open in the game? Box in the wrong place? <button data-fa="adjust-inv">🎯 Adjust area</button>'; return; }
       for (const i of items) f.inv.push({ id: flipUid(), cat: i.cat, name: i.name, used: i.used, broken: !!i.broken, price: i.price, src: "capture" });
       const nb = items.filter(i => i.broken).length, nn = items.filter(i => !i.used && !i.broken).length;
