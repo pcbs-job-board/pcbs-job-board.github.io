@@ -65,17 +65,17 @@ EKWB EK-CoolStream SE 360,16,1,300,Radiator 360mm x3,,1.0,,,,r=120x3;af=150,,,xl
 EKWB EK-CoolStream SE 360 RGB,23,1,350,Radiator 360mm x3,,1.0,,RGB,,r=120x3;af=150;lt=1,,,xlsx v1.15.3
 Raijintek CALORE C240D,27,1,300,Radiator 240mm x2,,1.3,,RGB,,r=120x2;af=120;lt=1,,,xlsx v1.15.3
 Raijintek CALORE C360D,27,1,400,Radiator 360mm x3,,1.3,,RGB,,r=120x3;af=150;lt=1,,,xlsx v1.15.3
-Alphacool Eisbecher D5 250mm Acetal,27,30,420,Reservoir,,1.4,,,,,,,xlsx v1.15.3
-Alphacool Eisbecher DDC 150mm Acetal,27,30,380,Reservoir,,1.4,,,,,,,xlsx v1.15.3
-Alphacool Eisstation DC-Ultra,27,30,150,Reservoir,,1.4,,RGB,,lt=1,,,xlsx v1.15.3
-CORSAIR XD3 RGB Combo,25,10,150,Reservoir,,1.11,,RGB,,lt=1,,,xlsx v1.15.3
-CORSAIR XD5 RGB Combo (Black),25,10,150,Reservoir,,1.7,,RGB,,lt=1,,,xlsx v1.15.3
-CORSAIR XD5 RGB Combo (White),25,10,150,Reservoir,,1.7,,RGB,,lt=1,,,xlsx v1.15.3
-EKWB EK-XRES 100 Revo D5,16,1,220,Reservoir,,1.0,,,,,,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5,16,1,250,Reservoir,,1.0,,,,,,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5 - Plexi,16,1,250,Reservoir,,1.0,,,,,,,xlsx v1.15.3
-EKWB EK-XRES 140 Revo D5 RGB,23,1,320,Reservoir,,1.0,,RGB,,lt=1,,,xlsx v1.15.3
-Raijintek Antila D5 RBW,26,50,340,Reservoir,,1.4,,RGB,,lt=1,,,xlsx v1.15.3
+Alphacool Eisbecher D5 250mm Acetal,27,30,420,Reservoir,,1.4,,"fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,ri=0,,,xlsx v1.15.3
+Alphacool Eisbecher DDC 150mm Acetal,27,30,380,Reservoir,,1.4,,"fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,ri=1,,,xlsx v1.15.3
+Alphacool Eisstation DC-Ultra,27,30,150,Reservoir,,1.4,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=2,,,xlsx v1.15.3
+CORSAIR XD3 RGB Combo,25,10,150,Reservoir,,1.11,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=3,,,xlsx v1.15.3
+CORSAIR XD5 RGB Combo (Black),25,10,150,Reservoir,,1.7,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=4,,,xlsx v1.15.3
+CORSAIR XD5 RGB Combo (White),25,10,150,Reservoir,,1.7,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=5,,,xlsx v1.15.3
+EKWB EK-XRES 100 Revo D5,16,1,220,Reservoir,,1.0,,"fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,ri=6,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5,16,1,250,Reservoir,,1.0,,"fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,ri=7,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5 - Plexi,16,1,250,Reservoir,,1.0,,"fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,ri=8,,,xlsx v1.15.3
+EKWB EK-XRES 140 Revo D5 RGB,23,1,320,Reservoir,,1.0,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=9,,,xlsx v1.15.3
+Raijintek Antila D5 RBW,26,50,340,Reservoir,,1.4,,"RGB · fits the cases the shop lists – the game checks 3D collision live, so it can still hit other parts even in a listed case",,lt=1;ri=10,,,xlsx v1.15.3
 AIO pipe,1,1,100,"Pipe Flexible, not in shop",,1.0,,,,,,,xlsx v1.15.3
 AIO white pipe,1,1,100,"Pipe Flexible, not in shop",,1.14,,,,,,,xlsx v1.15.3
 Flexible Black Pipe,16,1,200,Pipe Flexible,,1.0,,,,,,,xlsx v1.15.3

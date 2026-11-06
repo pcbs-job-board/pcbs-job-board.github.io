@@ -14,6 +14,7 @@ function compatOf(name) {
     for (const cat in window.PARTS_DB || {}) for (const r of window.PARTS_DB[cat]) {
       const c = { cat };
       for (const kv of String(r[10] || "").split(";")) { const i = kv.indexOf("="); if (i > 0) c[kv.slice(0, i)] = kv.slice(i + 1); }
+      if (cat === "GPU" && (/\bwater\b/i.test(r[3] || "") || r[0].includes("|"))) c.wg = "1";   // watercooled GPU (custom loop part)
       COMPAT.set(r[0].toLowerCase(), c);
     }
   }
@@ -93,6 +94,13 @@ const COMPAT_RULES = [
   // 9b …also with only the CPU known (no motherboard yet)
   { cats: ["CPU", "Water Cooling"], only: b => !b.some(p => p.cat === "Motherboard"), test: (cp, w) => !cp.c.s || !w.c.ss || w.c.ss.split("|").some(x => sockOk(x, cp.c.s)),
     msg: (cp, w, low) => low === w ? `CPU block doesn't support socket ${cp.c.s}` : `socket ${cp.c.s} isn't supported by the CPU block` },
+  // 10 case ↔ custom water cooling (the shop's "Reservoir compatibility" list, data/reservoir-cases.csv):
+  //    rs = reservoirs that fit ("-" = no custom water cooling at all), ri = the reservoir's number
+  { cats: ["Case", "Water Cooling"], test: (cs, w) => !cs.c.rs || (cs.c.rs === "-" ? !loopPart(w) : w.c.ri == null || cs.c.rs.split(",").includes(w.c.ri)),
+    msg: (cs, w, low) => cs.c.rs === "-" ? (low === w ? `case doesn't support custom water cooling` : `no custom water cooling in this case`)
+      : low === w ? `reservoir isn't on the case's compatible list` : `case isn't on the reservoir's compatible list` },
+  { cats: ["Case", "GPU"], test: (cs, g) => cs.c.rs !== "-" || g.c.wg !== "1",
+    msg: (cs, g, low) => low === g ? `case doesn't support custom water cooling` : `no custom water cooling in this case – watercooled GPU` },
   // 12 motherboard ↔ two GPUs (SLI / CrossFire, slot size)
   { cats: ["Motherboard", "GPU"], only: b => b.filter(p => p.cat === "GPU").length > 1,
     test: (mb, g) => !g.c.m || (g.c.m === "SLI" ? mb.c.sli === "1" : mb.c.cf === "1"),
@@ -107,6 +115,7 @@ const COMPAT_RULES = [
   { cats: ["GPU", "GPU"], test: (a, b) => !a.c.l || !b.c.l ? true /* a GPU without data: can't tell */ : !!a.c.m && a.c.m === b.c.m && (!a.c.c || !b.c.c || a.c.c === b.c.c),
     msg: (a, b, low) => { const hi = low === a ? b : a; return !low.c.m ? `can't run as a pair (no SLI / CrossFire)` : low.c.m !== hi.c.m ? `${low.c.m} – the other GPU is ${hi.c.m || "single only"}` : `${low.c.c} can't pair with ${hi.c.c} – needs the same chipset`; } },
 ];
+const loopPart = w => w.c.ri != null || !!w.c.ss || !!w.c.r;   // reservoir, CPU block or radiator (not pipes, fittings, coolant)
 const wantsOC = j => /\b(overclock\w*|oc)\b/i.test(jobObjectives(j).join(" "));   // objectives only (an email-body mention is "later")
 // count rules: more parts than places → the lowest-priority ones get the warning
 const COMPAT_COUNTS = [

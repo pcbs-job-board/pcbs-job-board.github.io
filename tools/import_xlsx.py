@@ -219,6 +219,7 @@ def main():
             w.writeheader()
             w.writerows(rows)
         print(f"{path.relative_to(ROOT)}: {len(rows)} rows")
+    subprocess.run([sys.executable, str(ROOT / "tools" / "reservoir_compat.py")], check=True)   # case ↔ reservoir lists from the game
     subprocess.run([sys.executable, str(ROOT / "tools" / "build_db.py")], check=True)
 
 if __name__ == "__main__":
