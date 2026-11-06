@@ -38,7 +38,8 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   player reports the real list.
 - Bonus (done): "!" on RAM sticks that differ in size / speed (an SSD once became a 32 GB HyperX stick – no screenshot;
   HyperX FURY RGB 960GB reads fine in tests, so the misread itself is not reproduced).
-- Next: items #12–#15, then the special task.
+- #12 done: 📖 parts database window (js/partsdb.js). Game part icons: not used (game assets) – category tabs only.
+- Next: items #13–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
