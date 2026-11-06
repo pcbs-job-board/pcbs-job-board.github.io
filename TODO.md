@@ -27,7 +27,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
-## dev-0.14.1 – ready (2026-11-06), waiting for Mariusz's OK to release
+## 0.14.1 – released 2026-11-06 (backup-0.14.0 made first)
 - PC Bay build assistant (js/core/flip.js: flipCheck, flipMoves, flipTry, flipUpgrades, flipPlan, flipApply, flipRemove):
   changes "rm" take a part out (a working one goes back to the inventory); a plan is applied as the difference between
   builds. Greedy plan: the best change again and again – a step toward a sellable PC first (×100,000), then profit.
