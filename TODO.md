@@ -27,6 +27,16 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - 💡 tip on every build: the resale formula in general words.
 - Inventory reader: USED / NEW / BROKEN read from the card labels (checked on 9 screenshots, incl. NEW + BROKEN ones).
 
+## dev-0.14.1 – ready (2026-11-06), waiting for Mariusz's OK to release
+- PC Bay build assistant (js/core/flip.js: flipCheck, flipMoves, flipTry, flipUpgrades, flipPlan, flipApply, flipRemove):
+  changes "rm" take a part out (a working one goes back to the inventory); a plan is applied as the difference between
+  builds. Greedy plan: the best change again and again – a step toward a sellable PC first (×100,000), then profit.
+  Complete PC = case, motherboard, CPU, CPU cooling (or a CPU block), RAM 1–4, GPU 1–2, PSU, storage ≥ 1, no clashes,
+  PSU enough (overclocked when it can be). Note: the real PC Bay capture in the tests (be69d2f7) has no drive.
+- Profit step: CPU multiplier (100 MHz base clock) + core voltage (linear stock → overclock base, workbook), GPU Tuner
+  clocks – oc.js ocSettings.
+- Tests: units 173, flipassist.js 13 (new), systems 42, soak, flow, run 431, pcbay 30 – all pass.
+
 ## 0.14.0 – released 2026-11-06 (backup-0.13.0 made first): 15 items + the stability check (#16, the special task)
 - Done so far: #1 swap tile sizes, #2 changelog window, #3 stale CSS / ?v= fix, #4 scroll up on table, #5 Overclock CPU keeps
   the CPU, #6 dual GPUs keep the board + GPU upgrade = higher score, #7 no cosmetic parts in autofill, #8 coolant colour,
@@ -113,18 +123,6 @@ Notes for later (not tasks yet):
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
   the Overclock tile read it correctly (target 4125 MHz). Screenshot: tests branch `fixtures/pending/oc_cpu_4125.png`.
   No GPU overclock objective seen yet. "Install custom water cooling for CPU" is suggested since 0.14.0.
-
-### PC Bay build: free editing, suggestions for every part, a complete build before Profit (Mariusz, 2026-11-06)
-Seen on 0.14.0 (screenshot): the build's suggestions only offer swaps of parts already in it; after removing the RAM in
-step 1 nothing suggested the 2 × G.SKILL Ripjaws V in the inventory; nothing for the GPU either (with or without one in
-the build). 3DMark shows "–" and the sale estimate drops when a part is missing.
-1. Steps 1–3: add and remove any part at will (not only the suggested swaps).
-2. Inventory list split into categories (headings per category, part order as everywhere).
-3. ↻ Refresh button for the suggestions.
-4. The build assistant works toward the most profitable *viable* build: an empty or weak slot is filled from the
-   inventory (RAM in pairs / sets of the same stick, GPU incl. a pair, every category, not just upgrades).
-5. Profit step only once the build is complete: 1 case, motherboard, CPU, CPU cooling, RAM (1–4), GPU (1–2), PSU,
-   storage (1 or more) – and it all fits (compatibility + power). Until then the Next button says what's missing.
 
 ### 1.0: story jobs + missing parts from the report sheet, then local "my story jobs / my parts"
 1. Story jobs: compare `data/story-jobs.csv` with the "Story jobs" tab of the "PCBS reports" Google Sheet (and the
