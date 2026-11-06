@@ -36,6 +36,8 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - Open from #11: re-check NZXT H210i in the game (same list as the H710i before it – may be the stale-list bug).
   Defender Pro and iCUE 5000D / 5000D Airflow are PC-only (not in the console shop) – best guesses, change if a PC
   player reports the real list.
+- Bonus (done): "!" on RAM sticks that differ in size / speed (an SSD once became a 32 GB HyperX stick – no screenshot;
+  HyperX FURY RGB 960GB reads fine in tests, so the misread itself is not reproduced).
 - Next: items #12–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
