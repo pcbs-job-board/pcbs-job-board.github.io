@@ -10,6 +10,10 @@ Writes into the "compat" column (tools/build_db.py reads it):
   case.csv           cases        rs=<n>,<n>,…    the reservoirs that fit; rs=- : no custom water cooling at all
 and adds the 3D collision note to every reservoir's details.
 
+Every list from the game is a height cut-off: the case takes all reservoirs up to its limit (workbook "Height (Unity Units)":
+0.45 Eisstation, 0.5 XD3, 0.74 XRES 100, 0.9 XRES 140 ×3, 0.94 Eisbecher DDC, 1.16 XD5 ×2, 1.47 Antila, 1.58 Eisbecher D5).
+The PC-only cases that the console shop doesn't show are best guesses (source column says so).
+
 Variants (Mariusz, 2026-11-05): when a case has several colour versions, or a window / no-window version,
 and only one of them is on the list, the others get the same list. A case that is on the list always
 keeps its own row. Run after tools/import_xlsx.py (it calls this), then tools/build_db.py.
