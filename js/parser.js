@@ -71,7 +71,7 @@ function detectSuspects(body) {
 }
 // strip OCR crumbs at the end of a line: "Diagnose and fix ls", "Diagnose and fix ‘S", "help plz G"
 function trimJunk(s) {
-  let w = String(s).trim().split(/\s+/);
+  const w = String(s).trim().split(/\s+/);
   while (w.length > 1 && /^(?:[^A-Za-z0-9(]+|[^A-Za-z0-9(]*[a-z]{1,2}[^A-Za-z0-9)]*|[‘'`|;:,.~_][A-Za-z]{1,2})$/.test(w[w.length - 1]) && !/^(it|up|on|in|me|my|pc|os|ok)$/i.test(w[w.length - 1])) w.pop();
   return w.join(" ");
 }

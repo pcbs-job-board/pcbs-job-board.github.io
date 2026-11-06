@@ -1,0 +1,19 @@
+{
+  "name": "pcbs-job-board",
+  "version": "0.14.0",
+  "private": true,
+  "description": "Job manager for PC Building Simulator – a static web app (no build step). These scripts are for development only.",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint js eslint.config.mjs",
+    "format": "prettier --write \"js/**/*.js\" \"css/**/*.css\" index.html",
+    "format:check": "prettier --check \"js/**/*.js\" \"css/**/*.css\" index.html",
+    "db": "python3 tools/build_db.py",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0 || ^10.0.0",
+    "espree": "^10.0.0 || ^11.0.0",
+    "prettier": "^3.0.0"
+  }
+}

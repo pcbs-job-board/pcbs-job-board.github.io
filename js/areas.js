@@ -137,7 +137,7 @@ function invColumns(b) { return [0, 1, 2].map(i => ({ x: b.x + b.w * i * 0.3442,
 const isBarGreen = ([r, g, b]) => g > 130 && g - r > 50 && g - b > 50;
 const lum = ([r, g, b]) => (r + g + b) / 3;
 function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
-  const { width: w, height: h, data: d } = img;
+  const { width: w, data: d } = img;
   // green runs, grouped into bars (same left end, rows next to each other)
   // short runs too: at ~0 % only a small green stub is left at the left end (smaller screenshots: a few pixels)
   const rs = runs(img, isBarGreen, Math.max(4, W * 0.0025));
@@ -328,7 +328,7 @@ function levelDigitsCanvas(src, b) {
   }
   if (!comps.length) return null;
   const top = Math.max(...comps.map(c => c.y1 - c.y0));
-  let tall = comps.filter(c => c.y1 - c.y0 >= 0.6 * top && c.n > 20 && c.x0 > 0 && c.y0 > 0)
+  const tall = comps.filter(c => c.y1 - c.y0 >= 0.6 * top && c.n > 20 && c.x0 > 0 && c.y0 > 0)
     .map(c => c.x1 - c.x0 > 0.95 * (c.y1 - c.y0) ? { ...c, x1: Math.min(c.x1, c.x0 + Math.round(0.72 * (c.y1 - c.y0))) } : c) // digit merged with the coin
     .sort((a, b) => a.x0 - b.x0);
   if (!tall.length) return null;

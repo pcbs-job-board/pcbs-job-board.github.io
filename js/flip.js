@@ -181,7 +181,7 @@ function flipFits(build, swaps) {
 }
 function flipUpgrades(f) {
   const st = flipState(f); if (!st.best) return [];
-  const build = st.build, inv = flipInventory(f).filter(i => !i.taken), plan = { xmp: true, ocCpu: st.can.ocCpu, ocGpu: st.can.ocGpu };
+  const build = st.build, inv = flipInventory(f).filter(i => !i.taken);
   const cur = cat => build.filter(p => p.cat === cat), val = (b, sc) => flipValue(b.reduce((t, p) => t + (p.broken ? 0 : p.value), 0), true, sc);
   const base = val(build, st.best), out = [];
   const tryIt = (label, items) => {   // items: [{inv, old (build row or null)}]

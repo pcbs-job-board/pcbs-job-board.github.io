@@ -4,7 +4,7 @@
 // ---- DLC / content packs the user owns ----
 const DLCS = window.PARTS_DLC || [];
 const DLC_LABEL = Object.fromEntries(DLCS.map(d => [d.key, d.label]));
-let dlcOn = Object.assign(Object.fromEntries(DLCS.map(d => [d.key, d.on])), LS.get("pcbs.dlc", {}));
+const dlcOn = Object.assign(Object.fromEntries(DLCS.map(d => [d.key, d.on])), LS.get("pcbs.dlc", {}));
 const dlcEnabled = k => !k || !!dlcOn[k];
 function setDlc(k, v) { dlcOn[k] = v; LS.set("pcbs.dlc", dlcOn); buildIndex(); }
 // game version the user plays (PC/Steam numbering); parts added later are hidden

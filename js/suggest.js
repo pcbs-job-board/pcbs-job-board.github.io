@@ -160,15 +160,14 @@ function suggestSwaps(job, opts = {}) {
       if (!gpus.length) { missing("obj:" + o, o, "capture PC Stats to get a second-GPU suggestion"); continue; }
       const g = gpus[0], shop = shopParts("GPU").find(sameAs(g.name));
       if (!shop) { missing("obj:" + o, o, `${g.name} isn't in the shop (locked or not sold) – pick a pair yourself`); continue; }
-      const opt = pickOptions(job, ctx, [shop], {})[0] || null;
       // the board may need SLI / CrossFire, the PSU more watts – offered together (G3)
       const pairSw = [{ cat: "GPU", old: "", new: shop.name }], extra = [];
       const board = cur("Motherboard").pop(), mc = cInfo(shop).m;
       // the board needs the right kind (SLI / CrossFire) AND room for two cards this wide (ds = widest card it fits two of)
-  const bi = board ? cInfo(board) : {}, room = c => !c.ds || !cInfo(card).sl || +c.ds >= +cInfo(card).sl;
-  if (board && mc && !((mc === "SLI" ? bi.sli === "1" : bi.cf === "1") && room(bi))) {
+      const bi = board ? cInfo(board) : {}, room = c => !c.ds || !cInfo(shop).sl || +c.ds >= +cInfo(shop).sl;
+      if (board && mc && !((mc === "SLI" ? bi.sli === "1" : bi.cf === "1") && room(bi))) {
         const bc = cInfo(board), nb = shopParts("Motherboard").filter(p => { const c = cInfo(p); return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(shop).sl || 0)); }).filter(p => fitsBuild(withSwaps(job, pairSw), p, board.name)).sort((a, b) => a.price - b.price)[0];
-        extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc} and room for two ${cInfo(card).sl || ""}-slot cards` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} and room for two of these cards – none unlocked` });
+        extra.push(nb ? { cat: "Motherboard", old: board.name, name: nb.name, price: nb.price, why: `board with ${mc} and room for two ${cInfo(shop).sl || ""}-slot cards` } : { cat: "Motherboard", old: board.name, name: null, why: `needs a board with ${mc} and room for two of these cards – none unlocked` });
       }
       const psu = psuFor(job, [...pairSw, ...extra.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))]);
       if (psu) extra.push(psu);

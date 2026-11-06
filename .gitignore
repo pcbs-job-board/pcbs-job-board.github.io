@@ -10,3 +10,6 @@ backups/
 *.png
 *.jpg
 *.jpeg
+
+# dev tools (npm install) – the app itself needs no build step
+node_modules
