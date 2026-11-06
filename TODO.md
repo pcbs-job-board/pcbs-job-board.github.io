@@ -33,8 +33,9 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   #9 Reservoir / Radiator / CPU Block types + 💧 watercooled GPUs, #10 one part order + "Any", #11 water cooling fit
   (radiator ↔ case, CPU block ↔ socket, reservoir ↔ case from the shop list: `data/reservoir-cases.csv` on dev-0.14.0,
   159 cases → `tools/reservoir_compat.py`, colour / window variants inherit, 3D collision note on reservoirs).
-- Open from #11: Mariusz double-checks 6 cases with no data (ADATA XPG Defender Pro, CORSAIR iCUE 5000D / 5000D Airflow,
-  all colours) and re-checks NZXT H210i (same list as the H710i before it – may be the stale-list bug).
+- Open from #11: re-check NZXT H210i in the game (same list as the H710i before it – may be the stale-list bug).
+  Defender Pro and iCUE 5000D / 5000D Airflow are PC-only (not in the console shop) – best guesses, change if a PC
+  player reports the real list.
 - Next: items #12–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
