@@ -1,4 +1,5 @@
 # Code checks on every push and pull request: lint, formatting, and that the parts database matches its CSVs.
+# Tool versions are pinned in package.json – a newer Prettier formats some lines differently and would fail the check.
 name: Checks
 on:
   push:
@@ -11,8 +12,8 @@ jobs:
   code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: "22" }
       - run: npm install --no-audit --no-fund --no-package-lock
       - run: npm run lint
@@ -20,8 +21,8 @@ jobs:
   data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: parts-db.js is up to date
         run: |
