@@ -50,7 +50,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   2. split js/app.js by concern (board, capture/OCR, job window, settings/backup/reports) – still classic scripts (file:// works)
   3. folders: js/core (logic, no DOM) and js/ui (windows, board, keys…); update index.html, tests, bump_version.py
   4. docs: README layout, CONTRIBUTING.md (build DB, tests, version bump, branches); CI: lint + DB check on push
-  Done steps: 1 (lint + fixes, found a dual-GPU crash), 1b (Prettier). Dev tools: node_modules is a symlink to /opt/node-tools/node_modules (npm registry blocked here).
+  Done steps: 1 (lint + fixes, found a dual-GPU crash), 1b (Prettier), 2–3 (core/ui folders, app.js split; js/config.js stays – update check). Dev tools: node_modules is a symlink to /opt/node-tools/node_modules (npm registry blocked here).
 - Then: the special task.
 
 ## 0.13.0 – released 2026-11-04
