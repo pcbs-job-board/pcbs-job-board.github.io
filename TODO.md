@@ -31,17 +31,11 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - Done so far: #1 swap tile sizes, #2 changelog window, #3 stale CSS / ?v= fix, #4 scroll up on table, #5 Overclock CPU keeps
   the CPU, #6 dual GPUs keep the board + GPU upgrade = higher score, #7 no cosmetic parts in autofill, #8 coolant colour,
   #9 Reservoir / Radiator / CPU Block types + 💧 watercooled GPUs, #10 one part order + "Any", #11 water cooling fit
-  (radiator ↔ case, CPU block ↔ socket) – **Reservoir ↔ case still open**:
-  Mariusz sends the game's compatible reservoirs per case (one message per case, screenshots, selected case has a
-  yellowish border). Collected in `data-wip/reservoir-cases.csv` on this branch (case, compatible reservoirs joined
-  with "|", source; "NONE" = game says "Custom water cooling not supported").
-  **Paused 2026-11-05 after 96 cases (ADATA … Kolink Big Chungus). Next session starts with the Lian Li cases.**
-  Variant rule (Mariusz, applies to all brands): if a case has several colour variants but only one is on the list,
-  all variants get the same compatibility; same for window / no-window versions of one model when only one is listed.
-  Apply this when importing (match by model name with colour / "Window" / "TG" suffixes stripped, but a listed
-  variant always wins over an inferred one).
-  After the last one: put it into the parts data (case compat field), add the case ↔ reservoir fit rule, and add the note
-  "the game checks 3D collision in real time – even a compatible reservoir might not fit in a compatible case".
+  (radiator ↔ case, CPU block ↔ socket, reservoir ↔ case from the shop list: `data/reservoir-cases.csv` on dev-0.14.0,
+  159 cases → `tools/reservoir_compat.py`, colour / window variants inherit, 3D collision note on reservoirs).
+- Open from #11: Mariusz double-checks 6 cases with no data (ADATA XPG Defender Pro, CORSAIR iCUE 5000D / 5000D Airflow,
+  all colours) and re-checks NZXT H210i (same list as the H710i before it – may be the stale-list bug).
+- Next: items #12–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
