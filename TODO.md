@@ -39,7 +39,12 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - Bonus (done): "!" on RAM sticks that differ in size / speed (an SSD once became a 32 GB HyperX stick – no screenshot;
   HyperX FURY RGB 960GB reads fine in tests, so the misread itself is not reproduced).
 - #12 done: 📖 parts database window (js/partsdb.js). Game part icons: not used (game assets) – category tabs only.
-- Next: items #13–#15, then the special task.
+- #13 keyboard re-analysis: walked through it (2026-11-06), proposal sent to Mariusz – waiting for his pick.
+  Found: ↓ lands on ✕ of objectives (Enter deletes, no undo); digits/letters on a focused card button act on the job
+  (typing "1080" on Cancel moved the job, closed the swap form); Edit window opens with focus on ✕ close; Enter into a
+  card without hidden objectives lands on 💡; PC Bay tile has no arrow / E / D support; 📖 database, unlocks, changelog
+  have no keys; E and P do the same; Alt+E may open the browser menu in Chrome/Edge on Windows.
+- Next: items #14–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
