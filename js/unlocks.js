@@ -2,7 +2,21 @@
    3DMark isn't bought: it's there from the start. Some help in this app waits for the matching unlock, so it never
    suggests something the player can't do in the game yet (career level not set = everything allowed). */
 const UNLOCKS = [
-  [1, ["E-mail", "Shop", "System Info", "Will it run?", "Part Ranking", "3DMark", "Cloud Notes", "Compressed Air", "Thermal Paste", "OS Installation USB Drive 1"]],
+  [
+    1,
+    [
+      "E-mail",
+      "Shop",
+      "System Info",
+      "Will it run?",
+      "Part Ranking",
+      "3DMark",
+      "Cloud Notes",
+      "Compressed Air",
+      "Thermal Paste",
+      "OS Installation USB Drive 1",
+    ],
+  ],
   [2, ["Auto-Connect Tool"]],
   [3, ["Bongle"]],
   [4, ["Quick-Screw Tool", "OS Installation USB Drive 2"]],
@@ -17,21 +31,43 @@ const UNLOCKS = [
   [16, ["Custom Water Cooling Shop", "Auto-Cable Tool"]],
 ];
 // app features that wait for an unlock
-const GATES = {   // what: used in messages · app: the "In this app" column of the unlocks popup
-  cpuOC: { lvl: 6, tool: "OCCT", what: "CPU overclocking help", app: "CPU overclock objectives: Overclock tile + part suggestions" },
+const GATES = {
+  // what: used in messages · app: the "In this app" column of the unlocks popup
+  cpuOC: {
+    lvl: 6,
+    tool: "OCCT",
+    what: "CPU overclocking help",
+    app: "CPU overclock objectives: Overclock tile + part suggestions",
+  },
   pcBay: { lvl: 9, tool: "PC Bay", what: "PC Bay builds", app: "📦 PC Bay builds: fix, upgrade and resell broken PCs" },
-  gpuOC: { lvl: 13, tool: "GPU Tuner", what: "GPU overclocking help", app: "GPU overclock objectives: Overclock tile + part suggestions" },
-  customWC: { lvl: 16, tool: "Custom Water Cooling Shop", what: "custom water cooling parts in suggestions", app: "Custom water cooling parts in suggestions and autofill" },
+  gpuOC: {
+    lvl: 13,
+    tool: "GPU Tuner",
+    what: "GPU overclocking help",
+    app: "GPU overclock objectives: Overclock tile + part suggestions",
+  },
+  customWC: {
+    lvl: 16,
+    tool: "Custom Water Cooling Shop",
+    what: "custom water cooling parts in suggestions",
+    app: "Custom water cooling parts in suggestions and autofill",
+  },
 };
-function hasUnlock(k) { return career.level == null || career.level >= GATES[k].lvl; }
-function gateMsg(k) { return `${GATES[k].what.replace(/ help$/, "")} needs <b>${GATES[k].tool}</b> – unlocks at career level ${GATES[k].lvl}${career.level != null ? ` (you're level ${career.level})` : ""}`; }
+function hasUnlock(k) {
+  return career.level == null || career.level >= GATES[k].lvl;
+}
+function gateMsg(k) {
+  return `${GATES[k].what.replace(/ help$/, "")} needs <b>${GATES[k].tool}</b> – unlocks at career level ${GATES[k].lvl}${career.level != null ? ` (you're level ${career.level})` : ""}`;
+}
 const UL_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7.5 13.5 12 9l4.5 4.5M7.5 17.5 12 13l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function unlocksHtml() {
   const lv = career.level;
   return `<div class="ulbox"><div class="ulhead">Career unlocks <small>${lv == null ? "– set your career level to see what's unlocked" : `– you're level ${lv}`}</small></div>
     <div class="ulgrid"><b class="ulth">Lv</b><b class="ulth">In the game</b><b class="ulth">In this app</b>
     ${UNLOCKS.map(([l, names]) => {
-      const ok = lv == null || lv >= l, cls = `${ok ? "ok" : "no"}${lv === l ? " now" : ""}`, mark = ok ? "✓" : "🔒";
+      const ok = lv == null || lv >= l,
+        cls = `${ok ? "ok" : "no"}${lv === l ? " now" : ""}`,
+        mark = ok ? "✓" : "🔒";
       const app = Object.values(GATES).filter(g => g.lvl === l);
       return `<b class="ullv ${cls}">${l}</b><div class="ulnames ${cls}">${names.map(n => `<span class="ul">${mark} ${esc(n)}</span>`).join("")}</div>
         <div class="ulapp ${cls}">${app.map(g => `<span class="ul">${mark} ${esc(g.app)}</span>`).join("") || `<span class="ulnone">–</span>`}</div>`;

@@ -18,7 +18,7 @@ cfg.write_text(re.sub(r'version:\s*"[^"]*"', f'version: "{v}"', cfg.read_text(en
 idx = ROOT / "index.html"
 idx.write_text(re.sub(r'(\.(?:js|css))\?v=[\w.]+', rf"\1?v={v}", idx.read_text(encoding="utf-8")), encoding="utf-8")
 css = ROOT / "css" / "style.css"
-css.write_text(re.sub(r'--css-ver:"[^"]*"', f'--css-ver:"{v}"', css.read_text(encoding="utf-8"), count=1), encoding="utf-8")
+css.write_text(re.sub(r'--css-ver:\s*"[^"]*"', f'--css-ver: "{v}"', css.read_text(encoding="utf-8"), count=1), encoding="utf-8")
 pkg = ROOT / "package.json"
 if pkg.exists():
     pkg.write_text(re.sub(r'"version":\s*"[^"]*"', f'"version": "{v}"', pkg.read_text(encoding="utf-8"), count=1), encoding="utf-8")

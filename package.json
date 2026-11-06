@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint js eslint.config.mjs",
-    "format": "prettier --write \"js/**/*.js\" \"css/**/*.css\" index.html",
-    "format:check": "prettier --check \"js/**/*.js\" \"css/**/*.css\" index.html",
+    "format": "prettier --write \"js/**/*.js\" \"css/**/*.css\" eslint.config.mjs",
+    "format:check": "prettier --check \"js/**/*.js\" \"css/**/*.css\" eslint.config.mjs",
     "db": "python3 tools/build_db.py",
     "serve": "python3 -m http.server 8000"
   },

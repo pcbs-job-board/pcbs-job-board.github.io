@@ -1,0 +1,6 @@
+{
+  "printWidth": 130,
+  "arrowParens": "avoid",
+  "trailingComma": "es5",
+  "overrides": [{ "files": "*.html", "options": { "printWidth": 160 } }]
+}
