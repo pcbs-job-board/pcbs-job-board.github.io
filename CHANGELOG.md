@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- 📖 Parts database: every part by category (case, motherboard … cables) in a sortable table with all its facts, filtered by name.
 - Water cooling fit checks: reservoirs against the case (the game's shop list, all colour / window versions), cases without custom water cooling, radiators against the case's radiator places, CPU blocks against the socket (also before a motherboard is known). The game also checks 3D collision live, so a listed reservoir can still clash with other parts.
 - One part order everywhere (job window + swap categories): Case, Motherboard, CPU, CPU Cooling, RAM, GPU, PSU, Storage, Case Fans, Reservoir, Radiator, CPU Block. The swap category "Other" is now "Any".
 - Custom water cooling has its own part types: Reservoir, Radiator and CPU Block – as fields in the job window and in the swap categories.
