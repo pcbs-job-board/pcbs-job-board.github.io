@@ -19,6 +19,8 @@ Within each version, changes are listed from most to least important.
 - "Overclock CPU" jobs keep the customer's own CPU: no CPU swaps are suggested (unless an objective also asks to replace / upgrade it), and a CPU swap turns the Overclock tile red.
 - Putting a job on a table scrolls the page up to the workbenches.
 - Fixed: after an update the page could keep an old style sheet (wrong looks) – it's now reloaded automatically, and old "?v=" addresses are cleaned up.
+- Fixed: "Install dual graphics cards" jobs showed no suggested swaps at all when the PC had a motherboard.
+- Code reorganised for easier work on it (logic and page parts in separate folders, automatic code checks) – no change in how it works or how fast it loads.
 - 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
 - Part swap tiles: tidier sizes – ✕ / ✎ and the price box match the checkbox.
 

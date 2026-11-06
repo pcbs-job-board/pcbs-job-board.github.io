@@ -1,0 +1,30 @@
+# Code checks on every push and pull request: lint, formatting, and that the parts database matches its CSVs.
+name: Checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: npm install --no-audit --no-fund --no-package-lock
+      - run: npm run lint
+      - run: npm run format:check
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: parts-db.js is up to date
+        run: |
+          python tools/build_db.py
+          sed -i '/^window.PARTS_META/d' data/parts-db.js && git show HEAD:data/parts-db.js | sed '/^window.PARTS_META/d' > /tmp/old.js
+          diff -q /tmp/old.js data/parts-db.js || { echo "::error::data/parts-db.js is out of date – run python tools/build_db.py"; exit 1; }
