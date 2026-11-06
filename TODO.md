@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (2)
 
 1. **Broken RAM hint missed** (Mariusz, 2026-11-06 – GJarvis@GraemeSoft.tv, "My rig needs fixing", Diagnose and fix,
    Labour $439 / Budget $200, Level 10). Email: "Who knew that RAM had to go in one way around?" = the customer put the
@@ -115,6 +115,13 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    wording). Fix: treat "<part> had to go in one way / the right way round", "put it in backwards / the wrong way" as a
    broken-part hint for that part; also as the diagnose suggestion (identical stick). Screenshot: tests branch
    `fixtures/pending/graeme_ram.png` → move to fixtures with expectations when fixed.
+2. **Red parts read as BROKEN in the inventory** (Mariusz, 2026-11-06, CPU Cooling tab): ARCTIC Freezer 33 eSports
+   Edition (Red), Freezer 33 TR (Red) ×2 and Raijintek Tisis (red fan) are all USED, but got BROKEN. Cause: cardLabels
+   (js/core/flip.js) counts strong red pixels in a box under the USED label – that box overlaps the part's picture, so a
+   red fan / red heatsink counts. Fix: look for the BROKEN label's own shape (a short line of red text with light
+   background around it, only at the label's place), not any red in the picture; check against the 9 screenshots it was
+   tuned on (real BROKEN cards) + these two. Screenshots: tests branch `fixtures/pending/inv_arctic_red.png`,
+   `inv_raijintek_tisis.png`.
 
 ---
 
