@@ -182,7 +182,8 @@ function suggestSwaps(job, opts = {}) {
   };
   const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o));
   const add = (key, reason, items, extra = {}) => {
-    if (items.length) out.push({ key, reason, options: items, ...extra });
+    // an objective with no options → the window says why (hint or the general reason); optional extras just drop out
+    if (items.length || key.startsWith("obj:")) out.push({ key, reason, options: items, ...extra });
   };
   const missing = (key, reason, need) => out.push({ key, reason, options: [], hint: need });
   const ref = name => {
@@ -214,7 +215,23 @@ function suggestSwaps(job, opts = {}) {
     if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
       const chip = chipFromText(m[1]),
         r = chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]);
-      if (!r) continue;
+      // no part named – "Install an SSD", "Install a 1TB HDD", "Install M.2 storage": the cheapest drive of that kind that fits
+      const sk = !r && storageKind(m[1]);
+      if (sk) {
+        const gb = sizeGB(m[1]),
+          c = shopParts("Storage").filter(p => cInfo(p).k === sk && (!gb || +cInfo(p).gb >= gb));
+        add("obj:" + o, o, pickOptions(job, ctx, c, {}), {
+          cat: "Storage",
+          old: "",
+          hint: "No unlocked drive of this kind fits – check the budget, your career level or the free SATA / M.2 slots.",
+        });
+        handled.add("Storage");
+        continue;
+      }
+      if (!r) {
+        missing("obj:" + o, o, "Couldn't tell which part this asks for – add the swap yourself (⇄ on the job card).");
+        continue;
+      }
       const cat = r.cat,
         curP = cur(cat).pop(),
         better = !!m[2] && cat !== "Case"; // "or better" for a case: no way to rank cases – the one asked for
@@ -394,6 +411,13 @@ function suggestSwaps(job, opts = {}) {
       handled.add("GPU");
       continue;
     }
+    // 10c "Install custom water cooling for CPU": a CPU block for the socket, a radiator with room in the case and a
+    //     reservoir (pump combo) on the case's list – cheapest set that fits; pipes, fittings and coolant are looks only
+    if (/custom/i.test(o) && /water ?cool/i.test(o)) {
+      out.push(...customLoopSuggestion(job, ctx, o, cur));
+      handled.add("Water Cooling");
+      continue;
+    }
     // 10  Install AIO water cooling (not custom loops)
     if (/water cooling|aio|liquid cool/i.test(o) && !/custom/i.test(o)) {
       out.push(...aioSuggestion(job, ctx, o, cur));
@@ -468,9 +492,11 @@ function suggestSwaps(job, opts = {}) {
               };
             })
             .filter(Boolean);
-          add("obj:" + o, o + " – as a pair (dual graphics cards)", opts2, { cat, old: hdd.name });
-          if (!opts2.length)
-            missing("obj:" + o, o + " – as a pair", "No better SLI / CrossFire card fits – pick a pair yourself.");
+          add("obj:" + o, o + " – as a pair (dual graphics cards)", opts2, {
+            cat,
+            old: hdd.name,
+            hint: "No better SLI / CrossFire card fits – pick a pair yourself.",
+          });
         } else
           add("obj:" + o, o, pickOptions(job, ctx, better, { replace: hdd.name, upgrade: true, base: hdd }), {
             cat,
@@ -720,6 +746,71 @@ function cpuWithBoard(job, ctx, cands, curP, cur, boardOk = () => true) {
         over: !priceOk({ price: total }, ctx.left),
       };
     });
+}
+// a drive asked for by kind, not by name: 1 HDD, 2 SATA SSD, 3 M.2 (the database's "k")
+function storageKind(t) {
+  if (/\bm\.?2\b|nvme/i.test(t)) return "3";
+  if (/\bssd\b|solid.state/i.test(t)) return "2";
+  if (/\bhdd\b|hard (disk|drive)/i.test(t)) return "1";
+  return "";
+}
+const sizeGB = t => {
+  const m = String(t).match(/(\d+(?:\.\d+)?)\s*(tb|gb)\b/i);
+  return m ? +m[1] * (/tb/i.test(m[2]) ? 1000 : 1) : 0;
+};
+function customLoopSuggestion(job, ctx, reason, cur) {
+  const key = "obj:customloop";
+  if (!hasUnlock("customWC")) return [{ key, reason, options: [], hint: gateMsg("customWC").replace(/<\/?b>/g, "") + "." }];
+  const have = k => cur("Water Cooling").find(p => wcKind(p) === k);
+  const kinds = ["CPU Block", "Radiator", "Reservoir"].filter(k => !have(k));
+  if (!kinds.length) return [];
+  const cooler = cur("CPU Cooler").pop(),
+    picked = [];
+  let plan = job;
+  for (const k of kinds) {
+    // the CPU block takes the place of the old CPU cooler
+    const replace = k === "CPU Block" && cooler ? cooler.name : "";
+    const p = shopParts("Water Cooling")
+      .filter(x => wcKind(x) === k)
+      .sort((a, b) => a.price - b.price)
+      .find(x => fitsBuild(plan, x, replace));
+    if (!p) {
+      const why =
+        k === "Reservoir"
+          ? "no unlocked reservoir fits this case (shop list)"
+          : k === "Radiator"
+            ? "no radiator fits the case's radiator places"
+            : "no CPU block for this socket unlocked";
+      return [{ key, reason, options: [], hint: `Custom loop: ${why}.` }];
+    }
+    picked.push({ p, replace });
+    plan = withSwaps(plan, [{ cat: "Water Cooling", old: replace, new: p.name }]);
+  }
+  const [first, ...rest] = picked,
+    total = picked.reduce((t, x) => t + (x.p.price || 0), 0);
+  return [
+    {
+      key,
+      reason,
+      cat: "Water Cooling",
+      old: first.replace,
+      options: [
+        {
+          name: first.p.name,
+          cat: "Water Cooling",
+          price: first.p.price,
+          count: 1,
+          lvl: Math.max(...picked.map(x => x.p.lvl || 0)) || first.p.lvl,
+          det: first.p.det,
+          tag: `custom loop: ${picked.map(x => wcKind(x.p)).join(" + ")} · then pipes, fittings and coolant (looks only)`,
+          swaps: [{ cat: "Water Cooling", old: first.replace, new: first.p.name }],
+          extras: rest.map(x => ({ cat: "Water Cooling", old: "", name: x.p.name, price: x.p.price, why: wcKind(x.p) })),
+          total,
+          over: !priceOk({ price: total }, ctx.left),
+        },
+      ],
+    },
+  ];
 }
 function aioSuggestion(job, ctx, reason, cur) {
   const old = cur("CPU Cooler").pop();
