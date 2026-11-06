@@ -45,12 +45,10 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   first download and reading: now warmed up in the background + "⏳ Starting / Downloading the text reader…", suggestions
   show "⏳ Working out…" and are reused when nothing changed, PC Bay inventory shows the column being read.
   Tests: run.js --cpu N (slower Chromium).
-- #15 in progress – code + file structure to commercial standard (keep #14 speed work; tests after every step):
-  1. tooling: package.json (dev only), .editorconfig, ESLint (browser globals, classic scripts) + Prettier; fix what lint finds
-  2. split js/app.js by concern (board, capture/OCR, job window, settings/backup/reports) – still classic scripts (file:// works)
-  3. folders: js/core (logic, no DOM) and js/ui (windows, board, keys…); update index.html, tests, bump_version.py
-  4. docs: README layout, CONTRIBUTING.md (build DB, tests, version bump, branches); CI: lint + DB check on push
-  Done steps: 1 (lint + fixes, found a dual-GPU crash), 1b (Prettier), 2–3 (core/ui folders, app.js split; js/config.js stays – update check). Dev tools: node_modules is a symlink to /opt/node-tools/node_modules (npm registry blocked here).
+- #15 done: ESLint + Prettier + .editorconfig + package.json (dev only), js/core (logic, no page access) and js/ui (page),
+  app.js split by concern, js/config.js kept in place (update check of released versions), CONTRIBUTING.md, CI checks
+  (lint, format, parts-db.js up to date). Lint found a real bug: dual-GPU suggestions crashed with a board in the PC.
+  Load time unchanged (median, CPU 6× slower). Locally node_modules → /opt/node-tools/node_modules (npm registry blocked).
 - Then: the special task.
 
 ## 0.13.0 – released 2026-11-04
