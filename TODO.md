@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **Broken RAM hint missed** (Mariusz, 2026-11-06 – GJarvis@GraemeSoft.tv, "My rig needs fixing", Diagnose and fix,
    Labour $439 / Budget $200, Level 10). Email: "Who knew that RAM had to go in one way around?" = the customer put the
@@ -122,6 +122,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    background around it, only at the label's place), not any red in the picture; check against the 9 screenshots it was
    tuned on (real BROKEN cards) + these two. Screenshots: tests branch `fixtures/pending/inv_arctic_red.png`,
    `inv_raijintek_tisis.png`.
+3. **Overclock settings (PC Bay Profit step, and the job's overclock tips)** (Mariusz, 2026-11-06):
+   - CPU core voltage only moves in steps of 0.05 V in the game → round the suggested voltage UP to the next 0.05
+     (enough for the clock); show it as e.g. "1.55 V".
+   - GPU: say what to do with the power limit. Data exists: the workbook's "GPU % Power Increase" (in parts-db "power"
+     as W>W_max: +20 % on 253 cards, +50 % on 63). The overclock estimate (OC base clocks) and the PSU check already
+     assume it's at the maximum → tell the player "Power limit +20 % (max)" / "+50 %". No GPU voltage in the workbook.
 
 ---
 
