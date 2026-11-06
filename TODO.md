@@ -39,11 +39,7 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
 - Bonus (done): "!" on RAM sticks that differ in size / speed (an SSD once became a 32 GB HyperX stick – no screenshot;
   HyperX FURY RGB 960GB reads fine in tests, so the misread itself is not reproduced).
 - #12 done: 📖 parts database window (js/partsdb.js). Game part icons: not used (game assets) – category tabs only.
-- #13 keyboard re-analysis: walked through it (2026-11-06), proposal sent to Mariusz – waiting for his pick.
-  Found: ↓ lands on ✕ of objectives (Enter deletes, no undo); digits/letters on a focused card button act on the job
-  (typing "1080" on Cancel moved the job, closed the swap form); Edit window opens with focus on ✕ close; Enter into a
-  card without hidden objectives lands on 💡; PC Bay tile has no arrow / E / D support; 📖 database, unlocks, changelog
-  have no keys; E and P do the same; Alt+E may open the browser menu in Chrome/Edge on Windows.
+- #13 done: keyboard rework (all 12 proposals; Alt+E / Alt+P confirmed working, kept).
 - Next: items #14–#15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
@@ -131,19 +127,6 @@ Notes for later (not tasks yet):
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
-
-### 1.0: re-analyse keyboard shortcuts and navigation (especially inside a job card)
-- The card got many new parts since the keyboard design (0.8.x): part details, ⚡ power, ⚠️ clash box →
-  Status tiles, swap ⠿ order with Alt + ↑ ↓, ranked suggestions with warnings, swap form selects.
-- Walk through every card and window with the keyboard only and write down what is slow, confusing or
-  unreachable: line order (`ROW_SEL` in `js/keys.js`), what ← → do on each line, where focus lands after
-  an action / re-render, the suggestion list (↑ ↓ / Enter / Esc), Status tiles (focus + delayed popup),
-  opening / closing the swap form, deleting a swap, "Current parts", the review window and dialogs.
-- Check shortcuts for clashes with the browser / screen readers (Alt + arrows = back / forward in some
-  browsers outside a focused control), and that every mouse-only action has a keyboard way.
-- The new-job window shows "(Alt+E)" / "(Alt+P)" on its capture buttons – keep those labels in step with any key change.
-- Propose the changes to Mariusz first (list), then build, update the shortcuts window and the "How to use it"
-  window, and add keyboard checks to the flow test.
 
 ### 1.0: speed + "working on it" notices
 - Some calculations take a couple of seconds before anything shows – e.g. the 3DMark set for a PC built from
