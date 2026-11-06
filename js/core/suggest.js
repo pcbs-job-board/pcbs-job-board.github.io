@@ -944,6 +944,21 @@ function ocSuggestions(job, ctx, reason, cur) {
         });
     }
   }
+  // nothing to change: say so, so the objective isn't left without a word
+  if (!out.length && t.mhz && (t.part === "CPU" || t.part === "GPU")) {
+    const p = cur(t.part).pop(),
+      x = p && ocReach(p.name),
+      v = x && (typeof x === "number" ? x : t.mem ? x.mem : x.core);
+    if (v)
+      return [
+        {
+          key: "obj:oc-ok",
+          reason,
+          options: [],
+          hint: `Nothing to change – ${p.name} should reach ~${v.toLocaleString()} MHz (90 % of its potential). Overclock it in the game.`,
+        },
+      ];
+  }
   // tell how the parts were picked
   out.forEach(x => {
     if (!/90 %/.test(x.reason) && x.key !== "obj:oc-board")
