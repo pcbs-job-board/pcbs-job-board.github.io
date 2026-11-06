@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.0
+- Keyboard: the arrows skip the ✕ buttons – Delete removes a line instead, and every removal (task, objective, swap) can be undone. Inside a card the job keys (1 2 3 0, H, N, R, E, P, D) wait until Esc, so a stray key can't move the job. Enter goes to the first unfinished line, Esc closes a details popup first, an open swap form survives the board being redrawn, the Edit window opens on its first field. New keys: B parts database, U career unlocks, L changelog, P = Edit + capture PC Stats; E / Enter open a PC Bay build.
 - 📖 Parts database: every part by category (case, motherboard … cables) in a sortable table with all its facts, filtered by name.
 - Water cooling fit checks: reservoirs against the case (the game's shop list, all colour / window versions), cases without custom water cooling, radiators against the case's radiator places, CPU blocks against the socket (also before a motherboard is known). The game also checks 3D collision live, so a listed reservoir can still clash with other parts.
 - One part order everywhere (job window + swap categories): Case, Motherboard, CPU, CPU Cooling, RAM, GPU, PSU, Storage, Case Fans, Reservoir, Radiator, CPU Block. The swap category "Other" is now "Any".

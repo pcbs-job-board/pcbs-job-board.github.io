@@ -125,7 +125,8 @@ document.addEventListener("mouseover", e => { const t = e.target.closest?.(".sti
 document.addEventListener("mouseout", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t && !t.contains(e.relatedTarget)) { if (document.activeElement !== t) stipHide(); else clearTimeout(stipTimer); } });
 document.addEventListener("focusin", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t) stipLater(t); else stipHide(); });
 document.addEventListener("focusout", e => { if (e.target.closest?.(".stile,.ulbtn,.hintbtn")) stipHide(); });
-document.addEventListener("keydown", () => { if (!stip.hidden || stipTimer) stipHide(); }, true);
+// any key closes the details popup; Esc only does that (it doesn't also leave the card / close the window)
+document.addEventListener("keydown", e => { if (!stip.hidden || stipTimer) { const was = !stip.hidden; stipHide(); if (was && e.key === "Escape") { e.preventDefault(); e.stopPropagation(); } } }, true);
 document.addEventListener("click", e => { const t = e.target.closest?.(".stile,.ulbtn,.hintbtn"); if (t) { if (stipFor === t && !stip.hidden) stipHide(); else stipShow(t); } else if (!e.target.closest?.("#stip")) stipHide(); });
 // scrolling / resizing closes an open popup but doesn't cancel one about to open
 // (keyboard moves scroll the focused tile into view – the popup is placed after that)
@@ -147,6 +148,18 @@ function moveSwap(j, id, to) {
 }
 function render() {
   if (typeof stipHide === "function") stipHide();
+  // an open swap form (and what is typed in it) survives the redraw – e.g. a job moved to another table meanwhile
+  const forms = [...document.querySelectorAll("[data-swapform]:not([hidden])")].map(f => ({ id: f.dataset.swapform, edit: f.dataset.edit,
+    v: ["old", "cat", "new"].map(k => f.querySelector(`[data-f="${k}"]`)?.value) }));
+  renderBoard();
+  for (const o of forms) {
+    const btn = document.querySelector(o.edit ? `[data-act="editSwap"][data-id="${o.id}"][data-k="${o.edit}"]` : `[data-act="openSwap"][data-id="${o.id}"]`); if (!btn) continue;
+    btn.click(); const f = document.querySelector(`[data-swapform="${o.id}"]`); if (!f) continue;
+    ["old", "cat", "new"].forEach((k, i) => { const el = f.querySelector(`[data-f="${k}"]`); if (el && o.v[i] != null && [...(el.options || [{ value: o.v[i] }])].some(x => x.value === o.v[i])) el.value = o.v[i]; });
+  }
+  if (forms.length) { const ac = document.getElementById("ac"); if (ac) ac.hidden = true; }
+}
+function renderBoard() {
   $("#tables").innerHTML = [1, 2, 3].map(n => {
     const j = jobs.find(j => j.table === n);
     return `<section class="slot" style="--c:${TCOL[n]}" data-table="${n}"><h2>Table ${n}<small>${j ? "in progress" : "free"}</small></h2>
@@ -163,7 +176,7 @@ function jobCard(j) {
   const hid = j.tasks.filter(k => k.src === "hid"), main = j.tasks.filter(k => k.src === "obj"), found = j.tasks.filter(k => k.src === "add");
   const del = k => `<button class="ghost x" data-act="delTask" data-id="${j.id}" data-k="${k.id}" title="Remove">✕</button>`;
   const hidHtml = hid.length ? `<div class="hidbox ${hid.every(k => k.done) ? "alldone" : ""}"><div class="hidhead">🔍 Hidden objectives <span>${hid.filter(k => k.done).length}/${hid.length}</span></div>${hid.map(k => { const [, t, d] = k.text.match(/^(.*?)\s*(\((?:makes|e\.g\.)[^)]*\))?$/) || [, k.text]; return `<label class="hid ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span class="ico">${hidIcon(k.text)}</span><span><b>${esc(t)}</b>${d ? `<small>${esc(d.slice(1, -1))}</small>` : ""}</span>${del(k)}</label>`; }).join("")}</div>` : "";
-  const mainHtml = main.length ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li>${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>` : "";
+  const mainHtml = main.length ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li tabindex="-1" data-line="${k.id}">${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>` : "";
   const foundHtml = found.map(k => `<div class="task ${k.done ? "done" : ""}"><input type="checkbox" ${k.done ? "checked" : ""} data-act="toggleTask" data-id="${j.id}" data-k="${k.id}"><span>${esc(k.text)}</span>${del(k)}</div>`).join("");
   const swapPrice = s => s.price ?? priceOf(s.new);
   const clashes = jobCompatIssues(j), bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
@@ -223,11 +236,13 @@ document.addEventListener("click", e => {
   const j = job(b.dataset.id); const a = b.dataset.act;
   if (a === "table") { moveToTable(j, +b.dataset.n); }
   else if (a === "toggleTask") { const t = j.tasks.find(t => t.id === b.dataset.k); t.done = b.checked; }
-  else if (a === "delTask") { j.tasks = j.tasks.filter(t => t.id !== b.dataset.k); }
+  else if (a === "delTask") { const i = j.tasks.findIndex(t => t.id === b.dataset.k); if (i < 0) return; const [t] = j.tasks.splice(i, 1); save(); render();
+    toast(`Removed: ${t.text}`, () => { j.tasks.splice(Math.min(i, j.tasks.length), 0, t); save(); render(); }); return; }
   else if (a === "addTask") { const inp = document.querySelector(`[data-input="task"][data-id="${j.id}"]`); if (!inp.value.trim()) return; j.tasks.push({ id: uid(), text: inp.value.trim(), src: "add", done: false }); }
   else if (a === "toggleSwap") { j.swaps.find(s => s.id === b.dataset.k).done = b.checked; }
   else if (a === "setPrice") { const s = j.swaps.find(s => s.id === b.dataset.k); const cur = s.price ?? priceOf(s.new); const v = prompt(`Price of ${s.new} in $ (leave empty to use the shop price):`, cur ?? ""); if (v === null) return; s.price = v.trim() === "" ? undefined : Math.max(0, Math.round(+v.replace(/[^\d.]/g, "")) || 0); if (s.price === undefined) delete s.price; }
-  else if (a === "delSwap") { j.swaps = j.swaps.filter(s => s.id !== b.dataset.k); }
+  else if (a === "delSwap") { const i = j.swaps.findIndex(s => s.id === b.dataset.k); if (i < 0) return; const [sw] = j.swaps.splice(i, 1); save(); render();
+    toast(`Removed swap: ${sw.new}`, () => { j.swaps.splice(Math.min(i, j.swaps.length), 0, sw); save(); render(); }); return; }
   else if (a === "editSwap") {   // the swap form, filled in, right under that swap – saving changes it in place
     const sw = j.swaps.find(x => x.id === b.dataset.k); if (!sw) return;
     const f = document.querySelector(`[data-swapform="${j.id}"]`), row = b.closest(".swap"), sel = f.querySelector('[data-f="old"]');
@@ -249,13 +264,13 @@ document.addEventListener("click", e => {
       inp.dataset.noAc = "1"; inp.focus(); inp.select(); delete inp.dataset.noAc;
     };
     f.querySelector('[data-f="new"]').focus(); return; }
-  else if (a === "cancelSwap") { render(); return; }
+  else if (a === "cancelSwap") { b.closest("[data-swapform]").hidden = true; render(); return; }
   else if (a === "saveSwap") { const f = document.querySelector(`[data-swapform="${j.id}"]`); const o = f.querySelector('[data-f="old"]').value, nw = f.querySelector('[data-f="new"]').value.trim(), cat = catData(f.querySelector('[data-f="cat"]').value);
     if (!nw) { f.querySelector('[data-f="new"]').focus(); return; }
     const ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
     if (ed) { const was = ed.new; ed.old = o === "keep" ? ed.old : j.components[o]?.name || ""; ed.cat = cat; ed.new = nw; if (nw !== was) { delete ed.price; ed.done = false; } }
     else j.swaps.push({ id: uid(), old: j.components[o]?.name || "", cat, new: nw, done: false });
-    rememberPart(nw, cat); }
+    rememberPart(nw, cat); f.hidden = true; }
   else if (a === "complete") { const idx = jobs.indexOf(j); jobs.splice(idx, 1); save(); render(); toast(`Completed: ${j.sender || "job"}`, () => { if (j.table && jobs.some(o => o.table === j.table)) j.table = 0; jobs.splice(idx, 0, j); save(); render(); }); return; }
   else if (a === "edit") { openReview(null, j); return; }
   else if (a === "addParts") { openReview(null, j); return; }   // old shortcut target – now the Edit window
@@ -420,6 +435,7 @@ function openReview(dataUrl, editJob, forJob) {
   $("#revTitle").textContent = editJob ? `Edit job: ${editJob.sender || "unknown customer"}` : dataUrl ? "New job from capture" : "New job";
   $("#rawTxt").textContent = ""; $("#prog").style.width = "0"; $("#ocrState").textContent = "";
   renderForm(); showBlack(false); renderShots(); dlg.showModal();
+  $("#fSender")?.focus({ preventScroll: true });   // not the ✕ in the corner (Enter would close the window)
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
 }
 // a warning under the screenshot with a shortcut to the set-up window – nothing is changed automatically

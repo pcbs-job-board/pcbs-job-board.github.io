@@ -3,17 +3,20 @@
 const KEYMAP = [
   { group: "Anywhere", keys: [
     ["C", "Capture job (reads the email)"], ["M", "New manual job"], ["Shift + C", "Connect / change screen"],
-    ["S", "Settings"], ["?", "Show this list"], ["Esc", "Close window · leave a text field"]] },
+    ["B", "📖 Parts database"], ["U", "Career unlocks"], ["L", "📜 Changelog – what's new"],
+    ["S", "Settings"], ["?", "Show this list"], ["Esc", "Close window · close a popup · leave a text field"]] },
   { group: "Choosing a job", keys: [
     ["← → ↑ ↓", "Move between job cards (tables and open jobs)"], ["Home / End", "First / last job"]] },
   { group: "Selected job", keys: [
     ["1 / 2 / 3", "Put on Table 1 / 2 / 3 (again = back to open jobs)"], ["0", "Back to open jobs"],
     ["H", "Tick the next hidden objective"], ["N", "Type a new task"], ["R", "Add part replacement"],
-    ["E / P", "✎ Edit job – details, tasks and parts (capture PC Stats there)"], ["Enter", "Go into the card"],
-    ["D", "Job completed (Undo stays available)"]] },
+    ["E", "✎ Edit job – details, tasks and parts · 📦 open a PC Bay build"], ["P", "✎ Edit job and capture PC Stats right away"],
+    ["Enter", "Go into the card (first unfinished line) · 📦 open a PC Bay build"], ["D", "Job completed (Undo stays available)"]] },
   { group: "Inside a card", keys: [
-    ["↑ ↓", "Previous / next line (objective, task, swap, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
-    ["Space / Enter", "Tick the box · press the button"], ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"], ["Esc", "Back to choosing jobs"]] },
+    ["↑ ↓", "Previous / next line (objective, task, swap, Status tiles, button…)"], ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
+    ["Space / Enter", "Tick the box · press the button · show a Status tile's details"], ["Delete", "Remove the line (objective, task, swap) – Undo stays available"],
+    ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"], ["Esc", "Close the details popup · back to choosing jobs"],
+    ["", "Job keys (1 2 3 0, H, N, R, E, P, D) work after Esc – never while you are inside a card"]] },
   { group: "New job window", keys: [
     ["Ctrl + Enter", "Create / save the job"], ["Alt + E", "📸 Add email capture"], ["Alt + P", "📸 Add PC parts capture"]   /* also shown on those buttons (js/app.js .capkey) */, ["Alt + A", "🎯 Adjust areas"]] },
   { group: "Screen area window", keys: [["Ctrl + Enter", "✓ Use this area"], ["Esc", "Skip for now"]] },
@@ -22,7 +25,7 @@ let keysOn = LS.get("pcbs.keys", true);
 let selJob = null;
 
 function keysHelpHtml() {
-  return KEYMAP.map(g => `<h4 class="sub">${esc(g.group)}</h4><table class="keys">${g.keys.map(([k, d]) => `<tr><td>${k.split(" / ").map(x => x.split(" + ").map(y => `<kbd>${esc(y)}</kbd>`).join(" + ")).join(" / ")}</td><td>${esc(d)}</td></tr>`).join("")}</table>`).join("");
+  return KEYMAP.map(g => `<h4 class="sub">${esc(g.group)}</h4><table class="keys">${g.keys.map(([k, d]) => !k ? `<tr><td colspan="2" class="hint">${esc(d)}</td></tr>` : `<tr><td>${k.split(" / ").map(x => x.split(" + ").map(y => `<kbd>${esc(y)}</kbd>`).join(" + ")).join(" / ")}</td><td>${esc(d)}</td></tr>`).join("")}</table>`).join("");
 }
 function cards() { return [...document.querySelectorAll("#tables .job, #queue .job")]; }
 function markSel() {
@@ -56,9 +59,16 @@ const typing = el => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.
 // ---- moving inside a card: the card is split into lines (rows), each with one or more controls ----
 const ROW_SEL = ".top, .tables, .stiles, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
 const CTRL_SEL = "input, select, button, summary";
+const DEL_SEL = '[data-act="delTask"], [data-act="delSwap"]';   // ✕ buttons: skipped by the arrows – Delete removes the line instead
+const SWAP_ORDER = ["toggleSwap", "editSwap", "setPrice"];
 const shown = el => !el.closest("[hidden]") && el.getClientRects().length > 0;
 function cardRows(card) {
-  return [...card.querySelectorAll(ROW_SEL)].filter(shown).map(r => r.matches(CTRL_SEL) ? [r] : [...r.querySelectorAll(CTRL_SEL)].filter(shown)).filter(r => r.length);
+  return [...card.querySelectorAll(ROW_SEL)].filter(shown).map(r => {
+    if (r.matches(CTRL_SEL)) return [r];
+    const c = [...r.querySelectorAll(CTRL_SEL)].filter(x => shown(x) && !x.matches(DEL_SEL));
+    if (r.matches(".swap")) c.sort((a, b) => SWAP_ORDER.indexOf(a.dataset.act) - SWAP_ORDER.indexOf(b.dataset.act));
+    return c.length ? c : r.hasAttribute("tabindex") ? [r] : [];
+  }).filter(r => r.length);
 }
 function posOf(el) {
   const card = el?.closest?.(".job"); if (!card) return null;
@@ -73,9 +83,10 @@ function focusCtrl(el) {
   (el.closest(ROW_SEL.replace(/, \[data-act='openSwap'\]|, details > summary/g, "")) || el).classList.add("kbrow");
 }
 function enterCard(card) {
+  if (card.classList.contains("flip")) { card.querySelector('[data-flip="open"]')?.click(); return; }   // 📦 PC Bay build: open its window
   const rows = cardRows(card); if (!rows.length) return;
-  const hid = card.querySelector("label.hid input:not(:checked)");
-  focusCtrl(hid || rows[0][0]);
+  const first = card.querySelector("label.hid input:not(:checked)") || card.querySelector(".task input[type=checkbox]:not(:checked)") || card.querySelector('[data-act="openSwap"]:not([hidden])');
+  focusCtrl(first && shown(first) ? first : rows[0][0]);
 }
 // how to find the same control again after the board is redrawn
 function ctrlId(el) {
@@ -85,6 +96,7 @@ function ctrlId(el) {
   if (d.act === "table") return `[data-act="table"][data-n="${d.n}"]`;
   if (d.act) return `[data-act="${d.act}"]`;
   if (d.input) return `[data-input="${d.input}"]`;
+  if (d.line) return `[data-line="${d.line}"]`;
   if (d.f) return `[data-f="${d.f}"]`;
   return null;
 }
@@ -122,7 +134,13 @@ function inCardKey(e) {
       go(p.r, p.c + d); return true;
     }
     case "Enter": if (t.type === "checkbox") { e.preventDefault(); t.click(); } return true;
-    case "Escape": e.preventDefault(); t.blur(); document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow")); selectCard(p.card); return true;
+    case "Delete": {
+      if (text) return true;   // deleting characters
+      const del = t.closest("label.hid, ul.mainobj li, .task, .swap")?.querySelector(DEL_SEL);
+      if (del) { e.preventDefault(); del.click(); } return true;
+    }
+    case "Escape": e.preventDefault();
+      t.blur(); document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow")); selectCard(p.card); return true;
   }
   return false;
 }
@@ -150,6 +168,7 @@ document.addEventListener("keydown", e => {
     if (j2) { e.preventDefault(); const i = j2.swaps.findIndex(s => s.id === sw.dataset.swap); moveSwap(j2, sw.dataset.swap, i + (e.key === "ArrowUp" ? -1 : 1)); return; }
   }
   if (!e.ctrlKey && !e.metaKey && !e.altKey && inCardKey(e)) return;
+  if (posOf(t) && !typing(t)) return;   // inside a card: no single-key job shortcuts (a stray "1" would move the job) – Esc first
   if (typing(t)) {
     if (e.key === "Escape" && !document.querySelector("#ac:not([hidden])")) { const card = t.closest(".job"); t.blur(); if (card) selectCard(card); }
     return;
@@ -159,6 +178,9 @@ document.addEventListener("keydown", e => {
   const act = fn => { e.preventDefault(); fn(); };
   switch (true) {
     case k === "?": return act(openKeysHelp);
+    case k === "b": return act(openPartsDb);
+    case k === "u": return act(() => $("#btnUnlocks").click());
+    case k === "l": return act(openChangelog);
     case k === "c" && e.shiftKey: return act(() => $("#btnShare").click());
     case k === "c": return act(() => $("#btnCapture").click());
     case k === "m": return act(() => $("#btnManual").click());
@@ -178,8 +200,8 @@ document.addEventListener("keydown", e => {
     case k === "h": return act(() => { const t2 = j.tasks.find(x => x.src === "hid" && !x.done); if (t2) { t2.done = true; save(); render(); toast(`Done: ${t2.text}`, () => { t2.done = false; save(); render(); }); } });
     case k === "n": return act(() => document.querySelector(`.job[data-job="${selJob}"] [data-input="task"]`)?.focus());
     case k === "r": return act(() => clickIn('[data-act="openSwap"]:not([hidden])'));
-    case k === "p": return act(() => clickIn('[data-act="edit"]'));
-    case k === "e": return act(() => clickIn('[data-act="edit"]'));
+    case k === "p": return act(() => { if (clickIn('[data-act="edit"]')) setTimeout(() => $("#btnCapParts")?.click(), 0); });   // Edit window + PC Stats capture
+    case k === "e": return act(() => clickIn('[data-act="edit"]') || clickIn('[data-flip="open"]'));
     case k === "d": return act(() => clickIn('[data-act="complete"]'));
     case k === "Enter": return act(() => { const c = document.querySelector(`.job[data-job="${selJob}"]`); if (c) enterCard(c); });
   }
