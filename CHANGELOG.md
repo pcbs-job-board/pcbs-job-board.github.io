@@ -7,6 +7,7 @@ Within each version, changes are listed from most to least important.
 - Faster and clearer while it works: the text reader starts in the background (job / PC Bay window opened, screen connected, or right after the page loads for players who captured before), and says so when a capture has to wait for it (first time: downloads a few MB). Suggested swaps show "⏳ Working out…" and aren't worked out again when nothing changed. PC Bay inventory capture shows which column it is reading.
 - Keyboard: the arrows skip the ✕ buttons – Delete removes a line instead, and every removal (task, objective, swap) can be undone. Inside a card the job keys (1 2 3 0, H, N, R, E, P, D) wait until Esc, so a stray key can't move the job. Enter goes to the first unfinished line, Esc closes a details popup first, an open swap form survives the board being redrawn, the Edit window opens on its first field. New keys: B parts database, U career unlocks, L changelog, P = Edit + capture PC Stats; E / Enter open a PC Bay build.
 - 📖 Parts database: every part by category (case, motherboard … cables) in a sortable table with all its facts, filtered by name.
+- Suggested swaps for every objective, or a line saying why there are none: "Install custom water cooling for CPU" → a CPU block, radiator and reservoir that fit, in one tick; "Install an SSD / HDD / M.2" → the cheapest drive of that kind; an overclock the parts already reach → "nothing to change".
 - Water cooling fit checks: reservoirs against the case (the game's shop list, all colour / window versions), cases without custom water cooling, radiators against the case's radiator places, CPU blocks against the socket (also before a motherboard is known). The game also checks 3D collision live, so a listed reservoir can still clash with other parts.
 - One part order everywhere (job window + swap categories): Case, Motherboard, CPU, CPU Cooling, RAM, GPU, PSU, Storage, Case Fans, Reservoir, Radiator, CPU Block. The swap category "Other" is now "Any".
 - Custom water cooling has its own part types: Reservoir, Radiator and CPU Block – as fields in the job window and in the swap categories.
@@ -20,6 +21,7 @@ Within each version, changes are listed from most to least important.
 - Putting a job on a table scrolls the page up to the workbenches.
 - Fixed: after an update the page could keep an old style sheet (wrong looks) – it's now reloaded automatically, and old "?v=" addresses are cleaned up.
 - Fixed: a half-cut RAM line at the top of a scrolled PC Stats list ("2400 MHz") was added as a part.
+- Fixed: a rare error when a part field was changed while the part fields were being redrawn.
 - Fixed: "Install dual graphics cards" jobs showed no suggested swaps at all when the PC had a motherboard.
 - Code reorganised for easier work on it (logic and page parts in separate folders, automatic code checks) – no change in how it works or how fast it loads.
 - 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
