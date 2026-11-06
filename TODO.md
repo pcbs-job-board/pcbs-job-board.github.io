@@ -40,7 +40,12 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   HyperX FURY RGB 960GB reads fine in tests, so the misread itself is not reproduced).
 - #12 done: 📖 parts database window (js/partsdb.js). Game part icons: not used (game assets) – category tabs only.
 - #13 done: keyboard rework (all 12 proposals; Alt+E / Alt+P confirmed working, kept).
-- Next: items #14–#15, then the special task.
+- #14 done: speed + notices. Measured (Chromium slowed 6×): suggestions ≤ ~0.25 s (3DMark new build the slowest),
+  board with 10 jobs ~0.1 s, a job card ~15 ms – nothing needed rewriting. The silent waits were the text reader's start /
+  first download and reading: now warmed up in the background + "⏳ Starting / Downloading the text reader…", suggestions
+  show "⏳ Working out…" and are reused when nothing changed, PC Bay inventory shows the column being read.
+  Tests: run.js --cpu N (slower Chromium).
+- Next: item #15, then the special task.
 
 ## 0.13.0 – released 2026-11-04
 - New-job window: job fields (email capture, customer … extra tasks) in `#revJob` under the screenshot (left column,
@@ -127,14 +132,6 @@ Notes for later (not tasks yet):
   "urgent job!!" (streaming together, no star requirement; probably the streamer story).
 - Rule: the email address or subject alone marks a story job. The signed name only counts together with
   "no star requirement" or a long email, because random customers sign with first names too.
-
-### 1.0: speed + "working on it" notices
-- Some calculations take a couple of seconds before anything shows – e.g. the 3DMark set for a PC built from
-  nothing (0.12.3 already made that one ~100× faster: cheapest-first fit checks for PSU / cooler / drive) (newBuildBench in js/suggest.js; suggestions are also re-worked on every tick in the new-job window).
-  Measure where the time goes (suggestSwaps, benchSuggestions, newBuildBench, planFits / compat checks,
-  PC Bay upgrades) and make the slow ones faster (e.g. cache per input, fewer fit checks, work in pieces).
-- Anything that can still take long shows a loading notice (spinner / "Working out the cheapest set…") so the
-  user knows the page hasn't frozen – and the page stays usable meanwhile.
 
 ### After 1.0: new Steam guide, then the "How to use it" window from it
 - The window (? button, `index.html` → `#dlgHelp`, pictures in `img/help/`) is up to date with 0.12.x.
