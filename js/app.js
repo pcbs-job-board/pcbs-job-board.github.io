@@ -528,11 +528,23 @@ function inPartsDb(name) {   // exactly a part of the database (any DLC / versio
   if (!DBNAMES) { DBNAMES = new Set(); for (const c in window.PARTS_DB || {}) for (const r of window.PARTS_DB[c]) DBNAMES.add(r[0].toLowerCase()); }
   return DBNAMES.has(String(name || "").trim().toLowerCase());
 }
+// RAM sticks in one PC are all the same size and speed – an odd one out is often another part read as RAM
+// (a 960GB SSD became a "32 GB" RAM stick once). Returns the names that don't match the most common size + speed.
+function oddRam(names) {
+  const key = n => { const c = (typeof compatOf === "function" && compatOf(n)) || {}; const t = String(n);
+    return `${c.gb || (t.match(/(\d+)\s*GB/i) || [])[1] || "?"}/${c.mhz || (t.match(/(\d+)\s*MHz/i) || [])[1] || "?"}`; };
+  const keys = names.map(key), count = {};
+  keys.forEach(k => count[k] = (count[k] || 0) + 1);
+  if (Object.keys(count).length < 2) return new Set();   // one stick, or all the same
+  const top = Math.max(...Object.values(count)), common = Object.keys(count).filter(k => count[k] === top);
+  return new Set(names.filter((n, i) => common.length > 1 || keys[i] !== common[0]));   // a tie: check all of them
+}
 function partFieldsHtml(comps) {
+  const ramOdd = oddRam(comps.filter(c => c.name && slotOf(c.cat, c.name).k === "RAM").map(c => c.name));
   return `<div id="fParts">${PART_SLOTS.map(sl => {
     const rows = comps.filter(c => slotOf(c.cat, c.name) === sl), shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
     if (sl.onlyIfUsed && !rows.length) return "";
-    const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
+    const row = c => `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more = sl.other || rows.length < sl.max ? (rows.length ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>` : sl.other ? row({ cat: "Other", name: "" }) : "") : "";
     return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
