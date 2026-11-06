@@ -49,6 +49,11 @@ Flipping broken PCs bought on PC Bay: fix → optimise → XMP / overclock → 3
   app.js split by concern, js/config.js kept in place (update check of released versions), CONTRIBUTING.md, CI checks
   (lint, format, parts-db.js up to date). Lint found a real bug: dual-GPU suggestions crashed with a board in the PC.
   Load time unchanged (median, CPU 6× slower). Locally node_modules → /opt/node-tools/node_modules (npm registry blocked).
+- #16 done: stability check. New tests: systems.js (manual job, Edit, 13 objective kinds + hidden ones, PC Bay start →
+  finish, career level, backup round trip, reload; 40 checks) and soak.js (60 rounds in one page: memory / page size /
+  saved data / speed flat). Found + fixed: "2400 MHz" PC Stats line, no suggestion for custom water cooling / "Install an
+  SSD" / reachable overclock (now options or a reason for every objective), part fields redraw error. All suites pass
+  (units 163, flow 56, run 431 + 11 known, pcbay 30, startup, systems 40, soak). Chromium only – no Firefox here.
 - Then: the special task.
 
 ## 0.13.0 – released 2026-11-04
@@ -84,8 +89,8 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
   repository only gets `main`.
 - Before a release: back up the live `main` as `backup-<live version>` here. Then **ask Mariusz before
   merging a dev version into `main`**, merge, and check the live site.
-- **Version bump = 4 places**: `js/config.js` version, every `?v=` in `index.html`, `--css-ver` at the top of
-  `css/style.css` (the app reloads a stale stylesheet when it doesn't match – 0.14.0), and a new CHANGELOG.md section.
+- **Version bump**: `python tools/bump_version.py X.Y.Z` (js/config.js, every `?v=`, `--css-ver`, package.json), then a
+  new CHANGELOG.md section by hand.
 - Changelog: very short lines, most important change first. Versions are X.Y.Z (X major, Y features, Z fixes).
 - Tests: branch `tests` here (`node run.js --app <app checkout>`). Run it on every dev branch before
   asking to release – 0 failed. New screenshots from Mariusz go into `fixtures/` with checked expectations.
