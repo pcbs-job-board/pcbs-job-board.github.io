@@ -112,7 +112,19 @@ Notes for later (not tasks yet):
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
   the Overclock tile read it correctly (target 4125 MHz). Screenshot: tests branch `fixtures/pending/oc_cpu_4125.png`.
-  No GPU overclock objective seen yet. Note: "Install custom water cooling for CPU" has no part suggestion yet.
+  No GPU overclock objective seen yet. "Install custom water cooling for CPU" is suggested since 0.14.0.
+
+### PC Bay build: free editing, suggestions for every part, a complete build before Profit (Mariusz, 2026-11-06)
+Seen on 0.14.0 (screenshot): the build's suggestions only offer swaps of parts already in it; after removing the RAM in
+step 1 nothing suggested the 2 × G.SKILL Ripjaws V in the inventory; nothing for the GPU either (with or without one in
+the build). 3DMark shows "–" and the sale estimate drops when a part is missing.
+1. Steps 1–3: add and remove any part at will (not only the suggested swaps).
+2. Inventory list split into categories (headings per category, part order as everywhere).
+3. ↻ Refresh button for the suggestions.
+4. The build assistant works toward the most profitable *viable* build: an empty or weak slot is filled from the
+   inventory (RAM in pairs / sets of the same stick, GPU incl. a pair, every category, not just upgrades).
+5. Profit step only once the build is complete: 1 case, motherboard, CPU, CPU cooling, RAM (1–4), GPU (1–2), PSU,
+   storage (1 or more) – and it all fits (compatibility + power). Until then the Next button says what's missing.
 
 ### 1.0: story jobs + missing parts from the report sheet, then local "my story jobs / my parts"
 1. Story jobs: compare `data/story-jobs.csv` with the "Story jobs" tab of the "PCBS reports" Google Sheet (and the
