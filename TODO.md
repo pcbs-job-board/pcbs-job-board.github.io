@@ -106,9 +106,15 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
 
-_None open. Swap tile sizes and the changelog window are done in dev-0.14.0._
+1. **Broken RAM hint missed** (Mariusz, 2026-11-06 – GJarvis@GraemeSoft.tv, "My rig needs fixing", Diagnose and fix,
+   Labour $439 / Budget $200, Level 10). Email: "Who knew that RAM had to go in one way around?" = the customer put the
+   RAM in the wrong way → it's broken. Read now: "Clean with compressed air" and "Use HyperX…" only – no
+   "Check / replace the RAM – customer hints it's broken" (detectSuspects in js/core/parser.js doesn't know this
+   wording). Fix: treat "<part> had to go in one way / the right way round", "put it in backwards / the wrong way" as a
+   broken-part hint for that part; also as the diagnose suggestion (identical stick). Screenshot: tests branch
+   `fixtures/pending/graeme_ram.png` → move to fixtures with expectations when fixed.
 
 ---
 
