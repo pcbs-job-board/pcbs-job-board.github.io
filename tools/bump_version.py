@@ -13,7 +13,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 if len(sys.argv) != 2 or not re.fullmatch(r"\d+\.\d+\.\d+", sys.argv[1]):
     sys.exit(__doc__)
 v = sys.argv[1]
-cfg = ROOT / "js" / "config.js"
+cfg = ROOT / "js" / "config.js"   # stays in js/: released versions look for updates in this file
 cfg.write_text(re.sub(r'version:\s*"[^"]*"', f'version: "{v}"', cfg.read_text(encoding="utf-8")), encoding="utf-8")
 idx = ROOT / "index.html"
 idx.write_text(re.sub(r'(\.(?:js|css))\?v=[\w.]+', rf"\1?v={v}", idx.read_text(encoding="utf-8")), encoding="utf-8")

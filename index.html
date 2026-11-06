@@ -263,25 +263,36 @@
   </div>
 </dialog>
 
-<script src="js/config.js?v=0.14.0"></script>
-<script src="js/util.js?v=0.14.0"></script>
+<!-- js/core: the logic (no page access) · js/ui: windows, board, capture – plain scripts in this order (no build step; file:// works) -->
+<script src="js/config.js?v=0.14.0"></script>   <!-- stays here: older versions check this file for updates -->
+<script src="js/core/util.js?v=0.14.0"></script>
 <script src="data/parts-db.js?v=0.14.0"></script>
-<script src="js/parser.js?v=0.14.0"></script>
-<script src="js/parts.js?v=0.14.0"></script>
-<script src="js/compat.js?v=0.14.0"></script>
-<script src="js/unlocks.js?v=0.14.0"></script>
-<script src="js/bench.js?v=0.14.0"></script>
-<script src="js/oc.js?v=0.14.0"></script>
-<script src="js/hints.js?v=0.14.0"></script>
-<script src="js/suggest.js?v=0.14.0"></script>
-<script src="js/flip.js?v=0.14.0"></script>
-<script src="js/flipui.js?v=0.14.0"></script>   <!-- before app.js: saved PC Bay builds are drawn at start-up -->
-<script src="js/app.js?v=0.14.0"></script>
-<script src="js/partsdb.js?v=0.14.0"></script>
-<script src="js/rules.js?v=0.14.0"></script>
-<script src="js/areas.js?v=0.14.0"></script>
-<script src="js/story.js?v=0.14.0"></script>
-<script src="js/notify.js?v=0.14.0"></script>
-<script src="js/keys.js?v=0.14.0"></script>
+<script src="js/core/parser.js?v=0.14.0"></script>
+<script src="js/core/parts.js?v=0.14.0"></script>
+<script src="js/core/compat.js?v=0.14.0"></script>
+<script src="js/core/unlocks.js?v=0.14.0"></script>
+<script src="js/core/bench.js?v=0.14.0"></script>
+<script src="js/core/oc.js?v=0.14.0"></script>
+<script src="js/core/hints.js?v=0.14.0"></script>
+<script src="js/core/suggest.js?v=0.14.0"></script>
+<script src="js/core/flip.js?v=0.14.0"></script>
+<script src="js/ui/autocomplete.js?v=0.14.0"></script>
+<script src="js/ui/flipui.js?v=0.14.0"></script>   <!-- before the board: saved PC Bay builds are drawn at start-up -->
+<script src="js/ui/state.js?v=0.14.0"></script>
+<script src="js/ui/board.js?v=0.14.0"></script>
+<script src="js/ui/capture.js?v=0.14.0"></script>
+<script src="js/ui/ocr.js?v=0.14.0"></script>
+<script src="js/ui/job-window.js?v=0.14.0"></script>
+<script src="js/ui/job-window-suggestions.js?v=0.14.0"></script>
+<script src="js/ui/settings.js?v=0.14.0"></script>
+<script src="js/ui/reports.js?v=0.14.0"></script>
+<script src="js/ui/backup.js?v=0.14.0"></script>
+<script src="js/ui/start.js?v=0.14.0"></script>
+<script src="js/ui/partsdb.js?v=0.14.0"></script>
+<script src="js/ui/rules.js?v=0.14.0"></script>
+<script src="js/ui/areas.js?v=0.14.0"></script>
+<script src="js/ui/story.js?v=0.14.0"></script>
+<script src="js/ui/notify.js?v=0.14.0"></script>
+<script src="js/ui/keys.js?v=0.14.0"></script>
 </body>
 </html>

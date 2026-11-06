@@ -1,5 +1,5 @@
 // ESLint (flat config) – the app is plain browser scripts loaded in order by index.html (no modules, no build step),
-// so the top-level names of every js/ file are shared globals. They are collected here from the files themselves:
+// so the top-level names of every js/ file (core/ and ui/) are shared globals. They are collected here from the files themselves:
 // a typo or a name that exists nowhere is still reported (no-undef).
 import fs from "node:fs";
 import path from "node:path";
@@ -19,7 +19,7 @@ const names = node =>
           : node.type === "RestElement"
             ? names(node.argument)
             : [];
-for (const f of fs.readdirSync(JS).filter(f => f.endsWith(".js"))) {
+for (const f of fs.readdirSync(JS, { recursive: true }).filter(f => f.endsWith(".js"))) {
   const ast = espree.parse(fs.readFileSync(path.join(JS, f), "utf8"), { ecmaVersion: 2023, sourceType: "script" });
   for (const n of ast.body) {
     if ((n.type === "FunctionDeclaration" || n.type === "ClassDeclaration") && n.id) shared[n.id.name] = "writable";

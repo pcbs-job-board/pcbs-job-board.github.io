@@ -168,40 +168,6 @@ function cardLabels(px, colX, colW, nameMidY, W, H) {
   const red = cnt(colX + colW * 0.2, colX + colW * 0.8, top + 0.04, top + 0.1, ([r, g, b]) => r > 170 && g < 80 && b < 80);
   return { used: dark > 0.05, broken: red > 0.035, dark, red };
 }
-// a whole inventory screenshot (browser): the 3 card columns of the "inv" area → [{name, cat, price, used, broken}]
-async function readInventory(img, grid, onStep) {
-  const W = img.naturalWidth || img.width,
-    H = img.naturalHeight || img.height,
-    fc = document.createElement("canvas");
-  fc.width = W;
-  fc.height = H;
-  const fg = fc.getContext("2d", { willReadFrequently: true });
-  fg.drawImage(img, 0, 0);
-  const pd = fg.getImageData(0, 0, W, H).data;
-  const px = (x, y) => {
-    const i = (Math.min(H - 1, Math.max(0, Math.round(y * H))) * W + Math.min(W - 1, Math.max(0, Math.round(x * W)))) * 4;
-    return [pd[i], pd[i + 1], pd[i + 2]];
-  };
-  const items = [];
-  const cols = invColumns(grid);
-  for (const [ci, b] of cols.entries()) {
-    if (onStep) onStep(ci + 1, cols.length);
-    const c = cropCanvas(img, b),
-      got = parseInventoryColumn((await readText(c)).lines);
-    for (const it of got) {
-      if (it.nameY != null) {
-        const L = cardLabels(px, b.x, b.w, b.y + (it.nameY / c.height) * b.h, W, H);
-        it.used = L.used;
-        it.broken = L.broken;
-        // not broken but the price reads far too low → misread, the used value it must be
-        const u = usedValue(it.name);
-        if (!it.broken && u != null && it.price <= u * 0.4) it.price = u;
-      } else it.used = true;
-      items.push(it);
-    }
-  }
-  return items;
-}
 // ---------- the build ----------
 const flipUid = () => Math.random().toString(36).slice(2, 9);
 function newFlip() {
