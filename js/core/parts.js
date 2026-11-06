@@ -475,12 +475,22 @@ const weakPartLine = t => {
   const w = String(t).split(/\s+/).filter(Boolean);
   return w.length < 2 || w.some(x => /[^\w().+-]/.test(x) || !wordOk(x));
 };
+const specOnly = t => {
+  const w = String(t)
+    .replace(/[-–|]+\s*$/, "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  return w.length > 0 && w.every(x => /^[\d.,]+([gt]b|mhz|w)?$/i.test(x) || /^([gt]b|mhz|w)$/i.test(x));
+};
 function resolvePCStats(items) {
   if (typeof items === "string") items = joinPCStatsLines(denoisePartLines(componentLines(items)));
   const out = [],
     count = {};
   let lastIdx = -1;
   for (const it of items) {
+    // only sizes / speeds left ("2400 MHz", "8 GB", "450") – the rest of a name cut off at the top of a scrolled list
+    if (specOnly(it.name)) continue;
     let m = bestPartMatch(it.name);
     let loose = false;
     // a lone short word nothing matches ("S35", "ion") is a crumb of a picture or of a half-cut line
