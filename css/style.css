@@ -1,5 +1,5 @@
 :root {
-  --css-ver: "0.14.0"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
+  --css-ver: "0.14.1"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
   --bg: #12151c;
   --panel: #1a1f29;
   --card: #222836;
@@ -2738,7 +2738,72 @@ dialog.flipdlg {
   color: #ffb0ae;
 }
 .fprow.inv {
-  grid-template-columns: 96px 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
+}
+.fprow.now {
+  grid-template-columns: 96px 1fr auto;
+}
+.finvcat {
+  margin: 10px 0 3px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffd27a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.finvcat small {
+  color: var(--muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+.fuse {
+  padding: 2px 9px;
+  font-size: 12px;
+}
+.fcheck {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #7a5a17;
+  background: #2a2412;
+  color: #f1e6cf;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.fcheck ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+.fcheck.ok {
+  border-color: #2f6b45;
+  background: #13261b;
+  color: #bfe8cc;
+}
+.fplan {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #2f5e8f;
+  background: #132235;
+  margin-bottom: 8px;
+}
+.fplan ol {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+.fplan small {
+  color: var(--muted);
+}
+.fstep .fh .fref {
+  margin-left: 8px;
+  padding: 1px 8px;
+  font-size: 11.5px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .fval {
   width: 76px;
@@ -3212,4 +3277,8 @@ dialog.pdbdlg .dlg-b {
 #fSugg.working > :not(.sbusy) {
   opacity: 0.45;
   pointer-events: none;
+}
+#dlgFlip button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }

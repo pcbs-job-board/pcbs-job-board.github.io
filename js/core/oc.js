@@ -18,6 +18,18 @@ function ocReach(name) {
   if (!d) return null;
   return d.core != null ? { core: ocEst(d.core, d.ocCore), mem: ocEst(d.mem, d.ocMem) } : ocEst(d.mhz, d.ocMhz);
 }
+// what to set in the game for that estimate: CPU – multiplier on the 100 MHz base clock and the core voltage it needs (the
+// voltage rises in step with the clock from stock to the overclock base, as in the workbook); GPU – the GPU Tuner clocks
+function ocSettings(name) {
+  const d = ocOf(name),
+    r = ocReach(name);
+  if (!d || !r) return null;
+  if (d.core != null) return { core: r.core, mem: r.mem, dCore: r.core - d.core, dMem: r.mem - d.mem };
+  const mult = Math.floor(r / 100),
+    mhz = mult * 100,
+    v = d.ocMhz > d.mhz && d.ocV ? d.v + ((mhz - d.mhz) / (d.ocMhz - d.mhz)) * (d.ocV - d.v) : null;
+  return { mhz, mult, volt: v != null && v > 0 ? Math.round(v * 100) / 100 : null };
+}
 function throttleOf(cat, name) {
   const d = ocOf(name);
   if (d && d.thr) return { c: d.thr, known: true };

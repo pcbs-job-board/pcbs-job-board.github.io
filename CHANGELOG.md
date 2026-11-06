@@ -3,6 +3,12 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.1
+- PC Bay build, Hardware step: a build assistant – "Best build from your inventory" (the most profitable PC that works, one click), single changes that also fill empty places (RAM pairs, GPUs, drives …), ↻ Refresh.
+- PC Bay build: put parts in (＋ Use) and take them out (✕) freely in steps 2–3; inventory grouped by category.
+- PC Bay build: the Profit step opens only for a complete PC that works (case, motherboard, CPU, CPU cooling, 1–4 RAM, 1–2 GPUs, PSU, storage, everything fits, enough power) – the window says what's missing; no sale estimate before that.
+- PC Bay build, Profit step: overclock settings to type in – CPU multiplier and core voltage, GPU Tuner core / memory clocks.
+
 ## 0.14.0
 - Faster and clearer while it works: the text reader starts in the background (job / PC Bay window opened, screen connected, or right after the page loads for players who captured before), and says so when a capture has to wait for it (first time: downloads a few MB). Suggested swaps show "⏳ Working out…" and aren't worked out again when nothing changed. PC Bay inventory capture shows which column it is reading.
 - Keyboard: the arrows skip the ✕ buttons – Delete removes a line instead, and every removal (task, objective, swap) can be undone. Inside a card the job keys (1 2 3 0, H, N, R, E, P, D) wait until Esc, so a stray key can't move the job. Enter goes to the first unfinished line, Esc closes a details popup first, an open swap form survives the board being redrawn, the Edit window opens on its first field. New keys: B parts database, U career unlocks, L changelog, P = Edit + capture PC Stats; E / Enter open a PC Bay build.

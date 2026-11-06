@@ -66,14 +66,21 @@ function flipRender() {
       `<button class="${f.step === i + 1 ? "sel" : ""} ${i + 1 < f.step ? "done" : ""}" data-fstep="${i + 1}">${i + 1}. ${s}</button>`
   ).join("");
   d.querySelector(".flipsum").innerHTML = `<span>Bought <b>${money(st.start)}</b></span><span>Now <b>${money(st.value)}</b></span>
-    <span>Sale ${st.scored ? "" : "~"}<b>${money(st.scored ? st.value : st.estValue)}</b></span><span class="${st.profit == null ? "" : st.profit >= 0 ? "profit" : "loss"}">Profit ${st.profit == null ? "<b>after the fix</b>" : `${st.scored ? "" : "~"}<b>${st.profit >= 0 ? "+" : ""}${money(st.profit)}</b>`}</span>
+    <span>Sale ${st.scored ? "" : "~"}<b>${money(st.scored ? st.value : st.estValue)}</b></span><span class="${st.profit == null ? "" : st.profit >= 0 ? "profit" : "loss"}">Profit ${st.profit == null ? `<b>${st.unfixed.length ? "after the fix" : "when the PC is complete"}</b>` : `${st.scored ? "" : "~"}<b>${st.profit >= 0 ? "+" : ""}${money(st.profit)}</b>`}</span>
     <span>3DMark ${st.scored ? `<b>${f.score.toLocaleString()}</b>` : st.best ? `~<b>${st.best.toLocaleString()}</b>` : "–"}</span>${st.newCost ? `<span class="warn">New parts ${money(st.newCost)}</span>` : ""}`;
   const body = d.querySelector(".flipbody");
   body.innerHTML = [flipStep1, flipStep2, flipStep3, flipStep4][f.step - 1](f, st);
   d.querySelector(".flipback").hidden = f.step === 1;
-  const nx = d.querySelector(".flipnext");
+  const nx = d.querySelector(".flipnext"),
+    ready = flipCheck(st.build).ok;
+  d.querySelector('[data-fstep="4"]').disabled = !ready && f.step !== 4;
   nx.textContent =
-    f.step < 4 ? `Next step (${["Fix", "Hardware optimisation", "Profit optimisation"][f.step - 1]}) →` : "✔ Finish build";
+    f.step === 3 && !ready
+      ? "Complete the PC first"
+      : f.step < 4
+        ? `Next step (${["Fix", "Hardware optimisation", "Profit optimisation"][f.step - 1]}) →`
+        : "✔ Finish build";
+  nx.disabled = f.step === 3 && !ready;
   nx.classList.toggle("good", f.step === 4);
   d.querySelector(".flipconfirm").hidden = true;
 }
@@ -93,27 +100,81 @@ function flipStep1(f) {
     <div class="addrow"><input data-ac data-fa="addname" placeholder="Add a part – type to search" autocomplete="off"><input class="fval" type="number" min="0" data-fa="addval" placeholder="$"><button data-fa="add">＋</button></div>
     <label class="fstart">Resale value as bought <input type="number" min="0" data-fa="start" value="${f.startValue ?? ""}" placeholder="${f.parts.reduce((t, p) => t + (p.value || 0), 0)}"> <small>(the "Resale Value" at the top of the window – the start for the profit)</small></label></div>`;
 }
-// ---------- inventory panel (steps 2 + 3) ----------
-function invHtml(f, cat) {
-  const inv = flipInventory(f).filter(i => !cat || i.cat === cat);
-  return `<div class="finv"><div class="fh">Your inventory for this build${cat ? ` – ${esc(cat)}` : ""}</div>
+// ---------- the PC as it is now (steps 2 + 3): every part, each can be taken out ----------
+const catRank = c => {
+  const i = PART_ORDER.indexOf(c === "Water Cooling" ? "WC:CPU Block" : c);
+  return i < 0 ? 99 : i;
+};
+const byCat = (a, b) => catRank(a.cat) - catRank(b.cat);
+const rowKey = r => (r.changed ? "c:" + r.changed : "p:" + r.partId);
+function pcNowHtml(f, st) {
+  const rows = [...st.build].sort(byCat);
+  return `<div class="fh">This PC now <small>(✕ takes a part out – a working one goes back to the inventory)</small></div>
+    ${
+      rows
+        .map(r => {
+          const c = r.changed && f.changes.find(x => x.id === r.changed);
+          const tag = r.broken
+            ? `<span class="tag broken">BROKEN</span>`
+            : c
+              ? c.isNew
+                ? `<span class="tag new">NEW</span>`
+                : `<span class="tag used">USED</span>`
+              : `<small>(came with it)</small>`;
+          return `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[r.cat] || r.cat)}</span><span class="nm">${esc(r.name)} ${tag}</span><button class="ghost x" data-fr="rm" data-k="${rowKey(r)}" title="Take it out">✕</button></div>`;
+        })
+        .join("") || `<div class="hint">No parts – put some in from your inventory below.</div>`
+    }`;
+}
+// what still stops the Profit step
+function checkHtml(chk) {
+  if (chk.ok) return `<div class="fcheck ok">✓ Complete PC – everything fits. Ready for the Profit step.</div>`;
+  const l = [
+    chk.missing.length && `Missing: <b>${chk.missing.map(esc).join(", ")}</b>`,
+    ...chk.extra.map(x => `Too many: ${esc(x)}`),
+    ...chk.broken.map(x => `Broken: ${esc(x)} – replace it or take it out`),
+    ...chk.issues.map(x => `Doesn't fit – ${esc(x)}`),
+    chk.power && `⚡ Power: ${esc(chk.power)}`,
+  ].filter(Boolean);
+  return `<div class="fcheck"><b>Before the Profit step</b> (PC Bay buyers want a complete PC that works: case, motherboard, CPU, CPU cooling, 1–4 RAM sticks, 1–2 GPUs, PSU, storage):<ul>${l.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
+}
+// ---------- inventory panel (steps 2 + 3): by category; ＋ Use puts a part in (in place of the one of its kind) ----------
+function invHtml(f) {
+  const inv = flipInventory(f).sort(byCat),
+    cats = [...new Set(inv.map(i => i.cat))];
+  return `<div class="finv"><div class="fh">Your inventory for this build</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
     <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
     ${
-      inv
+      cats
         .map(
-          i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="cat">${esc(i.cat)}</span><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+          cat =>
+            `<div class="finvcat">${esc(CAT_LABEL[cat] || cat)} <small>${inv.filter(i => i.cat === cat && !i.taken).length} free</small></div>${inv
+              .filter(i => i.cat === cat)
+              .map(
+                i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+      ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
+              )
+              .join("")}`
         )
         .join("") || `<div class="hint">Nothing yet.</div>`
     }
     <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
 }
+const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
+// the assistant's results, worked out again only when the build / inventory changes (or ↻)
+let flipCache = { key: "", plan: null, ups: null };
+function flipAdvice(f) {
+  const key = JSON.stringify([f.id, f.parts, f.inv, f.changes, career.level]);
+  if (flipCache.key !== key) flipCache = { key, plan: flipPlan(f), ups: flipUpgrades(f) };
+  return flipCache;
+}
 // ---------- step 2: fix ----------
 function flipStep2(f, st) {
   const broken = f.parts.filter(p => p.broken);
   if (!broken.length)
-    return `<div class="fstep"><p class="okc">✓ No broken part found – the values all look normal.</p><p class="hint">If the game still shows "Broken part(s)", mark the part as broken in step 1 (the PC Status line in the Resale Value window).</p>${invHtml(f)}</div>`;
+    return `<div class="fstep"><p class="okc">✓ No broken part found – the values all look normal.</p><p class="hint">If the game still shows "Broken part(s)", mark the part as broken in step 1 (the PC Status line in the Resale Value window).</p>${pcNowHtml(f, st)}${invHtml(f)}</div>`;
   const inv = flipInventory(f);
   return `<div class="fstep">${broken
     .map(p => {
@@ -137,26 +198,42 @@ function flipStep2(f, st) {
           <div class="addrow"><input data-ac data-fx-name="${p.id}" placeholder="Or type the replacement" value="${esc(p.name)}" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fx-used="${p.id}"> used</label><button data-fx="typed" data-part="${p.id}">Use it</button></div></div>`
       }</div>`;
     })
-    .join("")}${invHtml(f)}</div>`;
+    .join("")}${pcNowHtml(f, st)}${invHtml(f)}</div>`;
 }
-// ---------- step 3: hardware (optional) ----------
+// ---------- step 3: hardware – the build assistant ----------
 function flipStep3(f, st) {
-  if (st.unfixed.length)
-    return `<div class="fstep"><p class="warn">Fix the broken part first (step 2) – the score needs a working PC.</p></div>`;
-  const ups = flipUpgrades(f),
+  const { plan, ups } = flipAdvice(f),
     notes = flipNotes(f),
-    hw = f.changes.filter(c => c.kind === "hw");
-  return `<div class="fstep"><p class="hint">Optional: parts from your inventory that raise the 3DMark score – and so the price. Estimated with XMP on and overclocking where this PC allows it. Sets need all their parts.</p>
+    chk = flipCheck(st.build);
+  const sc = v => (v == null ? "–" : "~" + v.toLocaleString()),
+    plus = v => `${v >= 0 ? "+" : ""}${money(v)}`;
+  const planBox = plan.steps.length
+    ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.steps.length} change${plan.steps.length > 1 ? "s" : ""}:<ol>${plan.steps.map(x => `<li>${esc(x.label)} <small>(${plus(x.gain)})</small></li>`).join("")}</ol>
+      <small>3DMark ${sc(plan.score)} · sale ~${money(plan.value)}${plan.cost ? ` · new parts ${money(plan.cost)}` : ""} · profit ${plus(plan.gain)}${plan.check.ok ? " · complete PC ✓" : ` · still: ${esc([...plan.check.missing.map(m => "no " + m), ...plan.check.issues, plan.check.power].filter(Boolean).join("; "))}`}</small></div><button class="primary" data-fx="plan">Use all</button></div>`
+    : `<div class="hint">${chk.ok ? "Nothing in your inventory makes this PC worth more." : "Nothing in your inventory fills the gaps – capture or type the missing parts into the inventory below."}</div>`;
+  return `<div class="fstep"><p class="hint">Put parts in and take them out as you like. The assistant looks for the most profitable PC that works, from your inventory – estimated with XMP on and overclocking where the PC allows it.</p>
     ${notes.map(n => `<div class="fnote">💡 ${esc(n)}</div>`).join("")}
-    <div class="fh">Now: 3DMark ~${st.best ? st.best.toLocaleString() : "–"} → sale ~${money(st.estValue)}</div>
-    ${hw.length ? `<div class="fh">Your changes</div>${hw.map(c => `<div class="fprow"><span class="cat">${esc(c.cat)}</span><span class="nm">${c.oldName ? `<span class="old">${esc(c.oldName)}</span> → ` : "(add) "}${esc(c.name)} ${c.isNew ? `<span class="tag new">NEW</span>` : `<span class="tag used">USED</span>`}</span><button class="ghost x" data-fx="undo" data-k="${c.id}">✕</button></div>`).join("")}` : ""}
-    <div class="fh">Suggestions from your inventory</div>
-    ${ups.map((u, k) => `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}${u.psuLow ? ` <small class="warn">⚡ the PSU is too weak overclocked (needs ~${u.psuLow} W)</small>` : ""}<br><small>3DMark ~${u.score.toLocaleString()} (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()}) · sale ~${money(u.value)} · profit ${u.gain >= 0 ? "+" : ""}${money(u.gain)}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`).join("") || `<div class="hint">No upgrade in your inventory helps yet – capture more categories (GPU, CPU, RAM, motherboards) below.</div>`}
+    ${checkHtml(chk)}
+    <div class="fh">Now: 3DMark ${sc(st.best)} → sale ~${money(st.estValue)} <button class="ghost fref" data-fa="refresh" title="Work out the suggestions again">↻ Refresh</button></div>
+    ${planBox}
+    <div class="fh">Single changes</div>
+    ${
+      ups
+        .slice(0, 10)
+        .map(
+          (u, k) =>
+            `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}<br><small>3DMark ${sc(u.score)}${u.dScore != null ? ` (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()})` : ""} · sale ~${money(u.value)} · profit ${plus(u.gain)}${u.check.bad < chk.bad ? " · fills a gap" : ""}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`
+        )
+        .join("") || `<div class="hint">No single change helps.</div>`
+    }
+    ${pcNowHtml(f, st)}
     ${invHtml(f)}</div>`;
 }
 // ---------- step 4: software ----------
 function flipStep4(f, st) {
-  if (st.unfixed.length) return `<div class="fstep"><p class="warn">Fix the broken part first (step 2).</p></div>`;
+  const chk = flipCheck(st.build);
+  if (!chk.ok)
+    return `<div class="fstep">${checkHtml(chk)}<p class="hint">Go back to step 3 (Hardware) to complete the PC.</p></div>`;
   const b = st.build,
     s = f.soft,
     cpu = b.find(p => p.cat === "CPU"),
@@ -170,7 +247,9 @@ function flipStep4(f, st) {
   };
   const thr = (cat, n) => throttleOf(cat, n).c,
     est = ocReach(cpu?.name),
-    gest = ocReach(gpu?.name);
+    gest = ocReach(gpu?.name),
+    cs = ocSettings(cpu?.name),
+    gs = ocSettings(gpu?.name);
   const row = (k, title, sub, ok = true, why = "") =>
     `<label class="fsoft ${ok ? "" : "locked"}"><input type="checkbox" data-fs="${k}" ${s[k] && ok ? "checked" : ""} ${ok ? "" : "disabled"}><span><b>${title}</b><br><small>${ok ? sub : why}</small></span></label>`;
   return `<div class="fstep"><p class="hint">Do these in the game in this order, tick each one. The value only changes once 3DMark has run.</p>
@@ -179,7 +258,9 @@ function flipStep4(f, st) {
     ${row(
       "ocCpu",
       "Overclock the CPU",
-      `Aim for ~${est ? est.toLocaleString() : "?"} MHz (90 % of its potential), keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT. 3DMark +${gain("ocCpu").toLocaleString()}.`,
+      cs
+        ? `BIOS: base clock 100 MHz, CPU multiplier ×${cs.mult} (${cs.mhz.toLocaleString()} MHz)${cs.volt ? `, core voltage ~${cs.volt.toFixed(2)} V` : ""} – 90 % of its potential (${est.toLocaleString()} MHz). Keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT; too hot or unstable → one step lower. 3DMark +${gain("ocCpu").toLocaleString()}.`
+        : `Aim for ~${est ? est.toLocaleString() : "?"} MHz (90 % of its potential), keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT. 3DMark +${gain("ocCpu").toLocaleString()}.`,
       st.can.ocCpu,
       !hasUnlock("cpuOC")
         ? gateMsg("cpuOC").replace(/<\/?b>/g, "") + "."
@@ -188,7 +269,9 @@ function flipStep4(f, st) {
     ${row(
       "ocGpu",
       "Overclock the GPU (GPU Tuner)",
-      `Aim for ~${gest ? gest.core.toLocaleString() : "?"} MHz core / ~${gest ? gest.mem.toLocaleString() : "?"} MHz memory, keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`,
+      gs
+        ? `GPU Tuner: core clock ${gs.core.toLocaleString()} MHz (+${gs.dCore}), memory clock ${gs.mem.toLocaleString()} MHz (+${gs.dMem}) – 90 % of its potential${b.filter(p => p.cat === "GPU").length > 1 ? ", the same on both cards" : ""}. Keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`
+        : `Aim for ~${gest ? gest.core.toLocaleString() : "?"} MHz core / ~${gest ? gest.mem.toLocaleString() : "?"} MHz memory, keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`,
       st.can.ocGpu,
       !hasUnlock("gpuOC") ? gateMsg("gpuOC").replace(/<\/?b>/g, "") + "." : "No overclocking data for this GPU."
     )}
@@ -203,9 +286,10 @@ flipDlg.addEventListener("click", e => {
   const f = flipCur;
   if (!f) return;
   const t = e.target.closest(
-    "[data-fstep],[data-fa],[data-fp],[data-fi],[data-fx],.flipnext,.flipback,.flipmin,.flipyes,.flipno"
+    "[data-fstep],[data-fa],[data-fp],[data-fi],[data-fx],[data-fr],.flipnext,.flipback,.flipmin,.flipyes,.flipno"
   );
   if (!t) return;
+  if (t.disabled) return;
   if (t.dataset.fstep) {
     f.step = +t.dataset.fstep;
   } else if (t.classList.contains("flipback")) f.step = Math.max(1, f.step - 1);
@@ -300,24 +384,23 @@ flipDlg.addEventListener("click", e => {
       price: used ? null : priceOf(m ? m.name : n),
     });
   } else if (t.dataset.fx === "undo") flipUnchange(f, t.dataset.k);
-  else if (t.dataset.fx === "up") {
-    const u = flipUpgrades(f)[+t.dataset.k];
+  else if (t.dataset.fx === "up" || t.dataset.fx === "plan") {
+    const a = flipAdvice(f),
+      u = t.dataset.fx === "plan" ? a.plan : a.ups[+t.dataset.k];
     if (!u) return;
-    for (const x of u.items) {
-      const old = x.old
-        ? f.parts.find(p => p.name === x.old.name && p.cat === x.old.cat && !f.changes.some(c => c.old === p.id))
-        : null;
-      flipChange(f, {
-        kind: "hw",
-        old: old ? old.id : "",
-        oldName: x.old ? x.old.name : "",
-        cat: x.inv.cat,
-        name: x.inv.name,
-        invId: x.inv.id,
-        isNew: !x.inv.used,
-        price: x.inv.used ? null : priceOf(x.inv.name),
-      });
-    }
+    flipApply(f, u.build);
+  } else if (t.dataset.fr === "rm") {
+    const r = flipBuild(f).find(x => rowKey(x) === t.dataset.k);
+    if (r) flipRemove(f, r);
+  } else if (t.dataset.fi === "use") {
+    const i = flipInventory(f).find(x => x.id === t.dataset.k),
+      b = flipBuild(f);
+    if (!i || i.taken) return;
+    const old = ONE_SLOT.includes(i.cat) ? b.find(p => (i.cat === "CPU Cooler" ? isCooling(p) : p.cat === i.cat)) || null : null;
+    flipApply(f, flipApplyItems(b, [{ inv: i, old }]));
+  } else if (t.dataset.fa === "refresh") {
+    flipCache.key = "";
+    toast("Suggestions worked out again");
   } else return;
   flipSave();
   flipRender();

@@ -211,6 +211,11 @@ function flipBuild(f) {
     partId: p.id,
   }));
   for (const c of f.changes) {
+    if (c.kind === "rm") {
+      const k = out.findIndex(p => p.partId === c.old && !p.changed);
+      if (k >= 0) out.splice(k, 1);
+      continue;
+    }
     const v = usedValue(c.name) ?? 0,
       row = { cat: c.cat, name: c.name, value: v, changed: c.id, isNew: !!c.isNew };
     const k = c.old ? out.findIndex(p => p.partId === c.old && !p.changed) : -1;
@@ -223,7 +228,7 @@ function flipBuild(f) {
 function flipInventory(f) {
   const out = f.inv.map(i => ({ ...i }));
   for (const c of f.changes)
-    if (c.kind === "hw" && c.old) {
+    if ((c.kind === "hw" || c.kind === "rm") && c.old) {
       const p = f.parts.find(x => x.id === c.old);
       if (p && !p.broken) out.push({ id: "out:" + p.id, cat: p.cat, name: p.name, used: true, src: "removed" });
     }
@@ -273,7 +278,7 @@ function flipState(f) {
     can = softOk(f, build),
     sum = build.reduce((t, p) => t + (p.broken ? 0 : p.value), 0);
   const broken = f.parts.filter(p => p.broken),
-    unfixed = broken.filter(p => !f.changes.some(c => c.kind === "fix" && c.old === p.id));
+    unfixed = broken.filter(p => !f.changes.some(c => c.old === p.id)); // replaced or taken out
   const newCost = f.changes.filter(c => c.isNew).reduce((t, c) => t + (c.price ?? priceOf(c.name) ?? 0), 0);
   const s = f.soft,
     plan = { xmp: true, ocCpu: can.ocCpu, ocGpu: can.ocGpu };
@@ -283,7 +288,9 @@ function flipState(f) {
   const score = s.bench && f.score ? f.score : null;
   // still broken: worth what the game shows (broken parts at their low value), no estimate yet
   const value = unfixed.length ? f.parts.reduce((t, p) => t + (p.value ?? 0), 0) : flipValue(sum, s.boot, score);
-  const estValue = unfixed.length ? null : flipValue(sum, true, best);
+  // a sale estimate only for a PC that can be sold (complete, nothing broken, everything fits)
+  const complete = flipCheck(build).ok,
+    estValue = unfixed.length || !complete ? null : flipValue(sum, true, best);
   return {
     build,
     can,
@@ -296,117 +303,262 @@ function flipState(f) {
     start,
     value,
     estValue,
-    profit: unfixed.length ? null : (score ? value : (estValue ?? value)) - start - newCost,
+    complete,
+    profit: unfixed.length || (!complete && !score) ? null : (score ? value : (estValue ?? value)) - start - newCost,
     scored: !!score,
   };
 }
-// ---------- step 3: upgrades from the inventory (each with its score and value) ----------
+// would these swaps fit the build (no clash with the parts put in)?
 function flipFits(build, swaps) {
   const job = { components: build.map(p => ({ cat: p.cat, name: p.name })), swaps: [], objectives: [], tasks: [] }; // planFits adds the swaps
   return planFits(job, swaps);
 }
-function flipUpgrades(f) {
-  const st = flipState(f);
-  if (!st.best) return [];
-  const build = st.build,
-    inv = flipInventory(f).filter(i => !i.taken);
-  const cur = cat => build.filter(p => p.cat === cat),
-    val = (b, sc) =>
-      flipValue(
-        b.reduce((t, p) => t + (p.broken ? 0 : p.value), 0),
-        true,
-        sc
-      );
-  const base = val(build, st.best),
-    out = [];
-  const tryIt = (label, items) => {
-    // items: [{inv, old (build row or null)}]
-    const swaps = items.map(x => ({ cat: x.inv.cat, old: x.old ? x.old.name : "", new: x.inv.name }));
-    if (!flipFits(build, swaps)) return;
-    const b2 = build.map(p => ({ ...p }));
-    for (const x of items) {
-      const row = { cat: x.inv.cat, name: x.inv.name, value: usedValue(x.inv.name) ?? 0 };
-      const k = x.old ? b2.indexOf(b2.find(p => p.name === x.old.name && p.cat === x.old.cat)) : -1;
-      if (k >= 0) b2[k] = row;
-      else b2.push(row);
-    }
-    const can2 = { ocCpu: softOk(f, b2).ocCpu, ocGpu: softOk(f, b2).ocGpu },
-      sc = flipScore(b2, { xmp: true, ...can2 });
-    if (!sc) return;
-    const cost = items.filter(x => !x.inv.used).reduce((t, x) => t + (x.inv.price ?? priceOf(x.inv.name) ?? 0), 0);
-    const gain = val(b2, sc) - cost - base;
-    // overclocked watts vs the PSU (the build will be overclocked for the sale)
-    const pc = powerCheck({ components: b2.map(p => ({ cat: p.cat, name: p.name })), swaps: [], objectives: [], tasks: [] }),
-      psuLow = pc && pc.psuW != null && pc.oc > pc.psuW ? pc.oc : 0;
-    if (out.some(o => o.label === label)) return;
-    out.push({
-      label,
-      items,
-      score: sc,
-      dScore: sc - st.best,
-      value: val(b2, sc),
-      gain,
-      cost,
-      isNew: items.some(x => !x.inv.used),
-      psuLow,
-    });
-  };
-  for (const i of inv.filter(i => i.cat === "GPU")) {
-    const g = cur("GPU");
-    if (g.length && i.name !== g[0].name) tryIt(`GPU: ${i.name}`, [{ inv: i, old: g[0] }]);
-    if (g.length === 1 && i.name === g[0].name) tryIt(`Second GPU: ${i.name}`, [{ inv: i, old: null }]);
+// ---------- a complete PC: what PC Bay needs before the Profit step ----------
+const FLIP_NEED = [
+  { cat: "Case", min: 1, max: 1 },
+  { cat: "Motherboard", min: 1, max: 1 },
+  { cat: "CPU", min: 1, max: 1 },
+  { cat: "CPU Cooler", min: 1, max: 1, label: "CPU cooling" },
+  { cat: "RAM", min: 1, max: 4 },
+  { cat: "GPU", min: 1, max: 2 },
+  { cat: "PSU", min: 1, max: 1 },
+  { cat: "Storage", min: 1, max: 99 },
+];
+const isCooling = p => p.cat === "CPU Cooler" || (p.cat === "Water Cooling" && wcKind(p) === "CPU Block");
+const needCount = (b, n) => b.filter(p => !p.broken && (n.cat === "CPU Cooler" ? isCooling(p) : p.cat === n.cat)).length;
+// the build as a job where every part is a planned swap – so every clash is reported (a job hides the customer's own)
+const flipJobOf = b => ({
+  components: [],
+  swaps: b.map((p, i) => ({ id: "sg" + i, cat: p.cat, old: "", new: p.name })),
+  objectives: [],
+  tasks: [],
+});
+// what still stops the sale: missing / too many parts, broken ones, clashes, a PSU too weak (overclocked when it can be)
+function flipCheck(b) {
+  const missing = [],
+    extra = [];
+  for (const n of FLIP_NEED) {
+    const k = needCount(b, n);
+    if (k < n.min) missing.push(n.label || n.cat);
+    else if (k > n.max) extra.push(`${k} × ${n.label || n.cat} (at most ${n.max})`);
   }
-  for (const i of inv.filter(i => i.cat === "CPU")) {
-    const c = cur("CPU")[0];
-    if (!c || i.name === c.name) continue;
-    if (sockOk((compatOf(cur("Motherboard")[0]?.name) || {}).s, (compatOf(i.name) || {}).s))
-      tryIt(`CPU: ${i.name}`, [{ inv: i, old: c }]);
-    else
-      for (const b of inv.filter(
-        b => b.cat === "Motherboard" && sockOk((compatOf(b.name) || {}).s, (compatOf(i.name) || {}).s)
-      )) {
-        const set = [
-          { inv: i, old: c },
-          { inv: b, old: cur("Motherboard")[0] },
-        ];
-        if (
-          flipFits(
-            build,
-            set.map(x => ({ cat: x.inv.cat, old: x.old?.name || "", new: x.inv.name }))
-          )
-        )
-          tryIt(`CPU + motherboard: ${i.name} + ${b.name}`, set);
-        else
-          for (const k of inv.filter(k => k.cat === "CPU Cooler"))
-            tryIt(`CPU + motherboard + cooler: ${i.name} + ${b.name} + ${k.name}`, [
-              ...set,
-              { inv: k, old: cur("CPU Cooler")[0] || null },
-            ]);
+  const broken = b.filter(p => p.broken).map(p => p.name);
+  const j = flipJobOf(b),
+    issues = [...new Set(compatIssues(j, compatBuild(j)).map(i => `${i.part.name}: ${i.msg}`))];
+  const pc = powerCheck(j),
+    can = softOk(null, b),
+    oc = can.ocCpu || can.ocGpu,
+    need = pc && pc.psuW != null ? (oc ? pc.oc : pc.stock) : null;
+  const power =
+    need != null && need > pc.psuW ? `the PSU has ${pc.psuW} W – the PC needs ~${need} W${oc ? " overclocked" : ""}` : "";
+  const bad = missing.length + extra.length + broken.length + issues.length + (power ? 1 : 0);
+  return { missing, extra, broken, issues, power, bad, ok: !bad };
+}
+// ---------- step 3: the build assistant (parts from the inventory) ----------
+// a build with some parts put in: items [{inv, old}] – old = a row of `b` it replaces (inv null = the row is taken out)
+function flipApplyItems(b, items) {
+  const out = b.slice(),
+    add = [];
+  for (const x of items) {
+    const row = x.inv ? { cat: x.inv.cat, name: x.inv.name, value: usedValue(x.inv.name) ?? 0, inv: x.inv } : null;
+    const k = x.old ? out.indexOf(x.old) : -1;
+    if (k >= 0) out[k] = row;
+    else if (row) add.push(row);
+  }
+  return [...out.filter(Boolean), ...add];
+}
+const flipSum = b => b.reduce((t, p) => t + (p.broken ? 0 : p.value || 0), 0);
+// sale value of a build after XMP + the overclocks it can do, minus what its NEW parts from the inventory cost
+function flipEval(b) {
+  const can = softOk(null, b),
+    score = flipScore(b, { xmp: true, ...can }),
+    cost = b.filter(p => p.inv && !p.inv.used).reduce((t, p) => t + (p.inv.price ?? priceOf(p.inv.name) ?? 0), 0);
+  return { score, value: flipValue(flipSum(b), true, score), cost, check: flipCheck(b) };
+}
+const byName = list => {
+  const m = new Map();
+  for (const i of [...list].sort((a, b) => b.used - a.used)) m.set(i.name, [...(m.get(i.name) || []), i]); // used ones first
+  return m;
+};
+// every sensible change of one kind: a part in place of the current one (or into an empty place), RAM / GPU sets of the
+// same stick / card, a CPU + motherboard (+ cooler) when the socket changes, more drives / fans
+function flipMoves(b, avail) {
+  const moves = [],
+    cur = cat => b.filter(p => p.cat === cat),
+    lab = cat => CAT_LABEL[cat] || cat;
+  const one = cat => (cat === "CPU Cooler" ? b.filter(isCooling) : cur(cat))[0] || null;
+  for (const cat of ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"]) {
+    const now = one(cat);
+    for (const [name, arr] of byName(avail.filter(i => i.cat === cat)))
+      if (!now || name !== now.name || now.broken)
+        moves.push({ label: `${now ? "" : "Add "}${lab(cat)}: ${name}`, items: [{ inv: arr[0], old: now }] });
+  }
+  // a CPU for another socket: with a motherboard for it (and a cooler that fits, if the old one doesn't)
+  const mb = one("Motherboard"),
+    cpuSock = n => (compatOf(n) || {}).s;
+  if (mb)
+    for (const [cn, ca] of byName(avail.filter(i => i.cat === "CPU")))
+      if (!sockOk(cpuSock(mb.name), cpuSock(cn)))
+        for (const [bn, ba] of byName(avail.filter(i => i.cat === "Motherboard" && sockOk(cpuSock(i.name), cpuSock(cn))))) {
+          const set = [
+            { inv: ca[0], old: one("CPU") },
+            { inv: ba[0], old: mb },
+          ];
+          moves.push({ label: `CPU + motherboard: ${cn} + ${bn}`, items: set });
+          for (const [kn, ka] of byName(avail.filter(i => i.cat === "CPU Cooler")))
+            moves.push({
+              label: `CPU + motherboard + cooler: ${cn} + ${bn} + ${kn}`,
+              items: [...set, { inv: ka[0], old: one("CPU Cooler") }],
+            });
+        }
+  // RAM (up to 4) and GPUs (up to 2): k of the same stick / card in place of all now, or more of the one in it
+  for (const [cat, max] of [
+    ["RAM", 4],
+    ["GPU", 2],
+  ]) {
+    const now = cur(cat);
+    for (const [name, arr] of byName(avail.filter(i => i.cat === cat))) {
+      for (let k = 1; k <= Math.min(arr.length, max); k++) {
+        if (now.length === k && now.every(p => p.name === name && !p.broken)) continue;
+        const items = now.map((p, n) => ({ inv: arr[n] || null, old: p })).slice(0, Math.max(k, now.length));
+        for (let n = now.length; n < k; n++) items.push({ inv: arr[n], old: null });
+        const l = k > 1 ? `${k} × ${name}` : name;
+        moves.push({ label: now.length ? `${cat}: ${l}` : `Add ${cat}: ${l}`, items: items.slice(0, Math.max(k, now.length)) });
       }
+      if (now.length && now.length < max && now.every(p => p.name === name && !p.broken))
+        for (let k = 1; k <= Math.min(arr.length, max - now.length); k++)
+          moves.push({
+            label: cat === "GPU" ? `Second GPU: ${name}` : `${k} more RAM stick${k > 1 ? "s" : ""}: ${name}`,
+            items: arr.slice(0, k).map(i => ({ inv: i, old: null })),
+          });
+    }
   }
-  const sticks = cur("RAM"),
-    cpuB = benchOf(cur("CPU")[0]?.name),
-    free = (cpuB?.maxCh || 2) - sticks.length,
-    rams = inv.filter(i => i.cat === "RAM");
-  // the fastest sticks first (the slowest stick sets the speed), then the most valuable
-  const best = [...rams]
-    .sort(
-      (a, b) =>
-        (+(compatOf(b.name) || {}).mhz || 0) - (+(compatOf(a.name) || {}).mhz || 0) ||
-        (usedValue(b.name) || 0) - (usedValue(a.name) || 0)
-    )
-    .slice(0, free);
-  if (free > 0 && best.length)
-    tryIt(
-      `More RAM: ${best.map(r => r.name).join(" + ")}`,
-      best.map(r => ({ inv: r, old: null }))
-    );
-  for (const b of inv.filter(i => i.cat === "Motherboard")) {
-    const m = cur("Motherboard")[0];
-    if (m && b.name !== m.name && sockOk((compatOf(b.name) || {}).s, (compatOf(cur("CPU")[0]?.name) || {}).s))
-      tryIt(`Motherboard: ${b.name}`, [{ inv: b, old: m }]);
+  // drives and fans: each one more adds its value (if there is room); a drive in place of a cheaper one when there isn't
+  for (const cat of ["Storage", "Case Fan"])
+    for (const [name, arr] of byName(avail.filter(i => i.cat === cat))) {
+      moves.push({ label: `Add ${lab(cat).replace(/s$/, "")}: ${name}`, items: [{ inv: arr[0], old: null }] });
+      const low = cur(cat).sort((a, c) => (a.broken ? -1 : 0) - (c.broken ? -1 : 0) || a.value - c.value)[0];
+      if (cat === "Storage" && low && (low.broken || (usedValue(name) || 0) > low.value))
+        moves.push({ label: `Storage: ${name} instead of ${low.name}`, items: [{ inv: arr[0], old: low }] });
+    }
+  return moves;
+}
+// how good a change is: a step toward a PC that can be sold first, then the profit it adds
+function flipTry(b, base, m, avail) {
+  let b2 = flipApplyItems(b, m.items),
+    e = flipEval(b2);
+  // a PSU too weak only because of this change → with the PSU from the inventory that carries it
+  if (e.check.power && !base.check.power) {
+    const psu = () => b2.find(p => p.cat === "PSU") || null;
+    let best = null;
+    for (const [, arr] of byName(avail.filter(i => i.cat === "PSU" && !m.items.some(x => x.inv === i)))) {
+      const b3 = flipApplyItems(b2, [{ inv: arr[0], old: psu() }]),
+        e3 = flipEval(b3);
+      if (!e3.check.power && (!best || e3.value - e3.cost > best.e.value - best.e.cost))
+        best = { b: b3, e: e3, name: arr[0].name };
+    }
+    if (best) {
+      b2 = best.b;
+      e = best.e;
+      m = { ...m, label: `${m.label} + PSU: ${best.name}` };
+    }
   }
-  return out.filter(o => o.dScore > 0 || o.gain > 0).sort((a, b) => b.gain - a.gain);
+  const gain = e.value - e.cost - (base.value - base.cost);
+  return {
+    ...m,
+    build: b2,
+    score: e.score,
+    value: e.value,
+    cost: e.cost,
+    gain,
+    check: e.check,
+    rank: (base.check.bad - e.check.bad) * 1e5 + gain,
+  };
+}
+const flipAvail = (f, b) => {
+  const used = new Set(b.filter(p => p.inv).map(p => p.inv.id));
+  return flipInventory(f).filter(i => !i.taken && !used.has(i.id));
+};
+// single changes on the PC as it is now, best first (each with its score and value)
+function flipUpgrades(f) {
+  const b = flipState(f).build,
+    base = flipEval(b),
+    avail = flipAvail(f, b);
+  const seen = new Set();
+  return flipMoves(b, avail)
+    .map(m => flipTry(b, base, m, avail))
+    .filter(o => o.rank > 0)
+    .sort((a, c) => c.rank - a.rank)
+    .filter(o => !seen.has(o.label) && seen.add(o.label))
+    .map(o => ({
+      ...o,
+      dScore: o.score != null && base.score != null ? o.score - base.score : null,
+      isNew: o.build.some(p => p.inv && !p.inv.used),
+    }));
+}
+// the best build from the inventory: the best change, again and again, until nothing helps (most profitable PC that sells)
+function flipPlan(f) {
+  let b = flipState(f).build,
+    base = flipEval(b);
+  const start = base,
+    steps = [];
+  for (let n = 0; n < 16; n++) {
+    const avail = flipAvail(f, b),
+      tries = flipMoves(b, avail)
+        .map(m => flipTry(b, base, m, avail))
+        .filter(o => o.rank > 0.5);
+    if (!tries.length) break;
+    const best = tries.sort((a, c) => c.rank - a.rank)[0];
+    steps.push({ label: best.label, gain: best.gain, score: best.score });
+    b = best.build;
+    base = flipEval(b);
+  }
+  return {
+    steps,
+    build: b,
+    score: base.score,
+    value: base.value,
+    cost: base.cost,
+    gain: base.value - base.cost - (start.value - start.cost),
+    check: base.check,
+  };
+}
+// put a planned build into the real one: the parts that differ become changes (in place of a part of the same type)
+function flipApply(f, target) {
+  const key = r => (r.changed ? "c:" + r.changed : r.partId ? "p:" + r.partId : null);
+  const keep = new Set(target.map(key).filter(Boolean)),
+    gone = [];
+  for (const r of flipBuild(f))
+    if (!keep.has(key(r))) {
+      if (r.changed) {
+        const c = f.changes.find(x => x.id === r.changed);
+        f.changes = f.changes.filter(x => x.id !== r.changed);
+        if (c && c.old) gone.push(f.parts.find(p => p.id === c.old));
+        flipReset(f, r.cat);
+      } else gone.push(f.parts.find(p => p.id === r.partId));
+    }
+  for (const r of target.filter(x => x.inv)) {
+    const k = gone.findIndex(p => p && p.cat === r.cat),
+      old = k >= 0 ? gone.splice(k, 1)[0] : null;
+    flipChange(f, {
+      kind: old && old.broken ? "fix" : "hw",
+      old: old ? old.id : "",
+      oldName: old ? old.name : "",
+      cat: r.cat,
+      name: r.name,
+      invId: r.inv.id,
+      isNew: !r.inv.used,
+      price: r.inv.used ? null : (r.inv.price ?? priceOf(r.name)),
+    });
+  }
+  for (const p of gone.filter(Boolean)) flipChange(f, { kind: "rm", old: p.id, cat: p.cat, name: p.name });
+}
+// take one part out of the build (a row of flipBuild)
+function flipRemove(f, r) {
+  flipApply(
+    f,
+    flipBuild(f).filter(x => !(x.cat === r.cat && x.name === r.name && (x.changed || x.partId) === (r.changed || r.partId)))
+  );
 }
 // gentle notes for step 3
 function flipNotes(f) {
@@ -459,6 +611,10 @@ if (typeof module !== "undefined")
     flipState,
     flipBuild,
     flipUpgrades,
+    flipPlan,
+    flipApply,
+    flipRemove,
+    flipCheck,
     flipNotes,
     flipChange,
     flipUnchange,
