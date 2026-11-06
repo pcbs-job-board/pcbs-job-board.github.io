@@ -369,10 +369,22 @@ function partsFromFields() {
   ta.value = list.map(c => c.cat + ": " + c.name).join("\n");
   ta.dispatchEvent(new Event("input", { bubbles: true }));
 }
+// replacing the fields takes focus out of one → its "change" can ask for a redraw while this one runs: redraw once more after
+let pfBusy = false,
+  pfAgain = false;
 function renderPartFields() {
-  const ta = $("#fComps"),
-    box = $("#fParts");
-  if (ta && box) box.outerHTML = partFieldsHtml(parseCompText(ta.value));
+  if (pfBusy) return void (pfAgain = true);
+  pfBusy = true;
+  try {
+    do {
+      pfAgain = false;
+      const ta = $("#fComps"),
+        box = $("#fParts");
+      if (ta && box?.isConnected) box.outerHTML = partFieldsHtml(parseCompText(ta.value));
+    } while (pfAgain);
+  } finally {
+    pfBusy = false;
+  }
 }
 function bindPartFields() {
   const wrap = $("#revForm");
