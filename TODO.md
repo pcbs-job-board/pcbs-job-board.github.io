@@ -150,6 +150,10 @@ Notes for later (not tasks yet):
   Silent Base + 2 Pure Wings: no fans 1.017, FSP CMT510 Plus + 4 fans 1.009, Antec P8 + 3 Heat Away 1.039, Kolink
   Ethereal + 1 fan 1.058 (one reading each – not a rule yet). Only 2 CPUs (Intel, same OC base 5000); voltage and
   clock moved together, so which one drives it isn't settled (clock fits better: rms 0.09 vs 0.14 °C).
+  Part 2 sheet sent 2026-11-07 (24 tests, octest/make2.py): E clock vs voltage (i3 + DELOS), I edge check of
+  "highest multiplier" (i3 Engine 27 ×46/×47, DELOS ×48/×49), H case vs fans (no fans in Antec / Kolink / FSP; one
+  Pure Wings at a time), F i5-9600K (OC base 5200 / 1.75), G Ryzen 5 2600 on GIGABYTE B450 AORUS M (65 W, 95 °C).
+  Predictions for both ideas (clock / voltage) are in the sheet.
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
