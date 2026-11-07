@@ -3,6 +3,8 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.2
+
 ## 0.14.1
 - PC Bay build, Hardware step: a build assistant – "Best build from your inventory" (the most profitable PC that works, one click), single changes that also fill empty places (RAM pairs, GPUs, drives …), ↻ Refresh.
 - PC Bay build: put parts in (＋ Use) and take them out (✕) freely in steps 2–3; inventory grouped by category.
