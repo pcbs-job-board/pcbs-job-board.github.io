@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_None open – the 5 below are done in dev-0.14.2 (waiting for Mariusz's OK to release):_
+_None open – the 5 below were released in 0.14.2 (2026-11-07, backup-0.14.1 made first):_
 customer hints in emails · red parts read as BROKEN · overclock settings (0.05 V, power limit) · USED / NEW on a Mac
 capture (labels measured in card widths) · ← / → skipping a tall card. Also found: career bar at ~0 % on a 1512 px
 capture wasn't read (finer second look). Note: the TR (Red) cooler in inv_arctic_red.png has no USED label – it's NEW.
