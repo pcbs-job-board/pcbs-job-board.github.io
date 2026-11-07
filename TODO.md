@@ -143,6 +143,13 @@ Notes for later (not tasks yet):
   i5-8600K) × 3 coolers × ×43/1.30, ×48/1.50 = 6; C: i3 + Freezer 34 ×45/1.40 in Antec P8, Kolink Ethereal, FSP CMT510
   Plus, Silent Base without fans = 4; D: repeat coolers = 2. (i7-8700K is in the PC Bay build for sale; ATC700 169 mm
   fits no case; Freezer 33 TR has no LGA 1151.)
+  RESULTS (2026-11-07, 33 readings, tests branch fixtures/pending/oc-temperature-tests-results.xlsx, fit:
+  tools-oc-temperature-fit.py): OCCT max CPU temp = 0.8035 × stock W × (1 + 0.6354 × x) × (1 − 0.001203 × cooler CFM)
+  × case factor; x = (f − stock f) / (OC base f − stock f). 3 parameters, 20 readings, max error 0.2 °C; predicts
+  every throttled reading (>100 °C). Cooler: only airflow counts (same CFM → same temp, any size). Case factor vs
+  Silent Base + 2 Pure Wings: no fans 1.017, FSP CMT510 Plus + 4 fans 1.009, Antec P8 + 3 Heat Away 1.039, Kolink
+  Ethereal + 1 fan 1.058 (one reading each – not a rule yet). Only 2 CPUs (Intel, same OC base 5000); voltage and
+  clock moved together, so which one drives it isn't settled (clock fits better: rms 0.09 vs 0.14 °C).
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
