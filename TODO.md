@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (4)
+## Small fixes (5)
 
 1. **Customer hints missed in emails** (Mariusz, 2026-11-06 / 07). Checked with the email reader – none of these
    become tasks now:
@@ -146,6 +146,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    from the card itself (card width / the found name, or the game area without the black bars), keep the box inside
    the card frame; check against his screenshots + all existing inventory fixtures. Screenshots: tests branch
    `fixtures/pending/friend_mac_inv_ryzen.png`, `friend_mac_inv_celeron.png`, `friend_mac_inv_area.png`.
+5. **← / → skip a tall job card** (reported to Mariusz, 2026-11-07; backup: tests branch
+   `fixtures/pending/backup-arrow-skips-story.json`, probe `navprobe.js`). Open jobs: GoodE (random) | CaptainBen
+   (story, 9 planned swaps → card 1746 px tall) | STanton (random), all tops at the same height. → from GoodE goes to
+   STanton, ← back to GoodE; ↓ reaches the story job. Cause: moveSel (js/ui/keys.js) measures from card *centres* and
+   counts the up/down gap 2.5 × – the tall card's centre is ~490 px lower, so its score (317 + 2.5 × 489 ≈ 1540) loses
+   to the card two columns away (634 + 2.5 × 52 ≈ 764). Fix: ← / → first take the nearest card in the same row
+   (vertical ranges overlap, or same top), ↑ / ↓ the nearest in the same column (horizontal ranges overlap); the
+   centre score only when nothing lines up. Test with this backup + tall / short cards in the tables.
 
 ---
 
