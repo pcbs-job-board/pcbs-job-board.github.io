@@ -106,54 +106,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (5)
+## Small fixes (0)
 
-1. **Customer hints missed in emails** (Mariusz, 2026-11-06 / 07). Checked with the email reader – none of these
-   become tasks now:
-   - GJarvis@GraemeSoft.tv "My rig needs fixing": "Who knew that RAM had to go in one way around?" → RAM broken.
-   - Nicolas.Waters@NWatersStaplers.gov "please help" (Level 8, $292 / $300): "I didn't realise there were clips for
-     the RAM, and I got a bit violent..." → RAM broken; "It seems to be running quite warm." → Clean with compressed
-     air (read now: only Urgent + Team Group).
-   - CriticalWriter@CriticalGoodallPets.io "NEED FIX" (Level 8, $327 / $400): "I waggled the RAM a bit too hard." →
-     RAM broken (clean, virus, new parts only are read fine).
-   - Jerome.John@JeromeCraft.co.uk "help plz" (Level 11, $321 / $200): "Please fix my PSU!" → PSU broken (virus and
-     new parts only are read fine).
-   Fix: detectSuspects (js/core/parser.js) – RAM: "go in one way / the right way round", "backwards", "clips … violent",
-   "waggled / yanked / forced … RAM"; any part: "fix / repair / replace my <part>"; heat: "(quite / a bit / running)
-   warm" alongside "hot". Each broken hint → "Check / replace the <part> – customer hints it's broken" and the
-   Diagnose and fix suggestion (identical part). Screenshots: tests branch fixtures/pending/graeme_ram.png,
-   nwaters_ram_warm.png, criticalwriter_ram_waggled.png, jeromejohn_fix_psu.png → fixtures with expectations.
-2. **Red parts read as BROKEN in the inventory** (Mariusz, 2026-11-06, CPU Cooling tab): ARCTIC Freezer 33 eSports
-   Edition (Red), Freezer 33 TR (Red) ×2 and Raijintek Tisis (red fan) are all USED, but got BROKEN. Cause: cardLabels
-   (js/core/flip.js) counts strong red pixels in a box under the USED label – that box overlaps the part's picture, so a
-   red fan / red heatsink counts. Fix: look for the BROKEN label's own shape (a short line of red text with light
-   background around it, only at the label's place), not any red in the picture; check against the 9 screenshots it was
-   tuned on (real BROKEN cards) + these two. Screenshots: tests branch `fixtures/pending/inv_arctic_red.png`,
-   `inv_raijintek_tisis.png`.
-3. **Overclock settings (PC Bay Profit step, and the job's overclock tips)** (Mariusz, 2026-11-06):
-   - CPU core voltage only moves in steps of 0.05 V in the game → round the suggested voltage UP to the next 0.05
-     (enough for the clock); show it as e.g. "1.55 V".
-   - GPU: say what to do with the power limit. Data exists: the workbook's "GPU % Power Increase" (in parts-db "power"
-     as W>W_max: +20 % on 253 cards, +50 % on 63). The overclock estimate (OC base clocks) and the PSU check already
-     assume it's at the maximum → tell the player "Power limit +20 % (max)" / "+50 %". No GPU voltage in the workbook.
-4. **USED / NEW read wrong on a friend's Mac** (Mariusz, 2026-11-07; Mariusz's own captures are always right).
-   Screenshot 1: Ryzen 5 1400, 1600X, 1600X – all USED, read USED / NEW / NEW. Screenshot 2: Celeron G3930 NEW,
-   i3-6100 ×2 USED – read USED / NEW / NEW. His inventory area looks right (third screenshot).
-   Likely causes (cardLabels, js/core/flip.js): (a) the label boxes are placed in *screen-height* units ("picture top
-   = name − 0.30 of the height") – his 1512×948 capture is a Mac window with a title bar and black bars above and
-   below the game, so the game is shorter than the image and the boxes land off the USED label; (b) the first column
-   is always "USED": it's the selected card, and its thick black frame counts as the dark USED letters. Fix: measure
-   from the card itself (card width / the found name, or the game area without the black bars), keep the box inside
-   the card frame; check against his screenshots + all existing inventory fixtures. Screenshots: tests branch
-   `fixtures/pending/friend_mac_inv_ryzen.png`, `friend_mac_inv_celeron.png`, `friend_mac_inv_area.png`.
-5. **← / → skip a tall job card** (reported to Mariusz, 2026-11-07; backup: tests branch
-   `fixtures/pending/backup-arrow-skips-story.json`, probe `navprobe.js`). Open jobs: GoodE (random) | CaptainBen
-   (story, 9 planned swaps → card 1746 px tall) | STanton (random), all tops at the same height. → from GoodE goes to
-   STanton, ← back to GoodE; ↓ reaches the story job. Cause: moveSel (js/ui/keys.js) measures from card *centres* and
-   counts the up/down gap 2.5 × – the tall card's centre is ~490 px lower, so its score (317 + 2.5 × 489 ≈ 1540) loses
-   to the card two columns away (634 + 2.5 × 52 ≈ 764). Fix: ← / → first take the nearest card in the same row
-   (vertical ranges overlap, or same top), ↑ / ↓ the nearest in the same column (horizontal ranges overlap); the
-   centre score only when nothing lines up. Test with this backup + tall / short cards in the tables.
+_None open – the 5 below are done in dev-0.14.2 (waiting for Mariusz's OK to release):_
+customer hints in emails · red parts read as BROKEN · overclock settings (0.05 V, power limit) · USED / NEW on a Mac
+capture (labels measured in card widths) · ← / → skipping a tall card. Also found: career bar at ~0 % on a 1512 px
+capture wasn't read (finer second look). Note: the TR (Red) cooler in inv_arctic_red.png has no USED label – it's NEW.
+Tests: units 175, run 474 + 12 known (4 new emails), pcbay 38 (4 new inventories), nav 2 (new), flow, systems,
+flipassist, soak, startup – all pass.
 
 ---
 
