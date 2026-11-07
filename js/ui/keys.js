@@ -104,7 +104,8 @@ function selectCard(el) {
   markSel();
   el.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
-// spatial move: nearest card in the pressed direction
+// spatial move: the nearest card in the pressed direction – first among the cards in the same row (← →) / column (↑ ↓),
+// so a tall card next to short ones isn't skipped; the centre-to-centre score only when nothing lines up
 function moveSel(dir) {
   const list = cards();
   if (!list.length) return;
@@ -115,27 +116,32 @@ function moveSel(dir) {
   }
   const a = cur.getBoundingClientRect(),
     ax = a.left + a.width / 2,
-    ay = a.top + a.height / 2;
-  let best = null,
-    bs = Infinity;
-  for (const c of list) {
-    if (c === cur) continue;
-    const b = c.getBoundingClientRect(),
-      bx = b.left + b.width / 2,
-      by = b.top + b.height / 2,
-      dx = bx - ax,
-      dy = by - ay;
-    const ok = dir === "left" ? dx < -10 : dir === "right" ? dx > 10 : dir === "up" ? dy < -10 : dy > 10;
-    if (!ok) continue;
-    const main = dir === "left" || dir === "right" ? Math.abs(dx) : Math.abs(dy),
-      side = dir === "left" || dir === "right" ? Math.abs(dy) : Math.abs(dx);
-    const s = main + side * 2.5;
-    if (s < bs) {
-      bs = s;
-      best = c;
-    }
-  }
-  if (best) selectCard(best);
+    ay = a.top + a.height / 2,
+    side = dir === "left" || dir === "right";
+  const cand = list
+    .filter(c => c !== cur)
+    .map(c => {
+      const b = c.getBoundingClientRect(),
+        dx = b.left + b.width / 2 - ax,
+        dy = b.top + b.height / 2 - ay;
+      // lined up: the cards overlap across the direction of travel (same row for ← →, same column for ↑ ↓)
+      const lined = side ? b.top < a.bottom - 4 && b.bottom > a.top + 4 : b.left < a.right - 4 && b.right > a.left + 4;
+      // how far in the pressed direction, from the facing edges
+      const gap =
+        dir === "left"
+          ? a.left - b.right
+          : dir === "right"
+            ? b.left - a.right
+            : dir === "up"
+              ? a.top - b.bottom
+              : b.top - a.bottom;
+      const ok = dir === "left" ? dx < -10 : dir === "right" ? dx > 10 : dir === "up" ? dy < -10 : dy > 10;
+      return { c, ok, lined, gap, score: (side ? Math.abs(dx) : Math.abs(dy)) + (side ? Math.abs(dy) : Math.abs(dx)) * 2.5 };
+    })
+    .filter(x => x.ok);
+  const row = cand.filter(x => x.lined).sort((p, q) => p.gap - q.gap);
+  const best = row[0] || cand.sort((p, q) => p.score - q.score)[0];
+  if (best) selectCard(best.c);
 }
 const clickIn = sel => {
   const el = document.querySelector(`.job[data-job="${selJob}"] ${sel}`);
