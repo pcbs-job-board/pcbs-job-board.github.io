@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **"Overclock Unlocked" badge in the PC Bay inventory** (Mariusz, 2026-11-07): on inventory rows of motherboards and
    CPUs that can overclock (compat `oc=1` – K / X CPUs, Z / X-chipset boards; not the locked ones), in the inventory tabs
@@ -114,6 +114,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Small, readable, like the USED / NEW tags.
 2. **Profit step: list of the PC's parts at the top** (Mariusz, 2026-11-07): step 4 starts with the parts the PC now has
    (same order and look as "This PC now" in steps 2–3, with came-with-it / USED / NEW tags), read-only – no ✕, no ＋ Use.
+3. **Profit step: adjust the overclock** (Mariusz, 2026-11-07): when the player can't reach the suggested values, they
+   can type what they actually set / got – CPU multiplier (and voltage), GPU core / memory clock (power limit). The
+   3DMark estimate and the sale / profit estimate update after every change. Defaults = the suggested settings; a
+   "back to the suggestion" button; saved with the build. (flipScore takes the clocks instead of 90 % of the potential.)
 
 _0.14.3 released 2026-11-07 (backup-0.14.2 made first): virus hint kept on 3DMark jobs (Conrad had a virus;
 DullGirl / FishyC tests updated) · PC Bay inventory as category tabs (only filled categories, newest scan first –
