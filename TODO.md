@@ -106,7 +106,18 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
+
+1. **Part swaps on the job card: compact, collapsible** (Mariusz, 2026-11-07; js/ui/board.js swap tiles, every job card –
+   tables and Open jobs):
+   - Ticking a swap collapses its tile to just the checkbox (80 % of its size now) and the name of the part put in;
+     unticking expands it back to the normal tile. A smooth animation both ways.
+   - A card shows at most 3 unticked swaps; more → a line like "X more part swaps planned – click to show".
+   - Ticked swaps are hidden by default and shown with the expand control; when all are ticked: "All planned swaps are
+     done" (expand shows them).
+   - Selecting another job (click or keyboard ← → ↑ ↓) folds the previous card back to these rules.
+   - Keep: drag ⠿ / Alt + ↑ ↓ ordering, ✕ / ✎ on open tiles, the clash / power boxes, keyboard focus on lines
+     (U / Space ticks) – the hidden ones must not trap the keyboard.
 
 _0.14.5 released 2026-11-07 (backup-0.14.4 made first): CPU, GPU and RAM overclock at their full potential (OC_SHARE = 1);
 "depends a lot on the cooling" notes · new build from nothing: boardIsFixed only with a
