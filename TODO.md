@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.3 (2026-11-07), ready – waiting for Mariusz's OK to release: virus hint kept on 3DMark jobs (Conrad had a virus;
+_0.14.3 released 2026-11-07 (backup-0.14.2 made first): virus hint kept on 3DMark jobs (Conrad had a virus;
 DullGirl / FishyC tests updated) · PC Bay inventory as category tabs (only filled categories, newest scan first –
 inventory items get `at` (scan time) + `n` (order in the scan); a capture / typed part opens its tab) · Open jobs cards min 370 px (tables left as they are – Mariusz) · filled SVG swap
 arrow, indented 10 px · PC Bay "Suggest NEW parts" switch (f.allowNew, off by default: flipAvail + fix-step options skip NEW
