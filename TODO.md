@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.5 (2026-11-07), ready – waiting for Mariusz's OK to release: CPU, GPU and RAM overclock at their full potential (OC_SHARE = 1);
+_0.14.5 released 2026-11-07 (backup-0.14.4 made first): CPU, GPU and RAM overclock at their full potential (OC_SHARE = 1);
 "depends a lot on the cooling" notes · new build from nothing: boardIsFixed only with a
 customer board, dual objective → pairs only in newBuildBench, case added to the set (fan places for a lights objective),
 lights / dual hints point to the set, "Install <colour> cables" → cheapest plain cable set (Cables category).
