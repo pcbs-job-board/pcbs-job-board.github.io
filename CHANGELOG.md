@@ -4,6 +4,10 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.2
+- Inventory captures: USED / NEW read right on any screen size (also windowed captures with black bars); red parts no longer read as BROKEN.
+- Emails: more broken-part hints ("RAM had to go in one way around", "waggled the RAM too hard", "Please fix my PSU!") and heat hints for cleaning ("running quite warm").
+- Overclock settings: core voltage on the game's 0.05 V steps, GPU power limit (+20 % / +50 %); multiplier and voltage on the job's overclock tile too.
+- Fixed: ← / → skipped a tall job card next to shorter ones; career level not read at ~0 % on small captures.
 
 ## 0.14.1
 - PC Bay build, Hardware step: a build assistant – "Best build from your inventory" (the most profitable PC that works, one click), single changes that also fill empty places (RAM pairs, GPUs, drives …), ↻ Refresh.
