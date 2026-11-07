@@ -2,27 +2,29 @@
    A mention in the email body ("I'll overclock it later") only feeds the PSU check (see suggest.js, "overclock later").
    Level 1 – certain: can it overclock at all (unlocked CPU + a motherboard that can overclock), is the target inside the
              part's hard limit (GPU core / memory maximum), overclocked watts vs the PSU.
-   Level 2 – an estimate: players rarely get a part to its full overclock potential, so we count on 90 % of it:
-             reachable ≈ stock + 0.9 × (overclock base − stock), the overclock base being the part's overclock clock in the
+   Level 2 – an estimate: CPUs at their full overclock potential (the workbook's overclock base – 0.14.5; how far a CPU
+             really gets depends a lot on its cooling, see the overclock tests in ToDo), GPUs / RAM at 90 % of it:
+             reachable ≈ stock + share × (overclock base − stock), the overclock base being the part's overclock clock in the
              parts workbook. Parts are judged and picked on that; the game's temperature formula isn't known, so real
              results depend on cooling / power. Watts are still counted at the full overclock.
    Temperatures: each part's throttle temperature from the workbook (CPUs that can overclock, all GPUs); without it
              Intel CPUs 100 °C, AMD CPUs 95 °C, GPUs 95 °C (the game's usual values). */
-const OC_SHARE = 0.9;
-function ocEst(stock, oc) {
-  return Math.round(stock + OC_SHARE * Math.max(0, oc - stock));
+const OC_SHARE = 0.9, // GPUs / RAM
+  CPU_OC_SHARE = 1; // CPUs: the full potential (0.14.5) – the cooling decides whether it holds
+function ocEst(stock, oc, share = OC_SHARE) {
+  return Math.round(stock + share * Math.max(0, oc - stock));
 }
-// what a part should reach overclocked (90 % of its potential): CPU MHz · GPU { core, mem } · RAM MHz
+// what a part should reach overclocked (CPU: its full potential, GPU / RAM: 90 % of it): CPU MHz · GPU { core, mem } · RAM MHz
 function ocReach(name) {
   const d = ocOf(name);
   if (!d) return null;
-  return d.core != null ? { core: ocEst(d.core, d.ocCore), mem: ocEst(d.mem, d.ocMem) } : ocEst(d.mhz, d.ocMhz);
+  return d.core != null ? { core: ocEst(d.core, d.ocCore), mem: ocEst(d.mem, d.ocMem) } : ocEst(d.mhz, d.ocMhz, CPU_OC_SHARE);
 }
 // what to set in the game: CPU – multiplier on the 100 MHz base clock and the core voltage it needs (the voltage rises in
 // step with the clock from stock to the overclock base, as in the workbook; the game moves it in 0.05 V steps → rounded
 // up, so it's enough); GPU – the GPU Tuner clocks and the power limit at its maximum (the workbook's "GPU % Power
 // Increase": +20 % on most cards, +50 % on some – the overclock estimate and the PSU check assume it).
-// want: the clock to set (an objective's target); without it the estimate (90 % of the potential)
+// want: the clock to set (an objective's target); without it the estimate (CPU: full potential, GPU: 90 %)
 const voltStep = v => Math.ceil(v * 20 - 1e-6) / 20;
 function ocSettings(name, want) {
   const d = ocOf(name),
@@ -161,28 +163,20 @@ function ocCheck(j) {
         it.lines.push(`<b>${esc(mb.name)}</b> can't overclock – a motherboard that can is needed.`);
       }
       if (it.state === "bad" || !d) continue;
-      const est = ocEst(d.mhz, d.ocMhz);
+      const est = ocEst(d.mhz, d.ocMhz, CPU_OC_SHARE),
+        cool = " Reaching it depends a lot on the CPU cooling and may not be possible.";
       if (t.mhz != null && t.mhz <= d.mhz)
         it.lines.push(`Already runs at ${mhz(d.mhz)} – the ${mhz(t.mhz)} target is met without overclocking.`);
       else {
         if (t.mhz == null)
-          it.lines.push(
-            `Should reach about <b>${mhz(est)}</b> (stock ${mhz(d.mhz)}, full potential ${mhz(d.ocMhz)} at ${d.ocV} V).`
-          );
+          it.lines.push(`Up to <b>${mhz(est)}</b> – its full overclock potential (stock ${mhz(d.mhz)}, ${d.ocV} V).${cool}`);
         else if (t.mhz <= est)
           it.lines.push(
-            `${mhz(t.mhz)} – should be reachable: estimate <b>${mhz(est)}</b> (stock ${mhz(d.mhz)}, full potential ${mhz(d.ocMhz)} at ${d.ocV} V).`
+            `${mhz(t.mhz)} – within its full overclock potential (<b>${mhz(est)}</b>, stock ${mhz(d.mhz)}).${t.mhz > d.mhz + 0.75 * (est - d.mhz) ? cool : ""}`
           );
-        else if (t.mhz <= d.ocMhz) {
+        else {
           it.state = "warn";
-          it.lines.push(
-            `${mhz(t.mhz)} is above the estimate (<b>${mhz(est)}</b>) but within its full potential (${mhz(d.ocMhz)}) – needs very good cooling.`
-          );
-        } else {
-          it.state = "warn";
-          it.lines.push(
-            `${mhz(t.mhz)} is above this CPU's full overclock potential (${mhz(d.ocMhz)}; estimate ${mhz(est)}) – unlikely to get there.`
-          );
+          it.lines.push(`${mhz(t.mhz)} is above this CPU's full overclock potential (${mhz(d.ocMhz)}) – unlikely to get there.`);
         }
         const set = ocSettings(cpu.name, t.mhz ?? null);
         if (set)

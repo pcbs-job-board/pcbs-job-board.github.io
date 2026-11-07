@@ -832,7 +832,7 @@ function ocSuggestions(job, ctx, reason, cur) {
   if (gate && !hasUnlock(gate))
     return [{ key: "obj:oc-locked", reason, options: [], hint: gateMsg(gate).replace(/<\/?b>/g, "") + "." }];
   if (t.part === "CPU") {
-    const reach = p => t.mhz == null || (ocReach(p.name) || 0) >= t.mhz; // 90 % of the overclock potential
+    const reach = p => t.mhz == null || (ocReach(p.name) || 0) >= t.mhz; // CPU: its full overclock potential
     const fixed = cpuIsFixed(job); // the customer's own CPU must be overclocked – no CPU swaps
     if (fixed && cpu && (cInfo(cpu).oc === "0" || !ocOf(cpu.name)))
       out.push({
@@ -880,7 +880,7 @@ function ocSuggestions(job, ctx, reason, cur) {
       if (o.length)
         out.push({
           key: "obj:oc-cpu-easier",
-          reason: `${reason} – optional: ${t.mhz.toLocaleString()} MHz is above this CPU's estimate (${ocReach(cpu.name).toLocaleString()} MHz, 90 % of its potential); these should reach it`,
+          reason: `${reason} – optional: ${t.mhz.toLocaleString()} MHz is above this CPU's full overclock potential (${ocReach(cpu.name).toLocaleString()} MHz); these should reach it`,
           options: o,
           cat: "CPU",
           old: cpu.name,
@@ -955,14 +955,17 @@ function ocSuggestions(job, ctx, reason, cur) {
           key: "obj:oc-ok",
           reason,
           options: [],
-          hint: `Nothing to change – ${p.name} should reach ~${v.toLocaleString()} MHz (90 % of its potential). Overclock it in the game.`,
+          hint: `Nothing to change – ${p.name} should reach ~${v.toLocaleString()} MHz (${t.part === "CPU" ? "its full potential – " + "reaching it depends a lot on the CPU cooling and may not be possible" : "90 % of its potential"}). Overclock it in the game.`,
         },
       ];
   }
   // tell how the parts were picked
   out.forEach(x => {
-    if (!/90 %/.test(x.reason) && x.key !== "obj:oc-board")
-      x.reason += " · picked on 90 % of each part's overclock potential – in-game results depend on cooling / power";
+    if (!/potential/.test(x.reason) && x.key !== "obj:oc-board")
+      x.reason +=
+        t.part === "CPU"
+          ? " · picked on each CPU's full overclock potential – reaching it depends a lot on the CPU cooling and may not be possible"
+          : " · picked on 90 % of each part's overclock potential – in-game results depend on cooling / power";
   });
   return out;
 }
