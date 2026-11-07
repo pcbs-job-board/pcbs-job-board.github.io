@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (2)
 
 1. **Part swaps on the job card: compact, collapsible** (Mariusz, 2026-11-07; js/ui/board.js swap tiles, every job card –
    tables and Open jobs):
@@ -118,6 +118,13 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    - Selecting another job (click or keyboard ← → ↑ ↓) folds the previous card back to these rules.
    - Keep: drag ⠿ / Alt + ↑ ↓ ordering, ✕ / ✎ on open tiles, the clash / power boxes, keyboard focus on lines
      (U / Space ticks) – the hidden ones must not trap the keyboard.
+2. **Inventory: skip customers' parts** (Mariusz, 2026-11-07; tests branch fixtures/pending/inv_property_of_1–4.png):
+   cards with a yellow sticky note "Property of <customer email>" on the picture (top left) belong to a job's customer –
+   not ours, can't go into a PC Bay build. Seen on a Threadripper 1900X, ARCTIC Freezer 33 TR (White), 2 × Team Group
+   T-Force Night Hawk, 2 × GTX 1070 GAMING X. Those cards also have no price and no Auction / Sell buttons.
+   Fix: in the inventory reader, find the note (a large pale-yellow patch at the picture's top left, measured in card
+   widths like the USED label) or the text "Property of" in the card's column → leave the part out (or list it greyed
+   "customer's – can't be used", never suggested / used). Check: the 4 screenshots + all existing inventory fixtures.
 
 _0.14.5 released 2026-11-07 (backup-0.14.4 made first): CPU, GPU and RAM overclock at their full potential (OC_SHARE = 1);
 "depends a lot on the cooling" notes · new build from nothing: boardIsFixed only with a
