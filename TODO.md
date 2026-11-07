@@ -106,21 +106,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
-
-1. **Job card width** (Mariusz, 2026-11-07, screenshots: ~385 px cards in a ~1230 px window are right; in a wide
-   window – 2560 px – the Open jobs cards get narrow, ~300 px, many per row). Cause: #queue uses
-   `repeat(auto-fill, minmax(290px, 1fr))`. Fix: minimum ~370 px (cards then 370–460 px wide at any width ≥ 2 per row).
-   Open question for Mariusz: the 3 workbench tables (repeat(3, 1fr)) get very wide (~800 px each at 2560) – cap them
-   to the same width too, or leave them?
-2. **Swap tile arrow** (Mariusz, 2026-11-07): the thin "↓" between the old and new part → a thicker, filled down arrow
-   (like ⇩ ⇳ ⇓, filled is best – as readable as possible), with some left indent. Plan: a small inline SVG (filled
-   arrow) so it looks the same on every system (⬇ U+2B07 can turn into a colour emoji on Windows / Mac); keep
-   aria-label "replaced by".
+## Small fixes (0)
 
 _dev-0.14.3 (2026-11-07), ready – waiting for Mariusz's OK to release: virus hint kept on 3DMark jobs (Conrad had a virus;
 DullGirl / FishyC tests updated) · PC Bay inventory as category tabs (only filled categories, newest scan first –
-inventory items get `at` (scan time) + `n` (order in the scan); a capture / typed part opens its tab)._
+inventory items get `at` (scan time) + `n` (order in the scan); a capture / typed part opens its tab) · Open jobs cards min 370 px (tables left as they are – Mariusz) · filled SVG swap
+arrow, indented 10 px._
 
 _Released in 0.14.2 (2026-11-07, backup-0.14.1 made first):_
 customer hints in emails · red parts read as BROKEN · overclock settings (0.05 V, power limit) · USED / NEW on a Mac
