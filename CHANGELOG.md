@@ -3,6 +3,9 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.3
+- Emails: a slow PC ("not as quick as it used to be") now always adds the virus scan, also on 3DMark jobs – as the keyword tester shows.
+
 ## 0.14.2
 - Inventory captures: USED / NEW read right on any screen size (also windowed captures with black bars); red parts no longer read as BROKEN.
 - Emails: more broken-part hints ("RAM had to go in one way around", "waggled the RAM too hard", "Please fix my PSU!") and heat hints for cleaning ("running quite warm").
