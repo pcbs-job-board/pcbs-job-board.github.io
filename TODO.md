@@ -106,24 +106,13 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (0)
 
-1. **New build from nothing gets no suggestions** (Mariusz, 2026-11-07; story job maj@hrh.royals.org "A royal robbery",
-   Level 21, $3,000: 3DMark score of 10000 · Install dual graphics cards · Install Parts with Lights: 6 coloured
-   (255,0,255) · Install Purple cables; tests branch fixtures/pending/queen_royal_robbery_1/2.png). Checked:
-   a) the 3DMark set IS found, then thrown away: boardIsFixed() says "dual GPUs keep the customer's board" even when the
-      customer has no PC → every option needs a board → all removed ("Every option here needs a new motherboard…").
-      Fix: board fixed only when the customer's PC has a motherboard.
-   b) "Install dual graphics cards" with no PC: "capture PC Stats to get a second-GPU suggestion". Fix: on a new build the
-      3DMark set uses a PAIR (same card twice, SLI / CrossFire board with room) and the dual objective points to it;
-      without a 3DMark objective: the cheapest pair + a board for it.
-   c) The set leaves the case out ("also needs: case"). Fix: add the cheapest case that fits (like PSU / cooler / drive);
-      with a lights objective, one with room for enough RGB fans.
-   d) "Install Parts with Lights: 6 coloured" – "0 more RGB parts found for this PC" (no case yet). Fix: work it out on
-      the planned build (after the set is ticked / with the set's case).
-   e) "Install Purple cables" – "Couldn't tell which part this asks for". Cables aren't a part: show it as a task
-      ("buy Purple cables in the Shop – Cables – and change all cables", like the hidden cable objective).
-   (Also: subject read as "Aroyal robbery" – the text reader merged two words.)
+_dev-0.14.5 (2026-11-07), ready – waiting for Mariusz's OK to release: CPU overclock at its full potential (CPU_OC_SHARE = 1;
+GPU / RAM stay 90 %) with the "depends a lot on the CPU cooling" note · new build from nothing: boardIsFixed only with a
+customer board, dual objective → pairs only in newBuildBench, case added to the set (fan places for a lights objective),
+lights / dual hints point to the set, "Install <colour> cables" → cheapest plain cable set (Cables category).
+Not fixed: subject "Aroyal robbery" (text reader merged two words)._
 
 _0.14.4 released 2026-11-07 (backup-0.14.3 made first): "Overclock Unlocked" badge (compat oc=1 CPUs /
 boards: inventory rows, This PC now, Profit list) · Profit step starts with the read-only parts list · own overclock
