@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.3
+- PC Bay build: "Suggest NEW parts" switch (off by default) – suggestions use only USED inventory parts unless it's on.
 - Open jobs cards keep a readable width (~370–460 px) in wide windows; a thicker, filled arrow on part swap tiles.
 - PC Bay build: inventory in category tabs (only categories you have), newest scans at the top; a capture opens its category.
 - Emails: a slow PC ("not as quick as it used to be") now always adds the virus scan, also on 3DMark jobs – as the keyword tester shows.

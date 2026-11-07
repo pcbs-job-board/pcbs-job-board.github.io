@@ -1,298 +1,541 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PCBS Job Board</title>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css?v=0.14.3">
-</head>
-<body>
-<header>
-  <h1>PCBS <span>Job Board</span></h1>
-  <button id="btnShare" title="Connect screen (Shift+C)">🖥️ Connect screen</button>
-  <div class="scrchip" id="scrChip" hidden>
-    <button id="btnChange" class="scrprev" title="Screen connected – click to change screen (Shift+C)" aria-label="Screen connected – change screen"><canvas id="live" width="160" height="90"></canvas><span class="dot on" id="dot"></span></button>
-    <button id="btnStop" class="scrstop" title="Stop capture" aria-label="Stop capture"></button>
-  </div>
-  <div class="capsplit">
-    <button class="primary big" id="btnCapture" title="Capture job (C)">📸 Capture job</button>
-    <button class="primary capplus" id="btnManual" title="Manual job (M)" aria-label="Manual job">＋</button>
-  </div>
-  <button id="btnFlip" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>📦</button>
-  <div class="spacer"></div>
-  <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
-  <div class="careerbar" id="careerBar">
-    <span class="cbl">Career</span>
-    <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level"></label>
-    <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level">%</label>
-  </div>
-  <button id="btnUnlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game"><span class="ulic"></span><template></template></button>
-  <div class="notify" id="notify" hidden>
-    <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
-    <div class="notipanel" id="notiPanel" hidden></div>
-  </div>
-  <button id="btnPartsDb" class="iconbtn pdbbtn" title="Parts database" aria-label="Parts database">📖</button>
-  <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
-  <button id="btnSettings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
-  <button id="btnHelp" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
-</header>
-
-<main>
-  <section>
-    <p class="row-title"><b>Workbenches</b> one job per table</p>
-    <div id="tables"></div>
-  </section>
-  <section>
-    <p class="row-title"><b>Open jobs</b> soonest deadline first <span id="qCount"></span></p>
-    <div id="queue"></div>
-  </section>
-</main>
-
-<video id="video" autoplay muted playsinline style="position:fixed;left:0;bottom:0;width:4px;height:4px;opacity:0.01;pointer-events:none"></video>
-<div id="drop">Drop screenshot to create a job</div>
-<div id="toast"><span id="toastTxt"></span><button id="toastBtn">Undo</button></div>
-<div class="ac" id="ac" hidden></div>
-
-<!-- 📦 PC Bay build -->
-<dialog id="dlgFlip" class="flipdlg">
-  <div class="dlg-h"><h3 style="flex:none">📦 PC Bay build</h3><div class="flipsteps"></div><button class="ghost flipmin" title="Save and minimize">✕</button></div>
-  <div class="dlg-b flipwrap">
-  <div class="flipsum"></div>
-  <div class="flipbody"></div>
-  <div class="flipfoot"><button class="flipmin">💾 Save and minimize</button><span class="spacer"></span><button class="flipback">← Back</button><button class="primary flipnext">Next →</button></div>
-  <div class="flipconfirm" hidden><span>Finish this build? It and the inventory saved for it are removed from the app.</span><button class="flipno">Cancel</button><button class="danger flipyes">Yes, finish</button></div>
-  </div>
-</dialog>
-
-<!-- Review dialog -->
-<dialog id="dlgReview">
-  <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <div class="review">
-      <div class="revleft"><div id="revCapE"></div><div id="shotPane">
-        <div class="ctrls">
-          <div class="seg" id="shotTabs"></div>
-          <span class="spacer"></span>
-          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button>
-        </div>
-        <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
-        <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
-        <div id="shotWrap"><img id="shot" alt="capture"><button id="btnReOcr" class="reocr" title="Read this screenshot again" aria-label="Read this screenshot again">↻</button><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
-        <div class="progress"><div id="prog"></div></div>
-        <div class="hint" id="ocrState"></div>
-        <p class="ocrnote">ℹ️ Works with the <b>English</b> version of the game only. Text is read automatically and mistakes can happen – always double-check the fields and hidden objectives against the email.</p>
-        <details><summary>Raw text read from screen</summary><div class="rawtxt" id="rawTxt"></div></details>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PCBS Job Board</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=0.14.3" />
+  </head>
+  <body>
+    <header>
+      <h1>PCBS <span>Job Board</span></h1>
+      <button id="btnShare" title="Connect screen (Shift+C)">🖥️ Connect screen</button>
+      <div class="scrchip" id="scrChip" hidden>
+        <button id="btnChange" class="scrprev" title="Screen connected – click to change screen (Shift+C)" aria-label="Screen connected – change screen">
+          <canvas id="live" width="160" height="90"></canvas><span class="dot on" id="dot"></span>
+        </button>
+        <button id="btnStop" class="scrstop" title="Stop capture" aria-label="Stop capture"></button>
       </div>
-      <div class="form" id="revJob"></div></div>   <!-- the job's fields (email, objectives, tasks) – under the screenshot -->
-      <div class="form" id="revForm"></div>
-    </div>
-  </div>
-</dialog>
+      <div class="capsplit">
+        <button class="primary big" id="btnCapture" title="Capture job (C)">📸 Capture job</button>
+        <button class="primary capplus" id="btnManual" title="Manual job (M)" aria-label="Manual job">＋</button>
+      </div>
+      <button id="btnFlip" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>
+        📦
+      </button>
+      <div class="spacer"></div>
+      <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
+      <div class="careerbar" id="careerBar">
+        <span class="cbl">Career</span>
+        <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level" /></label>
+        <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level" />%</label>
+      </div>
+      <button id="btnUnlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game">
+        <span class="ulic"></span><template></template>
+      </button>
+      <div class="notify" id="notify" hidden>
+        <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
+        <div class="notipanel" id="notiPanel" hidden></div>
+      </div>
+      <button id="btnPartsDb" class="iconbtn pdbbtn" title="Parts database" aria-label="Parts database">📖</button>
+      <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
+      <button id="btnSettings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
+      <button id="btnHelp" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
+    </header>
 
-<!-- Settings dialog -->
-<dialog id="dlgSettings" style="max-width:660px">
-  <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <h4 class="sub">Hidden objectives</h4>
-    <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
-    <button id="btnRules">Edit keyword rules…</button>
-    <h4 class="sub">Screen areas</h4>
-    <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
-    <div id="areaStatus" class="areastatus"></div>
-    <h4 class="sub">Keyboard</h4>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
-    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
-    <h4 class="sub">DLC &amp; promo parts</h4>
-    <div id="dlcList"></div>
-    <p class="hint" id="dlcOther"></p>
-    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
-    <h4 class="sub">Game version</h4>
-    <select id="gameVersion" style="width:100%"></select>
-    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
-    <p class="hint" id="dbInfo"></p>
-    <h4 class="sub">Backup</h4>
-    <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
-    <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
-    <input type="file" id="importFile" accept=".json" hidden>
-    <h4 class="sub danger">Reset</h4>
-    <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
-    <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
-  </div>
-</dialog>
+    <main>
+      <section>
+        <p class="row-title"><b>Workbenches</b> one job per table</p>
+        <div id="tables"></div>
+      </section>
+      <section>
+        <p class="row-title"><b>Open jobs</b> soonest deadline first <span id="qCount"></span></p>
+        <div id="queue"></div>
+      </section>
+    </main>
 
-<!-- Story job report -->
-<dialog id="dlgStory" style="max-width:600px">
-  <div class="dlg-h"><h3>📖 Report a story job</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b form">
-    <p class="hint">Story jobs come from career story customers – they come back, write long emails and have no hidden objectives. Reported ones are added to the list, so the board recognises them for everyone. Any one of these is enough:</p>
-    <label>Sender's email address</label><input id="sEmail" placeholder="e.g. robernator445@alaprofa.net">
-    <div class="grid2"><div><label>Email subject</label><input id="sSubject" placeholder="e.g. Computer has gone crazy?!"></div><div><label>Signed with the name</label><input id="sName" placeholder="e.g. Rob"></div></div>
-    <label>Email text, objectives, labour / budget (optional)</label><textarea id="sDetails" rows="6"></textarea>
-    <p class="hint" id="sRepoHint"></p>
-    <div class="btnrow"><button class="primary" id="sDirect">📨 Send report</button><button class="primary" id="sGitHub">Open report on GitHub</button><button id="sCopy">Copy report</button></div>
-  </div>
-</dialog>
+    <video
+      id="video"
+      autoplay
+      muted
+      playsinline
+      style="position: fixed; left: 0; bottom: 0; width: 4px; height: 4px; opacity: 0.01; pointer-events: none"
+    ></video>
+    <div id="drop">Drop screenshot to create a job</div>
+    <div id="toast"><span id="toastTxt"></span><button id="toastBtn">Undo</button></div>
+    <div class="ac" id="ac" hidden></div>
 
-<!-- Reset confirmation -->
-<dialog id="dlgReset" style="max-width:460px">
-  <div class="dlg-h"><h3>🗑 Reset all data?</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <p>This deletes <b>all jobs</b>, your keyword rules and every setting, forgets the screen areas and disconnects the screen.</p>
-    <p class="warnbox">It can't be undone. If you might want your jobs back, press <b>Export backup</b> first.</p>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="resetSure"><span><b>Yes, I want to delete everything</b></span></label>
-    <div class="btnrow"><button class="danger solid" id="resetGo" disabled>Delete everything</button><span class="spacer"></span><button data-close autofocus>Cancel</button></div>
-  </div>
-</dialog>
+    <!-- 📦 PC Bay build -->
+    <dialog id="dlgFlip" class="flipdlg">
+      <div class="dlg-h">
+        <h3 style="flex: none">📦 PC Bay build</h3>
+        <div class="flipsteps"></div>
+        <button class="ghost flipmin" title="Save and minimize">✕</button>
+      </div>
+      <div class="dlg-b flipwrap">
+        <div class="flipsum"></div>
+        <div class="flipbody"></div>
+        <div class="flipfoot">
+          <button class="flipmin">💾 Save and minimize</button
+          ><label
+            class="fnewsw"
+            title="Should the suggestions use NEW parts from your inventory? A new part keeps only ⅓ of its price in the sale value, so they're left out unless you switch this on. You can still put any part in yourself (＋ Use)."
+            ><input type="checkbox" class="flipnewsw" role="switch" /><span class="sw" aria-hidden="true"></span>Suggest NEW parts</label
+          ><span class="spacer"></span><button class="flipback">← Back</button><button class="primary flipnext">Next →</button>
+        </div>
+        <div class="flipconfirm" hidden>
+          <span>Finish this build? It and the inventory saved for it are removed from the app.</span><button class="flipno">Cancel</button
+          ><button class="danger flipyes">Yes, finish</button>
+        </div>
+      </div>
+    </dialog>
 
-<!-- Report dialog -->
-<dialog id="dlgReport" style="max-width:560px">
-  <div class="dlg-h"><h3>🚩 Report a missing part</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b form">
-    <label>Exact part name (as shown in the game)</label><input id="rName" placeholder="e.g. Corsair RM850x">
-    <div class="grid2"><div><label>Category</label><select id="rCat"><option value="">— choose —</option><option>CPU</option><option>CPU Cooler</option><option>Motherboard</option><option>RAM</option><option>GPU</option><option>Storage</option><option>PSU</option><option>Case</option><option>Case Fan</option><option>Cables</option><option>Water Cooling</option><option>Other</option></select></div><div><label>From</label><select id="rDlc"></select></div></div>
-    <div class="grid3"><div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1" max="99"></div><div><label>Level % (if known)</label><input id="rPct" type="number" min="0" max="100" placeholder="e.g. 40" title="How far into that level the part unlocks – the in-game shop shows it as a bar under the level"></div><div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0"></div></div>
-    <label>Notes</label><textarea id="rNotes" rows="3" placeholder="Where did you see it? Shop, PC Bay, customer PC…"></textarea>
-    <p class="hint" id="rRepoHint"></p>
-    <div class="btnrow"><button class="primary" id="rDirect">📨 Send report</button><button class="primary" id="rSend">Open report on GitHub</button><button id="rCopy">Copy report</button></div>
-  </div>
-</dialog>
+    <!-- Review dialog -->
+    <dialog id="dlgReview">
+      <div class="dlg-h">
+        <h3 id="revTitle">New job from capture</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b">
+        <div class="review">
+          <div class="revleft">
+            <div id="revCapE"></div>
+            <div id="shotPane">
+              <div class="ctrls">
+                <div class="seg" id="shotTabs"></div>
+                <span class="spacer"></span>
+                <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button>
+              </div>
+              <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
+              <div id="blackWarn" class="hint" hidden style="color: var(--warn); border: 1px solid var(--warn); border-radius: 6px; padding: 8px"></div>
+              <div id="shotWrap">
+                <img id="shot" alt="capture" /><button id="btnReOcr" class="reocr" title="Read this screenshot again" aria-label="Read this screenshot again">
+                  ↻
+                </button>
+                <div class="crop email" id="cropEmail"><label>EMAIL</label></div>
+                <div class="crop stats" id="cropStats"><label>PC STATS</label></div>
+              </div>
+              <div class="progress"><div id="prog"></div></div>
+              <div class="hint" id="ocrState"></div>
+              <p class="ocrnote">
+                ℹ️ Works with the <b>English</b> version of the game only. Text is read automatically and mistakes can happen – always double-check the fields
+                and hidden objectives against the email.
+              </p>
+              <details>
+                <summary>Raw text read from screen</summary>
+                <div class="rawtxt" id="rawTxt"></div>
+              </details>
+            </div>
+            <div class="form" id="revJob"></div>
+          </div>
+          <!-- the job's fields (email, objectives, tasks) – under the screenshot -->
+          <div class="form" id="revForm"></div>
+        </div>
+      </div>
+    </dialog>
 
-<!-- Keyboard shortcuts dialog -->
-<dialog id="dlgKeys" style="max-width:560px">
-  <div class="dlg-h"><h3>⌨ Keyboard shortcuts</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b" id="keysBody"></div>
-</dialog>
+    <!-- Settings dialog -->
+    <dialog id="dlgSettings" style="max-width: 660px">
+      <div class="dlg-h">
+        <h3>Settings</h3>
+        <a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b">
+        <h4 class="sub">Hidden objectives</h4>
+        <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
+        <button id="btnRules">Edit keyword rules…</button>
+        <h4 class="sub">Screen areas</h4>
+        <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
+        <div id="areaStatus" class="areastatus"></div>
+        <h4 class="sub">Keyboard</h4>
+        <label class="dlcrow"
+          ><input type="checkbox" class="switch" id="keysToggle" /><span
+            ><b>Keyboard shortcuts</b><br /><small
+              >Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small
+            ></span
+          ></label
+        >
+        <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+        <h4 class="sub">DLC &amp; promo parts</h4>
+        <div id="dlcList"></div>
+        <p class="hint" id="dlcOther"></p>
+        <p class="hint note-console">
+          ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.
+        </p>
+        <h4 class="sub">Game version</h4>
+        <select id="gameVersion" style="width: 100%"></select>
+        <p class="hint">
+          Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers,
+          so if you play on console, keep the latest version.
+        </p>
+        <p class="hint" id="dbInfo"></p>
+        <h4 class="sub">Backup</h4>
+        <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
+        <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
+        <input type="file" id="importFile" accept=".json" hidden />
+        <h4 class="sub danger">Reset</h4>
+        <p class="hint">
+          Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the
+          first time.
+        </p>
+        <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
+      </div>
+    </dialog>
 
-<!-- 📖 Parts database – every part of a category, filtered by name -->
-<dialog id="dlgPartsDb" class="pdbdlg">
-  <div class="dlg-h"><h3>📖 Parts database</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
-  <div class="dlg-b">
-    <div id="pdbTabs" class="pdbtabs" role="toolbar" aria-label="Part categories"></div>
-    <div class="pdbbar"><input id="pdbFilter" type="search" placeholder="Filter by name…" autocomplete="off" aria-label="Filter parts by name"><span id="pdbCount" class="hint"></span></div>
-    <p id="pdbNote" class="hint pdbnote"></p>
-    <div id="pdbWrap" class="pdbwrap"><table id="pdbTable" class="pdbtable"></table></div>
-  </div>
-</dialog>
+    <!-- Story job report -->
+    <dialog id="dlgStory" style="max-width: 600px">
+      <div class="dlg-h">
+        <h3>📖 Report a story job</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b form">
+        <p class="hint">
+          Story jobs come from career story customers – they come back, write long emails and have no hidden objectives. Reported ones are added to the list, so
+          the board recognises them for everyone. Any one of these is enough:
+        </p>
+        <label>Sender's email address</label><input id="sEmail" placeholder="e.g. robernator445@alaprofa.net" />
+        <div class="grid2">
+          <div><label>Email subject</label><input id="sSubject" placeholder="e.g. Computer has gone crazy?!" /></div>
+          <div><label>Signed with the name</label><input id="sName" placeholder="e.g. Rob" /></div>
+        </div>
+        <label>Email text, objectives, labour / budget (optional)</label><textarea id="sDetails" rows="6"></textarea>
+        <p class="hint" id="sRepoHint"></p>
+        <div class="btnrow">
+          <button class="primary" id="sDirect">📨 Send report</button><button class="primary" id="sGitHub">Open report on GitHub</button
+          ><button id="sCopy">Copy report</button>
+        </div>
+      </div>
+    </dialog>
 
-<!-- Changelog – read from CHANGELOG.md (the same file as on GitHub) -->
-<dialog id="dlgChangelog" class="cldlg">
-  <div class="dlg-h"><h3>📜 What's new – changelog</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
-  <div class="dlg-b" id="clBody"><p class="hint">Loading…</p></div>
-</dialog>
+    <!-- Reset confirmation -->
+    <dialog id="dlgReset" style="max-width: 460px">
+      <div class="dlg-h">
+        <h3>🗑 Reset all data?</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b">
+        <p>This deletes <b>all jobs</b>, your keyword rules and every setting, forgets the screen areas and disconnects the screen.</p>
+        <p class="warnbox">It can't be undone. If you might want your jobs back, press <b>Export backup</b> first.</p>
+        <label class="dlcrow"
+          ><input type="checkbox" class="switch" id="resetSure" /><span><b>Yes, I want to delete everything</b></span></label
+        >
+        <div class="btnrow">
+          <button class="danger solid" id="resetGo" disabled>Delete everything</button><span class="spacer"></span><button data-close autofocus>Cancel</button>
+        </div>
+      </div>
+    </dialog>
 
-<!-- How to use it (pictures load only when the window is opened) -->
-<dialog id="dlgHelp" class="helpdlg">
-  <div class="dlg-h"><h3>❓ How to use it</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
-  <div class="dlg-b help">
-    <img class="hbanner" data-src="img/help/banner.webp" width="1100" height="385" alt="PCBS Job Board – reads job emails, spots hidden objectives, plans the parts and helps you flip PC Bay builds for profit">
+    <!-- Report dialog -->
+    <dialog id="dlgReport" style="max-width: 560px">
+      <div class="dlg-h">
+        <h3>🚩 Report a missing part</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b form">
+        <label>Exact part name (as shown in the game)</label><input id="rName" placeholder="e.g. Corsair RM850x" />
+        <div class="grid2">
+          <div>
+            <label>Category</label
+            ><select id="rCat">
+              <option value="">— choose —</option>
+              <option>CPU</option>
+              <option>CPU Cooler</option>
+              <option>Motherboard</option>
+              <option>RAM</option>
+              <option>GPU</option>
+              <option>Storage</option>
+              <option>PSU</option>
+              <option>Case</option>
+              <option>Case Fan</option>
+              <option>Cables</option>
+              <option>Water Cooling</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label>From</label
+            ><select id="rDlc"></select>
+          </div>
+        </div>
+        <div class="grid3">
+          <div><label>Unlock level (if known)</label><input id="rLevel" type="number" min="1" max="99" /></div>
+          <div>
+            <label>Level % (if known)</label
+            ><input
+              id="rPct"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="e.g. 40"
+              title="How far into that level the part unlocks – the in-game shop shows it as a bar under the level"
+            />
+          </div>
+          <div><label>Shop price $ (if known)</label><input id="rPrice" type="number" min="0" /></div>
+        </div>
+        <label>Notes</label><textarea id="rNotes" rows="3" placeholder="Where did you see it? Shop, PC Bay, customer PC…"></textarea>
+        <p class="hint" id="rRepoHint"></p>
+        <div class="btnrow">
+          <button class="primary" id="rDirect">📨 Send report</button><button class="primary" id="rSend">Open report on GitHub</button
+          ><button id="rCopy">Copy report</button>
+        </div>
+      </div>
+    </dialog>
 
-    <h4>1. Set your career level</h4>
-    <p>Enter your <b>career level</b> and <b>%</b> in the top bar, so suggestions only show parts you have unlocked. It updates by itself after your first capture. The badge next to it lists what every level unlocks – in the game and in this app.</p>
+    <!-- Keyboard shortcuts dialog -->
+    <dialog id="dlgKeys" style="max-width: 560px">
+      <div class="dlg-h">
+        <h3>⌨ Keyboard shortcuts</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b" id="keysBody"></div>
+    </dialog>
 
-    <h4>2. Connect the game screen</h4>
-    <p>Click <b>🖥️ Connect screen</b> and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste (<b>Ctrl+V</b>) or drop a screenshot instead. Once connected, the button turns into a small live preview – click it to change the screen, the red <b>■</b> next to it stops capturing.</p>
+    <!-- 📖 Parts database – every part of a category, filtered by name -->
+    <dialog id="dlgPartsDb" class="pdbdlg">
+      <div class="dlg-h">
+        <h3>📖 Parts database</h3>
+        <button class="ghost" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-b">
+        <div id="pdbTabs" class="pdbtabs" role="toolbar" aria-label="Part categories"></div>
+        <div class="pdbbar">
+          <input id="pdbFilter" type="search" placeholder="Filter by name…" autocomplete="off" aria-label="Filter parts by name" /><span
+            id="pdbCount"
+            class="hint"
+          ></span>
+        </div>
+        <p id="pdbNote" class="hint pdbnote"></p>
+        <div id="pdbWrap" class="pdbwrap"><table id="pdbTable" class="pdbtable"></table></div>
+      </div>
+    </dialog>
 
-    <h4>3. Capture the job email</h4>
-    <p>Open the job email in the game and click <b>📸 Capture job</b> (<b>＋</b> next to it adds a job by hand). On your very first capture a large window shows where the app found the email – adjust the box if needed and press <b>Use this area</b>. This is only needed once.</p>
-    <img data-src="img/help/area-setup.webp" width="1100" height="688" alt="The screen area window with the email found">
+    <!-- Changelog – read from CHANGELOG.md (the same file as on GitHub) -->
+    <dialog id="dlgChangelog" class="cldlg">
+      <div class="dlg-h">
+        <h3>📜 What's new – changelog</h3>
+        <button class="ghost" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-b" id="clBody"><p class="hint">Loading…</p></div>
+    </dialog>
 
-    <h4>4. Check the new job</h4>
-    <p>The new job window shows everything that was read. Fix anything that looks off, tick the hidden objectives you want to keep, then press <b>Create job</b>. Email too long for one screen? Scroll in the game and press <b>📸 Add email capture</b> – the parts are joined.</p>
-    <img data-src="img/help/new-job.webp" width="1100" height="688" alt="The new job window with suggested hidden objectives">
+    <!-- How to use it (pictures load only when the window is opened) -->
+    <dialog id="dlgHelp" class="helpdlg">
+      <div class="dlg-h">
+        <h3>❓ How to use it</h3>
+        <button class="ghost" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-b help">
+        <img
+          class="hbanner"
+          data-src="img/help/banner.webp"
+          width="1100"
+          height="385"
+          alt="PCBS Job Board – reads job emails, spots hidden objectives, plans the parts and helps you flip PC Bay builds for profit"
+        />
 
-    <h4>5. Add the customer's parts and pick swaps</h4>
-    <p>When the PC is on your bench, open <b>PC Stats</b> in the game and press <b>✎ Edit</b> on the job card, then <b>📸 Add PC parts capture</b> (keyboard: select the job and press <b>P</b> – it does both). Take more screenshots if the list is long. <b>Suggested swaps</b> appear right away – only unlocked parts that fit the PC, cheapest first within budget. Tick the ones you want and they're added to the job.</p>
-    <p>For a <b>3DMark score</b> objective you get whole part sets – XMP, more RAM sticks, a new or second GPU, a new CPU… – each with the score it reaches. One tick adds the whole set. It works for PCs built from nothing too.</p>
-    <div class="hpair"><img data-src="img/help/swaps.webp" width="758" height="1010" alt="Suggested swaps in the new job window"><img data-src="img/help/bench-sets.webp" width="1100" height="359" alt="Part sets for a 3DMark score"></div>
+        <h4>1. Set your career level</h4>
+        <p>
+          Enter your <b>career level</b> and <b>%</b> in the top bar, so suggestions only show parts you have unlocked. It updates by itself after your first
+          capture. The badge next to it lists what every level unlocks – in the game and in this app.
+        </p>
 
-    <h4>6. Work the job</h4>
-    <p>Put the job on a workbench (drag it, or press T1 / T2 / T3). Tick objectives as you go, add things you find while working, and use <b>⇄ Add part replacement</b> to plan more swaps – start typing and pick from the list.</p>
-    <p>The <b>Status</b> row shows the budget, power, 3DMark score, overclock and whether the planned parts fit together – hover or tap a tile for details. The <b>💡</b> next to ✎ has tips for the job, like thermal paste, XMP or the leak test.</p>
-    <div class="hpair"><img data-src="img/help/job-card.webp" width="687" height="1094" alt="A job card on a workbench"><div><img data-src="img/help/bench-tile.webp" width="546" height="315" alt="The 3DMark tile"><img data-src="img/help/oc-tile.webp" width="546" height="369" alt="The overclock tile"><img data-src="img/help/tips.webp" width="546" height="255" alt="Tips for a job"></div></div>
-    <p>Now you can order parts, save, quit and come back tomorrow knowing exactly which part goes where.</p>
-    <img data-src="img/help/open-jobs.webp" width="1100" height="688" alt="The board with workbenches and open jobs">
+        <h4>2. Connect the game screen</h4>
+        <p>
+          Click <b>🖥️ Connect screen</b> and choose the PCBS window (or the Remote Play / chiaki-ng window on console). You can also skip this and paste
+          (<b>Ctrl+V</b>) or drop a screenshot instead. Once connected, the button turns into a small live preview – click it to change the screen, the red
+          <b>■</b> next to it stops capturing.
+        </p>
 
-    <h4>7. Finish</h4>
-    <p>Press <b>✔ Job completed</b> when the job is done.</p>
+        <h4>3. Capture the job email</h4>
+        <p>
+          Open the job email in the game and click <b>📸 Capture job</b> (<b>＋</b> next to it adds a job by hand). On your very first capture a large window
+          shows where the app found the email – adjust the box if needed and press <b>Use this area</b>. This is only needed once.
+        </p>
+        <img data-src="img/help/area-setup.webp" width="1100" height="688" alt="The screen area window with the email found" />
 
-    <h4>📦 PC Bay builds (career level 9+)</h4>
-    <p>Bought a broken PC on PC Bay? Click <b>📦</b> in the top bar. The build gets its own tile and can be saved and minimised at any time.</p>
-    <p><b>1. Parts</b> – look at the PC in the game, open its <b>Resale Value</b> window and capture it. The parts and their values are read, and a part worth far less than it should be is marked as broken.</p>
-    <img data-src="img/help/pcbay-parts.webp" width="1100" height="826" alt="Step 1: the parts read from the Resale Value window">
-    <p><b>2. Fix</b> – open your <b>Inventory</b> in the game, pick a category and capture it. Used, new and broken parts are read from the cards. Pick the replacement for the broken part – used parts are best, because a new part keeps only about a third of its price in the sale value.</p>
-    <img data-src="img/help/pcbay-fix.webp" width="1100" height="631" alt="Step 2: replacing the broken part from the inventory">
-    <p><b>3. Hardware</b> – capture more inventory categories (GPU, CPU, RAM…) to see which parts you already own raise the 3DMark score – and so the sale price – with the profit for each.</p>
-    <img data-src="img/help/pcbay-hardware.webp" width="1100" height="892" alt="Step 3: upgrades from the inventory">
-    <p><b>4. Profit</b> – a short checklist in the right order: boot to the OS, XMP, overclocking, 3DMark – with the expected score and sale price. Press <b>✔ Finish build</b> once it's sold.</p>
-    <div class="hpair"><img data-src="img/help/pcbay-profit.webp" width="1100" height="624" alt="Step 4: the profit checklist"><img data-src="img/help/pcbay-tile.webp" width="512" height="321" alt="A PC Bay build tile"></div>
+        <h4>4. Check the new job</h4>
+        <p>
+          The new job window shows everything that was read. Fix anything that looks off, tick the hidden objectives you want to keep, then press
+          <b>Create job</b>. Email too long for one screen? Scroll in the game and press <b>📸 Add email capture</b> – the parts are joined.
+        </p>
+        <img data-src="img/help/new-job.webp" width="1100" height="688" alt="The new job window with suggested hidden objectives" />
 
-    <h4>Tweak it</h4>
-    <p>In <b>⚙️ Settings</b> you'll find the hidden objective rules, screen areas, keyboard shortcuts, DLC &amp; promo parts, game version, backup and reset.</p>
-    <p>Prefer the keyboard? Pick a job with the arrow keys, act on it with single keys (1 2 3, E, P, R, N, D…) or press <b>Enter</b> to go into the card; <b>B</b> opens the 📖 parts database. Press <b>?</b> for the full list.</p>
-    <div class="hpair"><img data-src="img/help/rules.webp" width="1100" height="784" alt="The hidden objective rules table"><img data-src="img/help/settings.webp" width="992" height="1134" alt="The Settings window"></div>
-    <img data-src="img/help/unlocks.webp" width="840" height="903" alt="The career unlocks list" style="max-width:420px">
+        <h4>5. Add the customer's parts and pick swaps</h4>
+        <p>
+          When the PC is on your bench, open <b>PC Stats</b> in the game and press <b>✎ Edit</b> on the job card, then <b>📸 Add PC parts capture</b> (keyboard:
+          select the job and press <b>P</b> – it does both). Take more screenshots if the list is long. <b>Suggested swaps</b> appear right away – only unlocked
+          parts that fit the PC, cheapest first within budget. Tick the ones you want and they're added to the job.
+        </p>
+        <p>
+          For a <b>3DMark score</b> objective you get whole part sets – XMP, more RAM sticks, a new or second GPU, a new CPU… – each with the score it reaches.
+          One tick adds the whole set. It works for PCs built from nothing too.
+        </p>
+        <div class="hpair">
+          <img data-src="img/help/swaps.webp" width="758" height="1010" alt="Suggested swaps in the new job window" /><img
+            data-src="img/help/bench-sets.webp"
+            width="1100"
+            height="359"
+            alt="Part sets for a 3DMark score"
+          />
+        </div>
 
-    <p class="htip">💡 Text reading is never 100% perfect – always give the new job a quick look before adding it.</p>
-  </div>
-</dialog>
+        <h4>6. Work the job</h4>
+        <p>
+          Put the job on a workbench (drag it, or press T1 / T2 / T3). Tick objectives as you go, add things you find while working, and use
+          <b>⇄ Add part replacement</b> to plan more swaps – start typing and pick from the list.
+        </p>
+        <p>
+          The <b>Status</b> row shows the budget, power, 3DMark score, overclock and whether the planned parts fit together – hover or tap a tile for details.
+          The <b>💡</b> next to ✎ has tips for the job, like thermal paste, XMP or the leak test.
+        </p>
+        <div class="hpair">
+          <img data-src="img/help/job-card.webp" width="687" height="1094" alt="A job card on a workbench" />
+          <div>
+            <img data-src="img/help/bench-tile.webp" width="546" height="315" alt="The 3DMark tile" /><img
+              data-src="img/help/oc-tile.webp"
+              width="546"
+              height="369"
+              alt="The overclock tile"
+            /><img data-src="img/help/tips.webp" width="546" height="255" alt="Tips for a job" />
+          </div>
+        </div>
+        <p>Now you can order parts, save, quit and come back tomorrow knowing exactly which part goes where.</p>
+        <img data-src="img/help/open-jobs.webp" width="1100" height="688" alt="The board with workbenches and open jobs" />
 
-<!-- Screen area set-up -->
-<dialog id="dlgAreas" class="areasdlg">
-  <div class="dlg-h"><h3 id="areaTitle">🎯 Set up screen area</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <div id="areaMsg" class="areamsg"></div>
-    <div id="areaWrap"><img id="areaImg" alt="screenshot"><div id="areaBox" hidden><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i><i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i></div></div>
-    <p class="hint">Drag the box to move it, drag its corners or edges to resize it, or drag anywhere else on the picture to draw a new one.</p>
-    <div class="areabtns"><button class="primary big" id="areaUse">✓ Use this area</button><button id="areaRedetect">↻ Detect again</button><button id="areaDraw">✎ Draw it myself</button><span class="spacer"></span><button data-close>Skip for now</button></div>
-  </div>
-</dialog>
+        <h4>7. Finish</h4>
+        <p>Press <b>✔ Job completed</b> when the job is done.</p>
 
-<!-- Rules dialog -->
-<dialog id="dlgRules" class="rulesdlg">
-  <div class="dlg-h"><h3>🔍 Hidden objectives – when to suggest them</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <p class="hint">When an email contains one of the words in the green column, the objective on the left is suggested. Words in the red column stop that (e.g. <i>clean install</i> is not about dust). Type a word and press <kbd>Enter</kbd> to add it, click <b>×</b> to remove it. Changes are saved straight away.</p>
-    <div class="rtable" id="rulesTable"></div>
-    <div class="rbtns"><button class="primary" id="ruleAdd">＋ Add objective</button><span class="spacer"></span><button id="rulesReset">↺ Reset all to defaults</button></div>
-    <h4 class="sub">Automatic detections</h4>
-    <div id="smartList" class="smartlist"></div>
-    <h4 class="sub">🔎 Try it</h4>
-    <textarea id="ruleTry" rows="2" placeholder="Type or paste a sentence from an email, e.g. “My PC lives on the floor and it's really slow”"></textarea>
-    <div id="ruleTryOut" class="tryout"></div>
-  </div>
-</dialog>
+        <h4>📦 PC Bay builds (career level 9+)</h4>
+        <p>Bought a broken PC on PC Bay? Click <b>📦</b> in the top bar. The build gets its own tile and can be saved and minimised at any time.</p>
+        <p>
+          <b>1. Parts</b> – look at the PC in the game, open its <b>Resale Value</b> window and capture it. The parts and their values are read, and a part
+          worth far less than it should be is marked as broken.
+        </p>
+        <img data-src="img/help/pcbay-parts.webp" width="1100" height="826" alt="Step 1: the parts read from the Resale Value window" />
+        <p>
+          <b>2. Fix</b> – open your <b>Inventory</b> in the game, pick a category and capture it. Used, new and broken parts are read from the cards. Pick the
+          replacement for the broken part – used parts are best, because a new part keeps only about a third of its price in the sale value.
+        </p>
+        <img data-src="img/help/pcbay-fix.webp" width="1100" height="631" alt="Step 2: replacing the broken part from the inventory" />
+        <p>
+          <b>3. Hardware</b> – capture more inventory categories (GPU, CPU, RAM…) to see which parts you already own raise the 3DMark score – and so the sale
+          price – with the profit for each.
+        </p>
+        <img data-src="img/help/pcbay-hardware.webp" width="1100" height="892" alt="Step 3: upgrades from the inventory" />
+        <p>
+          <b>4. Profit</b> – a short checklist in the right order: boot to the OS, XMP, overclocking, 3DMark – with the expected score and sale price. Press
+          <b>✔ Finish build</b> once it's sold.
+        </p>
+        <div class="hpair">
+          <img data-src="img/help/pcbay-profit.webp" width="1100" height="624" alt="Step 4: the profit checklist" /><img
+            data-src="img/help/pcbay-tile.webp"
+            width="512"
+            height="321"
+            alt="A PC Bay build tile"
+          />
+        </div>
 
-<!-- js/core: the logic (no page access) · js/ui: windows, board, capture – plain scripts in this order (no build step; file:// works) -->
-<script src="js/config.js?v=0.14.3"></script>   <!-- stays here: older versions check this file for updates -->
-<script src="js/core/util.js?v=0.14.3"></script>
-<script src="data/parts-db.js?v=0.14.3"></script>
-<script src="js/core/parser.js?v=0.14.3"></script>
-<script src="js/core/parts.js?v=0.14.3"></script>
-<script src="js/core/compat.js?v=0.14.3"></script>
-<script src="js/core/unlocks.js?v=0.14.3"></script>
-<script src="js/core/bench.js?v=0.14.3"></script>
-<script src="js/core/oc.js?v=0.14.3"></script>
-<script src="js/core/hints.js?v=0.14.3"></script>
-<script src="js/core/suggest.js?v=0.14.3"></script>
-<script src="js/core/flip.js?v=0.14.3"></script>
-<script src="js/ui/autocomplete.js?v=0.14.3"></script>
-<script src="js/ui/flipui.js?v=0.14.3"></script>   <!-- before the board: saved PC Bay builds are drawn at start-up -->
-<script src="js/ui/state.js?v=0.14.3"></script>
-<script src="js/ui/board.js?v=0.14.3"></script>
-<script src="js/ui/capture.js?v=0.14.3"></script>
-<script src="js/ui/ocr.js?v=0.14.3"></script>
-<script src="js/ui/job-window.js?v=0.14.3"></script>
-<script src="js/ui/job-window-suggestions.js?v=0.14.3"></script>
-<script src="js/ui/settings.js?v=0.14.3"></script>
-<script src="js/ui/reports.js?v=0.14.3"></script>
-<script src="js/ui/backup.js?v=0.14.3"></script>
-<script src="js/ui/start.js?v=0.14.3"></script>
-<script src="js/ui/partsdb.js?v=0.14.3"></script>
-<script src="js/ui/rules.js?v=0.14.3"></script>
-<script src="js/ui/areas.js?v=0.14.3"></script>
-<script src="js/ui/story.js?v=0.14.3"></script>
-<script src="js/ui/notify.js?v=0.14.3"></script>
-<script src="js/ui/keys.js?v=0.14.3"></script>
-</body>
+        <h4>Tweak it</h4>
+        <p>
+          In <b>⚙️ Settings</b> you'll find the hidden objective rules, screen areas, keyboard shortcuts, DLC &amp; promo parts, game version, backup and reset.
+        </p>
+        <p>
+          Prefer the keyboard? Pick a job with the arrow keys, act on it with single keys (1 2 3, E, P, R, N, D…) or press <b>Enter</b> to go into the card;
+          <b>B</b> opens the 📖 parts database. Press <b>?</b> for the full list.
+        </p>
+        <div class="hpair">
+          <img data-src="img/help/rules.webp" width="1100" height="784" alt="The hidden objective rules table" /><img
+            data-src="img/help/settings.webp"
+            width="992"
+            height="1134"
+            alt="The Settings window"
+          />
+        </div>
+        <img data-src="img/help/unlocks.webp" width="840" height="903" alt="The career unlocks list" style="max-width: 420px" />
+
+        <p class="htip">💡 Text reading is never 100% perfect – always give the new job a quick look before adding it.</p>
+      </div>
+    </dialog>
+
+    <!-- Screen area set-up -->
+    <dialog id="dlgAreas" class="areasdlg">
+      <div class="dlg-h">
+        <h3 id="areaTitle">🎯 Set up screen area</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b">
+        <div id="areaMsg" class="areamsg"></div>
+        <div id="areaWrap">
+          <img id="areaImg" alt="screenshot" />
+          <div id="areaBox" hidden>
+            <i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i><i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i>
+          </div>
+        </div>
+        <p class="hint">Drag the box to move it, drag its corners or edges to resize it, or drag anywhere else on the picture to draw a new one.</p>
+        <div class="areabtns">
+          <button class="primary big" id="areaUse">✓ Use this area</button><button id="areaRedetect">↻ Detect again</button
+          ><button id="areaDraw">✎ Draw it myself</button><span class="spacer"></span><button data-close>Skip for now</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Rules dialog -->
+    <dialog id="dlgRules" class="rulesdlg">
+      <div class="dlg-h">
+        <h3>🔍 Hidden objectives – when to suggest them</h3>
+        <button class="ghost" data-close>✕</button>
+      </div>
+      <div class="dlg-b">
+        <p class="hint">
+          When an email contains one of the words in the green column, the objective on the left is suggested. Words in the red column stop that (e.g.
+          <i>clean install</i> is not about dust). Type a word and press <kbd>Enter</kbd> to add it, click <b>×</b> to remove it. Changes are saved straight
+          away.
+        </p>
+        <div class="rtable" id="rulesTable"></div>
+        <div class="rbtns">
+          <button class="primary" id="ruleAdd">＋ Add objective</button><span class="spacer"></span><button id="rulesReset">↺ Reset all to defaults</button>
+        </div>
+        <h4 class="sub">Automatic detections</h4>
+        <div id="smartList" class="smartlist"></div>
+        <h4 class="sub">🔎 Try it</h4>
+        <textarea id="ruleTry" rows="2" placeholder="Type or paste a sentence from an email, e.g. “My PC lives on the floor and it's really slow”"></textarea>
+        <div id="ruleTryOut" class="tryout"></div>
+      </div>
+    </dialog>
+
+    <!-- js/core: the logic (no page access) · js/ui: windows, board, capture – plain scripts in this order (no build step; file:// works) -->
+    <script src="js/config.js?v=0.14.3"></script>
+    <!-- stays here: older versions check this file for updates -->
+    <script src="js/core/util.js?v=0.14.3"></script>
+    <script src="data/parts-db.js?v=0.14.3"></script>
+    <script src="js/core/parser.js?v=0.14.3"></script>
+    <script src="js/core/parts.js?v=0.14.3"></script>
+    <script src="js/core/compat.js?v=0.14.3"></script>
+    <script src="js/core/unlocks.js?v=0.14.3"></script>
+    <script src="js/core/bench.js?v=0.14.3"></script>
+    <script src="js/core/oc.js?v=0.14.3"></script>
+    <script src="js/core/hints.js?v=0.14.3"></script>
+    <script src="js/core/suggest.js?v=0.14.3"></script>
+    <script src="js/core/flip.js?v=0.14.3"></script>
+    <script src="js/ui/autocomplete.js?v=0.14.3"></script>
+    <script src="js/ui/flipui.js?v=0.14.3"></script>
+    <!-- before the board: saved PC Bay builds are drawn at start-up -->
+    <script src="js/ui/state.js?v=0.14.3"></script>
+    <script src="js/ui/board.js?v=0.14.3"></script>
+    <script src="js/ui/capture.js?v=0.14.3"></script>
+    <script src="js/ui/ocr.js?v=0.14.3"></script>
+    <script src="js/ui/job-window.js?v=0.14.3"></script>
+    <script src="js/ui/job-window-suggestions.js?v=0.14.3"></script>
+    <script src="js/ui/settings.js?v=0.14.3"></script>
+    <script src="js/ui/reports.js?v=0.14.3"></script>
+    <script src="js/ui/backup.js?v=0.14.3"></script>
+    <script src="js/ui/start.js?v=0.14.3"></script>
+    <script src="js/ui/partsdb.js?v=0.14.3"></script>
+    <script src="js/ui/rules.js?v=0.14.3"></script>
+    <script src="js/ui/areas.js?v=0.14.3"></script>
+    <script src="js/ui/story.js?v=0.14.3"></script>
+    <script src="js/ui/notify.js?v=0.14.3"></script>
+    <script src="js/ui/keys.js?v=0.14.3"></script>
+  </body>
 </html>

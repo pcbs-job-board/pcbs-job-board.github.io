@@ -72,6 +72,9 @@ function flipRender() {
   const body = d.querySelector(".flipbody");
   body.innerHTML = [flipStep1, flipStep2, flipStep3, flipStep4][f.step - 1](f, st);
   d.querySelector(".flipback").hidden = f.step === 1;
+  const sw = d.querySelector(".fnewsw");
+  sw.hidden = f.step === 4; // parts are changed in steps 1–3
+  sw.querySelector("input").checked = !!f.allowNew;
   const nx = d.querySelector(".flipnext"),
     ready = flipCheck(st.build).ok;
   d.querySelector('[data-fstep="4"]').disabled = !ready && f.step !== 4;
@@ -178,7 +181,7 @@ const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
 // the assistant's results, worked out again only when the build / inventory changes (or ↻)
 let flipCache = { key: "", plan: null, ups: null };
 function flipAdvice(f) {
-  const key = JSON.stringify([f.id, f.parts, f.inv, f.changes, career.level]);
+  const key = JSON.stringify([f.id, f.parts, f.inv, f.changes, career.level, !!f.allowNew]);
   if (flipCache.key !== key) flipCache = { key, plan: flipPlan(f), ups: flipUpgrades(f) };
   return flipCache;
 }
@@ -192,8 +195,9 @@ function flipStep2(f, st) {
     .map(p => {
       const fix = f.changes.find(c => c.kind === "fix" && c.old === p.id),
         why = brokenWhy(p);
+      const newHidden = f.allowNew ? 0 : inv.filter(i => i.cat === p.cat && !i.taken && !i.used).length;
       const cands = inv
-        .filter(i => i.cat === p.cat && !i.taken)
+        .filter(i => i.cat === p.cat && !i.taken && (f.allowNew || i.used))
         .map(i => ({
           i,
           fits: flipFits(
@@ -206,7 +210,7 @@ function flipStep2(f, st) {
       ${
         fix
           ? `<div class="fchosen">Replacement: <b>${esc(fix.name)}</b> ${fix.isNew ? `<span class="tag new">NEW</span> <small class="warn">a new part loses ~66 % of its value: you pay ${money(fix.price ?? priceOf(fix.name))}, the sale value gains ${money(usedValue(fix.name))}</small>` : `<span class="tag used">USED</span>`} <button class="ghost x" data-fx="undo" data-k="${fix.id}">✕</button></div>`
-          : `<div class="fopts">${cands.map(({ i, fits }) => `<button data-fx="pick" data-part="${p.id}" data-inv="${i.id}" class="${fits ? "" : "nofit"}">${esc(i.name)} ${i.used ? `<span class="tag used">USED</span>` : `<span class="tag new">NEW</span>`}${fits ? "" : " <small>doesn't fit</small>"}</button>`).join("") || `<span class="hint">No ${esc(p.cat)} in your inventory yet – capture it or type one below.</span>`}
+          : `<div class="fopts">${cands.map(({ i, fits }) => `<button data-fx="pick" data-part="${p.id}" data-inv="${i.id}" class="${fits ? "" : "nofit"}">${esc(i.name)} ${i.used ? `<span class="tag used">USED</span>` : `<span class="tag new">NEW</span>`}${fits ? "" : " <small>doesn't fit</small>"}</button>`).join("") || `<span class="hint">${newHidden ? `No used ${esc(p.cat)} in your inventory – ${newHidden} new one${newHidden > 1 ? "s" : ""} left out (switch on <b>Suggest NEW parts</b> below), or type one.` : `No ${esc(p.cat)} in your inventory yet – capture it or type one below.`}</span>`}${cands.length && newHidden ? `<small class="hint">${newHidden} new one${newHidden > 1 ? "s" : ""} left out – <b>Suggest NEW parts</b> below.</small>` : ""}
           <div class="addrow"><input data-ac data-fx-name="${p.id}" placeholder="Or type the replacement" value="${esc(p.name)}" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fx-used="${p.id}"> used</label><button data-fx="typed" data-part="${p.id}">Use it</button></div></div>`
       }</div>`;
     })
@@ -430,6 +434,13 @@ flipDlg.addEventListener("change", e => {
   const f = flipCur,
     t = e.target;
   if (!f) return;
+  if (t.classList.contains("flipnewsw")) {
+    f.allowNew = t.checked;
+    flipSave();
+    flipRender();
+    toast(t.checked ? "Suggestions now include NEW parts from your inventory" : "Suggestions use only USED parts again");
+    return;
+  }
   if (t.dataset.fp === "value") {
     const p = f.parts.find(x => x.id === t.dataset.k);
     p.value = t.value === "" ? null : +t.value;

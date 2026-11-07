@@ -2667,6 +2667,63 @@ dialog.flipdlg {
   align-items: center;
   margin-top: 10px;
 }
+/* "Suggest NEW parts" switch: visible, quiet – a pill that lights up when on */
+.fnewsw {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 6px;
+  padding: 4px 11px 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+.fnewsw[hidden] {
+  display: none;
+}
+.fnewsw input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.fnewsw .sw {
+  position: relative;
+  width: 30px;
+  height: 17px;
+  border-radius: 9px;
+  background: #3a4552;
+  transition: background 0.15s;
+}
+.fnewsw .sw::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #cfd8e3;
+  transition: transform 0.15s;
+}
+.fnewsw:has(input:checked) {
+  color: var(--text, #e6edf5);
+  border-color: var(--accent);
+}
+.fnewsw input:checked + .sw {
+  background: var(--accent);
+}
+.fnewsw input:checked + .sw::after {
+  transform: translateX(13px);
+  background: #fff;
+}
+.fnewsw:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .flipfoot .spacer {
   flex: 1;
 }

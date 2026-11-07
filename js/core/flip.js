@@ -483,9 +483,11 @@ function flipTry(b, base, m, avail) {
     rank: (base.check.bad - e.check.bad) * 1e5 + gain,
   };
 }
+// the parts the assistant may suggest: free ones; NEW ones only when the build's "Suggest NEW parts" switch is on (off by
+// default – a new part keeps only ⅓ of its price in the sale value)
 const flipAvail = (f, b) => {
   const used = new Set(b.filter(p => p.inv).map(p => p.inv.id));
-  return flipInventory(f).filter(i => !i.taken && !used.has(i.id));
+  return flipInventory(f).filter(i => !i.taken && !used.has(i.id) && (f.allowNew || i.used));
 };
 // single changes on the PC as it is now, best first (each with its score and value)
 function flipUpgrades(f) {
