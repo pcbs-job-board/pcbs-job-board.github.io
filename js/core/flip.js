@@ -150,23 +150,31 @@ function parseInventoryColumn(lines) {
   if (cur) done(cur);
   return out;
 }
-// USED (dark letters, top right of the card picture) and BROKEN (red letters under it) – by colour, from where the
-// name is: the picture's top is ~0.30 of the screen height above the middle of the name. px(x, y) → [r, g, b] (0–1 coords)
+// USED (dark letters, top right of the card picture) and BROKEN (red letters under it), by colour – measured from the
+// part's name in *card widths* (colW), so it fits any capture: a full-screen 16:9 one or a window with a title bar and
+// black bars around the game (a 1512 × 948 Mac capture; screen-height units missed the labels there and hit the
+// selected card's black frame instead). From the name up: USED at 0.97–1.04 card widths, BROKEN at 0.82–0.89.
+// BROKEN must stand out from the rows just above and below it (red text on the picture), so a red fan or a red heatsink
+// – red all the way down the picture – doesn't count. px(x, y) → [r, g, b] (0–1 coords)
 function cardLabels(px, colX, colW, nameMidY, W, H) {
-  const top = nameMidY - 0.3,
-    cnt = (x0, x1, y0, y1, test) => {
+  const cw = colW * W,
+    // share of the pixels in rows k0..k1 (card widths above the name) and x0..x1 (share of the card width) passing test
+    band = (k0, k1, x0, x1, test) => {
       let n = 0,
         t = 0;
-      for (let y = y0; y < y1; y += 1 / H)
-        for (let x = x0; x < x1; x += 1 / W) {
+      for (let y = nameMidY * H - k1 * cw; y <= nameMidY * H - k0 * cw; y++)
+        for (let x = (colX + colW * x0) * W; x < (colX + colW * x1) * W; x++) {
           t++;
-          if (test(px(x, y))) n++;
+          if (test(px(x / W, y / H))) n++;
         }
       return t ? n / t : 0;
-    };
-  const dark = cnt(colX + colW * 0.62, colX + colW * 0.97, top + 0.004, top + 0.04, ([r, g, b]) => (r + g + b) / 3 < 90);
-  const red = cnt(colX + colW * 0.2, colX + colW * 0.8, top + 0.04, top + 0.1, ([r, g, b]) => r > 170 && g < 80 && b < 80);
-  return { used: dark > 0.05, broken: red > 0.035, dark, red };
+    },
+    isDark = ([r, g, b]) => (r + g + b) / 3 < 90,
+    isRed = ([r, g, b]) => r > 170 && g < 80 && b < 80;
+  const dark = band(0.97, 1.04, 0.62, 0.92, isDark),
+    red = band(0.82, 0.89, 0.2, 0.8, isRed),
+    around = Math.max(band(0.75, 0.81, 0.2, 0.8, isRed), band(0.9, 0.96, 0.2, 0.8, isRed));
+  return { used: dark > 0.05, broken: red > 0.1 && red - around > 0.08, dark, red, around };
 }
 // ---------- the build ----------
 const flipUid = () => Math.random().toString(36).slice(2, 9);
