@@ -137,6 +137,11 @@ Notes for later (not tasks yet):
 - Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published).
   **Very low priority**: only if Mariusz happens to collect enough readings before 1.0 (~20–30, see the list of what
   each reading needs, sent 2026-11-04); otherwise drop it.
+  Plan sent 2026-11-07 (32 readings): bench = Z370 AORUS Gaming 7 from his PC Bay build (none of his inventory boards
+  can overclock: B360 / B360N / H170), EVGA DG-84 case as is. i7-8700K × 11 working coolers (40–100 CFM) at ×47 / 1.35 V
+  and ×49 / 1.50 V = 22; i3-8350K × Engine 27 1U / Freezer 34 / DELOS RBW at ×40 / 1.20 V and ×47 / 1.40 V = 6;
+  i7-8700K + Freezer 34 at ×47 / 1.35 V in Antec P8, Silent Base 600, Kolink Ethereal, FSP CMT510 Plus = 4 (case effect).
+  Each: CPU, cooler, case (+ fans), multiplier, voltage, max temperature (OCCT or the BIOS readout), passed / throttled.
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
