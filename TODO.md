@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.4 (2026-11-07), ready – waiting for Mariusz's OK to release: "Overclock Unlocked" badge (compat oc=1 CPUs /
+_0.14.4 released 2026-11-07 (backup-0.14.3 made first): "Overclock Unlocked" badge (compat oc=1 CPUs /
 boards: inventory rows, This PC now, Profit list) · Profit step starts with the read-only parts list · own overclock
 values on the Profit step (f.ocSet {mult, core, mem} → flipOcOpts → flipScore cpuMhz / gpuShare = average of core and
 memory progress toward the OC base, capped 1.2; typing redraws around the field – patchAround – so focus stays)._
