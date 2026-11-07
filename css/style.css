@@ -199,7 +199,8 @@ main {
 }
 #queue {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  /* cards ~370–460 px wide at any window width (min() keeps one full-width card on a narrow screen) */
+  grid-template-columns: repeat(auto-fill, minmax(min(370px, 100%), 1fr));
   gap: 12px;
   align-items: start;
   min-height: 60px;
@@ -368,11 +369,15 @@ main {
   overflow-wrap: anywhere;
 }
 .swap .arr {
+  display: block;
   color: #e6edf5;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.1;
-  margin: 1px 0;
+  line-height: 0;
+  margin: 3px 0 3px 10px;
+}
+.swap .arr svg {
+  width: 13px;
+  height: 15px;
+  fill: currentColor;
 }
 .swap .sacts {
   display: flex;
