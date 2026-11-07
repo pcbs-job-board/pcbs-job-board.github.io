@@ -137,11 +137,12 @@ Notes for later (not tasks yet):
 - Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published).
   **Very low priority**: only if Mariusz happens to collect enough readings before 1.0 (~20–30, see the list of what
   each reading needs, sent 2026-11-04); otherwise drop it.
-  Plan sent 2026-11-07 (32 readings): bench = Z370 AORUS Gaming 7 from his PC Bay build (none of his inventory boards
-  can overclock: B360 / B360N / H170), EVGA DG-84 case as is. i7-8700K × 11 working coolers (40–100 CFM) at ×47 / 1.35 V
-  and ×49 / 1.50 V = 22; i3-8350K × Engine 27 1U / Freezer 34 / DELOS RBW at ×40 / 1.20 V and ×47 / 1.40 V = 6;
-  i7-8700K + Freezer 34 at ×47 / 1.35 V in Antec P8, Silent Base 600, Kolink Ethereal, FSP CMT510 Plus = 4 (case effect).
-  Each: CPU, cooler, case (+ fans), multiplier, voltage, max temperature (OCCT or the BIOS readout), passed / throttled.
+  Test sheet sent 2026-11-07 (PCBS-CPU-overclock-temperature-tests.xlsx, script: scratchpad octest/make.py): bench =
+  Silent Base 600 (Orange) + 2 Pure Wings 2, ASUS TUF Z370-PRO GAMING (to buy), 2 × HyperX Predator 2933, GTX 1060 X 6G
+  stock, ET650-G, VP4100. A: i3-8350K × 7 coolers (40–100 CFM) × ×40/1.20, ×45/1.40, ×50/1.55 = 21; B (optional, buy
+  i5-8600K) × 3 coolers × ×43/1.30, ×48/1.50 = 6; C: i3 + Freezer 34 ×45/1.40 in Antec P8, Kolink Ethereal, FSP CMT510
+  Plus, Silent Base without fans = 4; D: repeat coolers = 2. (i7-8700K is in the PC Bay build for sale; ATC700 169 mm
+  fits no case; Freezer 33 TR has no LGA 1151.)
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
