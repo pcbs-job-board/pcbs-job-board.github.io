@@ -257,7 +257,7 @@ const softOk = (f, build) => {
     ocGpu: build.some(p => p.cat === "GPU" && ocOf(p.name)) && hasUnlock("gpuOC"),
   };
 };
-// estimated 3DMark score of a build with XMP / overclocking (CPU: full potential, GPU: 90 %) as asked
+// estimated 3DMark score of a build with XMP / overclocking (each part's full potential) as asked
 function flipScore(build, o = {}) {
   const cpuP = build.find(p => p.cat === "CPU"),
     mbP = build.find(p => p.cat === "Motherboard"),
@@ -272,7 +272,7 @@ function flipScore(build, o = {}) {
   let gpuS = two ? g.two : g.one;
   if (o.ocGpu) {
     const oc = two ? g.ocTwo : g.ocOne;
-    // o.gpuShare: how far toward the overclock base the player got (from the clocks they set); else 90 % of it
+    // o.gpuShare: how far toward the overclock base the player got (from the clocks they set); else the full potential
     if (oc > gpuS) gpuS = Math.round(gpuS + (o.gpuShare ?? OC_SHARE) * (oc - gpuS));
   }
   const stick = Math.min(...sticks),
@@ -283,7 +283,7 @@ function flipScore(build, o = {}) {
   return sysBench(cpuBench({ ...cpu, mhz: cpuMhz }, ch, mhz), gpuS);
 }
 // the overclock the player says they set on the Profit step (f.ocSet: { mult, core, mem }) as flipScore options –
-// nothing set → the suggestion (CPU: full potential, GPU: 90 %)
+// nothing set → the suggestion (the full potential)
 function flipOcOpts(f, build) {
   const o = {},
     set = f.ocSet || {},

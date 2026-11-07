@@ -330,7 +330,7 @@ function flipStep4(f, st) {
       "ocGpu",
       "Overclock the GPU (GPU Tuner)",
       gs
-        ? `GPU Tuner: core clock ${gs.core.toLocaleString()} MHz (+${gs.dCore}), memory clock ${gs.mem.toLocaleString()} MHz (+${gs.dMem}), ${powerLimitTxt(gs).replace(/<\/?b>/g, "")} – 90 % of its potential${b.filter(p => p.cat === "GPU").length > 1 ? ", the same on both cards" : ""}. Keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`
+        ? `GPU Tuner: core clock ${gs.core.toLocaleString()} MHz (+${gs.dCore}), memory clock ${gs.mem.toLocaleString()} MHz (+${gs.dMem}), ${powerLimitTxt(gs).replace(/<\/?b>/g, "")} – its full overclock potential${b.filter(p => p.cat === "GPU").length > 1 ? ", the same on both cards" : ""}; reaching it depends a lot on the cooling and power and may not be possible (enter what you reached below). Keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`
         : `Aim for ~${gest ? gest.core.toLocaleString() : "?"} MHz core / ~${gest ? gest.mem.toLocaleString() : "?"} MHz memory, keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`,
       st.can.ocGpu,
       !hasUnlock("gpuOC") ? gateMsg("gpuOC").replace(/<\/?b>/g, "") + "." : "No overclocking data for this GPU."
