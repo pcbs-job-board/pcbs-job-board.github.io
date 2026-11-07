@@ -2743,20 +2743,12 @@ dialog.flipdlg {
 .fprow.now {
   grid-template-columns: 96px 1fr auto;
 }
-.finvcat {
-  margin: 10px 0 3px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #ffd27a;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+.finvtabs {
+  margin: 8px 0 6px;
 }
-.finvcat small {
-  color: var(--muted);
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
-  margin-left: 6px;
+.finvtabs .pdbtab small {
+  opacity: 0.75;
+  margin-left: 3px;
 }
 .fuse {
   padding: 2px 9px;

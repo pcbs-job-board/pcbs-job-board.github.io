@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.3
+- PC Bay build: inventory in category tabs (only categories you have), newest scans at the top; a capture opens its category.
 - Emails: a slow PC ("not as quick as it used to be") now always adds the virus scan, also on 3DMark jobs – as the keyword tester shows.
 
 ## 0.14.2

@@ -46,6 +46,7 @@ function openFlip(id) {
   const f = flipJob(id);
   if (!f) return;
   flipCur = f;
+  flipInvTab = null; // the inventory opens on its first tab
   flipRender();
   const d = $("#dlgFlip");
   if (!d.open) d.showModal();
@@ -139,26 +140,37 @@ function checkHtml(chk) {
   return `<div class="fcheck"><b>Before the Profit step</b> (PC Bay buyers want a complete PC that works: case, motherboard, CPU, CPU cooling, 1–4 RAM sticks, 1–2 GPUs, PSU, storage):<ul>${l.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
 }
 // ---------- inventory panel (steps 2 + 3): by category; ＋ Use puts a part in (in place of the one of its kind) ----------
+// newest scan first; the parts of one scan keep their order; parts saved before 0.14.3 (no scan time) below, as they were
+const invOrder = list =>
+  list
+    .map((i, k) => ({ i, k }))
+    .sort((a, b) => (b.i.at || 0) - (a.i.at || 0) || (a.i.n || 0) - (b.i.n || 0) || a.k - b.k)
+    .map(x => x.i);
+let flipInvTab = null; // the inventory's open category tab (while the window is open)
 function invHtml(f) {
-  const inv = flipInventory(f).sort(byCat),
-    cats = [...new Set(inv.map(i => i.cat))];
+  const inv = flipInventory(f),
+    cats = [...new Set([...inv].sort(byCat).map(i => i.cat))]; // only categories that have parts
+  if (!cats.includes(flipInvTab)) flipInvTab = cats[0] || null;
+  const rows = invOrder(inv.filter(i => i.cat === flipInvTab));
   return `<div class="finv"><div class="fh">Your inventory for this build</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
     <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
     ${
-      cats
-        .map(
-          cat =>
-            `<div class="finvcat">${esc(CAT_LABEL[cat] || cat)} <small>${inv.filter(i => i.cat === cat && !i.taken).length} free</small></div>${inv
-              .filter(i => i.cat === cat)
-              .map(
-                i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
-      ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
+      cats.length
+        ? `<div class="pdbtabs finvtabs" role="tablist">${cats
+            .map(cat => {
+              const free = inv.filter(i => i.cat === cat && !i.taken).length;
+              return `<button class="pdbtab${cat === flipInvTab ? " on" : ""}" role="tab" data-fitab="${esc(cat)}" aria-pressed="${cat === flipInvTab}" title="${free} free">${esc(CAT_LABEL[cat] || cat)} <small>${free}</small></button>`;
+            })
+            .join("")}</div>
+    ${rows
+      .map(
+        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+      ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(i.cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
-              )
-              .join("")}`
-        )
-        .join("") || `<div class="hint">Nothing yet.</div>`
+      )
+      .join("")}`
+        : `<div class="hint">Nothing yet.</div>`
     }
     <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
 }
@@ -286,10 +298,15 @@ flipDlg.addEventListener("click", e => {
   const f = flipCur;
   if (!f) return;
   const t = e.target.closest(
-    "[data-fstep],[data-fa],[data-fp],[data-fi],[data-fx],[data-fr],.flipnext,.flipback,.flipmin,.flipyes,.flipno"
+    "[data-fstep],[data-fa],[data-fp],[data-fi],[data-fx],[data-fr],[data-fitab],.flipnext,.flipback,.flipmin,.flipyes,.flipno"
   );
   if (!t) return;
   if (t.disabled) return;
+  if (t.dataset.fitab) {
+    flipInvTab = t.dataset.fitab;
+    flipRender();
+    return;
+  }
   if (t.dataset.fstep) {
     f.step = +t.dataset.fstep;
   } else if (t.classList.contains("flipback")) f.step = Math.max(1, f.step - 1);
@@ -343,13 +360,17 @@ flipDlg.addEventListener("click", e => {
     const n = flipDlg.querySelector('[data-fa="invname"]').value.trim();
     if (!n) return;
     const m = INDEX.find(p => p.name === n) || bestPartMatch(n);
+    const cat = m ? m.cat : categorize(n);
     f.inv.push({
       id: flipUid(),
-      cat: m ? m.cat : categorize(n),
+      cat,
       name: m ? m.name : n,
       used: flipDlg.querySelector('[data-fa="invused"]').checked,
       src: "typed",
+      at: Date.now(),
+      n: 0,
     });
+    flipInvTab = cat; // show it
   } else if (t.dataset.fp === "del") {
     f.parts = f.parts.filter(p => p.id !== t.dataset.k);
     f.changes = f.changes.filter(c => c.old !== t.dataset.k);
@@ -517,8 +538,24 @@ async function flipImage(url, kind, again) {
             '⚠ No inventory cards found – is the Inventory open in the game? Box in the wrong place? <button data-fa="adjust-inv">🎯 Adjust area</button>';
         return;
       }
-      for (const i of items)
-        f.inv.push({ id: flipUid(), cat: i.cat, name: i.name, used: i.used, broken: !!i.broken, price: i.price, src: "capture" });
+      const at = Date.now();
+      items.forEach((i, n) =>
+        f.inv.push({
+          id: flipUid(),
+          cat: i.cat,
+          name: i.name,
+          used: i.used,
+          broken: !!i.broken,
+          price: i.price,
+          src: "capture",
+          at,
+          n,
+        })
+      );
+      // switch to the tab of what was scanned (one category per screenshot; the most common one if it's mixed)
+      const cnt = {};
+      for (const i of items) cnt[i.cat] = (cnt[i.cat] || 0) + 1;
+      flipInvTab = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
       const nb = items.filter(i => i.broken).length,
         nn = items.filter(i => !i.used && !i.broken).length;
       toast(
