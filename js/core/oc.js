@@ -107,6 +107,8 @@ function cpuIsFixed(j) {
 // objective also asks to replace / upgrade / swap the motherboard
 function boardIsFixed(j) {
   const objs = jobObjectives(j);
+  // only a board the customer's PC has stays – a PC built from nothing gets whatever board the build needs
+  if (!(j.components || []).some(p => p.cat === "Motherboard")) return false;
   return (
     objs.some(o => /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i.test(o)) &&
     !objs.some(o => /\b(replace|upgrade|swap|change)\b.*\b(motherboard|mobo|mainboard|board)\b/i.test(o))

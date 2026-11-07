@@ -194,7 +194,7 @@ function suggestSwaps(job, opts = {}) {
   ctx.objCats = handled;
   // "Upgrade Graphics Card" + "Install dual graphics cards": the upgrade is offered as a PAIR of new cards (one tick
   // adds both), and the dual-GPU rule adds nothing on top
-  const DUAL = /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i;
+  const DUAL = DUAL_RE;
   const pairMode =
     objs.some(o => DUAL.test(o)) &&
     objs.some(o => /^\W*upgrade\s+(the\s+)?(graphics|gpu|video)/i.test(o)) &&
@@ -208,6 +208,25 @@ function suggestSwaps(job, opts = {}) {
     if (mL) {
       const sg = lightsSuggestion(job, ctx, +mL[1], o);
       if (sg) out.push(sg);
+      continue;
+    }
+    // 3c "Install Purple cables": cables are a part in the shop (category Cables) – the cheapest set in that colour
+    //     (one colour asked → plain sets first, no duo / striped / patterned ones)
+    const mC = o.match(/^\W*install\s+(.+?)\s+cables?\s*$/i);
+    if (mC) {
+      const words = mC[1].toLowerCase().split(/\s+/).filter(Boolean),
+        cands = shopParts("Cables")
+          .filter(
+            p =>
+              words.every(w => p.name.toLowerCase().includes(w)) && (words.length > 1 || !/duo|striped|patterned/i.test(p.name))
+          )
+          .sort((a, b) => a.price - b.price);
+      add("obj:" + o, o, pickOptions(job, ctx, cands, {}), {
+        cat: "Cables",
+        old: "",
+        hint: `No unlocked ${mC[1]} cables – they're in the Shop under Cables (check your career level).`,
+      });
+      handled.add("Cables");
       continue;
     }
     // 1 / 2 / 4  Install <part> [or better]
@@ -320,7 +339,15 @@ function suggestSwaps(job, opts = {}) {
       const gpus = cur("GPU");
       if (gpus.length >= 2 || pairMode) continue;
       if (!gpus.length) {
-        missing("obj:" + o, o, "capture PC Stats to get a second-GPU suggestion");
+        missing(
+          "obj:" + o,
+          o,
+          newBuild
+            ? benchTarget(job)
+              ? "Planned in the 3DMark build below – two of the same card (SLI / CrossFire) on a board that takes both."
+              : "New build: pick two of the same card that support SLI / CrossFire, and a motherboard that takes both."
+            : "capture PC Stats to get a second-GPU suggestion"
+        );
         continue;
       }
       const g = gpus[0],
@@ -993,6 +1020,9 @@ const BENCH_LABEL = {
   "Motherboard + CPU + RAM": "New motherboard + CPU + RAM sticks",
 };
 const XMP_TASK = "Turn on XMP in the BIOS (RAM settings) – needed for the 3DMark score";
+// "Install Parts with Lights: 6 coloured …" → 6 (0 when the job doesn't ask for lights)
+const lightsWanted = job =>
+  Math.max(0, ...jobObjectives(job).map(o => +((o.match(/parts with lights?\s*:?\s*(\d+)/i) || [])[1] || 0)));
 // RGB = lighting whose colour can be set ("· RGB" in the details); "White lighting" etc. can't be coloured
 function isRGB(p) {
   const ix = INDEX.find(x => x.name === p.name);
@@ -1015,6 +1045,16 @@ function lightsSuggestion(job, ctx, want, reason) {
   const cs = build.filter(p => p.cat === "Case").pop(),
     cc = cs ? cInfo(cs) : {},
     fans = build.filter(p => p.cat === "Case Fan");
+  // a PC built from nothing: no case yet → the lights are planned once the build (with its case) is ticked
+  if (!cs && !(job.components || []).length)
+    return {
+      key: "lights",
+      reason: `${reason} – ${lit} of ${want} planned`,
+      options: [],
+      hint: benchTarget(job)
+        ? "Tick the 3DMark build first – it brings a case with fan places for the lights; the RGB parts are then planned on it."
+        : "Pick the case first – the RGB fans / parts are then planned on it.",
+    };
   for (const z of ["120", "140"]) {
     const fan = rgbShop("Case Fan").find(p => cInfo(p).z === z);
     if (!fan || !cs) continue;
@@ -1088,6 +1128,7 @@ function lightsSuggestion(job, ctx, want, reason) {
     ],
   };
 }
+const DUAL_RE = /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i;
 function benchSuggestions(job, ctx) {
   const target = benchTarget(job);
   if (!target) return [];
@@ -1305,6 +1346,8 @@ function newBuildBench(job, ctx, target, build, why, set) {
           x => x.b.two
         ).map(x => ({ p: x.one, g: x.b.two, k: 2, cost: x.one.price * 2 })),
       ];
+  // "Install dual graphics cards": only pairs (two of the same card, SLI / CrossFire)
+  if (!g0.length && jobObjectives(job).some(o => DUAL_RE.test(o))) gpuLists.splice(0, 1);
   const gpus = gpuLists.flat();
   // CPU
   const c0 = have("CPU")[0],
@@ -1398,6 +1441,23 @@ function newBuildBench(job, ctx, target, build, why, set) {
       const drive = cheapFirst("Storage").find(p => fitsBuild(j4, p, ""));
       if (drive) extras.push({ cat: "Storage", old: "", name: drive.name, price: drive.price, why: "drive for the OS" });
     }
+    // a case it all fits in – the cheapest; with a lights objective one with fan places for the RGB fans still needed
+    if (!have("Case").length && !(ctx.objCats && ctx.objCats.has("Case"))) {
+      const j5 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]),
+        lit = plannedBuild(j5).filter(isRGB).length,
+        fanNeed = Math.max(0, lightsWanted(job) - lit),
+        places = p => +(cInfo(p).r120 || 0) + +(cInfo(p).r140 || 0),
+        fits = p => fitsBuild(j5, p, "");
+      const cs = (fanNeed && cheapFirst("Case").find(p => places(p) >= fanNeed && fits(p))) || cheapFirst("Case").find(fits);
+      if (!cs) return null;
+      extras.push({
+        cat: "Case",
+        old: "",
+        name: cs.name,
+        price: cs.price,
+        why: fanNeed && places(cs) >= fanNeed ? `case with ${places(cs)} fan places (lights)` : "case",
+      });
+    }
     return extras;
   };
   const isBrand = c =>
@@ -1432,11 +1492,10 @@ function newBuildBench(job, ctx, target, build, why, set) {
   if (picks.length && picks[0].o.xmp) tryPick(c => c.sc.off >= target, "no XMP needed");
   if (picks.length && picks[0].c.nG === 2) tryPick(c => c.nG === 1, "one GPU");
   if (ctx.brands.length) tryPick(isBrand, `★ ${ctx.brands[0]}`);
-  const still = ["Case"].filter(c => !have(c).length).map(c => c.toLowerCase());
   return [
     {
       key: "bench",
-      reason: why + (still.length ? ` · also needs: ${still.join(", ")}` : ""),
+      reason: why,
       cat: "3DMark",
       options: picks.map(p => p.o),
       hint: picks.length
