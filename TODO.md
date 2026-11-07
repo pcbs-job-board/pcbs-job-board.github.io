@@ -108,13 +108,21 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (4)
 
-1. **Broken RAM hint missed** (Mariusz, 2026-11-06 – GJarvis@GraemeSoft.tv, "My rig needs fixing", Diagnose and fix,
-   Labour $439 / Budget $200, Level 10). Email: "Who knew that RAM had to go in one way around?" = the customer put the
-   RAM in the wrong way → it's broken. Read now: "Clean with compressed air" and "Use HyperX…" only – no
-   "Check / replace the RAM – customer hints it's broken" (detectSuspects in js/core/parser.js doesn't know this
-   wording). Fix: treat "<part> had to go in one way / the right way round", "put it in backwards / the wrong way" as a
-   broken-part hint for that part; also as the diagnose suggestion (identical stick). Screenshot: tests branch
-   `fixtures/pending/graeme_ram.png` → move to fixtures with expectations when fixed.
+1. **Customer hints missed in emails** (Mariusz, 2026-11-06 / 07). Checked with the email reader – none of these
+   become tasks now:
+   - GJarvis@GraemeSoft.tv "My rig needs fixing": "Who knew that RAM had to go in one way around?" → RAM broken.
+   - Nicolas.Waters@NWatersStaplers.gov "please help" (Level 8, $292 / $300): "I didn't realise there were clips for
+     the RAM, and I got a bit violent..." → RAM broken; "It seems to be running quite warm." → Clean with compressed
+     air (read now: only Urgent + Team Group).
+   - CriticalWriter@CriticalGoodallPets.io "NEED FIX" (Level 8, $327 / $400): "I waggled the RAM a bit too hard." →
+     RAM broken (clean, virus, new parts only are read fine).
+   - Jerome.John@JeromeCraft.co.uk "help plz" (Level 11, $321 / $200): "Please fix my PSU!" → PSU broken (virus and
+     new parts only are read fine).
+   Fix: detectSuspects (js/core/parser.js) – RAM: "go in one way / the right way round", "backwards", "clips … violent",
+   "waggled / yanked / forced … RAM"; any part: "fix / repair / replace my <part>"; heat: "(quite / a bit / running)
+   warm" alongside "hot". Each broken hint → "Check / replace the <part> – customer hints it's broken" and the
+   Diagnose and fix suggestion (identical part). Screenshots: tests branch fixtures/pending/graeme_ram.png,
+   nwaters_ram_warm.png, criticalwriter_ram_waggled.png, jeromejohn_fix_psu.png → fixtures with expectations.
 2. **Red parts read as BROKEN in the inventory** (Mariusz, 2026-11-06, CPU Cooling tab): ARCTIC Freezer 33 eSports
    Edition (Red), Freezer 33 TR (Red) ×2 and Raijintek Tisis (red fan) are all USED, but got BROKEN. Cause: cardLabels
    (js/core/flip.js) counts strong red pixels in a box under the USED label – that box overlaps the part's picture, so a
