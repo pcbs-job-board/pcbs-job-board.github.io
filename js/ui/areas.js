@@ -269,11 +269,16 @@ function invColumns(b) {
 // Returns how full the bar is (0–1) and where the level number is written (fractions of the frame).
 const isBarGreen = ([r, g, b]) => g > 130 && g - r > 50 && g - b > 50;
 const lum = ([r, g, b]) => (r + g + b) / 3;
+// a near-empty bar on a small capture (1512 px wide, ~1 %) is only a 3 px green stub: a second, finer look only when
+// the usual one finds nothing (finer from the start picks up other small green bits on some screenshots)
 function findLevelBar(img, ox = 0, oy = 0, W = img.width, H = img.height) {
+  return levelBarAt(img, ox, oy, W, H, Math.max(4, W * 0.0025)) || levelBarAt(img, ox, oy, W, H, 3);
+}
+function levelBarAt(img, ox, oy, W, H, minRun) {
   const { width: w, data: d } = img;
   // green runs, grouped into bars (same left end, rows next to each other)
   // short runs too: at ~0 % only a small green stub is left at the left end (smaller screenshots: a few pixels)
-  const rs = runs(img, isBarGreen, Math.max(4, W * 0.0025));
+  const rs = runs(img, isBarGreen, minRun);
   const groups = [];
   for (const r of rs) {
     const g = groups.find(g => Math.abs(g.x0 - r.x0) <= 4 && r.y - g.y1 <= 2);

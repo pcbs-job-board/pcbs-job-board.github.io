@@ -1,7 +1,7 @@
 // ===== PCBS job parser (pure functions, no DOM) =====
 // One rule = task + keywords. A keyword starting with "-" is an exception: that phrase is
 // ignored before matching (e.g. "-clean install" so "clean" still catches "never cleaned it").
-const RULES_VERSION = 4;
+const RULES_VERSION = 5; // 5: heat words for cleaning (0.14.2)
 // Hints from the PCBS community list – one rule per solution (hints with the same solution are merged).
 const DEFAULT_RULES = [
   {
@@ -83,6 +83,23 @@ const DEFAULT_RULES = [
       "fur",
       "smoker",
       "cigarette",
+      "quite warm",
+      "a bit warm",
+      "running warm",
+      "getting warm",
+      "very warm",
+      "really warm",
+      "too warm",
+      "so warm",
+      "a bit hot",
+      "quite hot",
+      "running hot",
+      "getting hot",
+      "very hot",
+      "really hot",
+      "too hot",
+      "so hot",
+      "overheat",
       "-clean install",
       "-clean copy",
       "-clean windows",
@@ -243,8 +260,10 @@ const SUSPECT_PARTS = [
   ["Storage", "hard ?drives?|hdd|ssd|m\\.2|storage|disk"],
   ["Motherboard", "motherboard|mobo|main ?board"],
 ];
+// broken: said outright, or the customer handled it badly – "RAM had to go in one way around", "there were clips for
+// the RAM, and I got a bit violent", "I waggled the RAM a bit too hard" – or asks for it to be fixed ("Please fix my PSU!")
 const BLAME_WORDS =
-  /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust)\b/i;
+  /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust|violent|violently|waggled|wiggled|wobbled|yanked|forced|too hard|bent|one way (?:a)?round|the right way (?:a)?round|the wrong way|wrong way (?:a)?round|backwards|upside down|(?:fix|repair) (?:my|the|this|our|his|her))\b/i;
 const SUSPECT_WORDS =
   /\b(has to be|have to be|had to be|got to be|gotta be|must be|must have|sure it'?s|sure the|certain|bet it'?s|bet the|i think|i reckon|reckon|probably|maybe|might be|could it be|could be|is it the|guess|suspect|blame|it'?s the|it is the|sure it is|definitely|obviously|surely)\b|\bi(?:'?m| am) (?:\d+ ?% |pretty |quite |fairly |really |very |absolutely |100% )?sure\b|,\s*right\s*\?|\bright\?/i;
 const NOT_SUSPECT = /\b(upgrade|install|add|want|need|buy|new|faster|better|two|dual|more)\b/i;
