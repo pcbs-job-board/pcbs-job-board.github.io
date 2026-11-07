@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (1)
 
 1. **PC Bay build – inventory as category tabs** (Mariusz, 2026-11-07; js/ui/flipui.js invHtml, steps 2–3):
    - Scanned / typed inventory parts split into tabs by category, like the Parts database window (same order:
@@ -116,16 +116,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    - Within a tab the most recently scanned parts are at the top (newest capture first; keep the order inside one
      capture). Needs a scan time / sequence on each inventory item (old saved items: keep their current order, below).
    - Keep: "free" count per category, ＋ Use / used / ✕ on each row; the open tab is remembered while the window is open.
-2. **Virus hint dropped on 3DMark jobs** (Mariusz, 2026-11-07, Mac capture; tests branch
-   `fixtures/pending/conrad_3dmark_not_as_quick.png`): Conrad.Christine@SmellCard.com "Request for upgrade" (Level 9,
-   $270 / $800, 3DMark score of 3972, Upgrade to 16 GB of RAM, by 5/1/2018): "It's not as quick as it used to be."
-   The keyword tester shows "Run the virus scanner", the capture doesn't. Cause: parseEmail on purpose drops a virus
-   hint that comes only from speed words when a 3DMark objective is listed (added for DullGirl "super slow…
-   benchmarked 5660" – my assumption that "slow" was about the score; never confirmed in the game). The keyword tester
-   doesn't apply that filter → the two disagree. Fix (waiting for Mariusz: did the game PC have a virus?): if yes –
-   remove the filter (speed words always → virus scan), DullGirl fixture expectation updated; either way the tester and
-   the capture must give the same answer.
 
+
+
+_dev-0.14.3 (2026-11-07): done – virus hint kept on 3DMark jobs (Conrad had a virus; DullGirl / FishyC tests updated)._
 
 _Released in 0.14.2 (2026-11-07, backup-0.14.1 made first):_
 customer hints in emails · red parts read as BROKEN · overclock settings (0.05 V, power limit) · USED / NEW on a Mac
