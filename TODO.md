@@ -106,9 +106,19 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
 
-_None open – the 5 below were released in 0.14.2 (2026-11-07, backup-0.14.1 made first):_
+1. **PC Bay build – inventory as category tabs** (Mariusz, 2026-11-07; js/ui/flipui.js invHtml, steps 2–3):
+   - Scanned / typed inventory parts split into tabs by category, like the Parts database window (same order:
+     Case, Motherboard, CPU, CPU Cooling, RAM, GPU, PSU, Storage, Case Fans, Water Cooling …).
+   - Only categories that have inventory parts get a tab (no empty ones).
+   - Capturing an inventory screenshot (or typing a part in) switches to the tab of that part's category.
+   - Within a tab the most recently scanned parts are at the top (newest capture first; keep the order inside one
+     capture). Needs a scan time / sequence on each inventory item (old saved items: keep their current order, below).
+   - Keep: "free" count per category, ＋ Use / used / ✕ on each row; the open tab is remembered while the window is open.
+
+
+_Released in 0.14.2 (2026-11-07, backup-0.14.1 made first):_
 customer hints in emails · red parts read as BROKEN · overclock settings (0.05 V, power limit) · USED / NEW on a Mac
 capture (labels measured in card widths) · ← / → skipping a tall card. Also found: career bar at ~0 % on a 1512 px
 capture wasn't read (finer second look). Note: the TR (Red) cooler in inv_arctic_red.png has no USED label – it's NEW.
