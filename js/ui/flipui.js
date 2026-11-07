@@ -1,4 +1,6 @@
 /* 📦 PC Bay build – the step window, the tile and the top-bar button (logic in flip.js). */
+// shown on every estimated (~) 3DMark / sale figure
+const EST_NOTE = "~ = a rough estimate – the 3DMark score and sale price in the game can differ slightly";
 let flipCur = null; // the build shown in the window
 const FLIP_STEPS = ["Parts", "Fix", "Hardware", "Profit"];
 const money = v => (v == null ? "–" : (v < 0 ? "−$" : "$") + Math.abs(Math.round(v)).toLocaleString());
@@ -25,7 +27,7 @@ function flipCard(f) {
   return `<article class="job flip" draggable="true" data-job="${f.id}" style="--c:${TCOL[f.table || 0]}">
     <div class="fliptag">📦 PC Bay build</div>
     <div class="top"><div class="who"><b>${esc(flipName(f))}</b><small>Step ${f.step} of 4: ${FLIP_STEPS[f.step - 1]}${st.unfixed.length ? ` · ${st.unfixed.length} broken part${st.unfixed.length > 1 ? "s" : ""} to fix` : ""}</small></div><div class="topbtns">${hintBtn(f)}</div></div>
-    <div class="chips"><span class="chip">Bought ${money(st.start)}</span><span class="chip">Now ${money(st.value)}</span>${st.estValue != null && !st.scored ? `<span class="chip">Sale ~${money(st.estValue)}</span>` : ""}${st.profit != null ? `<span class="chip ${st.profit >= 0 ? "profit" : "loss"}">${st.scored ? "Profit" : "Profit ~"} ${st.profit >= 0 ? "+" : ""}${money(st.profit)}</span>` : ""}</div>
+    <div class="chips"><span class="chip">Bought ${money(st.start)}</span><span class="chip">Now ${money(st.value)}</span>${st.estValue != null && !st.scored ? `<span class="chip" title="${EST_NOTE}">Sale ~${money(st.estValue)}</span>` : ""}${st.profit != null ? `<span class="chip ${st.profit >= 0 ? "profit" : "loss"}">${st.scored ? "Profit" : "Profit ~"} ${st.profit >= 0 ? "+" : ""}${money(st.profit)}</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${f.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${f.id}" data-n="${n}" title="${f.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
     <div class="foot"><button class="primary" data-flip="open" data-id="${f.id}">📦 Open build</button><button data-flip="finish" data-id="${f.id}" title="Remove this build and its saved inventory">✔ Finish</button></div>
   </article>`;
@@ -81,8 +83,8 @@ function flipRender() {
       `<button class="${f.step === i + 1 ? "sel" : ""} ${i + 1 < f.step ? "done" : ""}" data-fstep="${i + 1}">${i + 1}. ${s}</button>`
   ).join("");
   d.querySelector(".flipsum").innerHTML = `<span>Bought <b>${money(st.start)}</b></span><span>Now <b>${money(st.value)}</b></span>
-    <span>Sale ${st.scored ? "" : "~"}<b>${money(st.scored ? st.value : st.estValue)}</b></span><span class="${st.profit == null ? "" : st.profit >= 0 ? "profit" : "loss"}">Profit ${st.profit == null ? `<b>${st.unfixed.length ? "after the fix" : "when the PC is complete"}</b>` : `${st.scored ? "" : "~"}<b>${st.profit >= 0 ? "+" : ""}${money(st.profit)}</b>`}</span>
-    <span>3DMark ${st.scored ? `<b>${f.score.toLocaleString()}</b>` : st.best ? `~<b>${st.best.toLocaleString()}</b>` : "–"}</span>${st.newCost ? `<span class="warn">New parts ${money(st.newCost)}</span>` : ""}`;
+    <span ${st.scored ? "" : `title="${EST_NOTE}"`}>Sale ${st.scored ? "" : "~"}<b>${money(st.scored ? st.value : st.estValue)}</b></span><span class="${st.profit == null ? "" : st.profit >= 0 ? "profit" : "loss"}">Profit ${st.profit == null ? `<b>${st.unfixed.length ? "after the fix" : "when the PC is complete"}</b>` : `${st.scored ? "" : "~"}<b>${st.profit >= 0 ? "+" : ""}${money(st.profit)}</b>`}</span>
+    <span ${st.scored ? "" : `title="${EST_NOTE}"`}>3DMark ${st.scored ? `<b>${f.score.toLocaleString()}</b>` : st.best ? `~<b>${st.best.toLocaleString()}</b>` : "–"}</span>${!st.scored && (st.best || st.estValue != null) ? `<span class="estnote">~ rough estimates</span>` : ""}${st.newCost ? `<span class="warn">New parts ${money(st.newCost)}</span>` : ""}`;
   const body = d.querySelector(".flipbody"),
     html = [flipStep1, flipStep2, flipStep3, flipStep4][f.step - 1](f, st),
     typing = document.activeElement?.matches?.("#dlgFlip input[data-oc]") ? document.activeElement : null;
@@ -253,7 +255,7 @@ function flipStep3(f, st) {
     ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.steps.length} change${plan.steps.length > 1 ? "s" : ""}:<ol>${plan.steps.map(x => `<li>${esc(x.label)} <small>(${plus(x.gain)})</small></li>`).join("")}</ol>
       <small>3DMark ${sc(plan.score)} · sale ~${money(plan.value)}${plan.cost ? ` · new parts ${money(plan.cost)}` : ""} · profit ${plus(plan.gain)}${plan.check.ok ? " · complete PC ✓" : ` · still: ${esc([...plan.check.missing.map(m => "no " + m), ...plan.check.issues, plan.check.power].filter(Boolean).join("; "))}`}</small></div><button class="primary" data-fx="plan">Use all</button></div>`
     : `<div class="hint">${chk.ok ? "Nothing in your inventory makes this PC worth more." : "Nothing in your inventory fills the gaps – capture or type the missing parts into the inventory below."}</div>`;
-  return `<div class="fstep"><p class="hint">Put parts in and take them out as you like. The assistant looks for the most profitable PC that works, from your inventory – estimated with XMP on and overclocking where the PC allows it.</p>
+  return `<div class="fstep"><p class="hint">Put parts in and take them out as you like. The assistant looks for the most profitable PC that works, from your inventory – estimated with XMP on and overclocking where the PC allows it. 3DMark and sale figures are rough estimates – the game's can differ slightly.</p>
     ${notes.map(n => `<div class="fnote">💡 ${esc(n)}</div>`).join("")}
     ${checkHtml(chk)}
     <div class="fh">Now: 3DMark ${sc(st.best)} → sale ~${money(st.estValue)} <button class="ghost fref" data-fa="refresh" title="Work out the suggestions again">↻ Refresh</button></div>
@@ -338,7 +340,7 @@ function flipStep4(f, st) {
         ? `<div class="focbox"><b>Couldn't reach the suggested overclock?</b> <small>Enter what you set – the 3DMark, sale and profit estimates follow.</small>${ownCpu}${ownGpu}<button class="ghost" data-fa="ocreset" ${f.ocSet ? "" : "hidden"}>↺ Back to the suggestion</button></div>`
         : ""
     }
-    ${row("bench", "Run 3DMark", `Expected ~${(sc(base) || 0).toLocaleString()} points with the ticks above. Enter the score the game shows:`)}
+    ${row("bench", "Run 3DMark", `Expected ~${(sc(base) || 0).toLocaleString()} points with the ticks above – a rough estimate, the game's score can differ slightly. Enter the score the game shows (the sale value then uses it):`)}
     <div class="addrow fscore"><input type="number" min="0" data-fa="score" placeholder="3DMark score" value="${f.score ?? ""}"><small>${f.score ? `Multiplier ×${benchMult(f.score).toFixed(2)} → resale value ${money(st.value)}` : "the multiplier goes from 1.0× at 1,000 points to 3.0× at 10,000"}</small></div>
     <p class="hint">Then add the PC Bay sticker and sell it – the auction can move the final price a little.</p></div>`;
 }

@@ -2668,6 +2668,11 @@ dialog.flipdlg {
   margin-top: 10px;
 }
 /* "Suggest NEW parts" switch: visible, quiet – a pill that lights up when on */
+.flipsum .estnote {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--muted);
+}
 .tag.oc {
   background: #1d3a5c;
   color: #9cd0ff;
