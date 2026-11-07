@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (3)
+## Small fixes (4)
 
 1. **Broken RAM hint missed** (Mariusz, 2026-11-06 – GJarvis@GraemeSoft.tv, "My rig needs fixing", Diagnose and fix,
    Labour $439 / Budget $200, Level 10). Email: "Who knew that RAM had to go in one way around?" = the customer put the
@@ -128,6 +128,16 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    - GPU: say what to do with the power limit. Data exists: the workbook's "GPU % Power Increase" (in parts-db "power"
      as W>W_max: +20 % on 253 cards, +50 % on 63). The overclock estimate (OC base clocks) and the PSU check already
      assume it's at the maximum → tell the player "Power limit +20 % (max)" / "+50 %". No GPU voltage in the workbook.
+4. **USED / NEW read wrong on a friend's Mac** (Mariusz, 2026-11-07; Mariusz's own captures are always right).
+   Screenshot 1: Ryzen 5 1400, 1600X, 1600X – all USED, read USED / NEW / NEW. Screenshot 2: Celeron G3930 NEW,
+   i3-6100 ×2 USED – read USED / NEW / NEW. His inventory area looks right (third screenshot).
+   Likely causes (cardLabels, js/core/flip.js): (a) the label boxes are placed in *screen-height* units ("picture top
+   = name − 0.30 of the height") – his 1512×948 capture is a Mac window with a title bar and black bars above and
+   below the game, so the game is shorter than the image and the boxes land off the USED label; (b) the first column
+   is always "USED": it's the selected card, and its thick black frame counts as the dark USED letters. Fix: measure
+   from the card itself (card width / the found name, or the game area without the black bars), keep the box inside
+   the card frame; check against his screenshots + all existing inventory fixtures. Screenshots: tests branch
+   `fixtures/pending/friend_mac_inv_ryzen.png`, `friend_mac_inv_celeron.png`, `friend_mac_inv_area.png`.
 
 ---
 
