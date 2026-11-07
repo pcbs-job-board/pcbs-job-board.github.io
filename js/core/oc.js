@@ -18,18 +18,27 @@ function ocReach(name) {
   if (!d) return null;
   return d.core != null ? { core: ocEst(d.core, d.ocCore), mem: ocEst(d.mem, d.ocMem) } : ocEst(d.mhz, d.ocMhz);
 }
-// what to set in the game for that estimate: CPU – multiplier on the 100 MHz base clock and the core voltage it needs (the
-// voltage rises in step with the clock from stock to the overclock base, as in the workbook); GPU – the GPU Tuner clocks
-function ocSettings(name) {
+// what to set in the game: CPU – multiplier on the 100 MHz base clock and the core voltage it needs (the voltage rises in
+// step with the clock from stock to the overclock base, as in the workbook; the game moves it in 0.05 V steps → rounded
+// up, so it's enough); GPU – the GPU Tuner clocks and the power limit at its maximum (the workbook's "GPU % Power
+// Increase": +20 % on most cards, +50 % on some – the overclock estimate and the PSU check assume it).
+// want: the clock to set (an objective's target); without it the estimate (90 % of the potential)
+const voltStep = v => Math.ceil(v * 20 - 1e-6) / 20;
+function ocSettings(name, want) {
   const d = ocOf(name),
     r = ocReach(name);
   if (!d || !r) return null;
-  if (d.core != null) return { core: r.core, mem: r.mem, dCore: r.core - d.core, dMem: r.mem - d.mem };
-  const mult = Math.floor(r / 100),
+  if (d.core != null) {
+    const p = powerOf(name),
+      pl = p && p.w ? Math.round(((p.oc / p.w - 1) * 100) / 5) * 5 : null;
+    return { core: r.core, mem: r.mem, dCore: r.core - d.core, dMem: r.mem - d.mem, power: pl || null };
+  }
+  const mult = want ? Math.ceil(want / 100) : Math.floor(r / 100),
     mhz = mult * 100,
-    v = d.ocMhz > d.mhz && d.ocV ? d.v + ((mhz - d.mhz) / (d.ocMhz - d.mhz)) * (d.ocV - d.v) : null;
-  return { mhz, mult, volt: v != null && v > 0 ? Math.round(v * 100) / 100 : null };
+    v = d.ocMhz > d.mhz && d.ocV ? d.v + (Math.max(0, mhz - d.mhz) / (d.ocMhz - d.mhz)) * (d.ocV - d.v) : null;
+  return { mhz, mult, volt: v != null && v > 0 ? voltStep(v) : null };
 }
+const powerLimitTxt = s => (s && s.power ? `power limit <b>+${s.power} %</b> (its maximum)` : "power limit at its maximum");
 function throttleOf(cat, name) {
   const d = ocOf(name);
   if (d && d.thr) return { c: d.thr, known: true };
@@ -175,6 +184,11 @@ function ocCheck(j) {
             `${mhz(t.mhz)} is above this CPU's full overclock potential (${mhz(d.ocMhz)}; estimate ${mhz(est)}) – unlikely to get there.`
           );
         }
+        const set = ocSettings(cpu.name, t.mhz ?? null);
+        if (set)
+          it.lines.push(
+            `BIOS: base clock 100 MHz, multiplier <b>×${set.mult}</b> (${mhz(set.mhz)})${set.volt ? `, core voltage <b>${set.volt.toFixed(2)} V</b>` : ""}.`
+          );
         temp("CPU", cpu.name);
       }
     } else if (t.part === "GPU") {
@@ -225,6 +239,7 @@ function ocCheck(j) {
           `${mhz(t.mhz)} is above the estimate (<b>${mhz(est)}</b>${t.mhz <= oc ? `, full potential ${mhz(oc)}` : `; over its full potential ${mhz(oc)}, under the maximum ${mhz(max)}`}) – needs very good cooling.`
         );
       }
+      it.lines.push(`GPU Tuner: ${powerLimitTxt(ocSettings(gpu.name))}.`);
       temp("GPU", gpu.name);
     } else {
       const ram = build.filter(p => p.cat === "RAM");
@@ -262,4 +277,4 @@ function ocCheck(j) {
   return { items, psu, missing: [...missing], state };
 }
 if (typeof module !== "undefined")
-  module.exports = { cpuIsFixed, boardIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf };
+  module.exports = { cpuIsFixed, boardIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf, ocSettings };

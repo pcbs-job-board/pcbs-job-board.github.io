@@ -259,7 +259,7 @@ function flipStep4(f, st) {
       "ocCpu",
       "Overclock the CPU",
       cs
-        ? `BIOS: base clock 100 MHz, CPU multiplier ×${cs.mult} (${cs.mhz.toLocaleString()} MHz)${cs.volt ? `, core voltage ~${cs.volt.toFixed(2)} V` : ""} – 90 % of its potential (${est.toLocaleString()} MHz). Keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT; too hot or unstable → one step lower. 3DMark +${gain("ocCpu").toLocaleString()}.`
+        ? `BIOS: base clock 100 MHz, CPU multiplier ×${cs.mult} (${cs.mhz.toLocaleString()} MHz)${cs.volt ? `, core voltage ${cs.volt.toFixed(2)} V` : ""} – 90 % of its potential (${est.toLocaleString()} MHz). Keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT; too hot or unstable → one step lower. 3DMark +${gain("ocCpu").toLocaleString()}.`
         : `Aim for ~${est ? est.toLocaleString() : "?"} MHz (90 % of its potential), keep it under ${thr("CPU", cpu?.name)} °C, then run OCCT. 3DMark +${gain("ocCpu").toLocaleString()}.`,
       st.can.ocCpu,
       !hasUnlock("cpuOC")
@@ -270,7 +270,7 @@ function flipStep4(f, st) {
       "ocGpu",
       "Overclock the GPU (GPU Tuner)",
       gs
-        ? `GPU Tuner: core clock ${gs.core.toLocaleString()} MHz (+${gs.dCore}), memory clock ${gs.mem.toLocaleString()} MHz (+${gs.dMem}) – 90 % of its potential${b.filter(p => p.cat === "GPU").length > 1 ? ", the same on both cards" : ""}. Keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`
+        ? `GPU Tuner: core clock ${gs.core.toLocaleString()} MHz (+${gs.dCore}), memory clock ${gs.mem.toLocaleString()} MHz (+${gs.dMem}), ${powerLimitTxt(gs).replace(/<\/?b>/g, "")} – 90 % of its potential${b.filter(p => p.cat === "GPU").length > 1 ? ", the same on both cards" : ""}. Keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`
         : `Aim for ~${gest ? gest.core.toLocaleString() : "?"} MHz core / ~${gest ? gest.mem.toLocaleString() : "?"} MHz memory, keep it under ${thr("GPU", gpu?.name)} °C. 3DMark +${gain("ocGpu").toLocaleString()}.`,
       st.can.ocGpu,
       !hasUnlock("gpuOC") ? gateMsg("gpuOC").replace(/<\/?b>/g, "") + "." : "No overclocking data for this GPU."
