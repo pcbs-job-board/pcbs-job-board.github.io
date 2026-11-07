@@ -58,6 +58,20 @@ function flipSave() {
     render();
   }
 }
+// redraw `old` as `neu`, except the element `keep` (and the path down to it), which stays the same node; false = the
+// two don't line up (then the caller redraws it all)
+function patchAround(old, neu, keep) {
+  const a = [...old.childNodes],
+    b = [...neu.childNodes];
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] === keep) continue;
+    if (a[i].nodeType === 1 && a[i].contains(keep)) {
+      if (a[i].tagName !== b[i].tagName || !patchAround(a[i], b[i], keep)) return false;
+    } else a[i].replaceWith(b[i]);
+  }
+  return true;
+}
 function flipRender() {
   const f = flipCur,
     st = flipState(f),
@@ -69,8 +83,15 @@ function flipRender() {
   d.querySelector(".flipsum").innerHTML = `<span>Bought <b>${money(st.start)}</b></span><span>Now <b>${money(st.value)}</b></span>
     <span>Sale ${st.scored ? "" : "~"}<b>${money(st.scored ? st.value : st.estValue)}</b></span><span class="${st.profit == null ? "" : st.profit >= 0 ? "profit" : "loss"}">Profit ${st.profit == null ? `<b>${st.unfixed.length ? "after the fix" : "when the PC is complete"}</b>` : `${st.scored ? "" : "~"}<b>${st.profit >= 0 ? "+" : ""}${money(st.profit)}</b>`}</span>
     <span>3DMark ${st.scored ? `<b>${f.score.toLocaleString()}</b>` : st.best ? `~<b>${st.best.toLocaleString()}</b>` : "–"}</span>${st.newCost ? `<span class="warn">New parts ${money(st.newCost)}</span>` : ""}`;
-  const body = d.querySelector(".flipbody");
-  body.innerHTML = [flipStep1, flipStep2, flipStep3, flipStep4][f.step - 1](f, st);
+  const body = d.querySelector(".flipbody"),
+    html = [flipStep1, flipStep2, flipStep3, flipStep4][f.step - 1](f, st),
+    typing = document.activeElement?.matches?.("#dlgFlip input[data-oc]") ? document.activeElement : null;
+  // an overclock field being typed in must stay put (focus, caret): redraw everything around it, not the field itself
+  if (typing) {
+    const t = document.createElement("div");
+    t.innerHTML = html;
+    if (!patchAround(body, t, typing)) body.innerHTML = html;
+  } else body.innerHTML = html;
   d.querySelector(".flipback").hidden = f.step === 1;
   const sw = d.querySelector(".fnewsw");
   sw.hidden = f.step === 4; // parts are changed in steps 1–3
@@ -111,9 +132,14 @@ const catRank = c => {
 };
 const byCat = (a, b) => catRank(a.cat) - catRank(b.cat);
 const rowKey = r => (r.changed ? "c:" + r.changed : "p:" + r.partId);
-function pcNowHtml(f, st) {
+// "Overclock Unlocked": a CPU or motherboard that can overclock (unlocked CPU / overclocking chipset)
+const ocTag = (cat, name) =>
+  (cat === "CPU" || cat === "Motherboard") && (compatOf(name) || {}).oc === "1"
+    ? ` <span class="tag oc" title="This ${cat === "CPU" ? "CPU" : "motherboard"} can overclock">Overclock Unlocked</span>`
+    : "";
+function pcNowHtml(f, st, readOnly = false) {
   const rows = [...st.build].sort(byCat);
-  return `<div class="fh">This PC now <small>(✕ takes a part out – a working one goes back to the inventory)</small></div>
+  return `<div class="fh">${readOnly ? "The PC's parts" : "This PC now <small>(✕ takes a part out – a working one goes back to the inventory)</small>"}</div>
     ${
       rows
         .map(r => {
@@ -125,7 +151,7 @@ function pcNowHtml(f, st) {
                 ? `<span class="tag new">NEW</span>`
                 : `<span class="tag used">USED</span>`
               : `<small>(came with it)</small>`;
-          return `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[r.cat] || r.cat)}</span><span class="nm">${esc(r.name)} ${tag}</span><button class="ghost x" data-fr="rm" data-k="${rowKey(r)}" title="Take it out">✕</button></div>`;
+          return `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[r.cat] || r.cat)}</span><span class="nm">${esc(r.name)} ${tag}${ocTag(r.cat, r.name)}</span>${readOnly ? "<span></span>" : `<button class="ghost x" data-fr="rm" data-k="${rowKey(r)}" title="Take it out">✕</button>`}</div>`;
         })
         .join("") || `<div class="hint">No parts – put some in from your inventory below.</div>`
     }`;
@@ -168,7 +194,7 @@ function invHtml(f) {
             .join("")}</div>
     ${rows
       .map(
-        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
       ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(i.cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
       )
@@ -254,7 +280,8 @@ function flipStep4(f, st) {
     s = f.soft,
     cpu = b.find(p => p.cat === "CPU"),
     gpu = b.find(p => p.cat === "GPU");
-  const sc = o => flipScore(b, o),
+  const oco = flipOcOpts(f, b),
+    sc = o => flipScore(b, { ...oco, ...o }),
     base = { xmp: s.xmp, ocCpu: s.ocCpu && st.can.ocCpu, ocGpu: s.ocGpu && st.can.ocGpu };
   const gain = k => {
     const on = sc({ ...base, [k]: true }),
@@ -265,10 +292,25 @@ function flipStep4(f, st) {
     est = ocReach(cpu?.name),
     gest = ocReach(gpu?.name),
     cs = ocSettings(cpu?.name),
-    gs = ocSettings(gpu?.name);
+    gs = ocSettings(gpu?.name),
+    set = f.ocSet || {};
+  // what the player actually set, if they couldn't reach the suggestion – the estimates follow every change
+  const mine = (cs || gs) && (st.can.ocCpu || st.can.ocGpu);
+  const ownCpu =
+    cs && st.can.ocCpu
+      ? (() => {
+          const m = set.mult || cs.mult,
+            v = ocSettings(cpu.name, m * 100)?.volt;
+          return `<div class="focset">CPU multiplier ×<input type="number" min="1" max="80" step="1" data-oc="mult" value="${m}"> = ${(m * 100).toLocaleString()} MHz${v ? ` · needs about ${v.toFixed(2)} V` : ""}</div>`;
+        })()
+      : "";
+  const ownGpu =
+    gs && st.can.ocGpu
+      ? `<div class="focset">GPU core <input type="number" min="0" step="1" data-oc="core" value="${set.core || gs.core}"> MHz · memory <input type="number" min="0" step="1" data-oc="mem" value="${set.mem || gs.mem}"> MHz</div>`
+      : "";
   const row = (k, title, sub, ok = true, why = "") =>
     `<label class="fsoft ${ok ? "" : "locked"}"><input type="checkbox" data-fs="${k}" ${s[k] && ok ? "checked" : ""} ${ok ? "" : "disabled"}><span><b>${title}</b><br><small>${ok ? sub : why}</small></span></label>`;
-  return `<div class="fstep"><p class="hint">Do these in the game in this order, tick each one. The value only changes once 3DMark has run.</p>
+  return `<div class="fstep">${pcNowHtml(f, st, true)}<p class="hint">Do these in the game in this order, tick each one. The value only changes once 3DMark has run.</p>
     ${row("boot", "Boot to the OS", "+$100 to the resale value.")}
     ${row("xmp", "Turn on XMP in the BIOS (RAM settings)", gain("xmp") > 0 ? `3DMark +${gain("xmp").toLocaleString()}.` : "No difference on this motherboard / RAM – it's fine either way.")}
     ${row(
@@ -291,6 +333,11 @@ function flipStep4(f, st) {
       st.can.ocGpu,
       !hasUnlock("gpuOC") ? gateMsg("gpuOC").replace(/<\/?b>/g, "") + "." : "No overclocking data for this GPU."
     )}
+    ${
+      mine && (ownCpu || ownGpu)
+        ? `<div class="focbox"><b>Couldn't reach the suggested overclock?</b> <small>Enter what you set – the 3DMark, sale and profit estimates follow.</small>${ownCpu}${ownGpu}<button class="ghost" data-fa="ocreset" ${f.ocSet ? "" : "hidden"}>↺ Back to the suggestion</button></div>`
+        : ""
+    }
     ${row("bench", "Run 3DMark", `Expected ~${(sc(base) || 0).toLocaleString()} points with the ticks above. Enter the score the game shows:`)}
     <div class="addrow fscore"><input type="number" min="0" data-fa="score" placeholder="3DMark score" value="${f.score ?? ""}"><small>${f.score ? `Multiplier ×${benchMult(f.score).toFixed(2)} → resale value ${money(st.value)}` : "the multiplier goes from 1.0× at 1,000 points to 3.0× at 10,000"}</small></div>
     <p class="hint">Then add the PC Bay sticker and sell it – the auction can move the final price a little.</p></div>`;
@@ -423,10 +470,23 @@ flipDlg.addEventListener("click", e => {
     if (!i || i.taken) return;
     const old = ONE_SLOT.includes(i.cat) ? b.find(p => (i.cat === "CPU Cooler" ? isCooling(p) : p.cat === i.cat)) || null : null;
     flipApply(f, flipApplyItems(b, [{ inv: i, old }]));
+  } else if (t.dataset.fa === "ocreset") {
+    delete f.ocSet;
   } else if (t.dataset.fa === "refresh") {
     flipCache.key = "";
     toast("Suggestions worked out again");
   } else return;
+  flipSave();
+  flipRender();
+});
+// the Profit step's own overclock values: every edit updates the 3DMark / sale / profit estimates
+flipDlg.addEventListener("input", e => {
+  const f = flipCur,
+    t = e.target;
+  if (!f || !t.dataset?.oc) return;
+  const v = Math.round(+t.value);
+  if (!(v > 0)) return; // half-typed / empty: wait
+  f.ocSet = { ...(f.ocSet || {}), [t.dataset.oc]: v };
   flipSave();
   flipRender();
 });

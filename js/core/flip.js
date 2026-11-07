@@ -272,13 +272,31 @@ function flipScore(build, o = {}) {
   let gpuS = two ? g.two : g.one;
   if (o.ocGpu) {
     const oc = two ? g.ocTwo : g.ocOne;
-    if (oc > gpuS) gpuS = Math.round(gpuS + OC_SHARE * (oc - gpuS));
+    // o.gpuShare: how far toward the overclock base the player got (from the clocks they set); else 90 % of it
+    if (oc > gpuS) gpuS = Math.round(gpuS + (o.gpuShare ?? OC_SHARE) * (oc - gpuS));
   }
   const stick = Math.min(...sticks),
     ch = Math.min(sticks.length, cpu.maxCh || 1),
     mhz = o.xmp ? xmpSpeed(stick, mb.steps) : Math.min(cpu.defMem || stick, stick);
-  const cpuMhz = o.ocCpu && ocReach(cpuP.name) ? ocReach(cpuP.name) : cpu.mhz;
+  // o.cpuMhz: the clock the player set (multiplier × 100); else 90 % of the potential
+  const cpuMhz = o.ocCpu && ocReach(cpuP.name) ? Math.max(cpu.mhz, o.cpuMhz || ocReach(cpuP.name)) : cpu.mhz;
   return sysBench(cpuBench({ ...cpu, mhz: cpuMhz }, ch, mhz), gpuS);
+}
+// the overclock the player says they set on the Profit step (f.ocSet: { mult, core, mem }) as flipScore options –
+// nothing set → the suggestion (90 % of the potential)
+function flipOcOpts(f, build) {
+  const o = {},
+    set = f.ocSet || {},
+    cpu = build.find(p => p.cat === "CPU"),
+    gpu = build.find(p => p.cat === "GPU");
+  if (set.mult && cpu) o.cpuMhz = set.mult * 100;
+  const d = gpu && ocOf(gpu.name);
+  if (d && d.core != null && (set.core || set.mem)) {
+    const part = (v, a, b) => (v == null || !(b > a) ? null : Math.min(1.2, Math.max(0, (v - a) / (b - a)))),
+      sh = [part(set.core, d.core, d.ocCore), part(set.mem, d.mem, d.ocMem)].filter(x => x != null);
+    if (sh.length) o.gpuShare = sh.reduce((t, x) => t + x, 0) / sh.length;
+  }
+  return o;
 }
 // everything the window and the tile show
 function flipState(f) {
@@ -289,8 +307,9 @@ function flipState(f) {
     unfixed = broken.filter(p => !f.changes.some(c => c.old === p.id)); // replaced or taken out
   const newCost = f.changes.filter(c => c.isNew).reduce((t, c) => t + (c.price ?? priceOf(c.name) ?? 0), 0);
   const s = f.soft,
-    plan = { xmp: true, ocCpu: can.ocCpu, ocGpu: can.ocGpu };
-  const now = flipScore(build, { xmp: s.xmp, ocCpu: s.ocCpu && can.ocCpu, ocGpu: s.ocGpu && can.ocGpu });
+    oco = flipOcOpts(f, build),
+    plan = { xmp: true, ocCpu: can.ocCpu, ocGpu: can.ocGpu, ...oco };
+  const now = flipScore(build, { xmp: s.xmp, ocCpu: s.ocCpu && can.ocCpu, ocGpu: s.ocGpu && can.ocGpu, ...oco });
   const best = flipScore(build, plan); // after XMP + the overclocks this PC can do
   const start = f.startValue ?? f.parts.reduce((t, p) => t + (p.value ?? 0), 0);
   const score = s.bench && f.score ? f.score : null;
@@ -622,6 +641,7 @@ if (typeof module !== "undefined")
     flipBuild,
     flipUpgrades,
     flipPlan,
+    flipOcOpts,
     flipApply,
     flipRemove,
     flipCheck,

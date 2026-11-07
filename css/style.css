@@ -1,5 +1,5 @@
 :root {
-  --css-ver: "0.14.3"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
+  --css-ver: "0.14.4"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
   --bg: #12151c;
   --panel: #1a1f29;
   --card: #222836;
@@ -2668,6 +2668,32 @@ dialog.flipdlg {
   margin-top: 10px;
 }
 /* "Suggest NEW parts" switch: visible, quiet – a pill that lights up when on */
+.tag.oc {
+  background: #1d3a5c;
+  color: #9cd0ff;
+  border: 1px solid #2f5e8f;
+}
+.focbox {
+  margin: 4px 0 10px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.focbox small {
+  color: var(--muted);
+}
+.focset {
+  margin-top: 6px;
+}
+.focset input {
+  width: 78px;
+  padding: 3px 6px;
+  margin: 0 2px;
+}
+.focbox button {
+  margin-top: 8px;
+}
 .fnewsw {
   display: inline-flex;
   align-items: center;
