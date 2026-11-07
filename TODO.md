@@ -106,18 +106,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (3)
+## Small fixes (0)
 
-1. **"Overclock Unlocked" badge in the PC Bay inventory** (Mariusz, 2026-11-07): on inventory rows of motherboards and
-   CPUs that can overclock (compat `oc=1` – K / X CPUs, Z / X-chipset boards; not the locked ones), in the inventory tabs
-   of steps 2–3, and on the part lists too – "This PC now" (steps 2–3) and the Profit step's list (Mariusz: yes).
-   Small, readable, like the USED / NEW tags.
-2. **Profit step: list of the PC's parts at the top** (Mariusz, 2026-11-07): step 4 starts with the parts the PC now has
-   (same order and look as "This PC now" in steps 2–3, with came-with-it / USED / NEW tags), read-only – no ✕, no ＋ Use.
-3. **Profit step: adjust the overclock** (Mariusz, 2026-11-07): when the player can't reach the suggested values, they
-   can type what they actually set / got – CPU multiplier (and voltage), GPU core / memory clock (power limit). The
-   3DMark estimate and the sale / profit estimate update after every change. Defaults = the suggested settings; a
-   "back to the suggestion" button; saved with the build. (flipScore takes the clocks instead of 90 % of the potential.)
+_dev-0.14.4 (2026-11-07), ready – waiting for Mariusz's OK to release: "Overclock Unlocked" badge (compat oc=1 CPUs /
+boards: inventory rows, This PC now, Profit list) · Profit step starts with the read-only parts list · own overclock
+values on the Profit step (f.ocSet {mult, core, mem} → flipOcOpts → flipScore cpuMhz / gpuShare = average of core and
+memory progress toward the OC base, capped 1.2; typing redraws around the field – patchAround – so focus stays)._
 
 _0.14.3 released 2026-11-07 (backup-0.14.2 made first): virus hint kept on 3DMark jobs (Conrad had a virus;
 DullGirl / FishyC tests updated) · PC Bay inventory as category tabs (only filled categories, newest scan first –
