@@ -206,6 +206,11 @@ Notes for later (not tasks yet):
   "highest multiplier" (i3 Engine 27 ×46/×47, DELOS ×48/×49), H case vs fans (no fans in Antec / Kolink / FSP; one
   Pure Wings at a time), F i5-9600K (OC base 5200 / 1.75), G Ryzen 5 2600 on GIGABYTE B450 AORUS M (65 W, 95 °C).
   Predictions for both ideas (clock / voltage) are in the sheet.
+  GPU heat (Mariusz 2026-11-08, certain): the GPU's temperature affects the CPU's – at least when both are air cooled.
+  Every reading so far had the same stock GTX 1060 GAMING X 6G, so its heat is hidden in the 0.8035 factor and the case
+  factors – the formula only holds for that GPU. Needs readings with the same CPU + cooler + clock and only the GPU
+  changed (e.g. GTX 1050 / 1060 / 1080 Ti, stock vs overclocked, air vs water-cooled GPU) before level 3 can be used
+  on other PCs. Part 2 also keeps the 1060 – don't change it there.
 - 💡 Tips live in js/hints.js (id, when(job, build), text) – add new ones there.
 - Overclock objectives: **confirmed by screenshot** (2026-11-05, AccurateUncle@UncleLaboratory.org, "More power!",
   Req: Level 20): "Overclock CPU to 4125 MHz" + "Install custom water cooling for CPU" + Complete by. The parser and
