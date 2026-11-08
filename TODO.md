@@ -160,7 +160,16 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    makers. Estimates with them as a pair: 12,164–12,227 stock, 13,366 at full GPU OC – close to 13,190 at the lower
    clocks. Fix: a pair = 2 cards of the same chip (GTX 1080 = GTX 1080, any maker / edition), score from the two
    cards' "two" values (the weaker card's, or their average); the job board (dual objective, suggestions, 3DMark
-   estimate) too. Open: does the game pair different chips (1080 + 1070)? – assume not until a test shows it.
+   estimate) too. Confirmed by Mariusz (2026-11-08, all reproduced in the game): the game pairs the same GPU model,
+   any maker / edition – ASUS Radeon RX 560 + ASUS ROG Strix Radeon RX 560 OC Edition; MSI GTX 1070 Gaming X 8G +
+   ZOTAC GTX 1070 AMP Extreme; MSI GTX 970 GAMING LE 100ME + Shean GTX 970 GAMER. Different models don't pair (1080 +
+   1070). The "model" = the chip part of the name (GeForce GTX 1080 / Radeon RX 560 …) – take it from the DB (chip /
+   series field if there is one, else parse "GeForce GTX|RTX … / Radeon RX|R9 … / Vega …", with "Ti" / "Super" / "XT"
+   kept: 1080 ≠ 1080 Ti) and add unit tests for the 3 examples + 1080 Ti ≠ 1080.
+   Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
+   score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
+   suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
+   pair – the 2nd one adds its value but not its score" (and the job board's dual-GPU objective must not count it).
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
