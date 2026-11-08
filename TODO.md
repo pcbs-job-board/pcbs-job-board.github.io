@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (8)
+## Small fixes (9)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -175,6 +175,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    any that don't apply. Soft wording (Mariusz): no hint that doing an extra one is punished – e.g. "These are
    guessed from the email's wording – some might not be required. Check them against the email and untick any that
    don't apply." Small, muted text (like the box's other hints); also on story jobs' "not ticked" box.
+9. **PC Bay step 3 notes: the 10,000 note is misleading** (Mariusz 2026-11-08, `pcbay_note_10000.png`). flip.js
+   flipNotes: "The score already reaches 10,000 – more performance won't raise the price." Only the score
+   multiplier stops at 10,000 (×3.0); the sale price is the parts' value × that multiplier, so more / more valuable
+   parts still raise it. New wording, e.g. "The score already reaches 10,000 – the price multiplier is at its
+   maximum (×3.0); more or better parts still raise the price through their value." And the RAM note next to it
+   ("a second one (dual channel) raises the 3DMark score, and so the price") is wrong at ≥ 10,000 the same way: there
+   say "a second stick adds its value to the price (the score is already high enough)". The planner itself already
+   counts the parts' value – only the notes need fixing.
    Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
    score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
    suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
