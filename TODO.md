@@ -106,7 +106,13 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
+
+1. **PC Bay step 1: a $0 part in the Resale Value window = broken** (Mariusz 2026-11-08). In the game a broken part
+   shows $0 resale value (PC Status: "Broken part(s)"); the capture read Cryorig M9i $0 but left "broken" unticked.
+   Tick "broken" automatically for $0 parts when reading the Resale Value window (still editable), and keep it when the
+   list is joined from several captures. Screenshots: tests `fixtures/pending/resale_broken_cooler_0usd.png` (game)
+   and `resale_broken_cooler_0usd_app.png` (app) – SilverStone RL07 build, Resale Value $598, bought $498.
 
 _0.14.7 released 2026-11-08 (backup-0.14.6 made first): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
