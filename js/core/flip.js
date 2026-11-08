@@ -155,7 +155,8 @@ function parseInventoryColumn(lines) {
 // black bars around the game (a 1512 × 948 Mac capture; screen-height units missed the labels there and hit the
 // selected card's black frame instead). From the name up: USED at 0.97–1.04 card widths, BROKEN at 0.82–0.89.
 // BROKEN must stand out from the rows just above and below it (red text on the picture), so a red fan or a red heatsink
-// – red all the way down the picture – doesn't count. px(x, y) → [r, g, b] (0–1 coords)
+// – red all the way down the picture – doesn't count. A yellow "Property of …" note top left → property (a customer's
+// part: can't be used for a PC Bay build). px(x, y) → [r, g, b] (0–1 coords)
 function cardLabels(px, colX, colW, nameMidY, W, H) {
   const cw = colW * W,
     // share of the pixels in rows k0..k1 (card widths above the name) and x0..x1 (share of the card width) passing test
@@ -174,7 +175,10 @@ function cardLabels(px, colX, colW, nameMidY, W, H) {
   const dark = band(0.97, 1.04, 0.62, 0.92, isDark),
     red = band(0.82, 0.89, 0.2, 0.8, isRed),
     around = Math.max(band(0.75, 0.81, 0.2, 0.8, isRed), band(0.9, 0.96, 0.2, 0.8, isRed));
-  return { used: dark > 0.05, broken: red > 0.1 && red - around > 0.08, dark, red, around };
+  // a yellow sticky note "Property of <customer email>" at the picture's top left: a customer's part, not ours
+  const note = band(0.6, 1.12, 0.04, 0.38, ([r, g, b]) => r > 200 && g > 190 && b < 150 && r - b > 80);
+  // cards with a note: 0.31–0.61 of the patch yellow, every other card: 0
+  return { used: dark > 0.05, broken: red > 0.1 && red - around > 0.08, property: note > 0.15, dark, red, around, note };
 }
 // ---------- the build ----------
 const flipUid = () => Math.random().toString(36).slice(2, 9);

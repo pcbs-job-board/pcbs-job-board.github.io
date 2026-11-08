@@ -4,6 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.6
+- PC Bay build: inventory parts with a yellow "Property of …" note (a customer's) are left out – they can't go into a build.
 - Story jobs: 4 more recognised (S Daldry "Intern-proof PC?", Captain J Dirk "Incoming Transmission", HRH The Queen "A royal robbery", scottyB "urgent job!!").
 
 ## 0.14.5

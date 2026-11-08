@@ -605,6 +605,13 @@ async function flipImage(url, kind, again) {
       const items = await readInventory(img, crops.inv, (i, n) => {
         if (st) st.textContent = `Reading the inventory… column ${i} of ${n}`;
       });
+      const cust = items.skipped
+        ? ` · ${items.skipped} customer's part${items.skipped > 1 ? "s" : ""} ("Property of …") left out`
+        : "";
+      if (!items.length && items.skipped) {
+        toast(`Only customers' parts here ("Property of …") – they can't go into a PC Bay build`);
+        return;
+      }
       if (!items.length) {
         if (st)
           st.innerHTML =
@@ -632,7 +639,7 @@ async function flipImage(url, kind, again) {
       const nb = items.filter(i => i.broken).length,
         nn = items.filter(i => !i.used && !i.broken).length;
       toast(
-        `Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory${nn ? ` · ${nn} new` : ""}${nb ? ` · ${nb} broken (can't be used)` : ""}`
+        `Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory${nn ? ` · ${nn} new` : ""}${nb ? ` · ${nb} broken (can't be used)` : ""}${cust}`
       );
     }
     flipSave();
@@ -693,6 +700,7 @@ async function readInventory(img, grid, onStep) {
   const fg = fc.getContext("2d", { willReadFrequently: true });
   fg.drawImage(img, 0, 0);
   const pd = fg.getImageData(0, 0, W, H).data;
+  let skipped = 0; // customers' parts ("Property of …") left out
   const px = (x, y) => {
     const i = (Math.min(H - 1, Math.max(0, Math.round(y * H))) * W + Math.min(W - 1, Math.max(0, Math.round(x * W)))) * 4;
     return [pd[i], pd[i + 1], pd[i + 2]];
@@ -706,6 +714,10 @@ async function readInventory(img, grid, onStep) {
     for (const it of got) {
       if (it.nameY != null) {
         const L = cardLabels(px, b.x, b.w, b.y + (it.nameY / c.height) * b.h, W, H);
+        if (L.property) {
+          skipped++; // "Property of <customer>": a job's part, not ours – left out
+          continue;
+        }
         it.used = L.used;
         it.broken = L.broken;
         // not broken but the price reads far too low → misread, the used value it must be
@@ -715,5 +727,6 @@ async function readInventory(img, grid, onStep) {
       items.push(it);
     }
   }
+  items.skipped = skipped;
   return items;
 }
