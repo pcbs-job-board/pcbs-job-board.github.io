@@ -8,6 +8,20 @@ function acCat(inp) {
   const f = inp.closest("[data-swapform]");
   return f ? f.querySelector('[data-f="cat"]').value : "";
 }
+// the PC the swap form plans for: without the swap being edited (✎) and without a swap already planned for the
+// chosen part – the new part takes their place, so their price and watts don't count (replaceSwaps)
+function swapFormPlan(job, form) {
+  const ed = form.dataset.edit,
+    edited = ed && job.swaps.find(s => s.id === ed),
+    o = form.querySelector('[data-f="old"]').value,
+    old = o === "keep" ? edited?.old || "" : job.components[o]?.name || "";
+  const others = job.swaps.filter(s => s.id !== ed),
+    r = replaceSwaps(others, [{ old, new: "" }]);
+  const swaps = r.swaps.filter(s => s.new !== ""),
+    replace = r.dropped.length ? r.dropped[0].old || null : old || null;
+  const spent = swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0);
+  return { job: { ...job, swaps }, replace, left: job.budget == null ? null : job.budget - spent };
+}
 function acShow(inp) {
   acInput = inp;
   const q = inp.value.trim(),
@@ -22,11 +36,9 @@ function acShow(inp) {
   acSel = 0;
   // planning a swap: parts that fit the planned PC first, the others with a warning
   const form = inp.closest("[data-swapform]"),
-    job = form && jobs.find(j => j.id === form.dataset.swapform);
-  if (job && typeof compatRank === "function") {
-    const o = form.querySelector('[data-f="old"]').value;
-    acItems = compatRank(job, job.components[o]?.name || null, acItems).slice(0, 14);
-  }
+    job = form && jobs.find(j => j.id === form.dataset.swapform),
+    plan = job && swapFormPlan(job, form);
+  if (plan && typeof compatRank === "function") acItems = compatRank(plan.job, plan.replace, acItems).slice(0, 14);
   const lockedN = searchParts.hidden;
   const toks = normP(q).split(" ").filter(Boolean);
   const hl = s => {
@@ -47,7 +59,7 @@ function acShow(inp) {
           .filter(Boolean)
           .join(" · ");
   const leftAttr = inp.closest("[data-left]")?.dataset.left,
-    left = leftAttr == null ? null : +leftAttr;
+    left = leftAttr == null ? null : plan ? plan.left : +leftAttr;
   const overB = p => left != null && p.price != null && p.price > left;
   acEl.innerHTML =
     `<div class="aclist">` +

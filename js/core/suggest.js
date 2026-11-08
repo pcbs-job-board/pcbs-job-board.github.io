@@ -36,7 +36,14 @@ function fitsBuild(job, cand, replace) {
   return !compatIssues(job, b).some(i => i.part === c || i.other === c);
 }
 // a copy of the job with extra planned swaps – to check power / fit of a combination
-const withSwaps = (job, swaps) => ({ ...job, swaps: [...(job.swaps || []), ...swaps.map((s, i) => ({ id: "sg" + i, ...s }))] });
+// (a new swap for a slot that already has a planned swap takes its place – replaceSwaps)
+const withSwaps = (job, swaps) => ({
+  ...job,
+  swaps: replaceSwaps(
+    job.swaps,
+    swaps.map((s, i) => ({ id: "sg" + i, ...s }))
+  ).swaps,
+});
 // the cheapest PSU that carries the job (same format as the case allows, fits the case)
 function psuFor(job, extraSwaps) {
   const j2 = withSwaps(job, extraSwaps),
@@ -56,7 +63,8 @@ function psuFor(job, extraSwaps) {
 }
 // turn a list of candidate parts into the options of one suggestion (G2–G4, brand)
 function pickOptions(job, ctx, cands, { replace = "", count = 1, upgrade = false, base = null } = {}) {
-  const left = ctx.left;
+  // a part already planned for this slot is not bought any more: its price is back in the budget
+  const left = ctx.left == null ? null : ctx.left + (replace && count === 1 ? refundFor(job, [replace]) : 0);
   const ok = cands.filter(p => fitsBuild(job, p, replace)).sort((a, b) => a.price - b.price || rk(b) - rk(a));
   if (!ok.length) return [];
   const opt = (p, tag) => {
@@ -668,6 +676,16 @@ function suggestSwaps(job, opts = {}) {
       old: p.name,
     });
   }
+  // "over budget" of every option: parts already planned for the slots it fills are not bought any more – their price is
+  // back in the budget (a planned GPU replaced by the suggested one only costs the difference)
+  if (ctx.left != null)
+    for (const sg of out)
+      for (const o of sg.options || []) {
+        if (o.over !== true) continue;
+        const olds = [...(o.swaps || []).map(w => w.old), ...(o.extras || []).map(e => e.old)];
+        const back = refundFor(job, olds);
+        if (back) o.over = (o.total ?? (o.price || 0) * (o.count || 1)) > ctx.left + back;
+      }
   return out;
 }
 // the identical part (or the closest equal-or-better one of the same kind when it can't be bought),

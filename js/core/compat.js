@@ -48,7 +48,9 @@ function compatBuild(j, extra) {
   });
   if (extra) {
     if (extra.replace != null) {
-      const k = out.findIndex(p => p.src === "stats" && p.name.toLowerCase() === extra.replace.toLowerCase());
+      const r = extra.replace.toLowerCase();
+      let k = out.findIndex(p => p.src === "stats" && p.name.toLowerCase() === r);
+      if (k < 0) k = out.findIndex(p => p.src === "swap" && p.name.toLowerCase() === r); // a part a planned swap puts in
       if (k >= 0) out.splice(k, 1);
     }
     out.push(extra.part);

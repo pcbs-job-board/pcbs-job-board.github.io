@@ -608,19 +608,35 @@ document.addEventListener("click", e => {
       f.querySelector('[data-f="new"]').focus();
       return;
     }
-    const ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
+    let ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
+    const old = ed && o === "keep" ? ed.old : j.components[o]?.name || "";
+    // a part that already has a planned swap: the new one takes its place (same spot in the list), never both
+    const twin = old && j.swaps.find(x => x !== ed && lowName(x.old) === lowName(old));
+    const before = j.swaps.map(x => ({ ...x }));
+    if (twin && ed) j.swaps.splice(j.swaps.indexOf(twin), 1);
+    else if (twin) ed = twin;
     if (ed) {
       const was = ed.new;
-      ed.old = o === "keep" ? ed.old : j.components[o]?.name || "";
+      ed.old = old;
       ed.cat = cat;
       ed.new = nw;
       if (nw !== was) {
         delete ed.price;
         ed.done = false;
       }
-    } else j.swaps.push({ id: uid(), old: j.components[o]?.name || "", cat, new: nw, done: false });
+    } else j.swaps.push({ id: uid(), old, cat, new: nw, done: false });
     rememberPart(nw, cat);
     f.hidden = true;
+    if (twin) {
+      save();
+      render();
+      toast(`Replaced the planned swap ${twin === ed ? before.find(x => x.id === twin.id).new : twin.new} → ${nw}`, () => {
+        j.swaps = before;
+        save();
+        render();
+      });
+      return;
+    }
   } else if (a === "complete") {
     const idx = jobs.indexOf(j);
     jobs.splice(idx, 1);

@@ -605,6 +605,38 @@ function plannedBuild(j) {
   }
   return b;
 }
+// planning a swap for a slot that already has a planned swap: the earlier swap drops out and the new one takes its
+// place (it replaces what the earlier one replaced) – so the earlier part's price and watts no longer count.
+// `add`: the new swaps ({cat, old, new}); returns the swaps of the plan and the ones that dropped out
+const lowName = x =>
+  String(x || "")
+    .trim()
+    .toLowerCase();
+function replaceSwaps(swaps, add) {
+  const keep = [...(swaps || [])],
+    out = [],
+    dropped = [];
+  for (const a of add || []) {
+    const o = lowName(a.old);
+    let k = o ? keep.findIndex(s => lowName(s.new) === o) : -1; // old = a part an earlier swap puts in
+    if (k < 0 && o) k = keep.findIndex(s => lowName(s.old) === o); // old = a customer's part an earlier swap replaces
+    if (k < 0) {
+      out.push(a);
+      continue;
+    }
+    const [s] = keep.splice(k, 1);
+    dropped.push(s);
+    out.push({ ...a, old: s.old || "" });
+  }
+  return { swaps: [...keep, ...out], dropped };
+}
+// what the swaps that a new swap of `old` would take the place of cost (they are no longer bought)
+const swapCost = s => (s.price ?? priceOf(s.new)) || 0;
+const refundFor = (j, olds) =>
+  replaceSwaps(
+    j.swaps,
+    olds.filter(Boolean).map(old => ({ old, new: "" }))
+  ).dropped.reduce((t, s) => t + swapCost(s), 0);
 // null when there is no PSU yet; otherwise what the CPU + GPU(s) + the rest need, stock and overclocked
 function powerCheck(j) {
   const b = plannedBuild(j),

@@ -199,7 +199,7 @@ function saveReview() {
     const fj = job(rev.forJob.id);
     fj.components = comps;
     fj.capNames = capNames;
-    fj.swaps.push(...picked.swaps);
+    fj.swaps = replaceSwaps(fj.swaps, picked.swaps).swaps; // a ticked part for a slot with a planned swap takes its place
     fj.tasks.push(...picked.tasks);
   } else {
     const fields = {
@@ -239,7 +239,7 @@ function saveReview() {
       document.querySelectorAll("#fHidden input:checked").forEach(c => tasks.push(take("hid", d.hidden[c.dataset.h].task)));
       lines("#fExtra").forEach(t => tasks.push(take("add", t)));
       target.tasks = [...tasks, ...picked.tasks];
-      target.swaps.push(...picked.swaps);
+      target.swaps = replaceSwaps(target.swaps, picked.swaps).swaps;
       // a favourite-brand hint that was unticked: the brand no longer steers the suggestions
       target.brands = (target.brands || []).filter(br =>
         target.tasks.some(t => t.src === "hid" && t.text.toLowerCase().includes(br.toLowerCase()))
