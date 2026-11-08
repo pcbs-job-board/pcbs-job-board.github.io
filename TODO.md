@@ -166,9 +166,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    1070). The "model" = the chip part of the name (GeForce GTX 1080 / Radeon RX 560 …) – take it from the DB (chip /
    series field if there is one, else parse "GeForce GTX|RTX … / Radeon RX|R9 … / Vega …", with "Ti" / "Super" / "XT"
    kept: 1080 ≠ 1080 Ti) and add unit tests for the 3 examples + 1080 Ti ≠ 1080.
-   OPEN: Mariusz thinks he once saw a GTX 1080 paired with a 1080 Ti – not tested yet, he'll confirm when he can.
-   Until then keep 1080 ≠ 1080 Ti, but put the "same model" rule in one place (one function / table) so it's a
-   one-line change if the game pairs them.
+   Tested by Mariusz (2026-11-08): EVGA GTX 1080 Ti K|NGP|N GAMING does NOT pair with MSI GTX 1080 GAMING Z 8G nor
+   with MSI GTX 1080 GAMING+ 8G → 1080 ≠ 1080 Ti (add these as unit tests too). Keep the "same model" rule in one
+   place (one function) anyway.
    Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
    score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
    suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
