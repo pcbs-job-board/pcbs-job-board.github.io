@@ -106,13 +106,20 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (2)
 
 1. **PC Bay step 1: a $0 part in the Resale Value window = broken** (Mariusz 2026-11-08). In the game a broken part
    shows $0 resale value (PC Status: "Broken part(s)"); the capture read Cryorig M9i $0 but left "broken" unticked.
    Tick "broken" automatically for $0 parts when reading the Resale Value window (still editable), and keep it when the
    list is joined from several captures. Screenshots: tests `fixtures/pending/resale_broken_cooler_0usd.png` (game)
    and `resale_broken_cooler_0usd_app.png` (app) – SilverStone RL07 build, Resale Value $598, bought $498.
+   Second case: Mortoni Heat Away 140 ×3 at $2 / $0 / $2 (`resale_same_fans_game.png`) – the $0 one is the broken one.
+2. **PC Bay step 1: identical parts can't be marked broken separately** (Mariusz 2026-11-08). Three "Mortoni Heat Away
+   140" case fans: ticking "broken" on any of them always marks the first one, and only one can be marked. Cause: when
+   captures are joined (flipui.js, the f.parts rebuild after a capture) old parts are matched by `cat|name`, so identical
+   parts all get the same id → `f.parts.find(id)` hits the first. Fix: match the n-th identical part to the n-th old one
+   (keep each its own id / broken state), and repair saved builds that already have duplicate ids. Screenshots:
+   `resale_same_fans_app.png`, `resale_same_fans_app_ticked.png` (COSMOS C700P build, Resale Value $739).
 
 _0.14.7 released 2026-11-08 (backup-0.14.6 made first): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
