@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **PC Bay step 1: a $0 part in the Resale Value window = broken** (Mariusz 2026-11-08). In the game a broken part
    shows $0 resale value (PC Status: "Broken part(s)"); the capture read Cryorig M9i $0 but left "broken" unticked.
@@ -121,6 +121,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    parts all get the same id → `f.parts.find(id)` hits the first. Fix: match the n-th identical part to the n-th old one
    (keep each its own id / broken state), and repair saved builds that already have duplicate ids. Screenshots:
    `resale_same_fans_app.png`, `resale_same_fans_app_ticked.png` (COSMOS C700P build, Resale Value $739).
+3. **RAM capacity suggestions ignore the favourite brand** (Mariusz 2026-11-08, D.Shah@UnluckyGroup.com "Upgrades for
+   my rig?": "I'm a total G.SKILL fanboy" → hidden "Use G.SKILL… (makes: CPU Cooler, RAM)", "Upgrade to 32 GB of RAM",
+   4 × Team Group T-Force Night Hawk 8 GB 3000 in a 4-slot board). All 3 "Upgrade to 32 GB" options were Team Group:
+   suggest.js "7 / 8 Upgrade to N GB" only takes the cheapest stick per layout and "add N × the same stick". Fix: with a
+   brand objective that covers RAM, offer the brand's sticks first (★, e.g. 2 × G.SKILL Ripjaws V 16 GB 3200 $420,
+   4 × 8 GB G.SKILL…), same speed or faster. Also: the 3DMark "More RAM sticks" option is tagged "★ G.SKILL" but adds a
+   Team Group stick – the tag must only be on a brand part (or offer the G.SKILL stick there too).
+   Screenshots: `gskill_ram_pcstats.png`, `gskill_ram_app.png`.
 
 _0.14.7 released 2026-11-08 (backup-0.14.6 made first): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
