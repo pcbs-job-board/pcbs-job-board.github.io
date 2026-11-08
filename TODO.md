@@ -189,9 +189,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    3DMark 10,000 (×3.0), so the Profit step should suggest the smallest overclock that gets the estimate just above
    10,000 – less heat, less risk, faster – with the full potential kept as extra info:
    - search the game's steps with flipScore (CPU multiplier ×1 steps + its voltage at 0.05 V; GPU Tuner core /
-     memory clocks; XMP on): CPU only, GPU only, both – pick the gentlest (fewest steps above stock, CPU voltage as
-     low as possible) whose estimate is ≥ 10,000 + a small safety margin (the estimate is usually within a few points;
-     e.g. +100, kept in one constant)
+     memory clocks; XMP on) for the gentlest overclock whose estimate is ≥ 10,000 + a small safety margin (the
+     estimate is usually within a few points; e.g. +100, kept in one constant)
+   - "gentlest" (Mariusz): spread it over both when both can overclock – measure each part's overclock as its share
+     of the way from stock to its full potential (0–100 %) and pick the combination with the lowest HIGHEST share
+     (CPU 25 % + GPU 25 % beats CPU 50 % alone or GPU 50 % alone); ties → the lower total, then lower CPU voltage.
+     Only one of them can overclock → that one alone.
    - show it first: "To reach 10,000: CPU ×46 (4.6 GHz, 1.30 V) · GPU stock" with the expected score; below it
      "Full potential: …" as now; the "Couldn't reach it?" fields keep working
    - stock (with XMP) already ≥ 10,000 → "No overclock needed – the score already reaches 10,000"; can't reach
