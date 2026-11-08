@@ -338,6 +338,48 @@ function suggestSwaps(job, opts = {}) {
         });
         if (opts2.length >= 3) break;
       }
+      // favourite brand that makes RAM (hidden objective): its sticks first – cheapest layout, same speed or faster
+      const fav = ctx.brands.length ? ctx.brands.find(b => shopParts("RAM").some(p => brandMatch(p, b))) : null;
+      if (fav) {
+        const isFav = name => {
+          const ix = INDEX.find(x => x.name === name);
+          return !!ix && ctx.brands.some(b => brandMatch(ix, b));
+        };
+        opts2.forEach(x => isFav(x.name) && (x.tag = `★ ${fav} · ${x.tag}`));
+        if (!opts2.some(x => isFav(x.name))) {
+          const favOpts = [];
+          for (const n of [2, 4, 1].filter(n => n <= slots)) {
+            const per = want / n;
+            if (!Number.isInteger(per)) continue;
+            const c = shopParts("RAM")
+              .filter(p => brandMatch(p, fav) && +cInfo(p).gb === per && +cInfo(p).mhz >= mhz)
+              .sort((a, b) => a.price - b.price)[0];
+            if (!c) continue;
+            const removed = sticks.slice(n).map(s => s.name);
+            favOpts.push({
+              name: c.name,
+              cat: "RAM",
+              price: c.price,
+              count: n,
+              det: c.det,
+              lvl: c.lvl,
+              pct: c.pct,
+              tag: `★ ${fav} · ${n} × ${per} GB${removed.length ? ` (take out ${removed.length})` : ""}`,
+              swaps: [
+                ...sticks.map(s => ({ cat: "RAM", old: s.name, new: c.name })).slice(0, n),
+                ...Array.from({ length: Math.max(0, n - sticks.length) }, () => ({ cat: "RAM", old: "", new: c.name })),
+              ],
+              extras: [],
+              removeOld: removed,
+              total: c.price * n,
+              over: !priceOk({ price: c.price * n }, ctx.left),
+            });
+          }
+          // the brand's cheapest layout inside the budget (else its cheapest) first, then 2 others
+          favOpts.sort((a, b) => a.over - b.over || a.total - b.total);
+          if (favOpts.length) opts2.unshift(favOpts[0]);
+        }
+      }
       add("obj:" + o, o, opts2.slice(0, 3), { cat: "RAM" });
       handled.add("RAM");
       continue;
@@ -1225,7 +1267,17 @@ function benchSuggestions(job, ctx) {
           .sort((a, b) => a.price - b.price)[0];
     if (same) ramFill = { k: (cpuB.maxCh || 1) - sticks, p: same };
   }
-  const fillSw = () => (ramFill ? Array.from({ length: ramFill.k }, () => sw(ramFill.p)) : []);
+  // …and with the favourite brand's stick (a brand that makes RAM): same size, same speed or faster
+  const favRam = ctx.brands.find(b => shopParts("RAM").some(p => brandMatch(p, b)));
+  let ramFav = null;
+  if (ramFill && favRam && !brandMatch(ramFill.p, favRam)) {
+    const r0 = ram0[0],
+      p = shopParts("RAM")
+        .filter(x => brandMatch(x, favRam) && +cInfo(x).gb === +cInfo(r0).gb && +cInfo(x).mhz >= stick)
+        .sort((a, b) => a.price - b.price)[0];
+    if (p) ramFav = { k: ramFill.k, p };
+  }
+  const fillSw = (f = ramFill) => (f ? Array.from({ length: f.k }, () => sw(f.p)) : []);
   const cands = []; // { type, swaps, sc, cost }
   const push = (type, swaps, sc) => {
     if (sc.on >= target) cands.push({ type, swaps, sc, cost: swaps.reduce((t, s) => t + s.price, 0) });
@@ -1234,9 +1286,11 @@ function benchSuggestions(job, ctx) {
     // without and with the RAM channels filled
     push(type, swaps, score(c, steps, gpu, sticks));
     if (ramFill) push(type + " + RAM", [...swaps, ...fillSw()], score(c, steps, gpu, sticks + ramFill.k));
+    if (ramFav) push(type + " + RAM", [...swaps, ...fillSw(ramFav)], score(c, steps, gpu, sticks + ramFav.k));
   };
   const gNow = nG === 2 ? benchOf(gpus0[0].name).two : benchOf(gpus0[0].name).one;
   if (ramFill) push("RAM", fillSw(), score(cpuB, mbB.steps, gNow, sticks + ramFill.k));
+  if (ramFav) push("RAM", fillSw(ramFav), score(cpuB, mbB.steps, gNow, sticks + ramFav.k));
   const gpusNew = locked.has("GPU") ? [] : withB("GPU");
   const gpuSw = g => (nG === 2 ? [sw(g, gpus0[0].name), sw(g, gpus0[1].name)] : [sw(g, gpus0[0].name)]);
   for (const { p: g, b } of gpusNew) {
@@ -1263,14 +1317,28 @@ function benchSuggestions(job, ctx) {
   const best = new Map(),
     brandBest = { o: null };
   let checks = 0;
-  const isBrand = c =>
-    ctx.brands.length &&
-    c.swaps
-      .filter(s => s.cat !== "RAM")
-      .every(s => {
+  // a brand set: every new part in a category the brand makes is the brand's (and there is at least one such part) –
+  // a RAM-only set with another maker's stick is not (it was tagged ★ before 0.14.8)
+  const makes = new Map(),
+    brandMakes = cat => {
+      if (!makes.has(cat))
+        makes.set(
+          cat,
+          shopParts(cat).some(p => ctx.brands.some(b => brandMatch(p, b)))
+        );
+      return makes.get(cat);
+    };
+  const isBrand = c => {
+    if (!ctx.brands.length) return false;
+    const rel = c.swaps.filter(s => brandMakes(s.cat));
+    return (
+      rel.length > 0 &&
+      rel.every(s => {
         const ix = INDEX.find(x => x.name === s.new);
         return ix && ctx.brands.some(b => brandMatch(ix, b));
-      });
+      })
+    );
+  };
   for (const c of cands) {
     const have = best.get(c.type);
     if (have && !have.over && (!isBrand(c) || brandBest.o)) continue;
@@ -1475,14 +1543,28 @@ function newBuildBench(job, ctx, target, build, why, set) {
     }
     return extras;
   };
-  const isBrand = c =>
-    ctx.brands.length &&
-    c.swaps
-      .filter(s => s.cat !== "RAM")
-      .every(s => {
+  // a brand set: every new part in a category the brand makes is the brand's (and there is at least one such part) –
+  // a RAM-only set with another maker's stick is not (it was tagged ★ before 0.14.8)
+  const makes = new Map(),
+    brandMakes = cat => {
+      if (!makes.has(cat))
+        makes.set(
+          cat,
+          shopParts(cat).some(p => ctx.brands.some(b => brandMatch(p, b)))
+        );
+      return makes.get(cat);
+    };
+  const isBrand = c => {
+    if (!ctx.brands.length) return false;
+    const rel = c.swaps.filter(s => brandMakes(s.cat));
+    return (
+      rel.length > 0 &&
+      rel.every(s => {
         const ix = INDEX.find(x => x.name === s.new);
         return ix && ctx.brands.some(b => brandMatch(ix, b));
-      });
+      })
+    );
+  };
   const label = c =>
     "Build for the score: " + [...new Set(c.swaps.map(s => (s.cat === "Motherboard" ? "motherboard" : s.cat)))].join(" + ");
   const picks = [];
