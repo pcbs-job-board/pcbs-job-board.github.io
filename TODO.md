@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -114,14 +114,19 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    7/27/2018 satellite orbiting Placidius." and "Install dual graphics cards" is missing (`dirk_placidius_app.png`).
    Email 1's header / first lines got into the objectives block when the texts were joined, and the line after it was
    lost. Fix the join so the objectives come only from the "Objectives:" block (header, sender, date and body text never
-   in it) and every bullet is kept. Email 1 screenshot not saved – ask Mariusz for it (or the "Raw text read from
-   screen") if the join can't be reproduced from Email 2 alone.
+   in it) and every bullet is kept. Email 1 = `dirk_placidius_email1.png` (sent later, same email – the top part),
+   `dirk_placidius_email2b.png` the bottom again.
 2. **Story job matched to the wrong entry** (same email). Captain J Dirk has a 3rd story email: "FSS Bold's mission to
    Placidius has reached a critical point" (Labour $140, Budget $700, Req: Level 22; 3DMark score of 11000, Install dual
    graphics cards – the force-field / supernova part of the story). Not in the list, so it matched his first entry by
    email and showed the "science officer smashed his research station" story. Add it to data/story-jobs.csv; and when
    the email matches but the subject doesn't match any of that sender's entries, don't show another entry's story
    (say "Story job – sender known, this email not in the list yet" instead).
+3. **Story job: Steve Shovel, P.I. "The Upgrade"** (Mariusz 2026-11-08, `shovel_upgrade_1.png`, `_2.png`):
+   steve.shovel@theprivateeyes.com, 7/27/2018, Labour $140 (no budget shown – the job was already accepted, "In
+   transit", so the objectives box isn't visible). Story: a noir detective tale – "Sam", a pro gamer, wants her rig
+   upgraded: "upgrade the rig with a second GPU and … hit a benchmark of 11000+". Add to data/story-jobs.csv (objectives
+   from the text: second GPU, 3DMark 11000 – confirm when Mariusz has the objectives box).
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
