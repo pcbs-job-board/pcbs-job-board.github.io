@@ -110,7 +110,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 _dev-0.14.7 (not released yet, waiting for Mariusz): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
-ARCTIC ONE (Red) fan was read as BROKEN. Reported "OCR really slow this update": no slowdown found between 0.14.0, 0.14.4
+ARCTIC ONE (Red) fan was read as BROKEN. Swap planning (Mariusz 2026-11-08): a new / edited swap for a slot that
+already has a planned swap counted both parts' price and watts (false "over budget", PSU, "can't pair" warnings) –
+replaceSwaps() in parts.js: the new swap takes the earlier one's place (swap form, saving it with an undo toast,
+suggestions' budget / PSU / fit, ticked suggestions). Reported "OCR really slow this update": no slowdown found between 0.14.0, 0.14.4
 and 0.14.7 (same reader, same timings in tests)._
 
 _0.14.6 released 2026-11-08 (backup-0.14.5 made first): story jobs from player reports (S Daldry "Intern-proof PC?",
