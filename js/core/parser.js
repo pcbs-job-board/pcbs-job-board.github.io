@@ -950,6 +950,9 @@ function storyMatch(job, list) {
   const e = normStory(job.sender),
     sub = normStory(job.subject),
     sig = (job.signature || []).map(normStory);
+  // the same customer can have several story jobs (HRH The Queen) – the one with this subject too comes first
+  const both = (list || []).find(st => st.email && e && normStory(st.email) === e && st.subject && normStory(st.subject) === sub);
+  if (both) return { entry: both, by: "email" };
   for (const st of list || []) {
     if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
     if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
