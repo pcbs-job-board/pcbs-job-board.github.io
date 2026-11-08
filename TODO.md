@@ -115,7 +115,8 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    and `resale_broken_cooler_0usd_app.png` (app) – SilverStone RL07 build, Resale Value $598, bought $498.
    Second case: Mortoni Heat Away 140 ×3 at $2 / $0 / $2 (`resale_same_fans_game.png`) – the $0 one is the broken one.
 2. **PC Bay step 1: identical parts can't be marked broken separately** (Mariusz 2026-11-08). Three "Mortoni Heat Away
-   140" case fans: ticking "broken" on any of them always marks the first one, and only one can be marked. Cause: when
+   140" case fans: ticking "broken" on any of them always marks the first one, and only one can be marked. Deleting one (✕)
+   deletes all three. Cause: when
    captures are joined (flipui.js, the f.parts rebuild after a capture) old parts are matched by `cat|name`, so identical
    parts all get the same id → `f.parts.find(id)` hits the first. Fix: match the n-th identical part to the n-th old one
    (keep each its own id / broken state), and repair saved builds that already have duplicate ids. Screenshots:
