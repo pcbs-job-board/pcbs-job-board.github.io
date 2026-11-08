@@ -138,6 +138,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    `twigg_pcstats.png`). The part is in the DB; the "|" in K|NGP|N (and the line break after "1080") lose the match –
    a different card ($875 vs ~$520, 3DMark and value off). Fix the matching (| read as I / l / 1 / nothing; "Ti" on
    the next line) and add the screenshot to the run tests.
+   Same in the PC Bay Resale Value window (Mariusz 2026-11-08, `resale_kingpin_silenos.png` / `_app.png`):
+   "EVGA GeForce GTX 1080 Ti K|NGP|N GAMING" ($292) read as "EVGA GeForce GTX 1080 Ti GAMING" (another card in the
+   DB), and the case "Raijintek SILENOS" ($42, in the DB) read as "mS] Raiijntek SILENOS" → "not in the parts list",
+   category Other: the case icon was read as text ("mS]") and the name misspelt. Fix: drop icon junk before the name,
+   match such names fuzzily (SILENOS is a unique word), and a near-match with a word left over (K|NGP|N) must not
+   win over the right part.
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
