@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (6)
+## Small fixes (7)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -152,6 +152,15 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    or the reader pool on his PC). Next: ask Mariusz to capture the same screen again (and paste the screenshot instead
    of capturing); if the middle column is missing again, check his "Adjust area" box and the pool (read the columns
    one by one as a fallback when a column comes back empty).
+7. **Two different cards of the same GPU counted as one (3DMark ~8,700 vs real 13,190)** (Mariusz 2026-11-08, PC Bay
+   Lian Li O11D XL-W build: i7-9700K, B360 (no CPU OC), 16 GB 3200, MSI GTX 1080 GAMING Z 8G + ZOTAC GTX 1080 AMP
+   Extreme, GPU OC 2011 / 2063 MHz → game 13,190; `mixed_sli_resale_*.png`, `mixed_sli_app.png`). Both
+   flipScore (flip.js: `gpus[1].name === gpus[0].name`) and bench.js (`two` only for the same name, else
+   "mixedGpus") count a pair only when it's the very same model. The game paired them: same chip (GTX 1080), other
+   makers. Estimates with them as a pair: 12,164–12,227 stock, 13,366 at full GPU OC – close to 13,190 at the lower
+   clocks. Fix: a pair = 2 cards of the same chip (GTX 1080 = GTX 1080, any maker / edition), score from the two
+   cards' "two" values (the weaker card's, or their average); the job board (dual objective, suggestions, 3DMark
+   estimate) too. Open: does the game pair different chips (1080 + 1070)? – assume not until a test shows it.
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
