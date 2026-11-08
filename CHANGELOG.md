@@ -10,17 +10,17 @@ Within each version, changes are listed from most to least important.
 - Fixed: identical PC Bay parts (3 × the same fan) – ticking or deleting one hit all of them.
 - RAM suggestions use the favourite brand (hidden objective); ★ only on that brand's parts.
 - Single changes say which part they replace.
-- Story jobs: "FSS Bold requires urgent system repairs" recognised.
+- 1 new story job added.
 
 ## 0.14.7
 - Fixed: planning a part for a slot that already has a planned swap (or editing a swap) still counted the old part's price and power – falsely "over budget" / PSU too weak; the new part now takes its place.
 - PC Bay inventory capture reads its 3 columns at once – about 3× faster on most computers.
-- Fixed: a cooler with a red fan (ARCTIC Freezer 33 eSports ONE (Red)) was read as BROKEN.
+- 1 OCR bug fixed.
 
 ## 0.14.6
 - Job cards: ticked part swaps shrink to a checkbox and the part's name and fold away; at most 3 open swaps show, the rest behind "X more part swaps planned".
 - PC Bay build: inventory parts with a yellow "Property of …" note (a customer's) are left out – they can't go into a build.
-- Story jobs: 4 more recognised (S Daldry "Intern-proof PC?", Captain J Dirk "Incoming Transmission", HRH The Queen "A royal robbery", scottyB "urgent job!!").
+- 4 new story jobs added.
 
 ## 0.14.5
 - Fixed: a PC built from nothing got no 3DMark build when the job also asks for dual graphics cards; the build now uses two of the same card and includes a case.
@@ -39,10 +39,10 @@ Within each version, changes are listed from most to least important.
 - Emails: a slow PC ("not as quick as it used to be") now always adds the virus scan, also on 3DMark jobs – as the keyword tester shows.
 
 ## 0.14.2
-- Inventory captures: USED / NEW read right on any screen size (also windowed captures with black bars); red parts no longer read as BROKEN.
-- Emails: more broken-part hints ("RAM had to go in one way around", "waggled the RAM too hard", "Please fix my PSU!") and heat hints for cleaning ("running quite warm").
+- 3 OCR bugs fixed.
+- Emails: 4 new hints (3 for broken parts, 1 for cleaning).
 - Overclock settings: core voltage on the game's 0.05 V steps, GPU power limit (+20 % / +50 %); multiplier and voltage on the job's overclock tile too.
-- Fixed: ← / → skipped a tall job card next to shorter ones; career level not read at ~0 % on small captures.
+- Fixed: ← / → skipped a tall job card next to shorter ones.
 
 ## 0.14.1
 - PC Bay build, Hardware step: a build assistant – "Best build from your inventory" (the most profitable PC that works, one click), single changes that also fill empty places (RAM pairs, GPUs, drives …), ↻ Refresh.
@@ -67,9 +67,9 @@ Within each version, changes are listed from most to least important.
 - "Overclock CPU" jobs keep the customer's own CPU: no CPU swaps are suggested (unless an objective also asks to replace / upgrade it), and a CPU swap turns the Overclock tile red.
 - Putting a job on a table scrolls the page up to the workbenches.
 - Fixed: after an update the page could keep an old style sheet (wrong looks) – it's now reloaded automatically, and old "?v=" addresses are cleaned up.
-- Fixed: a half-cut RAM line at the top of a scrolled PC Stats list ("2400 MHz") was added as a part.
 - Fixed: a rare error when a part field was changed while the part fields were being redrawn.
 - Fixed: "Install dual graphics cards" jobs showed no suggested swaps at all when the PC had a motherboard.
+- 1 OCR bug fixed.
 - Code reorganised for easier work on it (logic and page parts in separate folders, automatic code checks) – no change in how it works or how fast it loads.
 - 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
 - Part swap tiles: tidier sizes – ✕ / ✎ and the price box match the checkbox.
@@ -79,7 +79,7 @@ Within each version, changes are listed from most to least important.
 - One Edit window per job (✎ Edit): details, objectives, tasks and parts in the same layout – replaces the ✎ and 📸 Parts windows.
 - Suggested swaps can be worked out again (↻ Refresh).
 - Replacement coolers and fans are never weaker than the old part (air flow from the parts workbook).
-- Fixed: PC Stats lost a RAM size wrapped onto its own line ("8 GB 3000 MHz"), and read "Delta II" RAM as an SSD.
+- 2 OCR bugs fixed.
 - Fixed: GPU pairs are only suggested with a motherboard that has room for both cards (added to the price when needed).
 
 ## 0.12.3
@@ -88,11 +88,11 @@ Within each version, changes are listed from most to least important.
 - Part swaps: new tile layout, and they can be edited (✎) instead of removed and added again.
 - Capture buttons in the new-job window show their shortcuts (Alt+E / Alt+P).
 - Builds from nothing are worked out much faster.
-- New story job: Giovanna Sciarra ("A minor setback").
+- 1 new story job added.
 
 ## 0.12.2
 - "How to use it" updated: suggested swaps, 3DMark, overclock, tips, career unlocks and PC Bay builds.
-- Fixed: PC Stats lost a model number wrapped onto its own line ("Cooler Master MWE Bronze" + "450").
+- 1 OCR bug fixed.
 
 ## 0.12.1
 - Fixed: a saved PC Bay build stopped the page from loading; the 📦 button only showed after re-entering the level; unlocks list called PC Bay "coming later".
@@ -103,7 +103,7 @@ Within each version, changes are listed from most to least important.
 - Overclock helper: whether the objective can be reached, the clock and temperature to expect, and a PSU that can carry it.
 - 💡 Tips on job cards – small reminders like thermal paste, XMP or the leak test.
 - Career unlocks list by level; help for overclocking and custom water cooling waits until the game unlocks it.
-- New story job: HRH The Queen.
+- 1 new story job added.
 - Fixed: water cooling suggested because of a favourite brand; "or better" cases not sold in the shop; virus hint on 3DMark jobs; overclocking read from tasks.
 
 ## 0.11.1
@@ -111,8 +111,7 @@ Within each version, changes are listed from most to least important.
 - Re-capturing PC Stats from a job card adds to the parts read before instead of doubling them.
 - "Diagnose and fix" + a favourite brand ("total Intel fanboy") suggests their part of that brand again.
 - Skylake CPUs and Kaby Lake motherboards count as fitting each other (as in the game).
-- A part name read only halfway that fits several parts is shown as read and marked for checking.
-- Fixed: labour not read when the mouse pointer covers "Labour"; model letters like "D" / "OC" at the end of a line were dropped.
+- 3 OCR bugs fixed.
 
 ## 0.11.0
 - Suggested part swaps in the new-job and PC Stats windows, based on objectives, hints and the PC's parts – unlocked, fitting, cheapest first within budget, with the board / PSU they need.
@@ -123,28 +122,18 @@ Within each version, changes are listed from most to least important.
 
 ## 0.10.0
 - Text reader updated to Tesseract.js 7 – screenshots are read about 20 % faster.
-- Fixed the last objective of build requests lost when joining email screenshots.
 - New "How to use it" window – the ? button in the top bar.
 - Compatibility check: part suggestions that fit the planned PC come first, the others show why they don't fit.
 - Warning box under part swaps when planned parts don't fit together (socket, board size, GPU / PSU / cooler size, SLI / CrossFire, slots, radiators).
 - Part swaps can be reordered (drag ⠿ or Alt + ↑ ↓) – higher in the list wins when parts clash; parts named in the objectives win over all.
 - Power check: warns when the PSU is too weak for the planned CPU + GPU(s), also when overclocked.
 - Part suggestions and swaps show more details: board sizes, GPU length, socket, RAM, cores, watts, SLI/CrossFire, lighting.
-- PC Stats: model numbers cut at the line end are matched ("1500" → 1500X).
-- PC Stats: an unclear model number is shown as read for checking instead of a guessed part.
-- PC Stats: picture crumbs ("S35", "ion") no longer added as parts.
-- PC Stats: parts the game never puts in customers' PCs lose close calls to parts it does.
-- PC Stats: parts differing only by "+" (GAMING X vs GAMING X+) are told apart.
-- Fixed sender and subject lost when a crumb sticks to the address ("TinyAunt@]…").
-- Fixed junk after the last objective ("Diagnose and fix R").
+- 8 OCR bugs fixed.
 - Uses less memory in long sessions.
-- Dynabeard ("Important: Computer required") recognised as a story job.
+- 1 new story job added.
 
 ## 0.9.1
-- PC Stats: half-cut first line no longer added as a junk or wrong part.
-- PC Stats: model numbers with look-alike letters recognised ("ST55F" read as "STSSF").
-- Career level found at 0 % and on smaller screenshots.
-- Stray letters removed before the subject and objectives ("s3DMark").
+- 4 OCR bugs fixed.
 - Leftover test images removed from the website.
 
 ## 0.9.0
@@ -169,8 +158,7 @@ Within each version, changes are listed from most to least important.
 - "Show all shortcuts" in Settings opens the shortcuts window.
 
 ## 0.8.1
-- Fixed email and subject missing when screenshots are taken bottom-first.
-- Fixed duplicated objectives from words cut off at the edge of a screenshot.
+- 2 OCR bugs fixed.
 - Fixed hidden objectives triggered by parts of words (e.g. “led” in “failed”).
 - Improved "Customer suspects" – only the part the customer blames is listed.
 - Keyboard movement inside a job card: ↑ ↓ lines, ← → items, Space / Enter to tick or press.
@@ -181,7 +169,7 @@ Within each version, changes are listed from most to least important.
 - Hidden objectives rebuilt from the community hint list.
 - Remaining budget shown on each job, with a clear over-budget warning.
 - Keyboard shortcuts (on by default, can be turned off in Settings).
-- Fixed objectives missed when inbox text is read with the email.
+- 1 OCR bug fixed.
 - Urgent jobs get an estimated deadline.
 - Part prices shown on swaps and flagged in suggestions when over budget.
 - Improved "Customer suspects" detection.
@@ -191,13 +179,12 @@ Within each version, changes are listed from most to least important.
 ## 0.7.0
 - Long emails can be read from several screenshots.
 - PC Stats parts matched to the parts database, with per-category limits.
-- Fixed objectives not detected when the email box is larger than the email.
-- Fixed duplicated and wrongly categorised parts.
+- 2 OCR bugs fixed.
 - All parts shown by default, with a note about console editions.
 - "Add part replacement" opens with "Other" selected and the name field focused.
 
 ## 0.6.1
-- Fixed stray OCR text being added to objectives.
+- 1 OCR bug fixed.
 - Fixed smoke being detected as dust; smoke now points to a burnt part.
 - Detection of parts the customer hints are broken.
 - More phrases detected for cleaning and antivirus.
