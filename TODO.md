@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.6 (not released yet, waiting for Mariusz): story jobs from player reports (S Daldry "Intern-proof PC?",
+_0.14.6 released 2026-11-08 (backup-0.14.5 made first): story jobs from player reports (S Daldry "Intern-proof PC?",
 Captain J Dirk "Incoming Transmission", HRH "A royal robbery", scottyB "urgent job!!"); storyMatch prefers the entry
 with the same sender AND subject · inventory capture leaves out "Property of …" (yellow note) customer parts ·
 job cards: ticked swaps compact (16 px checkbox + part name) and folded, max 3 open swaps shown + "X more part swaps
