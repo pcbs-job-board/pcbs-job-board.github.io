@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.7 (not released yet, waiting for Mariusz): inventory capture reads the 3 columns at once (ocr.js reader pool,
+_0.14.7 released 2026-11-08 (backup-0.14.6 made first): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
 ARCTIC ONE (Red) fan was read as BROKEN. Swap planning (Mariusz 2026-11-08): a new / edited swap for a slot that
 already has a planned swap counted both parts' price and watts (false "over budget", PSU, "can't pair" warnings) –
