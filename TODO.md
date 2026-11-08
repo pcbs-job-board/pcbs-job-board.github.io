@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (5)
+## Small fixes (6)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -144,6 +144,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    category Other: the case icon was read as text ("mS]") and the name misspelt. Fix: drop icon junk before the name,
    match such names fuzzily (SILENOS is a unique word), and a near-match with a word left over (K|NGP|N) must not
    win over the right part.
+6. **PC Bay inventory capture skipped the Intel Celeron G3900** (Mariusz 2026-11-08, CPU tab: Ryzen 5 2600 (new),
+   Celeron G3900 (used), i3-8350K (used) → only the Ryzen and the i3 were added; `fixtures/pcbay/inv_celeron_skipped.png`,
+   app: `pending/inv_celeron_skipped_app.png`). Not reproduced yet: the screenshot read in the tests gives all 3 (1
+   reader and 3 readers, 3 runs each), labels fine (no BROKEN / Property-of). The middle column is the one a 2nd reader
+   reads since 0.14.7 – suspect the live capture (Mariusz's saved inventory area, screen-share frame vs screenshot,
+   or the reader pool on his PC). Next: ask Mariusz to capture the same screen again (and paste the screenshot instead
+   of capturing); if the middle column is missing again, check his "Adjust area" box and the pool (read the columns
+   one by one as a fallback when a column comes back empty).
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
