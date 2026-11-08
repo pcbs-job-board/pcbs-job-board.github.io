@@ -4,6 +4,13 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.14.8
+- PC Bay: "Best build" lists the end result, one line per slot (old → new) – no more steps that replace each other.
+- PC Bay Profit step: replaced parts shown red → new parts green (BROKEN tag on broken ones).
+- PC Bay: a $0 part in the Resale Value window is marked broken.
+- Fixed: identical PC Bay parts (3 × the same fan) – ticking or deleting one hit all of them.
+- RAM suggestions use the favourite brand (hidden objective); ★ only on that brand's parts.
+- Single changes say which part they replace.
+- Story jobs: "FSS Bold requires urgent system repairs" recognised.
 
 ## 0.14.7
 - Fixed: planning a part for a slot that already has a planned swap (or editing a swap) still counted the old part's price and power – falsely "over budget" / PSU too weak; the new part now takes its place.

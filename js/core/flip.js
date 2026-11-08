@@ -543,15 +543,54 @@ function flipUpgrades(f) {
     .filter(o => !seen.has(o.label) && seen.add(o.label))
     .map(o => ({
       ...o,
+      replaced: b.filter(r => !o.build.includes(r)).map(r => r.name),
       dScore: o.score != null && base.score != null ? o.score - base.score : null,
       isNew: o.build.some(p => p.inv && !p.inv.used),
     }));
+}
+// what changes from build a to build b, one line per slot: "GPU: GTX 970 → RTX 2060", "Add Storage: …", "Take out …";
+// the same change several times (RAM sticks) on one line ("2 × …")
+function flipDiff(a, b) {
+  const lab = cat => CAT_LABEL[cat] || cat,
+    lines = [];
+  const cats = [...new Set([...a, ...b].map(p => p.cat))].sort((x, y) => CATS.indexOf(x) - CATS.indexOf(y));
+  for (const cat of cats) {
+    const gone = a.filter(p => p.cat === cat && !b.includes(p)),
+      came = b.filter(p => p.cat === cat && !a.includes(p)),
+      n = Math.max(gone.length, came.length);
+    for (let i = 0; i < n; i++) {
+      const o = gone[i],
+        x = came[i];
+      lines.push(
+        o && x
+          ? { cat, old: o.name, oldBroken: !!o.broken, name: x.name, text: `${lab(cat)}: ${o.name} → ${x.name}` }
+          : x
+            ? { cat, old: "", name: x.name, text: `Add ${lab(cat)}: ${x.name}` }
+            : { cat, old: o.name, oldBroken: !!o.broken, name: "", text: `Take out ${lab(cat)}: ${o.name}` }
+      );
+    }
+  }
+  const out = [];
+  for (const l of lines) {
+    const same = out.find(x => x.cat === l.cat && x.old === l.old && x.name === l.name);
+    if (same) same.n++;
+    else out.push({ ...l, n: 1 });
+  }
+  return out.map(l =>
+    l.n > 1
+      ? {
+          ...l,
+          text: l.old && l.name ? `${lab(l.cat)}: ${l.n} × ${l.old} → ${l.n} × ${l.name}` : l.text.replace(": ", `: ${l.n} × `),
+        }
+      : l
+  );
 }
 // the best build from the inventory: the best change, again and again, until nothing helps (most profitable PC that sells)
 function flipPlan(f) {
   let b = flipState(f).build,
     base = flipEval(b);
   const start = base,
+    b0 = b,
     steps = [];
   for (let n = 0; n < 16; n++) {
     const avail = flipAvail(f, b),
@@ -564,8 +603,27 @@ function flipPlan(f) {
     b = best.build;
     base = flipEval(b);
   }
+  // the steps can undo each other (a Vega 56, later an RTX 2060 in its place): look at the end result only. Every part
+  // the plan put in goes back to the PC's own part of that kind if that's as good (still works, profit not lower)
+  const prof = e => e.value - e.cost;
+  for (let again = true, n = 0; again && n < 8; n++) {
+    again = false;
+    for (const r of b.filter(x => x.inv && !b0.includes(x))) {
+      const back = b0.find(o => o.cat === r.cat && !b.includes(o));
+      if (!back) continue;
+      const b2 = b.map(x => (x === r ? back : x)),
+        e2 = flipEval(b2);
+      if (e2.check.bad <= base.check.bad && prof(e2) >= prof(base)) {
+        b = b2;
+        base = e2;
+        again = true;
+        break;
+      }
+    }
+  }
   return {
     steps,
+    changes: flipDiff(b0, b),
     build: b,
     score: base.score,
     value: base.value,
@@ -672,6 +730,7 @@ if (typeof module !== "undefined")
     flipUnchange,
     markBroken,
     flipFixIds,
+    flipDiff,
     brokenWhy,
     flipScore,
   };

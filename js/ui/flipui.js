@@ -154,9 +154,26 @@ function pcNowHtml(f, st, readOnly = false) {
                 ? `<span class="tag new">NEW</span>`
                 : `<span class="tag used">USED</span>`
               : `<small>(came with it)</small>`;
-          return `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[r.cat] || r.cat)}</span><span class="nm">${esc(r.name)} ${tag}${ocTag(r.cat, r.name)}</span>${readOnly ? "<span></span>" : `<button class="ghost x" data-fr="rm" data-k="${rowKey(r)}" title="Take it out">✕</button>`}</div>`;
+          // Profit step: a part put in shows the one it replaced – old (red, BROKEN if it was) ⇄ new (green)
+          const was = readOnly && c ? c.oldName || f.parts.find(p => p.id === c.old)?.name || "" : "",
+            wasBroken = was && !!f.parts.find(p => p.id === c.old)?.broken;
+          const name =
+            readOnly && c
+              ? `${was ? `<span class="fold">${esc(was)}${wasBroken ? ` <span class="tag broken">BROKEN</span>` : ""}</span><span class="farr" role="img" aria-label="replaced by">${SWAP_ARROW}</span>` : ""}<span class="fnew">${esc(r.name)}</span>`
+              : esc(r.name);
+          return `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[r.cat] || r.cat)}</span><span class="nm">${name} ${tag}${ocTag(r.cat, r.name)}</span>${readOnly ? "<span></span>" : `<button class="ghost x" data-fr="rm" data-k="${rowKey(r)}" title="Take it out">✕</button>`}</div>`;
         })
         .join("") || `<div class="hint">No parts – put some in from your inventory below.</div>`
+    }${
+      readOnly
+        ? f.changes
+            .filter(c => c.kind === "rm")
+            .map(
+              c =>
+                `<div class="fprow now"><span class="cat">${esc(CAT_LABEL[c.cat] || c.cat)}</span><span class="nm"><span class="fold">${esc(c.name)}</span> <small>(taken out)</small></span><span></span></div>`
+            )
+            .join("")
+        : ""
     }`;
 }
 // what still stops the Profit step
@@ -252,8 +269,9 @@ function flipStep3(f, st) {
     chk = flipCheck(st.build);
   const sc = v => (v == null ? "–" : "~" + v.toLocaleString()),
     plus = v => `${v >= 0 ? "+" : ""}${money(v)}`;
-  const planBox = plan.steps.length
-    ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.steps.length} change${plan.steps.length > 1 ? "s" : ""}:<ol>${plan.steps.map(x => `<li>${esc(x.label)} <small>(${plus(x.gain)})</small></li>`).join("")}</ol>
+  // the end result against the PC now, one line per slot (the planner's own steps can replace each other)
+  const planBox = plan.changes.length
+    ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.changes.length} change${plan.changes.length > 1 ? "s" : ""}:<ol>${plan.changes.map(x => `<li>${esc(x.text)}</li>`).join("")}</ol>
       <small>3DMark ${sc(plan.score)} · sale ~${money(plan.value)}${plan.cost ? ` · new parts ${money(plan.cost)}` : ""} · profit ${plus(plan.gain)}${plan.check.ok ? " · complete PC ✓" : ` · still: ${esc([...plan.check.missing.map(m => "no " + m), ...plan.check.issues, plan.check.power].filter(Boolean).join("; "))}`}</small></div><button class="primary" data-fx="plan">Use all</button></div>`
     : `<div class="hint">${chk.ok ? "Nothing in your inventory makes this PC worth more." : "Nothing in your inventory fills the gaps – capture or type the missing parts into the inventory below."}</div>`;
   return `<div class="fstep"><p class="hint">Put parts in and take them out as you like. The assistant looks for the most profitable PC that works, from your inventory – estimated with XMP on and overclocking where the PC allows it. 3DMark and sale figures are rough estimates – the game's can differ slightly.</p>
@@ -267,7 +285,7 @@ function flipStep3(f, st) {
         .slice(0, 10)
         .map(
           (u, k) =>
-            `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}<br><small>3DMark ${sc(u.score)}${u.dScore != null ? ` (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()})` : ""} · sale ~${money(u.value)} · profit ${plus(u.gain)}${u.check.bad < chk.bad ? " · fills a gap" : ""}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`
+            `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}${u.replaced.length ? `<br><small class="instead">in place of ${esc(u.replaced.join(", "))}</small>` : ""}<br><small>3DMark ${sc(u.score)}${u.dScore != null ? ` (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()})` : ""} · sale ~${money(u.value)} · profit ${plus(u.gain)}${u.check.bad < chk.bad ? " · fills a gap" : ""}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`
         )
         .join("") || `<div class="hint">No single change helps.</div>`
     }

@@ -3424,3 +3424,24 @@ dialog.pdbdlg .dlg-b {
 .job.swopen .swapmore .sm-open {
   display: inline;
 }
+/* PC Bay Profit step (0.14.8): replaced part (red) ⇄ new part (green) */
+.fprow .fold {
+  color: var(--bad, #f0605a);
+}
+.fprow .fnew {
+  color: var(--good, #4fd18b);
+}
+.fprow .farr {
+  display: inline-flex;
+  vertical-align: middle;
+  margin: 0 7px;
+}
+.fprow .farr svg {
+  width: 11px;
+  height: 13px;
+  fill: var(--muted);
+  transform: rotate(-90deg);
+}
+.fup .instead {
+  color: var(--muted);
+}
