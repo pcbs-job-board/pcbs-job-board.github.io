@@ -342,12 +342,16 @@ function jobCard(j) {
   const clashes = jobCompatIssues(j),
     bad = new Set(clashes.map(c => c.part.swapId).filter(Boolean));
   // tile: ☐ | category / old (red) / ↓ / new (green) / details | price | ✕ over ✎ | drag handle (full height)
+  // folded unless the card is opened (▾): ticked swaps and the unticked ones after the first SWAP_SHOW
+  let openNo = 0;
+  const xtra = new Set(j.swaps.filter(s => s.done || ++openNo > SWAP_SHOW).map(s => s.id));
   const swaps = j.swaps
     .map(s => {
       const pr = swapPrice(s);
-      return `<div class="swap ${s.done ? "done" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div class="sbody"><span class="cat">${esc(s.cat === "Water Cooling" ? wcKind({ name: s.new }) || s.cat : s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span><span class="arr" role="img" aria-label="replaced by">${SWAP_ARROW}</span><span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><div class="sacts"><button class="ghost sx" data-act="delSwap" data-id="${j.id}" data-k="${s.id}" title="Remove this swap" aria-label="Remove this swap">✕</button><button class="ghost sx" data-act="editSwap" data-id="${j.id}" data-k="${s.id}" title="Edit this swap" aria-label="Edit this swap">✎</button></div><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true"></span></div>`;
+      return `<div class="swap ${s.done ? "done" : ""} ${xtra.has(s.id) ? "xtra" : ""} ${bad.has(s.id) ? "clash" : ""}" data-swap="${s.id}"><input type="checkbox" ${s.done ? "checked" : ""} data-act="toggleSwap" data-id="${j.id}" data-k="${s.id}" style="accent-color:var(--good)"><div class="sbody"><span class="cat">${esc(s.cat === "Water Cooling" ? wcKind({ name: s.new }) || s.cat : s.cat)}</span><span class="old">${esc(s.old || "(empty slot)")}</span><span class="arr" role="img" aria-label="replaced by">${SWAP_ARROW}</span><span class="new">${esc(s.new)}</span>${detailsOf(s.new) ? `<small class="det">${esc(detailsOf(s.new))}</small>` : ""}</div><button class="price ${pr == null ? "unknown" : ""}" data-act="setPrice" data-id="${j.id}" data-k="${s.id}" title="${pr == null ? "Price unknown – click to enter it" : "Click to change the price"}">${pr == null ? "$ ?" : "$" + pr}</button><div class="sacts"><button class="ghost sx" data-act="delSwap" data-id="${j.id}" data-k="${s.id}" title="Remove this swap" aria-label="Remove this swap">✕</button><button class="ghost sx" data-act="editSwap" data-id="${j.id}" data-k="${s.id}" title="Edit this swap" aria-label="Edit this swap">✎</button></div><span class="grip" draggable="true" title="Drag to change the order – higher = wins when parts don't fit together (Alt + ↑ ↓)" aria-hidden="true"></span></div>`;
     })
     .join("");
+  const swapMore = xtra.size ? swapMoreHtml(j, xtra) : "";
   // budget = what the customer pays for parts; labour is not part of it
   let budgetHtml = "",
     budgetState = "off";
@@ -373,7 +377,7 @@ function jobCard(j) {
   const comp = j.components.length
     ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>`
     : `<div class="hint" style="margin:0">No parts list yet</div>`;
-  return `<article class="job ${j.story ? "story" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+  return `<article class="job ${j.story ? "story" : ""} ${swapsOpen.has(j.id) ? "swopen" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}</div></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
@@ -382,7 +386,7 @@ function jobCard(j) {
     ${hidHtml}${mainHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
-    <div class="sec"><h4>Part swaps</h4>${swaps}
+    <div class="sec"><h4>Part swaps</h4>${swaps}${swapMore}
       <div class="swapform" data-swapform="${j.id}" data-brands="${esc((j.brands || []).join("|"))}" ${j.budget != null && !loose ? `data-left="${j.budget - j.swaps.reduce((t, s) => t + ((s.price ?? priceOf(s.new)) || 0), 0)}"` : ""} hidden>
         <select data-f="old"><option value="">— replace which part? —</option>${j.components.map((c, i) => `<option value="${i}">${esc(c.cat)}: ${esc(c.name)}</option>`).join("")}<option value="new">(new / empty slot)</option></select>
         <div class="grid2"><select data-f="cat">${SWAP_CATS()
@@ -396,6 +400,72 @@ function jobCard(j) {
   </article>`;
 }
 const job = id => jobs.find(j => j.id === id);
+
+// ---- part swaps on a card: at most SWAP_SHOW unticked ones, ticked ones fold away; ▾ shows them all ----
+const SWAP_SHOW = 3;
+const swapsOpen = new Set(); // cards showing every swap (until another job is selected)
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+function swapMoreHtml(j, xtra) {
+  const left = j.swaps.filter(s => !s.done && xtra.has(s.id)).length,
+    done = j.swaps.filter(s => s.done).length;
+  const closed = !j.swaps.some(s => !s.done)
+    ? `✔ All planned swaps are done <small>– click to show ${done === 1 ? "it" : "them"}</small>`
+    : left
+      ? `${plural(left, "more part swap")} planned${done ? ` <small>· ${done} done</small>` : ""} <small>– click to show</small>`
+      : `✔ ${plural(done, "swap")} done <small>– click to show</small>`;
+  return `<button class="ghost swapmore" data-act="swapMore" data-id="${j.id}" aria-expanded="${swapsOpen.has(j.id)}"><span class="sm-closed">${closed}</span><span class="sm-open">▴ Show less</span></button>`;
+}
+// fold every opened card except the selected one
+function foldSwaps(keep) {
+  document.querySelectorAll(".job.swopen").forEach(c => {
+    const id = c.dataset.job;
+    if (id === keep) return;
+    animSwaps(id, () => {
+      swapsOpen.delete(id);
+      c.classList.remove("swopen");
+      c.querySelector(".swapmore")?.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+document.addEventListener("mousedown", e => {
+  const c = e.target.closest?.(".job");
+  if (c) foldSwaps(c.dataset.job);
+});
+// smooth change of the swap tiles' sizes: measure, change (or redraw), measure again, animate between the two
+const ANIM_PROPS = ["height", "paddingTop", "paddingBottom", "marginTop", "marginBottom", "borderTopWidth", "borderBottomWidth"];
+function animSwaps(jobId, change) {
+  const tiles = () => {
+    const card = document.querySelector(`.job[data-job="${jobId}"]`);
+    return card ? [...card.querySelectorAll(".swap, .swapmore")] : [];
+  };
+  const key = el => el.dataset.swap || "more";
+  const look = el => {
+    const cs = getComputedStyle(el),
+      o = {};
+    ANIM_PROPS.forEach(p => (o[p] = cs[p]));
+    return o;
+  };
+  const still = matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const before = new Map(still ? [] : tiles().map(el => [key(el), look(el)]));
+  change();
+  if (still) return;
+  tiles().forEach(el => {
+    const a = before.get(key(el)),
+      b = look(el);
+    if (!a) return el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220 }); // new line: fade in
+    if (ANIM_PROPS.every(p => a[p] === b[p])) return;
+    el.animate(
+      [
+        { ...a, overflow: "hidden", visibility: "visible" },
+        { ...b, overflow: "hidden", visibility: "visible" },
+      ],
+      {
+        duration: 240,
+        easing: "ease-in-out",
+      }
+    );
+  });
+}
 function moveToTable(j, n) {
   if (j.table === n) {
     j.table = 0;
@@ -443,6 +513,20 @@ document.addEventListener("click", e => {
     j.tasks.push({ id: uid(), text: inp.value.trim(), src: "add", done: false });
   } else if (a === "toggleSwap") {
     j.swaps.find(s => s.id === b.dataset.k).done = b.checked;
+    animSwaps(j.id, () => {
+      save();
+      render();
+    });
+    return;
+  } else if (a === "swapMore") {
+    const card = b.closest(".job");
+    animSwaps(j.id, () => {
+      const on = !swapsOpen.has(j.id);
+      if (on) swapsOpen.add(j.id);
+      else swapsOpen.delete(j.id);
+      card.classList.toggle("swopen", on);
+    });
+    return;
   } else if (a === "setPrice") {
     const s = j.swaps.find(s => s.id === b.dataset.k);
     const cur = s.price ?? priceOf(s.new);

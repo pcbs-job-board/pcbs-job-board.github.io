@@ -97,6 +97,7 @@ function markSel() {
   const el = document.querySelector(`.job[data-job="${selJob}"]`);
   if (el) el.classList.add("kbsel");
   else selJob = null;
+  if (selJob) foldSwaps(selJob); // the previously selected card shows its swaps folded again
 }
 function selectCard(el) {
   if (!el) return;
@@ -157,11 +158,11 @@ const typing = el =>
 
 // ---- moving inside a card: the card is split into lines (rows), each with one or more controls ----
 const ROW_SEL =
-  ".top, .tables, .stiles, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
+  ".top, .tables, .stiles, label.hid, ul.mainobj li, .task, .addrow:not(.swapform .addrow), .swap, .swapmore, .swapform > select, .swapform > .grid2, .swapform > .addrow, [data-act='openSwap'], details > summary, .foot";
 const CTRL_SEL = "input, select, button, summary";
 const DEL_SEL = '[data-act="delTask"], [data-act="delSwap"]'; // ✕ buttons: skipped by the arrows – Delete removes the line instead
 const SWAP_ORDER = ["toggleSwap", "editSwap", "setPrice"];
-const shown = el => !el.closest("[hidden]") && el.getClientRects().length > 0;
+const shown = el => !el.closest("[hidden]") && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden"; // folded swaps: hidden
 function cardRows(card) {
   return [...card.querySelectorAll(ROW_SEL)]
     .filter(shown)

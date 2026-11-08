@@ -396,7 +396,7 @@ main {
   color: var(--text, #e6edf5);
 }
 .swap.done {
-  opacity: 0.55;
+  opacity: 0.7;
 }
 .swap .cat {
   font-size: 10px;
@@ -3366,4 +3366,61 @@ dialog.pdbdlg .dlg-b {
 #dlgFlip button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+/* part swaps (0.14.6): a ticked swap = checkbox (80 %) + the part put in; extra / ticked ones fold until ▾ */
+.swap.done {
+  padding: 3px 9px 3px 9px;
+  gap: 7px;
+}
+.swap.done > input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0 2px;
+}
+.swap.done .cat,
+.swap.done .old,
+.swap.done .arr,
+.swap.done .det,
+.swap.done .price,
+.swap.done .sacts,
+.swap.done .grip {
+  display: none;
+}
+.job:not(.swopen) .swap.xtra {
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-top-width: 0;
+  border-bottom-width: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.swapmore,
+.swapmore.ghost {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 12.5px;
+  padding: 5px 9px;
+  margin: 4px 0;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--text, #e6edf5);
+}
+.swapmore:hover,
+.swapmore:focus-visible {
+  border-color: var(--muted);
+}
+.swapmore small {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.swapmore .sm-open,
+.job.swopen .swapmore .sm-closed {
+  display: none;
+}
+.job.swopen .swapmore .sm-open {
+  display: inline;
 }
