@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (9)
+## Small fixes (10)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -185,6 +185,19 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    counts the parts' value – only the notes need fixing. Checked 2026-11-08 (Mariusz asked): above 10,000 the
    planner already adds / swaps parts for their value (test PC at 11,830: + 3 TB drive, + fan, a pricier cooler →
    $2,398 → $2,512, score unchanged) – add that as a unit test with the note fix.
+10. **PC Bay Profit step: overclock "just enough" for 10,000** (Mariusz 2026-11-08). The price multiplier stops at
+   3DMark 10,000 (×3.0), so the Profit step should suggest the smallest overclock that gets the estimate just above
+   10,000 – less heat, less risk, faster – with the full potential kept as extra info:
+   - search the game's steps with flipScore (CPU multiplier ×1 steps + its voltage at 0.05 V; GPU Tuner core /
+     memory clocks; XMP on): CPU only, GPU only, both – pick the gentlest (fewest steps above stock, CPU voltage as
+     low as possible) whose estimate is ≥ 10,000 + a small safety margin (the estimate is usually within a few points;
+     e.g. +100, kept in one constant)
+   - show it first: "To reach 10,000: CPU ×46 (4.6 GHz, 1.30 V) · GPU stock" with the expected score; below it
+     "Full potential: …" as now; the "Couldn't reach it?" fields keep working
+   - stock (with XMP) already ≥ 10,000 → "No overclock needed – the score already reaches 10,000"; can't reach
+     10,000 even at full potential → the full-potential suggestion as now, saying so
+   - Profit step, score (estimate or the one entered) ≥ 10,000: a note "A score above 10,000 doesn't raise the
+     price multiplier (×3.0 is the maximum) – only more or better parts raise the price." (matches small fix 9)
    Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
    score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
    suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
