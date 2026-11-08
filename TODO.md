@@ -182,7 +182,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    maximum (×3.0); more or better parts still raise the price through their value." And the RAM note next to it
    ("a second one (dual channel) raises the 3DMark score, and so the price") is wrong at ≥ 10,000 the same way: there
    say "a second stick adds its value to the price (the score is already high enough)". The planner itself already
-   counts the parts' value – only the notes need fixing.
+   counts the parts' value – only the notes need fixing. Checked 2026-11-08 (Mariusz asked): above 10,000 the
+   planner already adds / swaps parts for their value (test PC at 11,830: + 3 TB drive, + fan, a pricier cooler →
+   $2,398 → $2,512, score unchanged) – add that as a unit test with the note fix.
    Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
    score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
    suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
