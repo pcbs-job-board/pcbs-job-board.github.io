@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (3)
+## Small fixes (5)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -127,6 +127,17 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    transit", so the objectives box isn't visible). Story: a noir detective tale – "Sam", a pro gamer, wants her rig
    upgraded: "upgrade the rig with a second GPU and … hit a benchmark of 11000+". Add to data/story-jobs.csv (objectives
    from the text: second GPU, 3DMark 11000 – confirm when Mariusz has the objectives box).
+4. **Brand + "diagnose and fix": "same part again" for a part that's already a planned swap** (Mariusz 2026-11-08,
+   AsleepL@TwiggDevelopment.uk "can you fix my PC?", "My brother has ASRock in his PC" → ASRock fan; customer's board
+   ASRock Z390 Taichi). Edit job suggested "ASRock Z390 Pro4 → ASRock Z390 Pro4". The card already has a planned
+   swap on the motherboard (Taichi → Pro4, it seems – check), and suggest.js 15b ("brandfix") takes the parts from the
+   planned build (cur()), so it offers the planned Pro4 "again". Fix: 15b looks at the customer's own parts
+   (job.components): "ASRock Z390 Taichi → ASRock Z390 Taichi", and leaves out a part whose slot already has a planned
+   swap (or says so). Screenshots: `twigg_pcstats.png`, `twigg_edit.png`, `twigg_edit_suggest.png`.
+5. **PC Stats: "EVGA GeForce GTX 1080 Ti K|NGP|N GAMING" read as "EVGA GeForce GTX 1080 GAMING"** (same job,
+   `twigg_pcstats.png`). The part is in the DB; the "|" in K|NGP|N (and the line break after "1080") lose the match –
+   a different card ($875 vs ~$520, 3DMark and value off). Fix the matching (| read as I / l / 1 / nothing; "Ti" on
+   the next line) and add the screenshot to the run tests.
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
