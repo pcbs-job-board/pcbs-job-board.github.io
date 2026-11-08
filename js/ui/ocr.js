@@ -66,9 +66,53 @@ function cropCanvas(img, r) {
 }
 // text + every line with its certainty (0–100). Since tesseract.js 6 only the plain text comes back
 // unless more is asked for, so the lines are taken from the "blocks" output (block → paragraph → line).
+// several pictures at once (the 3 inventory columns): extra readers next to the main one, started only when a read
+// would otherwise wait – each runs in its own thread, so 3 columns take about as long as 1
+const READERS = Math.max(1, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
+const extra = [],
+  idle = new Set(),
+  waiting = [];
+let starting = 0;
+async function takeReader() {
+  const main = await getWorker();
+  if (!main.busy) {
+    main.busy = true; // marked here, so two reads starting together never share it
+    return main;
+  }
+  const free = extra.find(w => idle.has(w));
+  if (free) {
+    idle.delete(free);
+    return free;
+  }
+  if (extra.length + starting + 1 < READERS) {
+    starting++;
+    try {
+      const w = await Tesseract.createWorker("eng", 1);
+      await w.setParameters({ tessedit_pageseg_mode: "6", preserve_interword_spaces: "0" });
+      extra.push(w);
+      return w;
+    } catch {
+      // no extra reader (memory etc.): wait for one that is running
+    } finally {
+      starting--;
+    }
+  }
+  return new Promise(res => waiting.push(res));
+}
+function giveBack(w) {
+  const next = waiting.shift();
+  if (next) return next(w);
+  if (w === worker) w.busy = false;
+  else idle.add(w);
+}
 async function readText(canvas) {
-  const w = await getWorker();
-  const d = (await w.recognize(canvas, {}, { text: true, blocks: true })).data;
+  const w = await takeReader();
+  let d;
+  try {
+    d = (await w.recognize(canvas, {}, { text: true, blocks: true })).data;
+  } finally {
+    giveBack(w);
+  }
   const lines = [];
   for (const b of d.blocks || [])
     for (const p of b.paragraphs || [])

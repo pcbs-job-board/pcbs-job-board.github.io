@@ -603,7 +603,7 @@ async function flipImage(url, kind, again) {
       toast(`Read ${r.items.length} parts${r.total != null ? ` · resale value $${r.total}` : ""}`);
     } else {
       const items = await readInventory(img, crops.inv, (i, n) => {
-        if (st) st.textContent = `Reading the inventory… column ${i} of ${n}`;
+        if (st) st.textContent = `Reading the inventory… ${i} of ${n} columns done`;
       });
       const cust = items.skipped
         ? ` · ${items.skipped} customer's part${items.skipped > 1 ? "s" : ""} ("Property of …") left out`
@@ -707,10 +707,18 @@ async function readInventory(img, grid, onStep) {
   };
   const items = [];
   const cols = invColumns(grid);
-  for (const [ci, b] of cols.entries()) {
-    if (onStep) onStep(ci + 1, cols.length);
-    const c = cropCanvas(img, b),
-      got = parseInventoryColumn((await readText(c)).lines);
+  // the columns are read at the same time (several readers), then handled left to right
+  let done = 0;
+  if (onStep) onStep(0, cols.length);
+  const read = await Promise.all(
+    cols.map(async b => {
+      const c = cropCanvas(img, b),
+        got = parseInventoryColumn((await readText(c)).lines);
+      if (onStep) onStep(++done, cols.length);
+      return { b, c, got };
+    })
+  );
+  for (const { b, c, got } of read) {
     for (const it of got) {
       if (it.nameY != null) {
         const L = cardLabels(px, b.x, b.w, b.y + (it.nameY / c.height) * b.h, W, H);

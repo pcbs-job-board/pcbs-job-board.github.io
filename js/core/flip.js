@@ -178,7 +178,9 @@ function cardLabels(px, colX, colW, nameMidY, W, H) {
   // a yellow sticky note "Property of <customer email>" at the picture's top left: a customer's part, not ours
   const note = band(0.6, 1.12, 0.04, 0.38, ([r, g, b]) => r > 200 && g > 190 && b < 150 && r - b > 80);
   // cards with a note: 0.31–0.61 of the patch yellow, every other card: 0
-  return { used: dark > 0.05, broken: red > 0.1 && red - around > 0.08, property: note > 0.15, dark, red, around, note };
+  // BROKEN: red text on a light grey band – real labels have ≤ 0.01 red just above / below it, a red fan reaching
+  // into the band (ARCTIC ONE (Red): 0.195 in it, 0.112 around) has red around it too
+  return { used: dark > 0.05, broken: red > 0.1 && around < 0.05, property: note > 0.15, dark, red, around, note };
 }
 // ---------- the build ----------
 const flipUid = () => Math.random().toString(36).slice(2, 9);

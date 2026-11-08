@@ -3,6 +3,10 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.7
+- PC Bay inventory capture reads its 3 columns at once – about 3× faster on most computers.
+- Fixed: a cooler with a red fan (ARCTIC Freezer 33 eSports ONE (Red)) was read as BROKEN.
+
 ## 0.14.6
 - Job cards: ticked part swaps shrink to a checkbox and the part's name and fold away; at most 3 open swaps show, the rest behind "X more part swaps planned".
 - PC Bay build: inventory parts with a yellow "Property of …" note (a customer's) are left out – they can't go into a build.
