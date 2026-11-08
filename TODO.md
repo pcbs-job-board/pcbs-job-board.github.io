@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (7)
+## Small fixes (8)
 
 1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
    "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
@@ -169,6 +169,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Tested by Mariusz (2026-11-08): EVGA GTX 1080 Ti K|NGP|N GAMING does NOT pair with MSI GTX 1080 GAMING Z 8G nor
    with MSI GTX 1080 GAMING+ 8G → 1080 ≠ 1080 Ti (add these as unit tests too). Keep the "same model" rule in one
    place (one function) anyway.
+8. **Hidden objectives: warn about false positives** (Mariusz 2026-11-08). In the New job and Edit job windows, in or
+   right by the "Hidden objectives found in email" box: a short note that the app guesses these from the email's
+   wording and can add ones the customer doesn't really want (false positives) – always check them against the email
+   and untick the wrong ones. Small, muted text (like the box's other hints); also on story jobs' "not ticked" box.
    Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
    score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
    suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
