@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (4)
+## Small fixes (5)
 
 1. **PC Bay step 1: a $0 part in the Resale Value window = broken** (Mariusz 2026-11-08). In the game a broken part
    shows $0 resale value (PC Status: "Broken part(s)"); the capture read Cryorig M9i $0 but left "broken" unticked.
@@ -136,6 +136,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Fix: show "Best build" as the final changes against the current PC, one line per slot ("GPU: GTX 970 → RTX 2060"),
    steps that were later undone dropped; then re-check every remaining change (e.g. is the TX850M still needed with the
    2060 – revert it if the PC still works and the profit isn't lower). Single changes: write "in place of …" too.
+5. **PC Bay step 4 (Profit): "The PC's parts" shows what was swapped** (Mariusz 2026-11-08, screenshot
+   `pcbay_profit_parts_list.png`). One row per part, columns: category | part:
+   - swapped part: `CPU | <old part> (red)  ⇄  <new part> (green)` – the swap arrow like on job cards (SWAP_ARROW);
+     the new part keeps its USED / Overclock Unlocked tags
+   - unchanged part: `RAM | <part> (came with it)` – as it is now
+   - broken part replaced: `GPU | <broken part> [BROKEN tag, as on the other steps] (red)  ⇄  <new part> (green)`
 
 _0.14.7 released 2026-11-08 (backup-0.14.6 made first): inventory capture reads the 3 columns at once (ocr.js reader pool,
 up to 3 readers by core count – 7.9 s → 2.8 s on Mariusz's PC); BROKEN label needs clean bands around it (around < 0.05) –
