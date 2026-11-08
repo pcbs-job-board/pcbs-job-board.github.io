@@ -75,8 +75,9 @@ function patchAround(old, neu, keep) {
   return true;
 }
 function flipRender() {
-  const f = flipCur,
-    st = flipState(f),
+  const f = flipCur;
+  if (flipFixIds(f)) flipSave(); // identical parts that shared an id (0.14.7 and older)
+  const st = flipState(f),
     d = $("#dlgFlip");
   d.querySelector(".flipsteps").innerHTML = FLIP_STEPS.map(
     (s, i) =>
@@ -576,10 +577,16 @@ async function flipImage(url, kind, again) {
       f.shots = [...(f.shots || []), r.items.map(i => ({ ...i }))];
       const merged = mergePCStats(f.shots),
         typed = f.parts.filter(p => p.src === "typed");
-      const keep = new Map(f.parts.map(p => [p.cat + "|" + p.name, p]));
+      // the n-th identical part (3 × the same case fan) gets the n-th old one – each keeps its own id and broken tick
+      const keep = new Map();
+      for (const p of f.parts) {
+        const k = p.cat + "|" + p.name;
+        if (!keep.has(k)) keep.set(k, []);
+        keep.get(k).push(p);
+      }
       f.parts = [
         ...merged.map(i => {
-          const old = keep.get(i.cat + "|" + i.name);
+          const old = keep.get(i.cat + "|" + i.name)?.shift();
           return {
             id: old ? old.id : flipUid(),
             cat: i.cat,

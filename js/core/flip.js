@@ -209,6 +209,8 @@ function isFlip(j) {
 // broken = worth far less than a working one (the game shows ~10 % of the used value)
 function brokenWhy(p) {
   const u = usedValue(p.name);
+  // $0 in the Resale Value window = broken, however cheap the part (a working one is worth at least $1)
+  if (p.value === 0 && (u == null || u >= 1)) return u ? `worth $0 – a working one is worth $${u}` : "worth $0";
   if (p.value == null || u == null || u < 8) return "";
   return p.value <= u * 0.4 ? `worth $${p.value} – a working one is worth $${u}` : "";
 }
@@ -305,6 +307,20 @@ function flipOcOpts(f, build) {
   return o;
 }
 // everything the window and the tile show
+// builds saved by 0.14.7 and older: identical parts joined from several captures could share one id (ticking or
+// deleting one hit all of them) – give every repeat its own id
+function flipFixIds(f) {
+  const seen = new Set();
+  let fixed = 0;
+  for (const p of f.parts || []) {
+    if (seen.has(p.id)) {
+      p.id = flipUid();
+      fixed++;
+    }
+    seen.add(p.id);
+  }
+  return fixed;
+}
 function flipState(f) {
   const build = flipBuild(f),
     can = softOk(f, build),
@@ -655,6 +671,7 @@ if (typeof module !== "undefined")
     flipChange,
     flipUnchange,
     markBroken,
+    flipFixIds,
     brokenWhy,
     flipScore,
   };
