@@ -234,8 +234,10 @@ Per category (hide = hidden unless "Show hidden details"):
 12. **CPU Block** – hide: Game Version, Details. Filters: Socket, Lights.
 13. **Pipes** – hide: Game Version.  14. **Connector** – hide: Game Version, Details.
 15. **Coolants** – hide: Game Version.  16. **Cables** – hide: Game Version.
-Open questions for when it's started: "mid / safe overclock" – the midpoint between stock and max, or a value from
-the overclock research (temperature)? Filters combine with the search box (AND).
+"Mid / safe overclock" (Mariusz 2026-11-09): best = an overclock that stays under throttle temperature with any
+cooler; if that can't be worked out reliably, use the midpoint between stock and max. Don't base it on the
+temperature research (case type and GPU heat also affect CPU temps, so that data isn't reliable enough).
+Open question: filters combine with the search box (AND).
 
 Notes for later (not tasks yet):
 - Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published).
