@@ -11,7 +11,7 @@ Within each version, changes are listed from most to least important.
 - Hidden objectives: a note that they're guesses and might not be required.
 - A known story customer's new email no longer shows another job's story.
 - 4 OCR bugs fixed.
-- 2 new story jobs added.
+- 3 new story jobs added.
 
 ## 0.14.8
 - PC Bay: "Best build" lists the end result, one line per slot (old → new) – no more steps that replace each other.
