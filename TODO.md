@@ -108,6 +108,16 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
+_dev-0.14.10 (not released yet, waiting for Mariusz) – inventory capture (Mariusz 2026-11-09: middle motherboard
+missing, RX 560 OC read as RX VEGA64 OC + "new", DFL R9 290 "new"; the Celeron "now and then"): bestPartMatch –
+a lone 1 / l / | read for an "I" ("X470-1" = X470-I); parseInventoryColumn keeps a name close to two parts (unsure,
+"read unclearly – check" in the list + toast) instead of dropping it; invNameGaps: a card with specs + price but no
+name → its name area read on its own; cardLabels: USED band tried −0.06…+0.04 card widths when ≥ 0.15 with clean
+background above (a selected card's frame read 0.11 at +0.06); gpuBySpecs: a GPU card's VRAM / core clock / length
+must agree with the name, else the closest name that agrees. The TUF Z370-PRO and the Colorful RTX 2060 really are
+NEW (no USED label on the screenshots). The Celeron is still not reproduced – likely a near-tie name dropped, which
+can't happen any more (kept, marked)._
+
 _0.14.9 released 2026-11-09 (backup-0.14.8-cl made first): 3 story jobs (Dirk "Placidius", Shovel "The Upgrade" + "The Dead Case", from reports_2); a known
 story sender with a new subject → "sender known, not in the list yet" (subject match allows a few misread letters);
 mergeTexts: email screenshots that meet edge to edge (no line in common) joined in order, edge lines kept;
