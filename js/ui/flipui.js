@@ -214,7 +214,7 @@ function invHtml(f) {
             .join("")}</div>
     ${rows
       .map(
-        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.unsure ? ` <small class="warn" title="Read as: ${esc(i.read || "")}">read unclearly – check the name</small>` : ""}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
       ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(i.cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
       )
@@ -690,6 +690,7 @@ async function flipImage(url, kind, again) {
           src: "capture",
           at,
           n,
+          ...(i.unsure ? { unsure: true, read: i.read } : {}),
         })
       );
       // switch to the tab of what was scanned (one category per screenshot; the most common one if it's mixed)
@@ -697,9 +698,10 @@ async function flipImage(url, kind, again) {
       for (const i of items) cnt[i.cat] = (cnt[i.cat] || 0) + 1;
       flipInvTab = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
       const nb = items.filter(i => i.broken).length,
-        nn = items.filter(i => !i.used && !i.broken).length;
+        nn = items.filter(i => !i.used && !i.broken).length,
+        nu = items.filter(i => i.unsure).length;
       toast(
-        `Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory${nn ? ` · ${nn} new` : ""}${nb ? ` · ${nb} broken (can't be used)` : ""}${cust}`
+        `Added ${items.length} part${items.length > 1 ? "s" : ""} from the inventory${nn ? ` · ${nn} new` : ""}${nb ? ` · ${nb} broken (can't be used)` : ""}${nu ? ` · ${nu} read unclearly – check` : ""}${cust}`
       );
     }
     flipSave();
@@ -773,11 +775,37 @@ async function readInventory(img, grid, onStep) {
   const read = await Promise.all(
     cols.map(async b => {
       const c = cropCanvas(img, b),
-        got = parseInventoryColumn((await readText(c)).lines);
+        r = await readText(c),
+        got = parseInventoryColumn(r.lines);
       if (onStep) onStep(++done, cols.length);
-      return { b, c, got };
+      return { b, c, got, lines: r.lines };
     })
   );
+  // a card with its specs and price read but no name: read just its name area (without the picture's crumbs)
+  for (const col of read)
+    for (const g of invNameGaps(col.lines, col.got)) {
+      const cc = document.createElement("canvas");
+      cc.width = col.c.width;
+      cc.height = Math.round(g.bottom - g.top);
+      cc.getContext("2d").drawImage(col.c, 0, g.top, cc.width, cc.height, 0, 0, cc.width, cc.height);
+      const t = (await readText(cc)).lines
+        .filter(l => l[1] >= 50 && /[A-Za-z]{2}|\d/.test(l[0]))
+        .map(l => String(l[0]).trim())
+        .join(" ");
+      const m = t && bestPartMatch(t);
+      if (!m || m.score < 0.7) continue;
+      const u = usedValue(m.name),
+        price = g.price ?? u;
+      col.got.push({
+        name: m.name,
+        cat: m.cat,
+        price,
+        nameY: (g.top + g.bottom) / 2,
+        broken: g.price != null && u != null && u >= 8 && price <= u * 0.4,
+        ...(m.amb ? { unsure: true, read: t } : {}),
+      });
+      col.got.sort((a, b2) => (a.nameY ?? 0) - (b2.nameY ?? 0));
+    }
   // cards fill a row left to right: a column with fewer cards than the one to its right (or none while others have
   // some) was read badly – read it once more (a Celeron went missing in a live capture, 0.14.8) and keep the better read
   for (let i = 0; i < read.length; i++) {

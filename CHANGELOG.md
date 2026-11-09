@@ -3,6 +3,11 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.10
+- PC Bay inventory: a card name read unclearly is kept and marked "check" instead of being dropped.
+- PC Bay inventory: graphics cards checked against their specs on the card (VRAM, core clock, length).
+- 3 OCR bugs fixed.
+
 ## 0.14.9
 - PC Bay Profit step: the gentlest overclock that just reaches 10,000 – one click to use it.
 - Two graphics cards of the same model from different makers count as a pair.

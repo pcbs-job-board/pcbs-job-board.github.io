@@ -267,6 +267,12 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
     inCat = p => !onlyCat || p.cat === onlyCat;
   const exact = fullIndex().find(p => inCat(p) && p.name.toLowerCase() === lc) || fullIndex().find(p => inCat(p) && p.n === s);
   if (exact) return { name: exact.name, cat: exact.cat, score: 1, amb: false };
+  // "I" read as 1 / l / | on its own in a model name ("X470-1 Gaming" = X470-I, not the X470-F): exact that way → it
+  const alt = s.replace(/(^| )[1l|](?= |$)/g, "$1i");
+  if (alt !== s) {
+    const ex2 = fullIndex().find(p => inCat(p) && p.n === alt);
+    if (ex2) return { name: ex2.name, cat: ex2.cat, score: 0.99, amb: false };
+  }
   const tri = trigrams(s);
   let best = null,
     bs = 0,

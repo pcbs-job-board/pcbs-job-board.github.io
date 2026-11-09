@@ -1,6 +1,6 @@
 {
   "name": "pcbs-job-board",
-  "version": "0.14.9",
+  "version": "0.14.10",
   "private": true,
   "description": "Job manager for PC Building Simulator – a static web app (no build step). These scripts are for development only.",
   "license": "MIT",

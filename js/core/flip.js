@@ -88,6 +88,66 @@ function nameMid(bs) {
   while (i > 0 && bs[i].y0 - bs[i - 1].y1 < (bs[i].y1 - bs[i].y0) * 0.8) i--;
   return (bs[i].y0 + bs[bs.length - 1].y1) / 2;
 }
+// a graphics card's name read as another card ("…Radeon RX 560 OC Edition" → "…RX VEGA64 OC Edition" when a name line
+// went missing): its specs on the card (length, VRAM, core clock) must agree with the part – if they don't, the card
+// whose specs agree and whose name is closest to what was read; none → kept, marked for checking
+function gpuBySpecs(c) {
+  const sp = c.spec,
+    facts = n => {
+      const ix = INDEX.find(x => x.name === n) || {};
+      return {
+        l: +(compatOf(n) || {}).l || null,
+        core: (ocOf(n) || {}).core ?? null,
+        vram: +(String(ix.det || "").match(/(\d+) GB/) || [])[1] || null,
+      };
+    },
+    fits = n => {
+      const f = facts(n);
+      return (
+        (!sp.length || !f.l || Math.abs(f.l - sp.length) <= 2) &&
+        (!sp.vram || !f.vram || f.vram === sp.vram) &&
+        (!sp["core frequency"] || f.core == null || Math.abs(f.core - sp["core frequency"]) <= 5)
+      );
+    };
+  if (Object.keys(sp).length < 2 || fits(c.name)) return;
+  const tri = trigrams(normP(c.read || c.name)),
+    alt = fullIndex()
+      .filter(p => p.cat === "GPU" && fits(p.name))
+      .map(p => ({ p, sc: dice(tri, p.tri) }))
+      .sort((a, b) => b.sc - a.sc);
+  if (alt.length && alt[0].sc >= 0.4) {
+    c.unsure = alt.length > 1 && alt[0].sc - alt[1].sc < 0.05;
+    c.name = alt[0].p.name;
+  } else c.unsure = true;
+}
+// cards whose specs and price were read but not the name (the name line got mixed with picture crumbs): where the
+// name should be – right above the first spec line, up to 3 lines (y in the column picture's pixels)
+function invNameGaps(lines, found) {
+  const L = lines
+    .map(l => (Array.isArray(l) ? { text: String(l[0]).trim(), conf: l[1], bbox: l[2] } : l))
+    .filter(l => l.bbox && l.text);
+  // a real spec line ("• VRAM: 4 GB"), read clearly – not a crumb of the picture starting with « or *
+  const isSpec = l => (l.conf ?? 100) >= 60 && /^\W{0,3}[A-Za-z][A-Za-z -]{1,24}:/.test(l.text) && !/\$/.test(l.text),
+    isPrice = t => /\$\s?\d/.test(t);
+  const specs = L.filter(isSpec),
+    lh = specs.length ? specs.map(l => l.bbox.y1 - l.bbox.y0).sort((a, b) => a - b)[specs.length >> 1] : 0;
+  if (!lh) return [];
+  const gaps = [];
+  let open = true; // at the top, or after a price: the next spec line starts a card
+  for (const l of L) {
+    if (isPrice(l.text)) open = true;
+    else if (open && isSpec(l)) {
+      open = false;
+      const y0 = l.bbox.y0,
+        top = y0 - 3.4 * lh;
+      if (top < 0) continue; // a card cut off at the top – its name isn't on the screenshot
+      if (found.some(it => it.nameY != null && it.nameY > y0 - 4.5 * lh && it.nameY < y0)) continue;
+      const price = L.find(x => x.bbox.y0 > y0 && isPrice(x.text));
+      gaps.push({ top, bottom: y0 - 0.1 * lh, price: price ? +price.text.match(/\$\s?(\d[\d,]*)/)[1].replace(/,/g, "") : null });
+    }
+  }
+  return gaps;
+}
 function parseInventoryColumn(lines) {
   lines = lines.map(l =>
     Array.isArray(l) ? { text: l[0], conf: l[1], bbox: l[2] } : typeof l === "string" ? { text: l, conf: 100 } : l
@@ -99,6 +159,7 @@ function parseInventoryColumn(lines) {
   // the sell price shown is the used value (⅓ of the shop price) – when the "$" line can't be read, that's used instead;
   // a BROKEN part shows ~10 % of it
   const done = c => {
+    if (c.cat === "GPU" && c.spec) gpuBySpecs(c);
     const price = c.price ?? usedValue(c.name),
       u = usedValue(c.name);
     out.push({ ...c, price, broken: c.price != null && u != null && u >= 8 && c.price <= u * 0.4 });
@@ -111,14 +172,35 @@ function parseInventoryColumn(lines) {
     name = [];
     box = [];
     const m = bestPartMatch(t);
-    if (m && !m.amb && m.score >= 0.7) {
+    // a name close to two parts (a letter misread) is kept as the closest one, marked for checking – never dropped
+    if (m && m.score >= 0.7) {
       if (cur) done(cur);
-      cur = { name: m.name, cat: m.cat, price: null, nameY: bs.length ? nameMid(bs) : null };
+      cur = {
+        name: m.name,
+        cat: m.cat,
+        price: null,
+        nameY: bs.length ? nameMid(bs) : null,
+        read: t,
+        ...(m.amb ? { unsure: true } : {}),
+      };
     }
   };
+  let pend = null; // a spec whose value wrapped onto the next line ("• Core Frequency:" / "1275 MHz")
   for (const { text, conf, bbox } of lines) {
     const t = String(text).trim();
     if (!t) continue;
+    // the card's specs (length, VRAM, core clock) – they check the name read (a GPU card)
+    if (cur) {
+      const kv = t.match(/(length|vram|core frequency)\s*:\s*(\d+)?/i);
+      if (kv) {
+        if (kv[2]) (cur.spec ||= {})[kv[1].toLowerCase()] = +kv[2];
+        else pend = kv[1].toLowerCase();
+      } else if (pend && /^\d{3,5}\s*mhz/i.test(t)) {
+        (cur.spec ||= {})[pend] = +t.match(/\d+/)[0];
+        pend = null;
+        continue;
+      } else pend = null;
+    }
     // "$65" – sometimes read as "365" / "S65" (the $ taken for a 3, 5, 8 or S): the parts database decides
     const pr = t.match(/\$\s?(\d[\d,]*)/) || (cur && t.match(/(?:auction on|sell)\D{0,3}([358S]?\d{1,4})\s*$/i));
     if (pr) {
@@ -173,8 +255,17 @@ function cardLabels(px, colX, colW, nameMidY, W, H) {
     },
     isDark = ([r, g, b]) => (r + g + b) / 3 < 90,
     isRed = ([r, g, b]) => r > 170 && g < 80 && b < 80;
-  const dark = band(0.97, 1.04, 0.62, 0.92, isDark),
-    red = band(0.82, 0.89, 0.2, 0.8, isRed),
+  // USED: dark text at the picture's top right. The name's middle can be off by half a line (a name line not read:
+  // "DFL Radeon R9 290" without "GR8"), so the band is tried a little higher / lower – a spot counts only with plain
+  // card background right above it (so never the dark graphics card in the picture below the label)
+  // (a shifted spot needs real text – ≥ 0.15, a label reads 0.2–0.27 – and never reaches the card's top edge, where a
+  // selected card's black frame is: a NEW Ryzen read 0.11 there)
+  let dark = band(0.97, 1.04, 0.62, 0.92, isDark);
+  for (const d of [-0.06, -0.04, -0.02, 0.02, 0.04]) {
+    const v = band(0.97 + d, 1.04 + d, 0.62, 0.92, isDark);
+    if (v >= 0.15 && v > dark && band(1.045 + d, 1.075 + d, 0.62, 0.92, isDark) < 0.02) dark = v;
+  }
+  const red = band(0.82, 0.89, 0.2, 0.8, isRed),
     around = Math.max(band(0.75, 0.81, 0.2, 0.8, isRed), band(0.9, 0.96, 0.2, 0.8, isRed));
   // a yellow sticky note "Property of <customer email>" at the picture's top left: a customer's part, not ours
   const note = band(0.6, 1.12, 0.04, 0.38, ([r, g, b]) => r > 200 && g > 190 && b < 150 && r - b > 80);
@@ -806,6 +897,7 @@ if (typeof module !== "undefined")
     markBroken,
     flipFixIds,
     flipDiff,
+    invNameGaps,
     flipEnough,
     brokenWhy,
     flipScore,
