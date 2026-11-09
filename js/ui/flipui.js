@@ -514,9 +514,17 @@ flipDlg.addEventListener("click", e => {
     delete f.ocSet;
   } else if (t.dataset.fa === "ocenough") {
     // the "just enough for 10,000" values: into the "Couldn't reach it?" fields, and the ticks to match
-    const e = flipEnough(flipState(f).build, flipState(f).can);
+    const st2 = flipState(f),
+      e = flipEnough(st2.build, st2.can);
     if (e && !e.none && !e.unreachable) {
-      f.ocSet = { ...(e.mult ? { mult: e.mult } : {}), ...(e.core ? { core: e.core, mem: e.mem } : {}) };
+      // a part left at stock gets its stock values, so every estimate (the header too) leaves its overclock out
+      const cd = ocOf(st2.build.find(p => p.cat === "CPU")?.name || ""),
+        gd = ocOf(st2.build.find(p => p.cat === "GPU")?.name || "");
+      f.ocSet = {};
+      if (e.mult) f.ocSet.mult = e.mult;
+      else if (st2.can.ocCpu && cd && cd.mhz) f.ocSet.mult = Math.floor(cd.mhz / 100);
+      if (e.core) Object.assign(f.ocSet, { core: e.core, mem: e.mem });
+      else if (st2.can.ocGpu && gd && gd.core != null) Object.assign(f.ocSet, { core: gd.core, mem: gd.mem });
       f.soft.ocCpu = !!e.mult;
       f.soft.ocGpu = !!e.core;
     }

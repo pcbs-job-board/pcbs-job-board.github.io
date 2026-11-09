@@ -386,8 +386,7 @@ function flipState(f) {
   const newCost = f.changes.filter(c => c.isNew).reduce((t, c) => t + (c.price ?? priceOf(c.name) ?? 0), 0);
   const s = f.soft,
     oco = flipOcOpts(f, build),
-    // the overclocks this PC can do – once the player set their own values (or "just enough for 10,000"), as ticked
-    plan = { xmp: true, ocCpu: can.ocCpu && (!f.ocSet || !!s.ocCpu), ocGpu: can.ocGpu && (!f.ocSet || !!s.ocGpu), ...oco };
+    plan = { xmp: true, ocCpu: can.ocCpu, ocGpu: can.ocGpu, ...oco };
   const now = flipScore(build, { xmp: s.xmp, ocCpu: s.ocCpu && can.ocCpu, ocGpu: s.ocGpu && can.ocGpu, ...oco });
   const best = flipScore(build, plan); // after XMP + the overclocks this PC can do
   const start = f.startValue ?? f.parts.reduce((t, p) => t + (p.value ?? 0), 0);
