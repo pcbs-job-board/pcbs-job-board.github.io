@@ -63,6 +63,7 @@ const normP = s =>
     .toLowerCase()
     .replace(/[™®�]/g, "")
     .replace(/\bgray\b/g, "grey")
+    .replace(/([a-z])\|(?=[a-z])/g, "$1i") // "K|NGP|N" (EVGA's stylised KINGPIN) = "kingpin", as the reader sees it
     .replace(/[-_/().,|+!:]/g, " ")
     .replace(/\s+/g, " ")
     .trim();

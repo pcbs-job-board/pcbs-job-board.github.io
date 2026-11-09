@@ -25,6 +25,7 @@ const RESALE_PRICE = /^(.*?)[\s|]*\$\s?(\d[\d,]*)\s*$/;
 const cleanName = t =>
   String(t)
     .replace(/^[^A-Za-z0-9(]+/, "")
+    .replace(/^[A-Za-z0-9]{0,3}[\][|{}]+\s+/, "") // a category icon read as letters: "mS] Raijintek…"
     .trim(); // icon crumbs: "[=] NZXT…", "® Low-Profile"
 // Resale Value panel: "NZXT H210i (Black + White) $40", names wrap onto a 2nd line (the $ can be on either)
 function parseResale(lines) {
