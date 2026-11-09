@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_dev-0.14.9 (not released yet, waiting for Mariusz): 2 story jobs (Dirk "Placidius", Shovel "The Upgrade"); a known
+_0.14.9 released 2026-11-09 (backup-0.14.8-cl made first): 3 story jobs (Dirk "Placidius", Shovel "The Upgrade" + "The Dead Case", from reports_2); a known
 story sender with a new subject → "sender known, not in the list yet" (subject match allows a few misread letters);
 mergeTexts: email screenshots that meet edge to edge (no line in common) joined in order, edge lines kept;
 brandfix from the customer's own parts, identical part only, "already planned" line; normP "K|NGP|N" = kingpin;
