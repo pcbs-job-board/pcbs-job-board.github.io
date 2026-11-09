@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -123,6 +123,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    "LGA 1151 Skylake", "LGA 1151 Coffee Lake" (Mariusz: Skylake and Coffee Lake are different – don't shorten both to
    "LGA 1151"; take the exact text from the DB, same rule as sockOk). (Form factor, max GPU length, RAM runs slower,
    PSU wattage were also suggested – not picked.)
+3. **Settings: "Compact mode for job status" switch** (Mariusz 2026-11-09). A new switch in Settings, between
+   Keyboard and DLC (own "Job cards" heading), on by default, saved like the keyboard switch (LS "pcbs.compactStatus").
+   On = the Status as it is now (one row of small icons, details in the hover / focus popup). Off = every status the
+   job uses (budget, power, 3DMark, overclock, parts fit; not the "off" ones – no budget, no PSU yet) expanded, each on
+   its own line with its values and progress bar – smaller than the old big status boxes, but readable, all info
+   visible. Plan: board.js statusHtml → for "off" render the tiles' bodies inline (`.sexp st-…`) with a tighter style;
+   check keyboard navigation (tiles are buttons now – the expanded lines aren't), layout / soak tests, and a test that
+   the switch flips the card and is remembered. Not before Thursday evening (no releases until then).
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
