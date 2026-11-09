@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (2)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -116,6 +116,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    case has N fan places (fan places / count from the case's compat; else "the case fits only K – also a case with
    more"), and parts already in the PC that are that part (or better) count towards N. Unit test with this job.
    (Mona isn't in the story list – the app flagged "Looks like a story job"; she can report it.)
+2. **PC Bay build: more tags** (Mariusz 2026-11-09), shown like "Overclock Unlocked" – in "This PC now", the
+   inventory lists and the plan / single changes: "SLI" / "CrossFire" on motherboards and GPUs that support them
+   (compat sli / cf, GPU m), "Watercooled" on watercooled GPUs (the 💧 / WATER_GPU_TAG ones). (Other tags suggested
+   to Mariusz – waiting for his pick.)
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
