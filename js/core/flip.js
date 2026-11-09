@@ -277,10 +277,10 @@ function flipScore(build, o = {}) {
     g = gpus[0] && benchOf(gpus[0].name);
   const sticks = ram.map(r => +((compatOf(r.name) || {}).mhz || 0)).filter(Boolean);
   if (!cpu || !mb || !g || !sticks.length) return null;
-  const two = gpus.length > 1 && gpus[1].name === gpus[0].name && g.two;
-  let gpuS = two ? g.two : g.one;
+  const pair = gpus.length > 1 ? pairBench(gpus[0].name, gpus[1].name) : null; // same model, any maker
+  let gpuS = pair ? pair.two : g.one;
   if (o.ocGpu) {
-    const oc = two ? g.ocTwo : g.ocOne;
+    const oc = pair ? pair.ocTwo : g.ocOne;
     // o.gpuShare: how far toward the overclock base the player got (from the clocks they set); else the full potential
     if (oc > gpuS) gpuS = Math.round(gpuS + (o.gpuShare ?? OC_SHARE) * (oc - gpuS));
   }
@@ -475,7 +475,12 @@ function flipMoves(b, avail) {
         const l = k > 1 ? `${k} × ${name}` : name;
         moves.push({ label: now.length ? `${cat}: ${l}` : `Add ${cat}: ${l}`, items: items.slice(0, Math.max(k, now.length)) });
       }
-      if (now.length && now.length < max && now.every(p => p.name === name && !p.broken))
+      // more of the same – a 2nd GPU of the same model from any maker pairs too (gpuPair)
+      const more =
+        cat === "GPU"
+          ? now.length === 1 && !now[0].broken && gpuPair(now[0].name, name)
+          : now.every(p => p.name === name && !p.broken);
+      if (now.length && now.length < max && more)
         for (let k = 1; k <= Math.min(arr.length, max - now.length); k++)
           moves.push({
             label: cat === "GPU" ? `Second GPU: ${name}` : `${k} more RAM stick${k > 1 ? "s" : ""}: ${name}`,
@@ -677,14 +682,28 @@ function flipNotes(f) {
     n = [];
   const cpu = b.find(p => p.cat === "CPU"),
     ram = b.filter(p => p.cat === "RAM"),
+    gpus = b.filter(p => p.cat === "GPU"),
     cpuB = cpu && benchOf(cpu.name);
+  // at 10,000 the score's price multiplier is at its maximum (×3.0) – the parts' value still counts
+  const high = st.best != null && st.best >= 10000;
   if (ram.length === 1 && (cpuB?.maxCh || 2) > 1)
-    n.push("Only one RAM stick – a second one (dual channel) raises the 3DMark score, and so the price.");
-  if (cpu && ((compatOf(cpu.name) || {}).oc === "0" || !ocOf(cpu.name)))
+    n.push(
+      high
+        ? "Only one RAM stick – a second one adds its value to the price (the score is already high enough)."
+        : "Only one RAM stick – a second one (dual channel) raises the 3DMark score, and so the price."
+    );
+  if (gpus.length === 2 && !gpuPair(gpus[0].name, gpus[1].name))
+    n.push(
+      "These 2 graphics cards are different models, so they don't pair – the second one adds its value to the price, but nothing to the 3DMark score."
+    );
+  if (!high && cpu && ((compatOf(cpu.name) || {}).oc === "0" || !ocOf(cpu.name)))
     n.push(`${cpu.name} is locked – an unlocked CPU could be overclocked: a higher score sells for more.`);
-  else if (cpu && !st.can.ocCpu && hasUnlock("cpuOC"))
+  else if (!high && cpu && !st.can.ocCpu && hasUnlock("cpuOC"))
     n.push("The motherboard can't overclock – the CPU stays at its stock speed.");
-  if (st.best != null && st.best >= 10000) n.push("The score already reaches 10,000 – more performance won't raise the price.");
+  if (high)
+    n.push(
+      "The score already reaches 10,000 – the price multiplier is at its maximum (×3.0); more or better parts still raise the price through their value."
+    );
   return n;
 }
 // ---------- changes (keep the step-4 ticks honest: a new CPU drops the CPU overclock, a new board drops everything…) ----------

@@ -82,7 +82,7 @@ function benchHtml(bc) {
     <div class="bar"><i class="on" style="width:${pctOn}%"></i><i style="width:${pct}%"></i></div>
     <small>XMP off (how customer PCs come): <b>${n(bc.off)}</b> · XMP on: <b>${n(bc.on)}</b>${bc.mhzOn === bc.mhzOff ? " (no difference – RAM already at its speed)" : ""}</small>
     <small>CPU ${n(bc.cpuOff)}${bc.cpuOn !== bc.cpuOff ? "→" + n(bc.cpuOn) : ""} · GPU ${n(bc.gpu)}${bc.gpus > 1 ? " (2 cards)" : ""} · RAM ${bc.sticks} stick${bc.sticks > 1 ? "s" : ""}, ${bc.channels} of ${bc.maxCh} channel${bc.maxCh > 1 ? "s" : ""}, ${bc.mhzOff}${bc.mhzOn !== bc.mhzOff ? "→" + bc.mhzOn : ""} MHz</small>
-    ${bc.mixedGpus ? `<small class="warn">Two different GPUs – only one counts.</small>` : ""}
+    ${bc.mixedGpus ? `<small class="warn">Two GPUs of different models – they don't pair, only one counts.</small>` : ""}
     <div class="bverdict">${verdict}</div></div>`;
 }
 // Overclock objective: can it be done (certain), how hard (rough guide), PSU when overclocked

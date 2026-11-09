@@ -1266,7 +1266,8 @@ function benchSuggestions(job, ctx) {
     cpuB = benchOf(cpu0.name),
     stick = Math.min(...ram0.map(r => +(cInfo(r).mhz || 0)).filter(Boolean)),
     sticks = ram0.length;
-  const nG = gpus0.length > 1 && gpus0[1].name === gpus0[0].name ? 2 : 1;
+  const pair0 = gpus0.length > 1 ? pairBench(gpus0[0].name, gpus0[1].name) : null,
+    nG = pair0 ? 2 : 1;
   const score = (c, steps, gpu, k) => {
     // c: CPU factors, steps: board RAM steps, gpu: graphics score, k: RAM sticks
     const ch = Math.min(k, c.maxCh || 1),
@@ -1311,18 +1312,23 @@ function benchSuggestions(job, ctx) {
     if (ramFill) push(type + " + RAM", [...swaps, ...fillSw()], score(c, steps, gpu, sticks + ramFill.k));
     if (ramFav) push(type + " + RAM", [...swaps, ...fillSw(ramFav)], score(c, steps, gpu, sticks + ramFav.k));
   };
-  const gNow = nG === 2 ? benchOf(gpus0[0].name).two : benchOf(gpus0[0].name).one;
+  const gNow = pair0 ? pair0.two : benchOf(gpus0[0].name).one;
   if (ramFill) push("RAM", fillSw(), score(cpuB, mbB.steps, gNow, sticks + ramFill.k));
   if (ramFav) push("RAM", fillSw(ramFav), score(cpuB, mbB.steps, gNow, sticks + ramFav.k));
   const gpusNew = locked.has("GPU") ? [] : withB("GPU");
   const gpuSw = g => (nG === 2 ? [sw(g, gpus0[0].name), sw(g, gpus0[1].name)] : [sw(g, gpus0[0].name)]);
   for (const { p: g, b } of gpusNew) {
     both("GPU", gpuSw(g), cpuB, mbB.steps, nG === 2 ? b.two : b.one);
-    if (nG === 1 && b.two && cInfo(g).m) both("2 GPUs", [sw(g, gpus0[0].name), sw(g)], cpuB, mbB.steps, b.two);
+    // (two cards that don't pair: both are replaced – never a 3rd card)
+    if (nG === 1 && b.two && cInfo(g).m)
+      both("2 GPUs", [sw(g, gpus0[0].name), sw(g, gpus0[1] ? gpus0[1].name : "")], cpuB, mbB.steps, b.two);
   }
-  if (nG === 1 && !locked.has("GPU") && benchOf(gpus0[0].name).two && cInfo(gpus0[0]).m) {
-    const same = shopParts("GPU").filter(sameAs(gpus0[0].name))[0];
-    if (same) both("2nd GPU", [sw(same)], cpuB, mbB.steps, benchOf(same.name).two);
+  if (gpus0.length === 1 && !locked.has("GPU") && benchOf(gpus0[0].name).two && cInfo(gpus0[0]).m) {
+    // the cheapest card of the same model (any maker – they pair in the game)
+    const same = shopParts("GPU")
+      .filter(p => pairBench(gpus0[0].name, p.name))
+      .sort((a, b) => a.price - b.price)[0];
+    if (same) both("2nd GPU", [sw(same)], cpuB, mbB.steps, pairBench(gpus0[0].name, same.name).two);
   }
   const cpus = locked.has("CPU") ? [] : withB("CPU");
   for (const { p: c, b } of cpus)
@@ -1442,7 +1448,7 @@ function newBuildBench(job, ctx, target, build, why, set) {
   if (g0.length && !g0b) return [{ key: "bench", reason: why, options: [], hint: `no 3DMark data for ${g0[0].name}` }];
   // one card, or two of the same (SLI / CrossFire) – each list cheapest first, a dearer entry always scores higher
   const gpuLists = g0.length
-    ? [[{ p: null, g: g0.length > 1 && g0[1].name === g0[0].name && g0b.two ? g0b.two : g0b.one, k: 0, cost: 0 }]]
+    ? [[{ p: null, g: (g0.length > 1 && pairBench(g0[0].name, g0[1].name)?.two) || g0b.one, k: 0, cost: 0 }]]
     : [
         pareto(withB("GPU"), x => x.b.one).map(x => ({ p: x.p, g: x.b.one, k: 1, cost: x.p.price })),
         pareto(

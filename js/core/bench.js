@@ -8,6 +8,23 @@
               XMP on = the motherboard's highest speed step at or below the stick's MHz. */
 
 let BENCH = null;
+// two GPUs run as a pair (SLI / CrossFire) when they're the same GPU model – any maker or edition (tested in the game:
+// MSI GTX 1070 GAMING X 8G + ZOTAC GTX 1070 AMP Extreme, ASUS RX 560 + ROG Strix RX 560 OC); a GTX 1080 and a
+// 1080 Ti don't pair. The one place for that rule ("c" = the chip in the parts database)
+function gpuPair(a, b) {
+  if (!a || !b) return false;
+  if (String(a).toLowerCase() === String(b).toLowerCase()) return true;
+  const x = (compatOf(a) || {}).c,
+    y = (compatOf(b) || {}).c;
+  return !!x && x === y;
+}
+// a pair's score: the two cards' pair scores averaged (the same card twice → its own); null when they don't pair
+function pairBench(a, b) {
+  const A = benchOf(a),
+    B = benchOf(b);
+  if (!gpuPair(a, b) || !A || !B || !A.two || !B.two) return null;
+  return { two: Math.round((A.two + B.two) / 2), ocTwo: Math.round(((A.ocTwo || A.two) + (B.ocTwo || B.two)) / 2) };
+}
 function benchOf(name) {
   if (!BENCH) {
     BENCH = new Map();
@@ -72,8 +89,9 @@ function benchScore(parts) {
   if (!sticks.length) missing.push("RAM");
   if (missing.length) return { missing };
   const g = benchOf(gpus[0].name),
-    two = gpus.length > 1 && gpus[1].name.toLowerCase() === gpus[0].name.toLowerCase();
-  const gpuS = two && g.two ? g.two : g.one,
+    pair = gpus.length > 1 ? pairBench(gpus[0].name, gpus[1].name) : null,
+    two = !!pair;
+  const gpuS = pair ? pair.two : g.one,
     stick = Math.min(...sticks),
     ch = Math.min(sticks.length, cpu.maxCh || 1);
   const mhzOff = Math.min(cpu.defMem || stick, stick),
