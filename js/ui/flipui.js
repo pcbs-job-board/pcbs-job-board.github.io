@@ -743,6 +743,16 @@ async function readInventory(img, grid, onStep) {
       return { b, c, got };
     })
   );
+  // cards fill a row left to right: a column with fewer cards than the one to its right (or none while others have
+  // some) was read badly – read it once more (a Celeron went missing in a live capture, 0.14.8) and keep the better read
+  for (let i = 0; i < read.length; i++) {
+    const right = read.slice(i + 1).reduce((m, r) => Math.max(m, r.got.length), 0),
+      any = read.some(r => r.got.length);
+    if (read[i].got.length < right || (!read[i].got.length && any)) {
+      const again = parseInventoryColumn((await readText(read[i].c)).lines);
+      if (again.length > read[i].got.length) read[i].got = again;
+    }
+  }
   for (const { b, c, got } of read) {
     for (const it of got) {
       if (it.nameY != null) {
