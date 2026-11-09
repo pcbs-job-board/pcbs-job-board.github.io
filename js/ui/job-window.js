@@ -249,7 +249,11 @@ async function runOcr() {
     // story job? known from the list (sender email / subject / name) or looks like one (no star requirement, long text)
     const sm = storyMatch(p, window.STORY_JOBS || []),
       sl = storyLooks(p);
-    rev.draft.storyKnown = sm ? sm.entry.story || sm.entry.sender_name || "known story job" : "";
+    rev.draft.storyKnown = !sm
+      ? ""
+      : sm.newEmail
+        ? `${sm.entry.sender_name || sm.entry.email} – a known story customer; this email isn't in the story list yet (📖 Report story job)`
+        : sm.entry.story || sm.entry.sender_name || "known story job";
     rev.draft.storyWhy = sm ? "" : sl.why.join(" · ");
     if (!rev.storyTouched) rev.draft.story = !!sm || sl.looks;
     renderForm();

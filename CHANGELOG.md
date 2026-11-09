@@ -3,6 +3,8 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.14.9
+
 ## 0.14.8
 - PC Bay: "Best build" lists the end result, one line per slot (old → new) – no more steps that replace each other.
 - PC Bay Profit step: replaced parts shown red → new parts green (BROKEN tag on broken ones).

@@ -794,6 +794,16 @@ function mergeTexts(shots) {
       const swap = where === "start" ? B.length > A.length : where === "end" ? A.length > B.length : false;
       out.push(...(swap ? [...B, ...A] : [...A, ...B]));
     };
+    // no line in common: the screenshots meet edge to edge (scrolled exactly one screen). The half with the sender /
+    // subject goes first, the one with Labour / Objectives last; edge lines stay when they're whole text or a bullet
+    if (!pairs.length) {
+      const head = l => l.slice(0, 3).some(e => /@[\w-]+\./.test(e.t)),
+        tail = l => l.some(e => /^(objectives|labou?r)\b/i.test(e.t)),
+        bFirst = (head(ls) && !head(acc)) || (tail(acc) && !tail(ls)),
+        whole = e => !e.edge || clean(e) || /^[*+•·-]\s*\w/.test(e.t) || (e.conf != null && e.conf >= 70);
+      acc = (bFirst ? [...ls, ...acc] : [...acc, ...ls]).filter(whole);
+      continue;
+    }
     let pi = 0,
       pj = 0;
     for (const [i, j] of pairs) {
@@ -951,8 +961,17 @@ function storyMatch(job, list) {
     sub = normStory(job.subject),
     sig = (job.signature || []).map(normStory);
   // the same customer can have several story jobs (HRH The Queen) – the one with this subject too comes first
-  const both = (list || []).find(st => st.email && e && normStory(st.email) === e && st.subject && normStory(st.subject) === sub);
+  // (a subject with a few misread letters still counts)
+  const sameSub = st =>
+    st.subject &&
+    sub &&
+    (normStory(st.subject) === sub || editDist(normStory(st.subject), sub) <= Math.max(1, Math.floor(sub.length / 12)));
+  const mine = (list || []).filter(st => st.email && e && normStory(st.email) === e);
+  const both = mine.find(sameSub);
   if (both) return { entry: both, by: "email" };
+  // a known story customer, but this email isn't in the list yet: don't show another of their jobs' story
+  if (mine.length && sub && mine.every(st => st.subject))
+    return { entry: { sender_name: mine[0].sender_name, email: mine[0].email, story: "" }, by: "sender", newEmail: true };
   for (const st of list || []) {
     if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
     if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
