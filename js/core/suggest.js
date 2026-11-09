@@ -384,6 +384,44 @@ function suggestSwaps(job, opts = {}) {
       handled.add("RAM");
       continue;
     }
+    // 9b Support for double GPU: a board with SLI / CrossFire (no 2nd card)
+    if (MULTI_RE.test(o)) {
+      const board = cur("Motherboard").pop();
+      if (!board) {
+        missing(
+          "obj:" + o,
+          o,
+          newBuild
+            ? benchTarget(job)
+              ? "Planned in the 3DMark build below – a motherboard with SLI / CrossFire."
+              : "New build: pick a motherboard with SLI / CrossFire."
+            : "capture PC Stats to check the motherboard"
+        );
+        continue;
+      }
+      if (multiOk(board)) {
+        missing(
+          "obj:" + o,
+          o,
+          `${board.name} already supports two GPUs (${[cInfo(board).sli === "1" && "SLI", cInfo(board).cf === "1" && "CrossFire"].filter(Boolean).join(" / ")}) – nothing to change`
+        );
+        continue;
+      }
+      const bc = cInfo(board),
+        cands = shopParts("Motherboard").filter(p => sockOk(cInfo(p).s, bc.s) && multiOk(p) && fitsBuild(job, p, board.name));
+      if (!cands.length) {
+        missing("obj:" + o, o, `${board.name} has no SLI / CrossFire – no unlocked board for this socket that has it`);
+        continue;
+      }
+      add(
+        "obj:" + o,
+        `${o} – ${board.name} has no SLI / CrossFire`,
+        pickOptions(job, ctx, cands, { replace: board.name, base: board }),
+        { cat: "Motherboard", old: board.name }
+      );
+      handled.add("Motherboard");
+      continue;
+    }
     // 9  Install dual graphics cards
     if (DUAL.test(o)) {
       const gpus = cur("GPU");
@@ -809,8 +847,9 @@ function similarTo(a, b) {
   }
 }
 // no CPU fits the current socket: the cheapest CPU + motherboard pair that fits the rest of the PC
-function cpuWithBoard(job, ctx, cands, curP, cur, boardOk = () => true) {
-  const board = cur("Motherboard").pop(),
+function cpuWithBoard(job, ctx, cands, curP, cur, boardOk0 = () => true) {
+  const boardOk = p => boardOk0(p) && (!needMulti(job) || multiOk(p)), // "Support for double GPU" too
+    board = cur("Motherboard").pop(),
     pairs = [];
   for (const sock of new Set(cands.map(p => cInfo(p).s))) {
     const cpu = cands.filter(p => cInfo(p).s === sock).sort((a, b) => a.price - b.price)[0];
@@ -1209,6 +1248,14 @@ function lightsSuggestion(job, ctx, want, reason) {
   };
 }
 const DUAL_RE = /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i;
+// "Support for double GPU" (0.14.10, Steve Shovel's "The Incognito Rig"): a motherboard with SLI / CrossFire – no 2nd
+// card needed (unlike "Install dual graphics cards")
+const MULTI_RE = /support for (double|dual|two|2|multiple|multi) (gpus?|graphics)|(double|dual|multi)[- ]?gpu support/i;
+const multiOk = p => {
+  const c = cInfo(p);
+  return c.sli === "1" || c.cf === "1";
+};
+const needMulti = job => jobObjectives(job).some(o => MULTI_RE.test(o));
 function benchSuggestions(job, ctx) {
   const target = benchTarget(job);
   if (!target) return [];
@@ -1338,7 +1385,7 @@ function benchSuggestions(job, ctx) {
         both("CPU + GPU", [sw(c, cpu0.name), ...gpuSw(g)], b, mbB.steps, nG === 2 ? gb.two : gb.one);
     }
   if (!locked.has("CPU") && !locked.has("Motherboard"))
-    for (const { p: m, b: mbN } of withB("Motherboard"))
+    for (const { p: m, b: mbN } of withB("Motherboard").filter(x => !needMulti(job) || multiOk(x.p)))
       for (const { p: c, b } of cpus)
         if (sockOk(cInfo(m).s, cInfo(c).s)) both("Motherboard + CPU", [sw(m, mb0.name), sw(c, cpu0.name)], b, mbN.steps, gNow);
   cands.sort((a, b) => a.cost - b.cost || b.sc.on - a.sc.on);
@@ -1477,10 +1524,12 @@ function newBuildBench(job, ctx, target, build, why, set) {
       ? [{ p: null, b: m0b, s: cInfo(m0).s, slots: +(cInfo(m0).ram || 4) }]
       : []
     : Object.values(
-        withB("Motherboard").reduce((g, x) => {
-          (g[cInfo(x.p).s] = g[cInfo(x.p).s] || []).push(x);
-          return g;
-        }, {})
+        withB("Motherboard")
+          .filter(x => !needMulti(job) || multiOk(x.p)) // "Support for double GPU": SLI / CrossFire boards only
+          .reduce((g, x) => {
+            (g[cInfo(x.p).s] = g[cInfo(x.p).s] || []).push(x);
+            return g;
+          }, {})
       )
         .flatMap(list => pareto(list, x => Math.max(...x.b.steps)))
         .map(x => ({ ...x, s: cInfo(x.p).s, slots: +(cInfo(x.p).ram || 4) }));
