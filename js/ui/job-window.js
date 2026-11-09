@@ -452,7 +452,7 @@ function renderForm() {
         .join("")}</select></div></div>
       <label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
       ${storyBanner(d)}
-      <label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>
+      <label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>${(d.hidden || []).length ? `<div class="hint hidnote">These are guessed from the email's wording – some might not be required. Check them against the email and untick any that don't apply.</div>` : ""}
       <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2">${esc((d.extra || []).join("\n"))}</textarea>`;
     f.innerHTML = `${parts}
       <div id="fSugg"></div>
