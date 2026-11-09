@@ -106,105 +106,17 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (10)
+## Small fixes (0)
 
-1. **Joined email captures: junk in Objectives, an objective lost** (Mariusz 2026-11-08, jamie.dirk@fssbold.hfed.gov
-   "FSS Bold's mission to Placidius has reached a critical point", 2 screenshots joined – Email 1 = the top of the email,
-   Email 2 = `dirk_placidius_email2.png`). Objectives came out as "3DMark score of 11000 jamie.dirk@fssbold.hfed.gov
-   7/27/2018 satellite orbiting Placidius." and "Install dual graphics cards" is missing (`dirk_placidius_app.png`).
-   Email 1's header / first lines got into the objectives block when the texts were joined, and the line after it was
-   lost. Fix the join so the objectives come only from the "Objectives:" block (header, sender, date and body text never
-   in it) and every bullet is kept. Email 1 = `dirk_placidius_email1.png` (sent later, same email – the top part),
-   `dirk_placidius_email2b.png` the bottom again.
-2. **Story job matched to the wrong entry** (same email). Captain J Dirk has a 3rd story email: "FSS Bold's mission to
-   Placidius has reached a critical point" (Labour $140, Budget $700, Req: Level 22; 3DMark score of 11000, Install dual
-   graphics cards – the force-field / supernova part of the story). Not in the list, so it matched his first entry by
-   email and showed the "science officer smashed his research station" story. Add it to data/story-jobs.csv; and when
-   the email matches but the subject doesn't match any of that sender's entries, don't show another entry's story
-   (say "Story job – sender known, this email not in the list yet" instead).
-3. **Story job: Steve Shovel, P.I. "The Upgrade"** (Mariusz 2026-11-08, `shovel_upgrade_1.png`, `_2.png`):
-   steve.shovel@theprivateeyes.com, 7/27/2018, Labour $140 (no budget shown – the job was already accepted, "In
-   transit", so the objectives box isn't visible). Story: a noir detective tale – "Sam", a pro gamer, wants her rig
-   upgraded: "upgrade the rig with a second GPU and … hit a benchmark of 11000+". Add to data/story-jobs.csv (objectives
-   from the text: second GPU, 3DMark 11000 – confirm when Mariusz has the objectives box).
-4. **Brand + "diagnose and fix": "same part again" for a part that's already a planned swap** (Mariusz 2026-11-08,
-   AsleepL@TwiggDevelopment.uk "can you fix my PC?", "My brother has ASRock in his PC" → ASRock fan; customer's board
-   ASRock Z390 Taichi). Edit job suggested "ASRock Z390 Pro4 → ASRock Z390 Pro4". The card already has a planned
-   swap on the motherboard (Taichi → Pro4, it seems – check), and suggest.js 15b ("brandfix") takes the parts from the
-   planned build (cur()), so it offers the planned Pro4 "again". Fix: 15b looks at the customer's own parts
-   (job.components): "ASRock Z390 Taichi → ASRock Z390 Taichi", and leaves out a part whose slot already has a planned
-   swap (or says so). Screenshots: `twigg_pcstats.png`, `twigg_edit.png`, `twigg_edit_suggest.png`.
-5. **PC Stats: "EVGA GeForce GTX 1080 Ti K|NGP|N GAMING" read as "EVGA GeForce GTX 1080 GAMING"** (same job,
-   `twigg_pcstats.png`). The part is in the DB; the "|" in K|NGP|N (and the line break after "1080") lose the match –
-   a different card ($875 vs ~$520, 3DMark and value off). Fix the matching (| read as I / l / 1 / nothing; "Ti" on
-   the next line) and add the screenshot to the run tests.
-   Same in the PC Bay Resale Value window (Mariusz 2026-11-08, `resale_kingpin_silenos.png` / `_app.png`):
-   "EVGA GeForce GTX 1080 Ti K|NGP|N GAMING" ($292) read as "EVGA GeForce GTX 1080 Ti GAMING" (another card in the
-   DB), and the case "Raijintek SILENOS" ($42, in the DB) read as "mS] Raiijntek SILENOS" → "not in the parts list",
-   category Other: the case icon was read as text ("mS]") and the name misspelt. Fix: drop icon junk before the name,
-   match such names fuzzily (SILENOS is a unique word), and a near-match with a word left over (K|NGP|N) must not
-   win over the right part.
-6. **PC Bay inventory capture skipped the Intel Celeron G3900** (Mariusz 2026-11-08, CPU tab: Ryzen 5 2600 (new),
-   Celeron G3900 (used), i3-8350K (used) → only the Ryzen and the i3 were added; `fixtures/pcbay/inv_celeron_skipped.png`,
-   app: `pending/inv_celeron_skipped_app.png`). Not reproduced yet: the screenshot read in the tests gives all 3 (1
-   reader and 3 readers, 3 runs each), labels fine (no BROKEN / Property-of). The middle column is the one a 2nd reader
-   reads since 0.14.7 – suspect the live capture (Mariusz's saved inventory area, screen-share frame vs screenshot,
-   or the reader pool on his PC). Next: ask Mariusz to capture the same screen again (and paste the screenshot instead
-   of capturing); if the middle column is missing again, check his "Adjust area" box and the pool (read the columns
-   one by one as a fallback when a column comes back empty).
-7. **Two different cards of the same GPU counted as one (3DMark ~8,700 vs real 13,190)** (Mariusz 2026-11-08, PC Bay
-   Lian Li O11D XL-W build: i7-9700K, B360 (no CPU OC), 16 GB 3200, MSI GTX 1080 GAMING Z 8G + ZOTAC GTX 1080 AMP
-   Extreme, GPU OC 2011 / 2063 MHz → game 13,190; `mixed_sli_resale_*.png`, `mixed_sli_app.png`). Both
-   flipScore (flip.js: `gpus[1].name === gpus[0].name`) and bench.js (`two` only for the same name, else
-   "mixedGpus") count a pair only when it's the very same model. The game paired them: same chip (GTX 1080), other
-   makers. Estimates with them as a pair: 12,164–12,227 stock, 13,366 at full GPU OC – close to 13,190 at the lower
-   clocks. Fix: a pair = 2 cards of the same chip (GTX 1080 = GTX 1080, any maker / edition), score from the two
-   cards' "two" values (the weaker card's, or their average); the job board (dual objective, suggestions, 3DMark
-   estimate) too. Confirmed by Mariusz (2026-11-08, all reproduced in the game): the game pairs the same GPU model,
-   any maker / edition – ASUS Radeon RX 560 + ASUS ROG Strix Radeon RX 560 OC Edition; MSI GTX 1070 Gaming X 8G +
-   ZOTAC GTX 1070 AMP Extreme; MSI GTX 970 GAMING LE 100ME + Shean GTX 970 GAMER. Different models don't pair (1080 +
-   1070). The "model" = the chip part of the name (GeForce GTX 1080 / Radeon RX 560 …) – take it from the DB (chip /
-   series field if there is one, else parse "GeForce GTX|RTX … / Radeon RX|R9 … / Vega …", with "Ti" / "Super" / "XT"
-   kept: 1080 ≠ 1080 Ti) and add unit tests for the 3 examples + 1080 Ti ≠ 1080.
-   Tested by Mariusz (2026-11-08): EVGA GTX 1080 Ti K|NGP|N GAMING does NOT pair with MSI GTX 1080 GAMING Z 8G nor
-   with MSI GTX 1080 GAMING+ 8G → 1080 ≠ 1080 Ti (add these as unit tests too). Keep the "same model" rule in one
-   place (one function) anyway.
-8. **Hidden objectives: warn about false positives** (Mariusz 2026-11-08). In the New job and Edit job windows, in or
-   right by the "Hidden objectives found in email" box: a short note that the app guesses these from the email's
-   wording, so some of them might not be required for this job – always check them against the email and untick
-   any that don't apply. Soft wording (Mariusz): no hint that doing an extra one is punished – e.g. "These are
-   guessed from the email's wording – some might not be required. Check them against the email and untick any that
-   don't apply." Small, muted text (like the box's other hints); also on story jobs' "not ticked" box.
-9. **PC Bay step 3 notes: the 10,000 note is misleading** (Mariusz 2026-11-08, `pcbay_note_10000.png`). flip.js
-   flipNotes: "The score already reaches 10,000 – more performance won't raise the price." Only the score
-   multiplier stops at 10,000 (×3.0); the sale price is the parts' value × that multiplier, so more / more valuable
-   parts still raise it. New wording, e.g. "The score already reaches 10,000 – the price multiplier is at its
-   maximum (×3.0); more or better parts still raise the price through their value." And the RAM note next to it
-   ("a second one (dual channel) raises the 3DMark score, and so the price") is wrong at ≥ 10,000 the same way: there
-   say "a second stick adds its value to the price (the score is already high enough)". The planner itself already
-   counts the parts' value – only the notes need fixing. Checked 2026-11-08 (Mariusz asked): above 10,000 the
-   planner already adds / swaps parts for their value (test PC at 11,830: + 3 TB drive, + fan, a pricier cooler →
-   $2,398 → $2,512, score unchanged) – add that as a unit test with the note fix.
-10. **PC Bay Profit step: overclock "just enough" for 10,000** (Mariusz 2026-11-08). The price multiplier stops at
-   3DMark 10,000 (×3.0), so the Profit step should suggest the smallest overclock that gets the estimate just above
-   10,000 – less heat, less risk, faster – with the full potential kept as extra info:
-   - search the game's steps with flipScore (CPU multiplier ×1 steps + its voltage at 0.05 V; GPU Tuner core /
-     memory clocks; XMP on) for the gentlest overclock whose estimate is ≥ 10,000 + a small safety margin (the
-     estimate is usually within a few points; e.g. +100, kept in one constant)
-   - "gentlest" (Mariusz): spread it over both when both can overclock – measure each part's overclock as its share
-     of the way from stock to its full potential (0–100 %) and pick the combination with the lowest HIGHEST share
-     (CPU 25 % + GPU 25 % beats CPU 50 % alone or GPU 50 % alone); ties → the lower total, then lower CPU voltage.
-     Only one of them can overclock → that one alone.
-   - show it first: "To reach 10,000: CPU ×46 (4.6 GHz, 1.30 V) · GPU stock" with the expected score; below it
-     "Full potential: …" as now; the "Couldn't reach it?" fields keep working
-   - stock (with XMP) already ≥ 10,000 → "No overclock needed – the score already reaches 10,000"; can't reach
-     10,000 even at full potential → the full-potential suggestion as now, saying so
-   - Profit step, score (estimate or the one entered) ≥ 10,000: a note "A score above 10,000 doesn't raise the
-     price multiplier (×3.0 is the maximum) – only more or better parts raise the price." (matches small fix 9)
-   Also (Mariusz asked why nothing told him): the app counted the 2nd card's value in the sale price but not in the
-   score, and flipCheck had no issue for a "mixed" pair – so taking it out only lowered the price and nothing was
-   suggested. With the fix a really mixed pair (different models) should show a note in step 3: "these 2 cards don't
-   pair – the 2nd one adds its value but not its score" (and the job board's dual-GPU objective must not count it).
+_dev-0.14.9 (not released yet, waiting for Mariusz): 2 story jobs (Dirk "Placidius", Shovel "The Upgrade"); a known
+story sender with a new subject → "sender known, not in the list yet" (subject match allows a few misread letters);
+mergeTexts: email screenshots that meet edge to edge (no line in common) joined in order, edge lines kept;
+brandfix from the customer's own parts, identical part only, "already planned" line; normP "K|NGP|N" = kingpin;
+Resale Value icon crumbs ("mS]") dropped; inventory: a column read short / empty is read again; gpuPair / pairBench
+(bench.js) = same chip, any maker – flipScore, benchScore, 3DMark suggestions, PC Bay "Second GPU"; flipNotes at
+10,000 + unpaired cards; hidden objectives note; flipEnough (sum of squared shares – Mariusz's "lowest highest share"
+picked e.g. CPU 50 % to save the GPU 1 %; squares keep his 25 + 25 < 50 example), "Use these values" (stock values
+for an untouched part), note above 10,000. Tests: units 222, pcbayfix 22, swaps 19, run 527 + 12 known, pcbay 51._
 
 _0.14.8 released 2026-11-08 (backup-0.14.7 made first): story job "FSS Bold requires urgent system repairs" (Captain J
 Dirk; report read the email as …@fsshold – matched by subject); PC Bay: $0 resale part = broken (brokenWhy); identical
