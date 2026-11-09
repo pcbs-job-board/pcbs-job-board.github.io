@@ -609,12 +609,24 @@ function suggestSwaps(job, opts = {}) {
   // 15b Diagnose and fix + favourite brand ("I'm a total Intel fanboy"): the broken part is the one made by that
   //     brand – the same part again, once per customer's part of that brand (which one is broken shows in the game)
   if (objs.some(o => /diagnose|fix/i.test(o)) && ctx.brands.length) {
-    const mine = CATS.flatMap(cat =>
-      broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : cur(cat)
-    ).filter(p => {
+    // the customer's OWN parts (not the planned build – a planned part isn't broken); a part that already has a
+    // planned swap is left out (the swap is the fix), with a line saying so
+    const own = plannedBuild({ ...job, swaps: [] }),
+      planned = p => (job.swaps || []).find(s => lowName(s.old) === lowName(p.name));
+    const isFan = p => {
       const ix = INDEX.find(x => x.name === p.name);
       return ix && ctx.brands.some(b => brandMatch(ix, b));
-    });
+    };
+    const fanParts = CATS.flatMap(cat =>
+      broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : own.filter(p => p.cat === cat)
+    ).filter(isFan);
+    const mine = fanParts.filter(p => !planned(p));
+    for (const p of fanParts.filter(planned))
+      missing(
+        "brandfix:" + p.cat + ":" + p.name,
+        `${ctx.brands[0]} fan + "diagnose and fix" – their ${p.name}`,
+        `already planned: ${p.name} → ${planned(p).new}`
+      );
     if (!build.length)
       missing(
         "brandfix",
@@ -630,7 +642,18 @@ function suggestSwaps(job, opts = {}) {
       add(
         "brandfix:" + p0.cat + ":" + p0.name,
         `${b} fan + "diagnose and fix" – the broken part is likely their ${b} ${p0.cat}: same part again${mine.length > 1 ? ` (one of ${mine.length} ${b} parts)` : ""}`,
-        pickOptions(job, ctx, sameOrBrand(p0.cat, p0, ctx), { replace: p0.name, base: p0 }),
+        // the identical part (as the line says – not a cheaper part of the brand); the brand's other parts that are
+        // at least as good only when it isn't sold
+        (() => {
+          const same = pickOptions(job, ctx, shopParts(p0.cat).filter(sameAs(p0.name)), { replace: p0.name, base: p0 }),
+            rest = pickOptions(
+              job,
+              ctx,
+              sameOrBrand(p0.cat, p0, ctx).filter(p => !sameAs(p0.name)(p)),
+              { replace: p0.name, base: p0 }
+            ).map(o => ({ ...o, tag: `other ${b} part${o.tag ? " · " + o.tag : ""}` }));
+          return same.length ? same : rest.slice(0, 3); // others only when the identical part isn't sold
+        })(),
         { cat: p0.cat, old: p0.name }
       );
     }
