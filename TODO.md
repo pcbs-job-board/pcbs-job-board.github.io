@@ -118,8 +118,11 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    (Mona isn't in the story list – the app flagged "Looks like a story job"; she can report it.)
 2. **PC Bay build: more tags** (Mariusz 2026-11-09), shown like "Overclock Unlocked" – in "This PC now", the
    inventory lists and the plan / single changes: "SLI" / "CrossFire" on motherboards and GPUs that support them
-   (compat sli / cf, GPU m), "Watercooled" on watercooled GPUs (the 💧 / WATER_GPU_TAG ones). (Other tags suggested
-   to Mariusz – waiting for his pick.)
+   (compat sli / cf, GPU m), "Watercooled" on watercooled GPUs (the 💧 / WATER_GPU_TAG ones), and the socket on CPUs
+   and motherboards (compat s) so it's clear which CPUs fit the board – short but never merged: "AM4", "TR4",
+   "LGA 1151 Skylake", "LGA 1151 Coffee Lake" (Mariusz: Skylake and Coffee Lake are different – don't shorten both to
+   "LGA 1151"; take the exact text from the DB, same rule as sockOk). (Form factor, max GPU length, RAM runs slower,
+   PSU wattage were also suggested – not picked.)
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
