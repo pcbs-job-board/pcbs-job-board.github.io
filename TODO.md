@@ -106,7 +106,19 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (2)
+
+1. **"Support for double GPU" objective ignored** (Mariusz 2026-11-09, steve.shovel@theprivateeyes.com "The Incognito
+   Rig" – build from nothing: 3DMark 6000, Install Intel Core i7-8700K or better, Install AIO water cooling, Support
+   for double GPU; Labour $200, Budget $2,000, Req: Level 23; `shovel_incognito_*.png`). New objective wording – the
+   suggested build took the cheapest board, Colorful CVN B365M GAMING PRO V20 (Multi-GPU: N/A). The motherboard must
+   have SLI / CrossFire (compat `sli` / `cf`) – e.g. Colorful iGame Z390 Vulcan X V20 ($260, CrossFire/SLI) – but no 2nd
+   card is needed (unlike "Install dual graphics cards"). Add the objective to the parser / suggestions (board filter in
+   the new-build set and any board swap; the fit check: a board without SLI / CrossFire → the objective isn't met), and
+   a unit test with this job.
+2. **Story job: Steve Shovel, P.I. "The Incognito Rig"** (same screenshots): build from nothing for a private LAN
+   party – objectives above, Labour $200, Budget $2,000, Req: Level 23 (no star requirement). Add to
+   data/story-jobs.csv.
 
 _dev-0.14.10 (not released yet, waiting for Mariusz) – inventory capture (Mariusz 2026-11-09: middle motherboard
 missing, RX 560 OC read as RX VEGA64 OC + "new", DFL R9 290 "new"; the Celeron "now and then"): bestPartMatch –
