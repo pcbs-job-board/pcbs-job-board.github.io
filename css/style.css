@@ -3445,3 +3445,27 @@ dialog.pdbdlg .dlg-b {
 .fup .instead {
   color: var(--muted);
 }
+/* PC Bay Profit step (0.14.9): just enough overclock for 10,000 */
+.fenough {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent, #4aa3ff);
+  border-radius: 8px;
+  padding: 8px 11px;
+  margin: 6px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.fenough.ok {
+  border-left-color: var(--good, #4fd18b);
+}
+.fenough.warn {
+  border-left-color: var(--warn, #e0a33a);
+}
+.fenough button {
+  margin-left: 6px;
+  padding: 2px 9px;
+  font-size: 12px;
+}
+.fenough small {
+  color: var(--muted);
+}

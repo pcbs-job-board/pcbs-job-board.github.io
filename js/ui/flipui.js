@@ -329,10 +329,28 @@ function flipStep4(f, st) {
     gs && st.can.ocGpu
       ? `<div class="focset">GPU core <input type="number" min="0" step="1" data-oc="core" value="${set.core || gs.core}"> MHz · memory <input type="number" min="0" step="1" data-oc="mem" value="${set.mem || gs.mem}"> MHz</div>`
       : "";
+  // just enough overclock for 10,000 (the price multiplier's maximum) – first; the full potential stays in the rows below
+  const en = (st.can.ocCpu || st.can.ocGpu || flipScore(b, { xmp: true }) >= ENOUGH_TARGET) && flipEnough(b, st.can);
+  const enoughBox = !en
+    ? ""
+    : en.none
+      ? `<div class="fenough ok">✓ <b>No overclock needed</b> – with XMP on, the score already reaches 10,000 (~${en.score.toLocaleString()}), the price multiplier's maximum. Overclocking won't raise the price.</div>`
+      : en.unreachable
+        ? `<div class="fenough warn"><b>10,000 is out of reach</b> – even the full overclock potential gets ~${en.best.toLocaleString()}. The full potential below gets the most.</div>`
+        : `<div class="fenough"><b>Just enough for 10,000</b> <small>(the price multiplier's maximum – more only adds heat and risk)</small><br>${
+            en.mult
+              ? `CPU multiplier ×${en.mult} (${en.mhz.toLocaleString()} MHz${en.volt ? `, ${en.volt.toFixed(2)} V` : ""})`
+              : "CPU at stock"
+          } · ${
+            en.core
+              ? `GPU Tuner core ${en.core.toLocaleString()} MHz (+${en.dCore}), memory ${en.mem.toLocaleString()} MHz (+${en.dMem})`
+              : "GPU at stock"
+          } → 3DMark ~${en.score.toLocaleString()} <button class="ghost" data-fa="ocenough">Use these values</button><br><small>The full potential below is only needed for a higher score – which doesn't raise the price.</small></div>`;
   const row = (k, title, sub, ok = true, why = "") =>
     `<label class="fsoft ${ok ? "" : "locked"}"><input type="checkbox" data-fs="${k}" ${s[k] && ok ? "checked" : ""} ${ok ? "" : "disabled"}><span><b>${title}</b><br><small>${ok ? sub : why}</small></span></label>`;
   return `<div class="fstep">${pcNowHtml(f, st, true)}<p class="hint">Do these in the game in this order, tick each one. The value only changes once 3DMark has run.</p>
     ${row("boot", "Boot to the OS", "+$100 to the resale value.")}
+    ${enoughBox}
     ${row("xmp", "Turn on XMP in the BIOS (RAM settings)", gain("xmp") > 0 ? `3DMark +${gain("xmp").toLocaleString()}.` : "No difference on this motherboard / RAM – it's fine either way.")}
     ${row(
       "ocCpu",
@@ -361,6 +379,7 @@ function flipStep4(f, st) {
     }
     ${row("bench", "Run 3DMark", `Expected ~${(sc(base) || 0).toLocaleString()} points with the ticks above – a rough estimate, the game's score can differ slightly. Enter the score the game shows (the sale value then uses it):`)}
     <div class="addrow fscore"><input type="number" min="0" data-fa="score" placeholder="3DMark score" value="${f.score ?? ""}"><small>${f.score ? `Multiplier ×${benchMult(f.score).toFixed(2)} → resale value ${money(st.value)}` : "the multiplier goes from 1.0× at 1,000 points to 3.0× at 10,000"}</small></div>
+    ${(f.score ?? sc(base) ?? 0) >= ENOUGH_TARGET ? `<p class="hint">A score above 10,000 doesn't raise the price multiplier (×3.0 is the maximum) – only more or better parts raise the price.</p>` : ""}
     <p class="hint">Then add the PC Bay sticker and sell it – the auction can move the final price a little.</p></div>`;
 }
 
@@ -493,6 +512,14 @@ flipDlg.addEventListener("click", e => {
     flipApply(f, flipApplyItems(b, [{ inv: i, old }]));
   } else if (t.dataset.fa === "ocreset") {
     delete f.ocSet;
+  } else if (t.dataset.fa === "ocenough") {
+    // the "just enough for 10,000" values: into the "Couldn't reach it?" fields, and the ticks to match
+    const e = flipEnough(flipState(f).build, flipState(f).can);
+    if (e && !e.none && !e.unreachable) {
+      f.ocSet = { ...(e.mult ? { mult: e.mult } : {}), ...(e.core ? { core: e.core, mem: e.mem } : {}) };
+      f.soft.ocCpu = !!e.mult;
+      f.soft.ocGpu = !!e.core;
+    }
   } else if (t.dataset.fa === "refresh") {
     flipCache.key = "";
     toast("Suggestions worked out again");

@@ -307,6 +307,61 @@ function flipOcOpts(f, build) {
   }
   return o;
 }
+// the gentlest overclock that gets the estimate just above 10,000 – where the score's price multiplier stops (×3.0),
+// so more is only heat and risk. Each part's overclock = its share of the way from stock to its full potential;
+// spread over both when that's gentler: the pick has the lowest sum of squared shares (CPU 25 % + GPU 25 % = 0.125
+// beats either at 50 % = 0.25 – Mariusz's rule – but a CPU at 50 % isn't added just to save the GPU 1 %), then the
+// lower CPU share. XMP on. → { none } (stock is enough), { unreachable, best }, or the settings and the score
+const ENOUGH_TARGET = 10000,
+  ENOUGH_MARGIN = 100; // the estimate is usually within a few points of the game's – a little room
+function flipEnough(b, can) {
+  const cpu = b.find(p => p.cat === "CPU"),
+    gpu = b.find(p => p.cat === "GPU"),
+    want = ENOUGH_TARGET + ENOUGH_MARGIN;
+  const stock = flipScore(b, { xmp: true });
+  if (stock == null) return null;
+  if (stock >= want) return { none: true, score: stock };
+  const cd = can.ocCpu && cpu && ocOf(cpu.name),
+    cs = cd && ocSettings(cpu.name),
+    gd = can.ocGpu && gpu && ocOf(gpu.name),
+    gr = gd && gd.core != null && ocReach(gpu.name);
+  const cpuSteps = [{ mult: null, share: 0 }];
+  if (cs && cs.mhz > cd.mhz)
+    for (let m = Math.floor(cd.mhz / 100) + 1; m <= cs.mult; m++)
+      cpuSteps.push({ mult: m, share: Math.min(1, (m * 100 - cd.mhz) / (cs.mhz - cd.mhz)) });
+  const gpuSteps = [0];
+  if (gr) for (let g = 1; g <= 100; g++) gpuSteps.push(g / 100);
+  let pick = null,
+    best = stock;
+  for (const c of cpuSteps)
+    for (const g of gpuSteps) {
+      const sc = flipScore(b, {
+        xmp: true,
+        ocCpu: !!c.mult,
+        cpuMhz: c.mult ? c.mult * 100 : undefined,
+        ocGpu: g > 0,
+        gpuShare: g,
+      });
+      if (sc == null) continue;
+      best = Math.max(best, sc);
+      if (sc < want) continue;
+      const cand = { c, g, sc, cost: c.share * c.share + g * g };
+      if (!pick || cand.cost < pick.cost - 1e-9 || (Math.abs(cand.cost - pick.cost) < 1e-9 && c.share < pick.c.share))
+        pick = cand;
+    }
+  if (!pick) return { unreachable: true, best };
+  const out = { score: pick.sc, cpuShare: pick.c.share, gpuShare: pick.g };
+  if (pick.c.mult) {
+    const v = ocSettings(cpu.name, pick.c.mult * 100);
+    Object.assign(out, { mult: pick.c.mult, mhz: pick.c.mult * 100, volt: v && v.volt });
+  }
+  if (pick.g > 0) {
+    const core = Math.round(gd.core + pick.g * (gr.core - gd.core)),
+      mem = Math.round(gd.mem + pick.g * (gr.mem - gd.mem));
+    Object.assign(out, { core, mem, dCore: core - gd.core, dMem: mem - gd.mem });
+  }
+  return out;
+}
 // everything the window and the tile show
 // builds saved by 0.14.7 and older: identical parts joined from several captures could share one id (ticking or
 // deleting one hit all of them) – give every repeat its own id
@@ -331,7 +386,8 @@ function flipState(f) {
   const newCost = f.changes.filter(c => c.isNew).reduce((t, c) => t + (c.price ?? priceOf(c.name) ?? 0), 0);
   const s = f.soft,
     oco = flipOcOpts(f, build),
-    plan = { xmp: true, ocCpu: can.ocCpu, ocGpu: can.ocGpu, ...oco };
+    // the overclocks this PC can do – once the player set their own values (or "just enough for 10,000"), as ticked
+    plan = { xmp: true, ocCpu: can.ocCpu && (!f.ocSet || !!s.ocCpu), ocGpu: can.ocGpu && (!f.ocSet || !!s.ocGpu), ...oco };
   const now = flipScore(build, { xmp: s.xmp, ocCpu: s.ocCpu && can.ocCpu, ocGpu: s.ocGpu && can.ocGpu, ...oco });
   const best = flipScore(build, plan); // after XMP + the overclocks this PC can do
   const start = f.startValue ?? f.parts.reduce((t, p) => t + (p.value ?? 0), 0);
@@ -751,6 +807,7 @@ if (typeof module !== "undefined")
     markBroken,
     flipFixIds,
     flipDiff,
+    flipEnough,
     brokenWhy,
     flipScore,
   };
