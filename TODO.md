@@ -204,6 +204,39 @@ flipassist, soak, startup – all pass.
 
 ## Bigger updates (waiting for the go-ahead)
 
+### Parts database window – hidden columns, filters, overclock columns (Mariusz 2026-11-09, planning only)
+General:
+- A small, unobtrusive switch at the bottom (like "Suggest NEW parts" in PC Bay build): **"Show hidden details"** –
+  OFF every time the window opens (not remembered). Off = the columns below hidden; on = everything.
+- Show all the remaining columns on one screen (no sideways scrolling) where possible: tighter widths, wrap long cells.
+- Filters as drop-down menus (per category, below).
+Per category (hide = hidden unless "Show hidden details"):
+1. **Case** – hide: Open Bench, Game Version, Random Jobs, Details. Custom water cooling "none – no custom water
+   cooling" → just "none". A small (i) next to the number of supported reservoirs – hover = the list of them. DLC
+   column → a small ✓ when the part is from a DLC, hover = the DLC's name. Filters: Case type, Board size, Lights.
+2. **Motherboard** – hide: Game Version, Details. Filters: Socket, Size, Multi GPU, Overclocking, Lights.
+3. **CPU** – hide: Ranking, Game Version, Details. Filters: Socket, Overclock. Overclock column → just Yes / No,
+   moved in front of the clock column. Clock column → **Clock and voltage**: Stock (e.g. "Stock: 3900 MHz @ 1.15 V"),
+   mid / safe overclock, max overclock (from oc.js: ocOf / ocSettings, voltage on the 0.05 V steps); a CPU that can't
+   overclock → stock only. Throttles at → right after Clock and voltage.
+4. **CPU Cooling** – hide: Game Version, Random Jobs, Details. Filters: Type, Socket, Lights. Long supported-socket
+   lists split into 2 lines.
+5. **RAM** – hide: Game Version, Details. Filters: Size, Speed in bands (2000–2499, 2500–2999, …), Lights.
+   Mariusz noticed: lights all say "RGB" (= any colour), but some sticks light in one fixed colour – check the data
+   source (xlsx lt / lighting type) and show the real type (RGB / single colour + which) where known.
+6. **GPU** – hide: Ranking, Game Version, Random Jobs, Details. Rename Memory → **VRAM**. Core clock and memory clock:
+   stock, mid overclock, max overclock (like the CPU). Filters: Chipset, VRAM, SLI / CrossFire, Lights.
+7. **PSU** – hide: Game Version, Details. Filters: Power in bands (250–499, 500–749, …), Type, Format.
+8. **Storage** – hide: Game Version, Details. Filters: Type, Lights.
+9. **Case fans** – hide: Game Version, Random Jobs, Details. Filters: Size, Lights.
+10. **Reservoir** – hide: Game Version, Details. Filter: Lights.
+11. **Radiator** – hide: Game Version, Details. Filters: Size, Lights.
+12. **CPU Block** – hide: Game Version, Details. Filters: Socket, Lights.
+13. **Pipes** – hide: Game Version.  14. **Connector** – hide: Game Version, Details.
+15. **Coolants** – hide: Game Version.  16. **Cables** – hide: Game Version.
+Open questions for when it's started: "mid / safe overclock" – the midpoint between stock and max, or a value from
+the overclock research (temperature)? Filters combine with the search box (AND).
+
 Notes for later (not tasks yet):
 - Overclock "level 3" – the highest clock a given cooler allows – needs the game's temperature formula (not published).
   **Very low priority**: only if Mariusz happens to collect enough readings before 1.0 (~20–30, see the list of what
