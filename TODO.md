@@ -146,6 +146,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Black); 3 colours → only sets with exactly those three; etc. The colours are the colour words in the shop name
    (Mariusz: "Duo Yellow" = 1 colour Yellow; "Striped White Yellow" = White + Yellow; "Patterned Red Yellow Black" =
    3). Malcolm's "Plastic White Yellow" at Lv 25 → only Ribbon Plastic Striped White Yellow.
+   Must work for 3- and 4-colour wishes too (Mariusz 2026-11-10): detectCables reads any run of 1–4 colour words
+   after the type ("Plastic Red Yellow Black", "Ribbon Plastic Red Green White Black") as one wish, and the
+   suggestions / hidden task examples offer the sets with exactly those colours (Patterned Red Yellow Black,
+   Patterned Red Green White Black). Unit tests: 1, 2, 3 and 4 colours, wish and suggestion.
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
