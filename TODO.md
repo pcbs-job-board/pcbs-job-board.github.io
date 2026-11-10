@@ -243,8 +243,8 @@ flipassist, soak, startup – all pass.
 2. **Deadline stays in the objectives** – "Complete by End of Day 8/23/2018" is shown as an objective again (it's
    detected right and also shown as the badge); cut the "(2 days)" / "(today)" / "(tomorrow)" part – the app can't
    know the game's current day.
-3. **Hidden objectives box toned down** – a calmer background, like the blue of the "select new part" switch or the
-   selected-job border, instead of the strong orange/brown.
+3. **Hidden objectives box toned down** – blue instead of the strong orange/brown: lighter blue for the border and
+   the title text ("HIDDEN OBJECTIVES X/Y"), darker blue background, good readability (Mariusz 2026-11-10).
 4. **Badges row** – remove the deadline, "Says: …" (suspect) and "N hidden" badges (each shows elsewhere: deadline in
    the objectives, suspect in its hidden objective, count in the hidden box header). Add next to Labour: Budget,
    required Level, required stars as stars (★, max 5). NB: the reader doesn't keep these yet – parser.js only works
@@ -252,9 +252,9 @@ flipassist, soak, startup – all pass.
    probably count them from the pixels of that line) stored on the job, editable in New / Edit job.
 5. **Settings: "Compact mode for part swaps"** – after the "Compact mode for job status" switch (small fix 3), on by
    default. On = as now: up to 3 not-yet-done swaps + "show more". Off = all swaps all the time.
-6. **Job focus mode** – when inside a card (Enter on the keyboard → enterCard in keys.js; also a mouse way in? –
-   ask): every other job (workbenches + open jobs) goes behind a 50% black overlay, the top bar stays fully visible;
-   a note on/near the card "Esc – leave job focus" (Mariusz wrote "press enter to leave" but then "esc" – check);
+6. **Job focus mode** – when inside a card (Enter on the keyboard → enterCard in keys.js; keyboard only, not mouse
+   clicks): every other job (workbenches + open jobs) goes behind a 50% black overlay, the top bar stays fully visible;
+   a note on/near the card "Esc – leave job focus";
    Status and Part swaps open in non-compact mode; all with a smooth animation (respect prefers-reduced-motion).
    Leaving (Esc or Job completed): overlay fades out, Status and Part swaps go back to the compact settings.
 Tests: layout / soak (card heights change), keys tests for focus in/out, a units test for Req level / stars parsing.
