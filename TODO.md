@@ -136,9 +136,11 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    (screenshots 2026-11-10) sells "Ribbon Plastic Duo Blue / Cyan / Green / Light Grey / Lime / Orange / Pink /
    Purple / Red / White / Yellow" ($400 each), the database has "Ribbon Plastic Duo Black <colour>"; also "Ribbon
    Plastic Patterned Lime Black Light Grey" (DB: "… Lime Black Grey"). Fix: rename those in cables.csv (keep the old
-   names as aliases for saved jobs); offer the duo sets of the asked colour(s) too; "Plastic White Yellow" (two
-   colours in one wish) – also offer the set with both colours (Ribbon Plastic Striped White Yellow). Ask Mariusz:
-   which sets does the game accept for "Plastic White Yellow" – only ones with both colours, or either colour?
+   names as aliases for saved jobs); offer the duo sets of the asked colour too. Two colours in one wish
+   ("Plastic White Yellow") = ONE wish: only sets that have both colours count (Mariusz 2026-11-10) – e.g. Ribbon
+   Plastic Striped White Yellow, any duo / striped / patterned set with white and yellow; not plain White / Yellow
+   and not "White / Yellow" as two options. Fix detectCables to keep "plastic white yellow" together (label
+   "Plastic White Yellow").
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
