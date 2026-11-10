@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (3)
+## Small fixes (5)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -131,6 +131,24 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    visible. Plan: board.js statusHtml → for "off" render the tiles' bodies inline (`.sexp st-…`) with a tighter style;
    check keyboard navigation (tiles are buttons now – the expanded lines aren't), layout / soak tests, and a test that
    the switch flips the card and is remembered. Not before Thursday evening (no releases until then).
+4. **Named-GPU objectives: suggest the part asked for** (Mariusz 2026-11-10, Steve Shovel "The Big Tournament":
+   "3DMark score of 14000", "Install dual graphics cards", "Install EVGA GeForce GTX 1080 Ti K|NGP|N GAMING or better").
+   What went wrong, and the fixes:
+   - The objective came in as "…K| NGP|N GAMING better" – the reader lost "or", so it was taken as a plain "Install",
+     and chipFromText turned it into "any GTX 1080 Ti" (suggested the cheaper MSI / EVGA GAMING). Fix: a trailing
+     "better" after a part name = "or better"; and a plain "Install <maker + model>" means that exact card – the
+     any-card-of-the-chip rule only when no maker/model is named ("Install GTX 1080").
+   - "Or better" options: always offer the named part first (tag "asked for"), then the cheaper / closer ones that
+     also count.
+   - "Install dual graphics cards" and the "Two new GPUs → score" option: when another objective names a GPU, pair
+     that GPU (2 × Kingpin here, or add a 2nd Kingpin when one is already in); never suggest a card worse than the
+     named one.
+5. **GPU name lost "Ti" in PC Stats** (same job). The PC has a ZOTAC GeForce GTX 1080 Ti AMP Extreme (2-line name in
+   the game list); the app read ZOTAC GeForce GTX 1080 AMP Extreme, so the app's score was 7,585 vs the game's 8,848.
+   Fixes: when a 2-line name matches two parts (with / without "Ti", "Super", …), read the 2nd line again on its own;
+   and use the captured "Benchmark:" value as a check – pick the near-tie name whose score is closer, else mark the
+   part "read unclearly – check". Note: the Ti AMP Extreme ranks above the Kingpin (rank 5885 vs 5682, $910 vs $875),
+   so once read right the app may call "Kingpin or better" already met – ask Mariusz whether the game accepts it.
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
