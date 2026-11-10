@@ -108,7 +108,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-_0.15.1 released 2026-11-10 (backup-0.15.0 first): suggestPlan retries with other options / 3DMark sets when an objective is left out._
+_0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
 _0.15.0 released 2026-11-10 (backup-0.14.10 made first) – job card layout + job focus, compact switches, one set of
 parts for the whole job (suggestPlan, work order), "or better" rankings, count objectives, PC Bay tags, Benchmark
