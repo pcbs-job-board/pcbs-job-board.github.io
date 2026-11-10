@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (5)
+## Small fixes (6)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -150,6 +150,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    part "read unclearly – check". Note: the Ti AMP Extreme ranks above the Kingpin (rank 5885 vs 5682, $910 vs $875),
    so once read right "Kingpin or better" is already met – confirmed by Mariusz: "or better" = in-game part ranking
    (atLeast in suggest.js already compares rank `rk`). Here the right suggestion is then a 2nd 1080 Ti for the pair.
+6. **One GPU split into two in PC Stats** (Mariusz 2026-11-10, C.Lloyd@TallPentagonStaplers.info "I need something
+   fixed"). "DFL Radeon R9 290" / "GR8TOR" (2-line name) became two GPUs: "DFL Radeon R9 290 GR8" + "GR8TOR" (marked
+   not found), so the card showed GPU 2/2. Likely cause: joinPCStatsLines (parts.js) only joins when the joined text
+   scores ≥ the first line's score − 0.02; "DFL Radeon R9 290" alone already matches "…R9 290 GR8" well, and the 2nd
+   line was probably read slightly off (GRBTOR / GR8T0R), so the joined score came out lower and the line was kept
+   as its own part. Fix: a non-branded line that matches no part on its own is always joined to the name above
+   (unless it's a known crumb); compare the joined text with "the name above + this line" names in the database
+   (R9 290 GR8 vs R9 290 GR8TOR) using editDist on the last word. Test with the raw text from this screenshot.
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
