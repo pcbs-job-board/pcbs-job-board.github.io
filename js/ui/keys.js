@@ -32,7 +32,10 @@ const KEYMAP = [
       ["R", "Add part replacement"],
       ["E", "✎ Edit job – details, tasks and parts · 📦 open a PC Bay build"],
       ["P", "✎ Edit job and capture PC Stats right away"],
-      ["Enter", "Go into the card – job focus: other jobs dimmed, status and swaps in full (Esc leaves) · 📦 open a PC Bay build"],
+      [
+        "Enter",
+        "Go into the card – job focus: other jobs dimmed, status and swaps in full (Esc leaves) · 📦 open a PC Bay build",
+      ],
       ["D", "Job completed (Undo stays available)"],
     ],
   },

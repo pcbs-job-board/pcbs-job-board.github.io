@@ -479,9 +479,7 @@ function denoisePartLines(lines) {
     const MODEL2 = /^(Ti|TI|XT|OC|GT|RX)$/;
     const edgeOk = i =>
       good[i] &&
-      (toks[i] === "II" ||
-        (MODEL2.test(toks[i]) && good[i + 1]) ||
-        !/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
+      (toks[i] === "II" || (MODEL2.test(toks[i]) && good[i + 1]) || !/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
     let a = 0,
       z = toks.length - 1;
     while (a <= z && !edgeOk(a)) a++;

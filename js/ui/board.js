@@ -341,7 +341,9 @@ function jobCard(j) {
   const sus = String(j.suspect || "")
     .split(/,\s*/)
     .filter(x => x && !hid.some(k => k.text.toLowerCase().includes(x.toLowerCase())));
-  const susHtml = sus.length ? `<div class="objsus">Customer suspects: ${esc(sus.join(", "))} <small>(often wrong – verify)</small></div>` : "";
+  const susHtml = sus.length
+    ? `<div class="objsus">Customer suspects: ${esc(sus.join(", "))} <small>(often wrong – verify)</small></div>`
+    : "";
   const mainHtml =
     main.length || dlLine || susHtml
       ? `<div class="objbox"><div class="objhead">Objectives</div><ul class="mainobj">${main.map(k => `<li tabindex="-1" data-line="${k.id}">${esc(k.text)}${del(k)}</li>`).join("")}${dlLine ? `<li class="dlobj" tabindex="-1" data-line="deadline">${esc(dlLine)}</li>` : ""}</ul>${susHtml}</div>`
@@ -454,12 +456,20 @@ function setFocusJob(id) {
   const now = document.querySelector(`.job[data-job="${id || prev}"]`);
   if (!still && now && h0) {
     const h1 = now.getBoundingClientRect().height;
-    if (Math.abs(h1 - h0) > 2) now.animate([{ height: h0 + "px", overflow: "hidden" }, { height: h1 + "px", overflow: "hidden" }], { duration: 260, easing: "ease-in-out" });
+    if (Math.abs(h1 - h0) > 2)
+      now.animate(
+        [
+          { height: h0 + "px", overflow: "hidden" },
+          { height: h1 + "px", overflow: "hidden" },
+        ],
+        { duration: 260, easing: "ease-in-out" }
+      );
   }
 }
 // leaving the focused card (mouse click elsewhere, Tab out) ends job focus
 document.addEventListener("focusin", e => {
-  if (focusJob && !e.target.closest?.(`.job[data-job="${focusJob}"]`) && !e.target.closest?.("dialog, header, #ac, #stip")) setFocusJob(null);
+  if (focusJob && !e.target.closest?.(`.job[data-job="${focusJob}"]`) && !e.target.closest?.("dialog, header, #ac, #stip"))
+    setFocusJob(null);
 });
 const swapsOpen = new Set(); // cards showing every swap (until another job is selected)
 const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;

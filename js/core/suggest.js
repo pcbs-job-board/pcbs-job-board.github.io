@@ -297,7 +297,8 @@ function suggestSwaps(job, opts = {}) {
       }
       // "or better" goes by the in-game part ranking – shown, so the player can see the rule worked
       const ranked = better && RATED.has(cat) && rk(r) > 0,
-        rankOf = p => (ranked ? { want: rk(r), wantName: r.name, cur: curP ? rk(curP) : null, curName: curP?.name || "", now: rk(p) } : null);
+        rankOf = p =>
+          ranked ? { want: rk(r), wantName: r.name, cur: curP ? rk(curP) : null, curName: curP?.name || "", now: rk(p) } : null;
       if (curP && cands.some(sameAs(curP.name)) && !(better && ranked)) {
         missing("obj:" + o, o, `Already met – ${curP.name} is in the PC`, { met: true, cat });
         handled.add(cat);
@@ -489,7 +490,11 @@ function suggestSwaps(job, opts = {}) {
           .filter(p => !sameAs(g.name)(p) && pairBench(g.name, p.name))
           .sort((a, b) => a.price - b.price)[0];
       if (!same && !other) {
-        missing("obj:" + o, o, `${g.name} isn't in the shop (locked or not sold) and no other card pairs with it – pick a pair yourself`);
+        missing(
+          "obj:" + o,
+          o,
+          `${g.name} isn't in the shop (locked or not sold) and no other card pairs with it – pick a pair yourself`
+        );
         continue;
       }
       // the board may need SLI / CrossFire, the PSU more watts – offered together (G3)
@@ -837,13 +842,20 @@ function countSuggestion(job, ctx, o, r, cands, n, better, cur) {
     }
   }
   // room unsure: the fit check leaves the fans of that size out (it would only repeat the places warning)
-  const jFit = roomNote ? { ...job, components: (job.components || []).filter(p => !(p.cat === "Case Fan" && cInfo(p).z === cInfo(r).z)) } : job;
+  const jFit = roomNote
+    ? { ...job, components: (job.components || []).filter(p => !(p.cat === "Case Fan" && cInfo(p).z === cInfo(r).z)) }
+    : job;
   const opts = pickOptions(jFit, ctx, cands, { count: need }).map(op => {
     const olds = Array.from({ length: need }, (_, i) => (i < free ? "" : weaker[i - free]?.name || ""));
     return {
       ...op,
       swaps: olds.map(old => ({ cat, old, new: op.name })),
-      tag: [op.tag, have ? `${have} already in the PC` : "", olds.some(Boolean) ? `${olds.filter(Boolean).length} in place of weaker fans` : "", roomNote]
+      tag: [
+        op.tag,
+        have ? `${have} already in the PC` : "",
+        olds.some(Boolean) ? `${olds.filter(Boolean).length} in place of weaker fans` : "",
+        roomNote,
+      ]
         .filter(Boolean)
         .join(" · "),
     };
@@ -901,7 +913,9 @@ function suggestPlan(job, opts = {}) {
     const take = (sg, o) => {
       const sw = [
         ...(o.swaps || []).map(x => ({ cat: x.cat, old: x.old || "", new: x.new, price: x.price ?? priceOf(x.new) })),
-        ...(o.extras || []).filter(e => e.name).map(e => ({ cat: e.cat, old: e.old || "", new: e.name, price: e.price, extra: true })),
+        ...(o.extras || [])
+          .filter(e => e.name)
+          .map(e => ({ cat: e.cat, old: e.old || "", new: e.name, price: e.price, extra: true })),
       ];
       const cant = (o.extras || []).find(e => !e.name);
       if (cant) left.push({ reason: sg.reason, why: cant.why });
@@ -909,7 +923,14 @@ function suggestPlan(job, opts = {}) {
       (o.tasks || []).forEach(t => tasks.includes(t) || tasks.push(t));
       if (o.removeOld?.length) removeOld.push(...o.removeOld);
       const note = o !== sg.options[0] && sg.options[0].over ? `${sg.options[0].name} would go over the budget` : "";
-      used.push({ reason: sg.reason.replace(/ – now .*$/, ""), sw, tag: o.tag, note, rank: o.rank || null, score: o.score ?? null });
+      used.push({
+        reason: sg.reason.replace(/ – now .*$/, ""),
+        sw,
+        tag: o.tag,
+        note,
+        rank: o.rank || null,
+        score: o.score ?? null,
+      });
       sw.forEach(x => pinned.add(x.cat));
     };
     if (seed) take(seed.sg, seed.o);
@@ -952,7 +973,15 @@ function suggestPlan(job, opts = {}) {
       console.warn("plan seeds", e);
     }
     const spent0 = (job.swaps || []).reduce((t, x) => t + ((x.price ?? priceOf(x.new)) || 0), 0),
-      over = r => job.budget != null && r.total > job.budget - spent0 + refundFor(job, r.plan.map(x => x.old));
+      over = r =>
+        job.budget != null &&
+        r.total >
+          job.budget -
+            spent0 +
+            refundFor(
+              job,
+              r.plan.map(x => x.old)
+            );
     const rank = r => [r.left.length, over(r) ? 1 : 0, r.total];
     const better = (a, b) => {
       const x = rank(a),
@@ -992,7 +1021,10 @@ function suggestPlan(job, opts = {}) {
   const total = parts.reduce((t, x) => t + (x.price || 0), 0);
   const spent = (job.swaps || []).reduce((t, x) => t + ((x.price ?? priceOf(x.new)) || 0), 0),
     budgetLeft = job.budget != null ? job.budget - spent : null,
-    back = refundFor(job, parts.map(x => x.old));
+    back = refundFor(
+      job,
+      parts.map(x => x.old)
+    );
   // 3DMark: the score of the planned PC – an earlier step (a 2nd GPU…) may already reach it
   let score = null;
   const target = benchTarget(job);
@@ -1003,7 +1035,10 @@ function suggestPlan(job, opts = {}) {
       const xmp = sc.off < target && sc.on >= target;
       if (xmp && !tasks.includes(XMP_TASK)) tasks.push(XMP_TASK);
       if (sc.on >= target && !used.some(u => u.score != null))
-        met.push({ reason: `3DMark score of ${target.toLocaleString()}`, note: `reached with this set: ${score.toLocaleString()}${xmp ? " (XMP on)" : ""}` });
+        met.push({
+          reason: `3DMark score of ${target.toLocaleString()}`,
+          note: `reached with this set: ${score.toLocaleString()}${xmp ? " (XMP on)" : ""}`,
+        });
     }
   }
   return {

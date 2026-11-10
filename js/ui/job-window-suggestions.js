@@ -114,7 +114,11 @@ function drawSuggestions(box, input, key) {
   box.innerHTML =
     `<div class="sugghead"><label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label><button class="ghost" id="suggRefresh" title="Work out all suggestions again">↻ Refresh</button></div>` +
     planHtml +
-    (fold ? `<details class="sothers"><summary>Options for each objective (${list.length})</summary>` : plan ? `<div class="sothhead">Options for each objective</div>` : "") +
+    (fold
+      ? `<details class="sothers"><summary>Options for each objective (${list.length})</summary>`
+      : plan
+        ? `<div class="sothhead">Options for each objective</div>`
+        : "") +
     list
       .map(
         (sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
