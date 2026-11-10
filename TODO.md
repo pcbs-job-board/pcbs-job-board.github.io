@@ -141,11 +141,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Plastic Striped White Yellow, any duo / striped / patterned set with white and yellow; not plain White / Yellow
    and not "White / Yellow" as two options. Fix detectCables to keep "plastic white yellow" together (label
    "Plastic White Yellow").
-   Also 3-colour (and 4-colour) sets exist, e.g. Ribbon Plastic Patterned Red Yellow Black, … Blue Yellow Green,
-   … Red Green White Black: a wish with 3 colours ("Plastic Red Yellow Black") keeps all 3 together and only sets
-   with all of them count. Open question for Mariusz: does a set with an extra colour count for a 2-colour wish
-   ("Red Yellow" → Patterned Red Yellow Black)? Until known: offer the exact-colour sets first, extra-colour ones
-   after with a "has an extra colour – may not count" note.
+   Rule (Mariusz 2026-11-10): the set's colours must be exactly the wished colours – 1 colour asked → only sets
+   in that one colour; 2 colours → only 2-colour sets with those two (no 3-colour sets like Patterned Red Yellow
+   Black); 3 colours → only sets with exactly those three; etc. (Check how the game counts the duo sets: "Duo
+   Yellow" may be yellow + black – then it's a 2-colour set "Black Yellow".)
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
