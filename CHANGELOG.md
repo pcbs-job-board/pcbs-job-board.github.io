@@ -17,6 +17,7 @@ Within each version, changes are listed from most to least important.
 - PC Stats: the game's Benchmark number corrects a GPU / CPU read without "Ti".
 - Customer suspects: more phrases caught ("Is it a problem with the RAM?", "with the hoover").
 - 3 OCR bugs fixed.
+- 4 new story jobs added.
 
 ## 0.14.10
 - New objective: "Support for double GPU" – suggestions pick a motherboard with SLI / CrossFire.
