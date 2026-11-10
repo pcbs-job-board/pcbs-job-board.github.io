@@ -106,17 +106,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (1)
+## Small fixes (0)
 
-1. **One-set plan misses a set that covers everything** (Mariusz 2026-11-10, BSingh@BSinghDevices.mil "Request for
-   upgrade": "3DMark score of 7708", "Install dual graphics cards", budget $1,100, PC has 1 × MSI Radeon RX 570 GAMING
-   X 8G). The one-tick set added a 2nd RX 570 ($325, score 6,727) and said the 3DMark score can't be reached – but
-   the 3DMark suggestion's first option, 2 × MSI Radeon RX 580 GAMING 4G ($770, score 7,834), covers both objectives
-   and is in budget. Cause: suggestPlan takes the first in-budget option of each step in order – the dual-GPU step
-   (weight 20) picks "same GPU again", then the 3DMark step (45) has the GPUs pinned and can't reach the score; it
-   never goes back. Fix: when a later step can't be covered, try again with the earlier steps' other options, and
-   with each 3DMark / performance set as the starting point (a set with two GPUs also meets "dual graphics cards");
-   keep the plan that covers the most objectives, then the cheapest. Test with this job (unit test).
+_0.15.1 in dev (not released): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
 _0.15.0 released 2026-11-10 (backup-0.14.10 made first) – job card layout + job focus, compact switches, one set of
 parts for the whole job (suggestPlan, work order), "or better" rankings, count objectives, PC Bay tags, Benchmark
