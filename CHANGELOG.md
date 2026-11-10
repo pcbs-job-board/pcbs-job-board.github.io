@@ -3,6 +3,9 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.15.1
+- One-set suggestion: when an objective can't be covered, other options are tried (e.g. 2 new GPUs that reach the 3DMark score also cover "dual graphics cards").
+
 ## 0.15.0
 - Suggestions: one set of parts for the whole job – objectives worked out in order, one tick adds it all.
 - "X or better": the part asked for is suggested first; part rankings shown (asked for, current, new).

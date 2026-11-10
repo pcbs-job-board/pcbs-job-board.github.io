@@ -888,36 +888,17 @@ function suggestPlan(job, opts = {}) {
     ...objs.map((o, i) => ({ w: objWeight(o), i, only: [o], sections: [] })),
     ...PLAN_SECTIONS.map(([k, w], i) => ({ w, i: 100 + i, only: [], sections: [k] })),
   ].sort((a, b) => a.w - b.w || a.i - b.i);
-  let plan = [];
-  const tasks = [],
-    removeOld = [],
-    used = [], // { reason, sw: [...], tag, rank } – what each step added
-    met = [], // objectives already met – nothing to add
-    left = [], // objectives the set can't cover, and why
-    pinned = new Set();
-  for (const st of steps) {
-    let res = [];
-    try {
-      res = suggestSwaps(withSwaps(job, plan), {
-        ...opts,
-        picked: [],
-        pickedLights: [],
-        only: st.only,
-        sections: st.sections,
-        pinned: [...pinned],
-      });
-    } catch (e) {
-      console.warn("plan step", e);
-      continue;
-    }
-    for (const sg of res) {
-      if (/^(brandfix|fix:oclater)/.test(sg.key)) continue; // guesses / optional: per objective only
-      if (!sg.options.length) {
-        if (sg.met) met.push({ reason: sg.reason, note: sg.hint });
-        else if (/^(obj:|bench|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
-        continue;
-      }
-      const o = sg.options.find(x => !x.over) || sg.options[0];
+  // one run through the steps; seed = { sg, o }: an option taken first (another option of a step, or a 3DMark set),
+  // the steps then build on it
+  const run = seed => {
+    let plan = [];
+    const tasks = [],
+      removeOld = [],
+      used = [], // { reason, sw: [...], tag, rank } – what each step added
+      met = [], // objectives already met – nothing to add
+      left = [], // objectives the set can't cover, and why
+      pinned = new Set();
+    const take = (sg, o) => {
       const sw = [
         ...(o.swaps || []).map(x => ({ cat: x.cat, old: x.old || "", new: x.new, price: x.price ?? priceOf(x.new) })),
         ...(o.extras || []).filter(e => e.name).map(e => ({ cat: e.cat, old: e.old || "", new: e.name, price: e.price, extra: true })),
@@ -927,11 +908,70 @@ function suggestPlan(job, opts = {}) {
       plan = replaceSwaps(plan, sw).swaps;
       (o.tasks || []).forEach(t => tasks.includes(t) || tasks.push(t));
       if (o.removeOld?.length) removeOld.push(...o.removeOld);
-      const note = o !== sg.options[0] ? `${sg.options[0].name} would go over the budget` : "";
-      used.push({ reason: sg.reason, sw, tag: o.tag, note, rank: o.rank || null, score: o.score ?? null });
+      const note = o !== sg.options[0] && sg.options[0].over ? `${sg.options[0].name} would go over the budget` : "";
+      used.push({ reason: sg.reason.replace(/ – now .*$/, ""), sw, tag: o.tag, note, rank: o.rank || null, score: o.score ?? null });
       sw.forEach(x => pinned.add(x.cat));
+    };
+    if (seed) take(seed.sg, seed.o);
+    for (const st of steps) {
+      let res = [];
+      try {
+        res = suggestSwaps(withSwaps(job, plan), {
+          ...opts,
+          picked: [],
+          pickedLights: [],
+          only: st.only,
+          sections: st.sections,
+          pinned: [...pinned],
+        });
+      } catch (e) {
+        console.warn("plan step", e);
+        continue;
+      }
+      for (const sg of res) {
+        if (/^(brandfix|fix:oclater)/.test(sg.key)) continue; // guesses / optional: per objective only
+        if (!sg.options.length) {
+          if (sg.met) met.push({ reason: sg.reason, note: sg.hint });
+          else if (/^(obj:|bench|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
+          continue;
+        }
+        take(sg, sg.options.find(x => !x.over) || sg.options[0]);
+      }
     }
+    const total = plan.reduce((t, x) => t + (x.price || 0), 0);
+    return { plan, tasks, removeOld, used, met, left, total };
+  };
+  // the straight run first; when it leaves an objective out, runs that start from the other options (a 3DMark set
+  // with two GPUs also meets "dual graphics cards") – the one covering the most, inside the budget, then the cheapest
+  let best = run(null);
+  if (best.left.length) {
+    let all = [];
+    try {
+      all = suggestSwaps(job, { ...opts, picked: [], pickedLights: [] });
+    } catch (e) {
+      console.warn("plan seeds", e);
+    }
+    const spent0 = (job.swaps || []).reduce((t, x) => t + ((x.price ?? priceOf(x.new)) || 0), 0),
+      over = r => job.budget != null && r.total > job.budget - spent0 + refundFor(job, r.plan.map(x => x.old));
+    const rank = r => [r.left.length, over(r) ? 1 : 0, r.total];
+    const better = (a, b) => {
+      const x = rank(a),
+        y = rank(b);
+      for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] < y[i];
+      return false;
+    };
+    for (const sg of all.filter(x => /^(obj:|bench)/.test(x.key) && x.options.length))
+      for (const o of sg.options.slice(0, 4)) {
+        const r = run({ sg, o });
+        if (better(r, best)) best = r;
+        if (!best.left.length && !over(best)) break;
+      }
   }
+  const { plan, tasks, removeOld, used, met, left } = best;
+  // objectives a part of the set covers without a step of their own (two GPUs from a 3DMark set → "dual graphics")
+  for (const o of objs)
+    if (![...used, ...met, ...left].some(u => u.reason === o) && !/3dmark|benchmark|score/i.test(o) && used.length)
+      met.push({ reason: o, note: "covered by this set" });
   // nothing to add – or a single objective with a single suggestion: that suggestion is already "one set"
   if (!used.length || (used.length === 1 && objs.length <= 1 && !left.length)) return null;
   // what each part of the final set is for (a later step may have replaced an earlier step's part)
