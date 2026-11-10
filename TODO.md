@@ -278,8 +278,12 @@ Per category (hide = hidden unless "Show hidden details"):
 4. **CPU Cooling** – hide: Game Version, Random Jobs, Details. Filters: Type, Socket, Lights. Long supported-socket
    lists split into 2 lines.
 5. **RAM** – hide: Game Version, Details. Filters: Size, Speed in bands (2000–2499, 2500–2999, …), Lights.
-   Mariusz noticed: lights all say "RGB" (= any colour), but some sticks light in one fixed colour – check the data
-   source (xlsx lt / lighting type) and show the real type (RGB / single colour + which) where known.
+   Mariusz noticed: lights all say "RGB" (= any colour), but some sticks light in one fixed colour (example 2026-11-10:
+   Team Group T-Force Night Hawk (Blue / White / Red LED) = one colour; T-Force DARK = no lights). Found: the data is
+   right – the details text already says "Blue lighting" / "RGB"; the bug is partsdb.js `["Lights", p => (p.c.lt ?
+   "RGB" : "")]`, which shows "RGB" for every lit part. Fix: take the type from the details ("RGB" or "<colour>"),
+   and the Lights filter offers RGB / each single colour / none. Single-colour parts in the DB: fans 7, cases 15,
+   coolers 7, GPUs 52, boards 1, RAM 40.
 6. **GPU** – hide: Ranking, Game Version, Random Jobs, Details. Rename Memory → **VRAM**. Core clock and memory clock:
    stock, mid overclock, max overclock (like the CPU). Filters: Chipset, VRAM, SLI / CrossFire, Lights.
 7. **PSU** – hide: Game Version, Details. Filters: Power in bands (250–499, 500–749, …), Type, Format.
