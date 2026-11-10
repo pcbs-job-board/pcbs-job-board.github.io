@@ -106,48 +106,14 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (6)
+## Small fixes (0)
 
-1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
-   mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
-   exactly 5 × $14; `mona_5_fans_*.png`). First objective seen with a count; may show up more at higher levels. The
-   suggestion offered ONE fan ($14, "(empty slot) → …"). Fix: read "Install N <part> or better" (N = 2–9, any part
-   category) – offer N of them (count, total N × price, budget check on the total), for case fans also whether the
-   case has N fan places (fan places / count from the case's compat; else "the case fits only K – also a case with
-   more"), and parts already in the PC that are that part (or better) count towards N. Unit test with this job.
-   (Mona isn't in the story list – the app flagged "Looks like a story job"; she can report it.)
-2. **PC Bay build: more tags** (Mariusz 2026-11-09), shown like "Overclock Unlocked" – in "This PC now", the
-   inventory lists and the plan / single changes: "SLI" / "CrossFire" on motherboards and GPUs that support them
-   (compat sli / cf, GPU m), "Watercooled" on watercooled GPUs (the 💧 / WATER_GPU_TAG ones), and the socket on CPUs
-   and motherboards (compat s) so it's clear which CPUs fit the board – short but never merged: "AM4", "TR4",
-   "LGA 1151 Skylake", "LGA 1151 Coffee Lake" (Mariusz: Skylake and Coffee Lake are different – don't shorten both to
-   "LGA 1151"; take the exact text from the DB, same rule as sockOk). (Form factor, max GPU length, RAM runs slower,
-   PSU wattage were also suggested – not picked.)
-3. **Named-GPU objective read without "or"** (Mariusz 2026-11-10, Steve Shovel "The Big Tournament"): the reader
-   turned "…K|NGP|N GAMING or better" into "…K| NGP|N GAMING better", so it was taken as a plain "Install". Fix: a
-   trailing "better" after a part name = "or better". (Done in dev-0.15.0: a named maker + model = that exact card,
-   the named part offered first, the pair / 3DMark set built on it via the one-set plan.)
-4. **GPU name lost "Ti" in PC Stats** (same job). The PC has a ZOTAC GeForce GTX 1080 Ti AMP Extreme (2-line name in
-   the game list); the app read ZOTAC GeForce GTX 1080 AMP Extreme, so the app's score was 7,585 vs the game's 8,848.
-   Fixes: when a 2-line name matches two parts (with / without "Ti", "Super", …), read the 2nd line again on its own;
-   and use the captured "Benchmark:" value as a check – pick the near-tie name whose score is closer, else mark the
-   part "read unclearly – check". Note: the Ti AMP Extreme ranks above the Kingpin (rank 5885 vs 5682, $910 vs $875),
-   so once read right "Kingpin or better" is already met – confirmed by Mariusz: "or better" = in-game part ranking
-   (atLeast in suggest.js already compares rank `rk`). Here the right suggestion is then a 2nd 1080 Ti for the pair.
-5. **One GPU split into two in PC Stats** (Mariusz 2026-11-10, C.Lloyd@TallPentagonStaplers.info "I need something
-   fixed"). "DFL Radeon R9 290" / "GR8TOR" (2-line name) became two GPUs: "DFL Radeon R9 290 GR8" + "GR8TOR" (marked
-   not found), so the card showed GPU 2/2. Likely cause: joinPCStatsLines (parts.js) only joins when the joined text
-   scores ≥ the first line's score − 0.02; "DFL Radeon R9 290" alone already matches "…R9 290 GR8" well, and the 2nd
-   line was probably read slightly off (GRBTOR / GR8T0R), so the joined score came out lower and the line was kept
-   as its own part. Fix: a non-branded line that matches no part on its own is always joined to the name above
-   (unless it's a known crumb); compare the joined text with "the name above + this line" names in the database
-   (R9 290 GR8 vs R9 290 GR8TOR) using editDist on the last word. Test with the raw text from this screenshot.
-6. **Customer suspects missed** (Mariusz 2026-11-10, Ryan.Fisher@SmellOffices.edu "HELP! REPAIRS NEEDED!": "Is it a
-   problem with the RAM?" – the field stayed empty). SUSPECT_WORDS (parser.js) has "is it the" but not "is it a
-   problem with", "problem with the", "something wrong with", "issue with", "is it my". Same email: "I thought the
-   motherboard was dirty so I cleaned it. With the hoover." – add "i thought" to the guess words, and "hoover /
-   vacuum(ed)" to BLAME_WORDS (handled badly), so Motherboard is listed too (the hoover sentence is split from the
-   motherboard one – look one sentence back when a blame sentence names no part). Add both to the units test.
+All 6 done in dev-0.15.0 (2026-11-10, not released): count objectives ("Install 5 … or better" – countSuggestion;
+fan places = the case's radiator places like the compat check, too few → offered with a "check the case" note), PC Bay
+tags (socket exactly as the DB has it, SLI / CrossFire, Watercooled – ocTag in flipui.js), "… better" → "… or better"
+(parseEmail), "Ti" kept at the start of a 2nd line + benchFix (PC Stats Benchmark number), extendName (a 2nd line read
+with slips joins the name above: GRBTOR → GR8TOR), customer suspects ("is it a problem with", "i thought", hoover /
+vacuum + one sentence back). Also: isWaterGPU no longer flags EVGA "K|NGP|N" as watercooled.
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
