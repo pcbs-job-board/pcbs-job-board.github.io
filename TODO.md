@@ -124,6 +124,11 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    small sets can't reach the score and the budget allows, try whole-platform sets (socket change: board + CPU +
    cooler if it doesn't fit + RAM type if it changes) with 1 or 2 GPUs and a PSU, cheapest that reaches it; and
    in the one-set plan, build it on the RAM / storage the other objectives add.
+   Rule (Mariusz 2026-11-10): the game never gives a 3DMark objective that can't be reached at the job's level, so
+   "No unlocked parts reach this score" should never be the answer – keep widening the search (more parts changed,
+   whole platform, 2 GPUs, overclock) until a set reaches the score and meets the other objectives; inside the
+   budget first, but for story jobs (budget only counts when an objective mentions it) go over it if needed and say
+   so. If the search still fails, that's an app bug – show "couldn't find a set – please report this job" instead.
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
