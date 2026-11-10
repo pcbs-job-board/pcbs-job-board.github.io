@@ -108,12 +108,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ## Small fixes (0)
 
-All 6 done in dev-0.15.0 (2026-11-10, not released): count objectives ("Install 5 … or better" – countSuggestion;
-fan places = the case's radiator places like the compat check, too few → offered with a "check the case" note), PC Bay
-tags (socket exactly as the DB has it, SLI / CrossFire, Watercooled – ocTag in flipui.js), "… better" → "… or better"
-(parseEmail), "Ti" kept at the start of a 2nd line + benchFix (PC Stats Benchmark number), extendName (a 2nd line read
-with slips joins the name above: GRBTOR → GR8TOR), customer suspects ("is it a problem with", "i thought", hoover /
-vacuum + one sentence back). Also: isWaterGPU no longer flags EVGA "K|NGP|N" as watercooled.
+_0.15.0 released 2026-11-10 (backup-0.14.10 made first) – job card layout + job focus, compact switches, one set of
+parts for the whole job (suggestPlan, work order), "or better" rankings, count objectives, PC Bay tags, Benchmark
+check for "Ti", 2-line name joining (extendName), more suspect phrases, 4 story jobs (Mona × 3, The Big Tournament)._
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
@@ -186,14 +183,6 @@ flipassist, soak, startup – all pass.
 ---
 
 ## Bigger updates (waiting for the go-ahead)
-
-### In dev-0.15.0 (not released – no releases before Thursday evening): Job card layout + job focus, Suggestions in work order
-Done 2026-11-10 (bigger updates 1 + 2, small fix 3 "compact job status" with it): objectives box under T1–T3 with the
-deadline, blue hidden box, Budget / Lv / ★ badges (stars counted on the screenshot – starsFrom in ocr.js), Settings
-"Job cards" switches (pcbs.compactStatus / pcbs.compactSwaps), job focus (Enter / Esc, keyboard only), suggestPlan in
-suggest.js (one set, work order, "for:" per part, ✓ met / ✗ not covered lines), "or better": named part first + part
-rankings + "Already met" line, dual GPU: also the cheapest card that pairs. A guessed-only suspect shows as a line
-under the objectives ("Customer suspects: …") since its badge is gone. Remove this note once released.
 
 ### Parts database window – hidden columns, filters, overclock columns (Mariusz 2026-11-09, planning only)
 General:
