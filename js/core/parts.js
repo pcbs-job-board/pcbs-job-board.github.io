@@ -44,7 +44,7 @@ function setCareer(level, pct) {
 function isWaterGPU(p) {
   if (!p || p.cat !== "GPU") return false;
   const ix = p.spec != null ? p : INDEX.find(x => x.name === p.name);
-  return /\bwater\b/i.test((ix && ix.spec) || "") || /\|/.test(p.name || "");
+  return /\bwater\b/i.test((ix && ix.spec) || "") || /\s\|\s/.test(p.name || ""); // " | EKWB …" – not EVGA's "K|NGP|N"
 }
 const WATER_GPU_TAG = "💧 Watercooled – Custom Water Cooling Shop";
 const unlocked = p =>
@@ -333,6 +333,25 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
 // one screenshot → list of {name, cat}: match each line, fill unknown categories from the list order,
 // drop extras beyond the limits (a duplicate Case/CPU/PSU… is an OCR repeat, not a second part)
 // join wrapped names ("ASUS ROG Strix RX" + "VEGA64 OC Edition") only when the database agrees
+let ALL_NAMES = null; // [name, normP(name)] of every part in the database
+function extendName(cur, line) {
+  const base = normP(cur),
+    w = normP(line).replace(/ /g, "");
+  if (!base || w.length < 3) return null;
+  if (!ALL_NAMES) ALL_NAMES = Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => [r[0], normP(r[0])]));
+  let best = null,
+    bd = Infinity;
+  for (const [name, n] of ALL_NAMES) {
+    if (!n.startsWith(base + " ")) continue;
+    const rest = n.slice(base.length + 1).replace(/ /g, ""),
+      d = Math.min(editDist(rest, w), editDist(shape(rest), shape(w))); // B / 8, O / 0 read for each other
+    if (d < bd) {
+      bd = d;
+      best = name;
+    }
+  }
+  return best && bd <= Math.max(1, Math.floor(w.length / 4)) ? best : null;
+}
 function joinPCStatsLines(lines) {
   const items = [];
   let cur = null;
@@ -361,6 +380,13 @@ function joinPCStatsLines(lines) {
           .some(x => x.startsWith(l.text))
       )
         cur += " " + l.text;
+      continue;
+    }
+    // a database name that is the name above + this line, the line read with a slip or two ("DFL Radeon R9 290" /
+    // "GRBTOR" = …R9 290 GR8TOR – the name above alone already looks like the R9 290 GR8)
+    const ext = extendName(cur, l.text);
+    if (ext) {
+      cur = ext;
       continue;
     }
     const joined = cur + " " + l.text,
@@ -448,7 +474,14 @@ function denoisePartLines(lines) {
         .map(t => (/^[|Il]{2}$/.test(t) && partVocab().has("ii") ? "II" : t)),
       good = toks.map(t => /^\d{1,4}\u00a0(gb|tb|mb)$/i.test(t) || wordOk(t));
     // at the ends, 1–2 letter bits ("Se", "a") are picture crumbs even when they happen to be real words
-    const edgeOk = i => good[i] && (toks[i] === "II" || !/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
+    // …except model words that tell two parts apart ("Ti AMP Extreme" – the 2nd line of "ZOTAC GeForce GTX 1080 Ti AMP
+    // Extreme"; without it the 1080 is a different card) when a real word follows
+    const MODEL2 = /^(Ti|TI|XT|OC|GT|RX)$/;
+    const edgeOk = i =>
+      good[i] &&
+      (toks[i] === "II" ||
+        (MODEL2.test(toks[i]) && good[i + 1]) ||
+        !/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
     let a = 0,
       z = toks.length - 1;
     while (a <= z && !edgeOk(a)) a++;

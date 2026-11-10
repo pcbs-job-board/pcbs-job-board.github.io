@@ -135,11 +135,25 @@ const catRank = c => {
 };
 const byCat = (a, b) => catRank(a.cat) - catRank(b.cat);
 const rowKey = r => (r.changed ? "c:" + r.changed : "p:" + r.partId);
-// "Overclock Unlocked": a CPU or motherboard that can overclock (unlocked CPU / overclocking chipset)
-const ocTag = (cat, name) =>
-  (cat === "CPU" || cat === "Motherboard") && (compatOf(name) || {}).oc === "1"
-    ? ` <span class="tag oc" title="This ${cat === "CPU" ? "CPU" : "motherboard"} can overclock">Overclock Unlocked</span>`
-    : "";
+// tags after a part's name: "Overclock Unlocked" (unlocked CPU / overclocking chipset), the socket of CPUs and boards
+// exactly as the database has it ("LGA 1151 (Skylake)" ≠ "LGA 1151 (Coffee Lake)"), SLI / CrossFire on boards and GPUs,
+// Watercooled on watercooled GPUs
+const ocTag = (cat, name) => {
+  const c = compatOf(name) || {},
+    t = [];
+  if ((cat === "CPU" || cat === "Motherboard") && c.s) t.push(`<span class="tag sock" title="Socket">${esc(c.s)}</span>`);
+  if ((cat === "CPU" || cat === "Motherboard") && c.oc === "1")
+    t.push(`<span class="tag oc" title="This ${cat === "CPU" ? "CPU" : "motherboard"} can overclock">Overclock Unlocked</span>`);
+  if (cat === "Motherboard") {
+    if (c.sli === "1") t.push(`<span class="tag multi" title="Takes two NVIDIA cards">SLI</span>`);
+    if (c.cf === "1") t.push(`<span class="tag multi" title="Takes two AMD cards">CrossFire</span>`);
+  }
+  if (cat === "GPU") {
+    if (c.m) t.push(`<span class="tag multi" title="Pairs with a second card of the same model">${esc(c.m)}</span>`);
+    if (isWaterGPU({ cat, name })) t.push(`<span class="tag wc" title="Watercooled GPU">Watercooled</span>`);
+  }
+  return t.length ? " " + t.join(" ") : "";
+};
 function pcNowHtml(f, st, readOnly = false) {
   const rows = [...st.build].sort(byCat);
   return `<div class="fh">${readOnly ? "The PC's parts" : "This PC now <small>(✕ takes a part out – a working one goes back to the inventory)</small>"}</div>
@@ -271,7 +285,7 @@ function flipStep3(f, st) {
     plus = v => `${v >= 0 ? "+" : ""}${money(v)}`;
   // the end result against the PC now, one line per slot (the planner's own steps can replace each other)
   const planBox = plan.changes.length
-    ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.changes.length} change${plan.changes.length > 1 ? "s" : ""}:<ol>${plan.changes.map(x => `<li>${esc(x.text)}</li>`).join("")}</ol>
+    ? `<div class="fplan"><div><b>Best build from your inventory</b> – ${plan.changes.length} change${plan.changes.length > 1 ? "s" : ""}:<ol>${plan.changes.map(x => `<li>${esc(x.text)}${x.name ? ocTag(x.cat, x.name) : ""}</li>`).join("")}</ol>
       <small>3DMark ${sc(plan.score)} · sale ~${money(plan.value)}${plan.cost ? ` · new parts ${money(plan.cost)}` : ""} · profit ${plus(plan.gain)}${plan.check.ok ? " · complete PC ✓" : ` · still: ${esc([...plan.check.missing.map(m => "no " + m), ...plan.check.issues, plan.check.power].filter(Boolean).join("; "))}`}</small></div><button class="primary" data-fx="plan">Use all</button></div>`
     : `<div class="hint">${chk.ok ? "Nothing in your inventory makes this PC worth more." : "Nothing in your inventory fills the gaps – capture or type the missing parts into the inventory below."}</div>`;
   return `<div class="fstep"><p class="hint">Put parts in and take them out as you like. The assistant looks for the most profitable PC that works, from your inventory – estimated with XMP on and overclocking where the PC allows it. 3DMark and sale figures are rough estimates – the game's can differ slightly.</p>

@@ -263,9 +263,9 @@ const SUSPECT_PARTS = [
 // broken: said outright, or the customer handled it badly – "RAM had to go in one way around", "there were clips for
 // the RAM, and I got a bit violent", "I waggled the RAM a bit too hard" – or asks for it to be fixed ("Please fix my PSU!")
 const BLAME_WORDS =
-  /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust|violent|violently|waggled|wiggled|wobbled|yanked|forced|too hard|bent|one way (?:a)?round|the right way (?:a)?round|the wrong way|wrong way (?:a)?round|backwards|upside down|(?:fix|repair) (?:my|the|this|our|his|her))\b/i;
+  /\b(fragile|flimsy|broke|broken|breaks|dead|died|dying|fried|cheap|rubbish|snapped|cracked|faulty|busted|blown|blew|kaput|stopped working|not working|isn'?t working|doesn'?t work|gave up|packed in|crap|junk|useless|failed|failing|bust|violent|violently|waggled|wiggled|wobbled|yanked|forced|too hard|bent|one way (?:a)?round|the right way (?:a)?round|the wrong way|wrong way (?:a)?round|backwards|upside down|(?:fix|repair) (?:my|the|this|our|his|her)|hoover(?:ed)?|vacuum(?:ed)?|vacuum cleaner)\b/i;
 const SUSPECT_WORDS =
-  /\b(has to be|have to be|had to be|got to be|gotta be|must be|must have|sure it'?s|sure the|certain|bet it'?s|bet the|i think|i reckon|reckon|probably|maybe|might be|could it be|could be|is it the|guess|suspect|blame|it'?s the|it is the|sure it is|definitely|obviously|surely)\b|\bi(?:'?m| am) (?:\d+ ?% |pretty |quite |fairly |really |very |absolutely |100% )?sure\b|,\s*right\s*\?|\bright\?/i;
+  /\b(has to be|have to be|had to be|got to be|gotta be|must be|must have|sure it'?s|sure the|certain|bet it'?s|bet the|i think|i reckon|reckon|probably|maybe|might be|could it be|could be|is it the|guess|suspect|blame|it'?s the|it is the|sure it is|definitely|obviously|surely|i thought|is it (?:a|an) (?:problem|issue|fault) with|(?:a |any )?(?:problem|issue|fault) with (?:the|my)|something wrong with|is it my)\b|\bi(?:'?m| am) (?:\d+ ?% |pretty |quite |fairly |really |very |absolutely |100% )?sure\b|,\s*right\s*\?|\bright\?/i;
 const NOT_SUSPECT = /\b(upgrade|install|add|want|need|buy|new|faster|better|two|dual|more)\b/i;
 function partsIn(s) {
   const found = [];
@@ -281,12 +281,25 @@ function partsIn(s) {
 }
 function detectSuspects(body) {
   const out = [];
+  let prev = "";
   for (const s of String(body || "")
     .replace(/[’`]/g, "'")
     .split(/(?<=[.?!;])\s+/)) {
+    const before = prev;
+    prev = s;
     const broken = BLAME_WORDS.test(s),
       guess = SUSPECT_WORDS.test(s);
     if (!broken && !guess) continue;
+    // "I thought the motherboard was dirty so I cleaned it. With the hoover." – the blame names no part: the part is
+    // in the sentence before
+    if (broken && !partsIn(s).length && partsIn(before).length) {
+      for (const part of partsIn(before)) {
+        const o = out.find(x => x.part === part);
+        if (o) o.broken = true;
+        else out.push({ part, broken: true, quote: (before + " " + s).trim().slice(0, 110) });
+      }
+      continue;
+    }
     if (!broken && NOT_SUSPECT.test(s) && !/\b(has|got|must) to be|must be|sure|reckon|blame|right\s*\?/i.test(s)) continue; // "maybe add more RAM" is a wish, not a suspect
     // "I was putting in a new CPU cooler and I think I broke some RAM": only the part in the
     // same clause as the blame counts. Without such a clause, the whole sentence is used.
@@ -911,7 +924,8 @@ function parseEmail(text, rules, smart) {
       if (k < 0) objs.push(o);
       else if (lineQuality({ t: o }) > lineQuality({ t: objs[k] })) objs[k] = o;
     }
-    job.objectives = objs;
+    // the reader sometimes drops the "or" of "… or better" ("…K| NGP|N GAMING better")
+    job.objectives = objs.map(o => o.replace(/^(\W*install\s+.+?)(?<!\bor)\s+better\s*$/i, "$1 or better"));
   }
   const dl =
     raw.match(/Complete by[^\n]*?(\d{1,2}\/\d{1,2}\/\d{4})/i) || raw.match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*\(?(Tomorrow|Today)/i);

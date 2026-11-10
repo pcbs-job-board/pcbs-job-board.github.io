@@ -243,6 +243,13 @@ function suggestSwaps(job, opts = {}) {
     }
     // 1 / 2 / 4  Install <part> [or better]
     let m = o.match(/^\W*install\s+(.+?)(\s+or better)?\s*$/i);
+    // "Install 5 ARCTIC BioniX F140 (Green) or better": a number of parts (not a size – "2 TB")
+    let nWant = 1;
+    const cm = m && m[1].match(/^([2-9])\s+(?!(?:tb|gb|mb)\b)(\S.+)$/i);
+    if (cm && !/water cooling|dual|two|\brgb\b|gpus?\b|graphics/i.test(cm[2])) {
+      nWant = +cm[1];
+      m = [m[0], cm[2], m[2]];
+    }
     if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
       // a named model ("EVGA GeForce GTX 1080 Ti K|NGP|N GAMING") is that card; a bare chip ("GTX 1080") any card of it
       const chip = chipFromText(m[1]),
@@ -283,6 +290,11 @@ function suggestSwaps(job, opts = {}) {
         const chip = chipFromText(m[1]);
         cands = shopParts(cat).filter(p => cInfo(p).c === chip);
       } else cands = shopParts(cat).filter(sameAs(r.name));
+      if (nWant > 1) {
+        out.push(countSuggestion(job, ctx, o, r, cands, nWant, better, cur));
+        handled.add(cat);
+        continue;
+      }
       // "or better" goes by the in-game part ranking – shown, so the player can see the rule worked
       const ranked = better && RATED.has(cat) && rk(r) > 0,
         rankOf = p => (ranked ? { want: rk(r), wantName: r.name, cur: curP ? rk(curP) : null, curName: curP?.name || "", now: rk(p) } : null);
@@ -796,6 +808,54 @@ function suggestSwaps(job, opts = {}) {
         if (back) o.over = (o.total ?? (o.price || 0) * (o.count || 1)) > ctx.left + back;
       }
   return out;
+}
+// "Install N <part> [or better]": N of them – parts already in the PC that count are kept; case fans go into free fan
+// places of their size first, then in place of the weaker fans of that size
+function countSuggestion(job, ctx, o, r, cands, n, better, cur) {
+  const cat = r.cat,
+    counts = p => (better ? atLeast(r, cat)(p) : sameAs(r.name)(p)),
+    mine = cur(cat),
+    have = mine.filter(counts).length,
+    need = n - have;
+  if (need <= 0) return { key: "obj:" + o, reason: o, options: [], hint: `Already met – ${have} in the PC`, met: true, cat };
+  let free = need,
+    weaker = [],
+    roomNote = "";
+  const fan = cat === "Case Fan" && cInfo(r).z;
+  if (fan) {
+    const cs = cur("Case").pop(),
+      z = cInfo(r).z,
+      places = cs ? +(cInfo(cs)["r" + z] || 0) : 0; // the same fan places the compatibility check uses
+    if (cs && places) {
+      free = Math.max(0, places - mine.filter(f => cInfo(f).z === z).length);
+      weaker = mine.filter(f => cInfo(f).z === z && !counts(f));
+      // fan places are known only roughly (the case's radiator places) – too few: offered anyway, with a warning
+      if (free + weaker.length < need) {
+        roomNote = `check the case has room – ${cs.name} lists ~${places} places for ${z} mm fans`;
+        free = need - weaker.length;
+      }
+    }
+  }
+  // room unsure: the fit check leaves the fans of that size out (it would only repeat the places warning)
+  const jFit = roomNote ? { ...job, components: (job.components || []).filter(p => !(p.cat === "Case Fan" && cInfo(p).z === cInfo(r).z)) } : job;
+  const opts = pickOptions(jFit, ctx, cands, { count: need }).map(op => {
+    const olds = Array.from({ length: need }, (_, i) => (i < free ? "" : weaker[i - free]?.name || ""));
+    return {
+      ...op,
+      swaps: olds.map(old => ({ cat, old, new: op.name })),
+      tag: [op.tag, have ? `${have} already in the PC` : "", olds.some(Boolean) ? `${olds.filter(Boolean).length} in place of weaker fans` : "", roomNote]
+        .filter(Boolean)
+        .join(" · "),
+    };
+  });
+  return {
+    key: "obj:" + o,
+    reason: o,
+    options: opts,
+    cat,
+    old: "",
+    hint: "No unlocked part does it – check the budget or your career level.",
+  };
 }
 // ---------- one set of parts for the whole job (0.15.0) ----------
 // The objectives are worked out in a set order, each step on the PC as the earlier steps left it (a planned PC):

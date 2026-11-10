@@ -130,3 +130,34 @@ function benchCheck(j) {
 }
 if (typeof module !== "undefined")
   module.exports = { benchOf, benchScore, benchTarget, benchCheck, sysBench, cpuBench, xmpSpeed };
+// PC Stats shows the PC's 3DMark ("Benchmark: 8848"). A GPU / CPU name that lost (or gained) "Ti", "Super" or "XT" in
+// reading ("ZOTAC GeForce GTX 1080 / Ti AMP Extreme" read without the Ti) is put right when the parts as read don't
+// give that number and the other version does (within 1 %). parts: [{cat, name}] – changed in place; returns the changes.
+function benchFix(parts, bench) {
+  if (!bench || !parts?.length) return [];
+  const sc = list => {
+    const b = benchScore(list);
+    return b.missing.length ? null : b.off;
+  };
+  const close = s => s != null && Math.abs(s - bench) <= bench * 0.01;
+  const s0 = sc(parts);
+  if (s0 == null || close(s0)) return [];
+  const key = n =>
+    normP(n)
+      .replace(/\b(ti|super|xt)\b/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  for (const p of parts.filter(x => x.cat === "GPU" || x.cat === "CPU")) {
+    const k = key(p.name),
+      from = p.name;
+    for (const s of INDEX.filter(x => x.cat === p.cat && !x.hist && x.name !== from && key(x.name) === k)) {
+      const alt = parts.map(q => (q.cat === p.cat && q.name === from ? { ...q, name: s.name } : q));
+      if (!close(sc(alt))) continue;
+      parts.forEach(q => {
+        if (q.cat === p.cat && q.name === from) q.name = s.name;
+      });
+      return [{ from, to: s.name }];
+    }
+  }
+  return [];
+}

@@ -12,6 +12,11 @@ Within each version, changes are listed from most to least important.
 - Job focus: Enter on a card dims the other jobs and shows it in full – Esc to leave.
 - Settings: compact mode switches for job status and part swaps.
 - Dual graphics cards: also suggests a cheaper card that pairs with yours.
+- Objectives with a count ("Install 5 … or better") suggest that many parts.
+- PC Bay: tags for socket, SLI / CrossFire and Watercooled.
+- PC Stats: the game's Benchmark number corrects a GPU / CPU read without "Ti".
+- Customer suspects: more phrases caught ("Is it a problem with the RAM?", "with the hoover").
+- 3 OCR bugs fixed.
 
 ## 0.14.10
 - New objective: "Support for double GPU" – suggestions pick a motherboard with SLI / CrossFire.

@@ -138,6 +138,9 @@ function rebuildParts() {
   const auto = mergePCStats(rev.prevCap?.length ? [rev.prevCap, ...lists] : lists).filter(
     p => !rev.dropAuto?.has(p.name.toLowerCase())
   );
+  // the game's "Benchmark:" number checks the names read (a GPU that lost its "Ti")
+  const bm = rev.shots.map(s => s.kind === "parts" && (s.text || "").match(/Benchmark[:;]?\s*([\d,]+)/i)).find(Boolean);
+  rev.benchFixed = bm ? benchFix(auto, +bm[1].replace(/,/g, "")) : [];
   rev.autoNames = new Set(auto.map(p => p.name.toLowerCase()));
   const manual = rev.draft.components.filter(
     c => !prevAuto.has(c.name.toLowerCase()) && !rev.autoNames.has(c.name.toLowerCase())
@@ -197,7 +200,7 @@ async function runOcr() {
       }
       const unsure = (sh.parts || []).filter(p => !p.sure).length;
       $("#ocrState").textContent = ok
-        ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.`
+        ? `Read ${sh.parts.length} parts here · list now has ${total.length}.${unsure ? ` ${unsure} not found in the parts database – check them.` : ""}${rev.benchFixed?.length ? ` Corrected by the Benchmark number: ${rev.benchFixed.map(c => c.from + " → " + c.to).join(", ")}.` : ""} Several RAM sticks / GPUs / drives / fans must be on one screenshot to be counted.`
         : "";
       if (!ok)
         areaWarn(

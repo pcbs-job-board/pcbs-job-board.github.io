@@ -3646,3 +3646,20 @@ details.sothers > summary,
   cursor: pointer;
   margin: 8px 0 2px;
 }
+/* PC Bay part tags (0.15.0): socket, SLI / CrossFire, watercooled */
+.tag.sock {
+  background: #2a2f3a;
+  color: #c9d1e0;
+  border: 1px solid #454d5e;
+  font-weight: 700;
+}
+.tag.multi {
+  background: #2d2346;
+  color: #cdb6ff;
+  border: 1px solid #54418a;
+}
+.tag.wc {
+  background: #0f3340;
+  color: #8fe3ff;
+  border: 1px solid #23697f;
+}
