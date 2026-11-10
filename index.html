@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PCBS Job Board</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
-<link rel="stylesheet" href="css/style.css?v=0.14.10">
+<link rel="stylesheet" href="css/style.css?v=0.15.0">
 </head>
 <body>
 <header>
@@ -103,6 +103,10 @@
     <h4 class="sub">Keyboard</h4>
     <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
     <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+    <h4 class="sub">Job cards</h4>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="compactStatus"><span><b>Compact mode for job status</b><br><small>On: one row of small icons – details when you point at one. Off: every status on its own line with its values.</small></span></label>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="compactSwaps"><span><b>Compact mode for part swaps</b><br><small>On: up to 3 swaps still to do, the rest behind "show more". Off: every part swap, all the time.</small></span></label>
+    <p class="hint">Going into a job with the keyboard (Enter) always shows both in full – Esc goes back.</p>
     <h4 class="sub">DLC &amp; promo parts</h4>
     <div id="dlcList"></div>
     <p class="hint" id="dlcOther"></p>
@@ -264,35 +268,35 @@
 </dialog>
 
 <!-- js/core: the logic (no page access) · js/ui: windows, board, capture – plain scripts in this order (no build step; file:// works) -->
-<script src="js/config.js?v=0.14.10"></script>   <!-- stays here: older versions check this file for updates -->
-<script src="js/core/util.js?v=0.14.10"></script>
-<script src="data/parts-db.js?v=0.14.10"></script>
-<script src="js/core/parser.js?v=0.14.10"></script>
-<script src="js/core/parts.js?v=0.14.10"></script>
-<script src="js/core/compat.js?v=0.14.10"></script>
-<script src="js/core/unlocks.js?v=0.14.10"></script>
-<script src="js/core/bench.js?v=0.14.10"></script>
-<script src="js/core/oc.js?v=0.14.10"></script>
-<script src="js/core/hints.js?v=0.14.10"></script>
-<script src="js/core/suggest.js?v=0.14.10"></script>
-<script src="js/core/flip.js?v=0.14.10"></script>
-<script src="js/ui/autocomplete.js?v=0.14.10"></script>
-<script src="js/ui/flipui.js?v=0.14.10"></script>   <!-- before the board: saved PC Bay builds are drawn at start-up -->
-<script src="js/ui/state.js?v=0.14.10"></script>
-<script src="js/ui/board.js?v=0.14.10"></script>
-<script src="js/ui/capture.js?v=0.14.10"></script>
-<script src="js/ui/ocr.js?v=0.14.10"></script>
-<script src="js/ui/job-window.js?v=0.14.10"></script>
-<script src="js/ui/job-window-suggestions.js?v=0.14.10"></script>
-<script src="js/ui/settings.js?v=0.14.10"></script>
-<script src="js/ui/reports.js?v=0.14.10"></script>
-<script src="js/ui/backup.js?v=0.14.10"></script>
-<script src="js/ui/start.js?v=0.14.10"></script>
-<script src="js/ui/partsdb.js?v=0.14.10"></script>
-<script src="js/ui/rules.js?v=0.14.10"></script>
-<script src="js/ui/areas.js?v=0.14.10"></script>
-<script src="js/ui/story.js?v=0.14.10"></script>
-<script src="js/ui/notify.js?v=0.14.10"></script>
-<script src="js/ui/keys.js?v=0.14.10"></script>
+<script src="js/config.js?v=0.15.0"></script>   <!-- stays here: older versions check this file for updates -->
+<script src="js/core/util.js?v=0.15.0"></script>
+<script src="data/parts-db.js?v=0.15.0"></script>
+<script src="js/core/parser.js?v=0.15.0"></script>
+<script src="js/core/parts.js?v=0.15.0"></script>
+<script src="js/core/compat.js?v=0.15.0"></script>
+<script src="js/core/unlocks.js?v=0.15.0"></script>
+<script src="js/core/bench.js?v=0.15.0"></script>
+<script src="js/core/oc.js?v=0.15.0"></script>
+<script src="js/core/hints.js?v=0.15.0"></script>
+<script src="js/core/suggest.js?v=0.15.0"></script>
+<script src="js/core/flip.js?v=0.15.0"></script>
+<script src="js/ui/autocomplete.js?v=0.15.0"></script>
+<script src="js/ui/flipui.js?v=0.15.0"></script>   <!-- before the board: saved PC Bay builds are drawn at start-up -->
+<script src="js/ui/state.js?v=0.15.0"></script>
+<script src="js/ui/board.js?v=0.15.0"></script>
+<script src="js/ui/capture.js?v=0.15.0"></script>
+<script src="js/ui/ocr.js?v=0.15.0"></script>
+<script src="js/ui/job-window.js?v=0.15.0"></script>
+<script src="js/ui/job-window-suggestions.js?v=0.15.0"></script>
+<script src="js/ui/settings.js?v=0.15.0"></script>
+<script src="js/ui/reports.js?v=0.15.0"></script>
+<script src="js/ui/backup.js?v=0.15.0"></script>
+<script src="js/ui/start.js?v=0.15.0"></script>
+<script src="js/ui/partsdb.js?v=0.15.0"></script>
+<script src="js/ui/rules.js?v=0.15.0"></script>
+<script src="js/ui/areas.js?v=0.15.0"></script>
+<script src="js/ui/story.js?v=0.15.0"></script>
+<script src="js/ui/notify.js?v=0.15.0"></script>
+<script src="js/ui/keys.js?v=0.15.0"></script>
 </body>
 </html>

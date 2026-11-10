@@ -188,18 +188,22 @@ function suggestSwaps(job, opts = {}) {
     picked: opts.picked || [],
     pickedLights: opts.pickedLights || [],
   };
-  const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o));
+  const objs = (opts.only || jobObjectives(job)).filter(o => !/^complete by/i.test(o));
+  // opts.only: just these objectives (the combined set works them out one step at a time); opts.sections: which of the
+  // rules that don't belong to one objective run (all when no step list is given)
+  const sec = k => !opts.only || !!opts.sections?.includes(k);
   const add = (key, reason, items, extra = {}) => {
     // an objective with no options → the window says why (hint or the general reason); optional extras just drop out
     if (items.length || key.startsWith("obj:")) out.push({ key, reason, options: items, ...extra });
   };
-  const missing = (key, reason, need) => out.push({ key, reason, options: [], hint: need });
+  const missing = (key, reason, need, extra = {}) => out.push({ key, reason, options: [], hint: need, ...extra });
   const ref = name => {
     const m = bestPartMatch(name);
     return m ? INDEX.find(p => p.name === m.name) || { name: m.name, cat: m.cat } : null;
   };
-  const handled = new Set();
+  const handled = new Set(opts.pinned || []); // categories an earlier step of the combined set already picked
   ctx.objCats = handled;
+  ctx.pinned = new Set(opts.pinned || []);
   // "Upgrade Graphics Card" + "Install dual graphics cards": the upgrade is offered as a PAIR of new cards (one tick
   // adds both), and the dual-GPU rule adds nothing on top
   const DUAL = DUAL_RE;
@@ -240,8 +244,11 @@ function suggestSwaps(job, opts = {}) {
     // 1 / 2 / 4  Install <part> [or better]
     let m = o.match(/^\W*install\s+(.+?)(\s+or better)?\s*$/i);
     if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
+      // a named model ("EVGA GeForce GTX 1080 Ti K|NGP|N GAMING") is that card; a bare chip ("GTX 1080") any card of it
       const chip = chipFromText(m[1]),
-        r = chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]);
+        exact = bestPartMatch(m[1]),
+        named = exact && exact.score >= 0.9 && !(chip && normP(m[1]) === normP(chip)) ? ref(m[1]) : null,
+        r = named || (chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]));
       // no part named – "Install an SSD", "Install a 1TB HDD", "Install M.2 storage": the cheapest drive of that kind that fits
       const sk = !r && storageKind(m[1]);
       if (sk) {
@@ -272,14 +279,38 @@ function suggestSwaps(job, opts = {}) {
           return +c.gb >= gbWant && +c.k >= +(rc.k || 1);
         });
       else if (better) cands = shopParts(cat).filter(atLeast(r, cat));
-      else if (cat === "GPU" && chipFromText(m[1])) {
+      else if (cat === "GPU" && chipFromText(m[1]) && !named) {
         const chip = chipFromText(m[1]);
         cands = shopParts(cat).filter(p => cInfo(p).c === chip);
       } else cands = shopParts(cat).filter(sameAs(r.name));
-      if (curP && cands.some(sameAs(curP.name))) continue; // already there
-      if (curP && better && atLeast(r, cat)(curP)) continue;
+      // "or better" goes by the in-game part ranking – shown, so the player can see the rule worked
+      const ranked = better && RATED.has(cat) && rk(r) > 0,
+        rankOf = p => (ranked ? { want: rk(r), wantName: r.name, cur: curP ? rk(curP) : null, curName: curP?.name || "", now: rk(p) } : null);
+      if (curP && cands.some(sameAs(curP.name)) && !(better && ranked)) {
+        missing("obj:" + o, o, `Already met – ${curP.name} is in the PC`, { met: true, cat });
+        handled.add(cat);
+        continue;
+      }
+      if (curP && better && atLeast(r, cat)(curP)) {
+        missing(
+          "obj:" + o,
+          o,
+          ranked
+            ? `Already met – ${curP.name} ranks ${rk(curP).toLocaleString()}, ${r.name} ${rk(r).toLocaleString()} (in-game part ranking)`
+            : `Already met – ${curP.name} counts as "${r.name} or better"`,
+          { met: true, cat }
+        );
+        handled.add(cat);
+        continue;
+      }
       let found = pickOptions(job, ctx, cands, { replace: curP?.name || "", base: curP || r });
       if (!found.length && cat === "CPU") found = cpuWithBoard(job, ctx, cands, curP, cur);
+      // the part asked for comes first (when it can be bought and fits) – the others also count
+      if (better && named) {
+        const own = pickOptions(job, ctx, shopParts(cat).filter(sameAs(r.name)), { replace: curP?.name || "", base: curP || r });
+        if (own.length) found = [{ ...own[0], tag: "asked for" }, ...found.filter(x => x.name !== own[0].name)].slice(0, 3);
+      }
+      found.forEach(x => (x.rank = rankOf(x)));
       add("obj:" + o, o, found, { cat, old: curP?.name || "" });
       handled.add(cat);
       continue;
@@ -403,7 +434,8 @@ function suggestSwaps(job, opts = {}) {
         missing(
           "obj:" + o,
           o,
-          `${board.name} already supports two GPUs (${[cInfo(board).sli === "1" && "SLI", cInfo(board).cf === "1" && "CrossFire"].filter(Boolean).join(" / ")}) – nothing to change`
+          `${board.name} already supports two GPUs (${[cInfo(board).sli === "1" && "SLI", cInfo(board).cf === "1" && "CrossFire"].filter(Boolean).join(" / ")}) – nothing to change`,
+          { met: true, cat: "Motherboard" }
         );
         continue;
       }
@@ -439,69 +471,42 @@ function suggestSwaps(job, opts = {}) {
         continue;
       }
       const g = gpus[0],
-        shop = shopParts("GPU").find(sameAs(g.name));
-      if (!shop) {
-        missing("obj:" + o, o, `${g.name} isn't in the shop (locked or not sold) – pick a pair yourself`);
+        same = shopParts("GPU").find(sameAs(g.name)),
+        // any maker's card of the same model pairs in the game (the pair scores between the two) – the cheapest one
+        other = shopParts("GPU")
+          .filter(p => !sameAs(g.name)(p) && pairBench(g.name, p.name))
+          .sort((a, b) => a.price - b.price)[0];
+      if (!same && !other) {
+        missing("obj:" + o, o, `${g.name} isn't in the shop (locked or not sold) and no other card pairs with it – pick a pair yourself`);
         continue;
       }
       // the board may need SLI / CrossFire, the PSU more watts – offered together (G3)
-      const pairSw = [{ cat: "GPU", old: "", new: shop.name }],
-        extra = [];
-      const board = cur("Motherboard").pop(),
-        mc = cInfo(shop).m;
-      // the board needs the right kind (SLI / CrossFire) AND room for two cards this wide (ds = widest card it fits two of)
-      const bi = board ? cInfo(board) : {},
-        room = c => !c.ds || !cInfo(shop).sl || +c.ds >= +cInfo(shop).sl;
-      if (board && mc && !((mc === "SLI" ? bi.sli === "1" : bi.cf === "1") && room(bi))) {
-        const bc = cInfo(board),
-          nb = shopParts("Motherboard")
-            .filter(p => {
-              const c = cInfo(p);
-              return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(shop).sl || 0));
-            })
-            .filter(p => fitsBuild(withSwaps(job, pairSw), p, board.name))
-            .sort((a, b) => a.price - b.price)[0];
-        extra.push(
-          nb
-            ? {
-                cat: "Motherboard",
-                old: board.name,
-                name: nb.name,
-                price: nb.price,
-                why: `board with ${mc} and room for two ${cInfo(shop).sl || ""}-slot cards`,
-              }
-            : {
-                cat: "Motherboard",
-                old: board.name,
-                name: null,
-                why: `needs a board with ${mc} and room for two of these cards – none unlocked`,
-              }
-        );
-      }
-      const psu = psuFor(job, [...pairSw, ...extra.filter(e => e.name).map(e => ({ cat: e.cat, old: e.old, new: e.name }))]);
-      if (psu) extra.push(psu);
-      const total = shop.price + extra.reduce((t, e) => t + (e.price || 0), 0);
-      add(
-        "obj:" + o,
-        o,
-        [
-          {
-            name: shop.name,
-            cat: "GPU",
-            price: shop.price,
-            count: 1,
-            det: shop.det,
-            lvl: shop.lvl,
-            pct: shop.pct,
-            tag: "same GPU again",
-            swaps: pairSw,
-            extras: extra,
-            total,
-            over: !priceOk({ price: total }, ctx.left),
-          },
-        ],
-        { cat: "GPU" }
-      );
+      const board = cur("Motherboard").pop();
+      const pairOpt = (shop, tag) => {
+        const pairSw = [{ cat: "GPU", old: "", new: shop.name }],
+          extra = pairExtras(job, shop, pairSw, board),
+          total = shop.price + extra.reduce((t, e) => t + (e.price || 0), 0);
+        return {
+          name: shop.name,
+          cat: "GPU",
+          price: shop.price,
+          count: 1,
+          det: shop.det,
+          lvl: shop.lvl,
+          pct: shop.pct,
+          tag,
+          swaps: pairSw,
+          extras: extra,
+          total,
+          over: !priceOk({ price: total }, ctx.left),
+        };
+      };
+      const opts2 = [
+        ...(same ? [pairOpt(same, "same GPU again")] : []),
+        ...(other && (!same || other.price < same.price) ? [pairOpt(other, "cheaper card that pairs with it")] : []),
+      ];
+      add("obj:" + o, o, opts2, { cat: "GPU" });
+      handled.add("GPU");
       continue;
     }
     // 10b "watercooled GPU" / "custom water cooling for the GPU": a watercooled version (Custom Water Cooling Shop), never worse
@@ -628,7 +633,8 @@ function suggestSwaps(job, opts = {}) {
       .map(x => catOfText(String(x).toLowerCase()) || x)
       .filter(c => CATS.includes(c))
   );
-  if (objs.some(o => /diagnose|fix/i.test(o)))
+  const fixJob = jobObjectives(job).some(o => /diagnose|fix/i.test(o));
+  if (fixJob && sec("hint"))
     for (const cat of broken) {
       if (handled.has(cat) || (cat === "CPU" && cpuIsFixed(job))) continue;
       const p0 = cur(cat)[0];
@@ -646,7 +652,7 @@ function suggestSwaps(job, opts = {}) {
     }
   // 15b Diagnose and fix + favourite brand ("I'm a total Intel fanboy"): the broken part is the one made by that
   //     brand – the same part again, once per customer's part of that brand (which one is broken shows in the game)
-  if (objs.some(o => /diagnose|fix/i.test(o)) && ctx.brands.length) {
+  if (fixJob && ctx.brands.length && sec("hint")) {
     // the customer's OWN parts (not the planned build – a planned part isn't broken); a part that already has a
     // planned swap is left out (the swap is the fix), with a line saying so
     const own = plannedBuild({ ...job, swaps: [] }),
@@ -697,10 +703,10 @@ function suggestSwaps(job, opts = {}) {
     }
   }
   // 19  water cooling requested (hidden) – AIO only
-  if (opts.waterCooling && !handled.has("CPU Cooler"))
+  if (opts.waterCooling && !handled.has("CPU Cooler") && sec("water"))
     out.push(...aioSuggestion(job, ctx, "Water cooling requested (hidden objective)", cur));
   // 18  Add RGB lighting – RGB case fans for free fan places
-  if (opts.rgb && !objs.some(o => /parts with lights?/i.test(o))) {
+  if (opts.rgb && !jobObjectives(job).some(o => /parts with lights?/i.test(o)) && sec("rgb")) {
     // the lights objective has its own set
     const cs = cur("Case").pop(),
       cc = cs ? cInfo(cs) : {};
@@ -722,7 +728,7 @@ function suggestSwaps(job, opts = {}) {
   }
   // 20  the planned PC is too much for its PSU
   const pc = powerCheck(job);
-  if (pc && pc.psuW != null && (pc.ocWanted ? pc.oc : pc.stock) > pc.psuW) {
+  if (pc && pc.psuW != null && (pc.ocWanted ? pc.oc : pc.stock) > pc.psuW && sec("power")) {
     const need = pc.ocWanted ? pc.oc : pc.stock,
       curPsu = cur("PSU").pop();
     add(
@@ -738,10 +744,10 @@ function suggestSwaps(job, opts = {}) {
     );
   }
   // 3DMark score of N (0.12.0): XMP, or the cheapest set of parts that reaches it – one tick adds the whole set
-  out.push(...benchSuggestions(job, ctx));
+  if (sec("bench")) out.push(...benchSuggestions(job, ctx));
   // 20b the customer plans to overclock LATER (email body, not an objective): a PSU that carries the overclocked PC –
   //     only inside the budget (it's not something the job asks for)
-  if (pc && pc.psuW != null && pc.ocLater && pc.oc > pc.psuW && !(pc.stock > pc.psuW)) {
+  if (pc && pc.psuW != null && pc.ocLater && pc.oc > pc.psuW && !(pc.stock > pc.psuW) && sec("oclater")) {
     const curPsu = cur("PSU").pop(),
       o = pickOptions(
         job,
@@ -768,7 +774,7 @@ function suggestSwaps(job, opts = {}) {
           "Every option here needs a new motherboard – this job keeps the customer's board (dual GPUs). Pick parts that fit it.";
     }
   // 21  a customer's part that clashes with a planned swap → the cheapest part that fits (never worse)
-  for (const cl of jobCompatIssues(job)) {
+  for (const cl of sec("fix") ? jobCompatIssues(job) : []) {
     const p = cl.part;
     if (p.src !== "stats" || p.req) continue;
     const key = "fix:" + p.cat + ":" + p.name;
@@ -790,6 +796,144 @@ function suggestSwaps(job, opts = {}) {
         if (back) o.over = (o.total ?? (o.price || 0) * (o.count || 1)) > ctx.left + back;
       }
   return out;
+}
+// ---------- one set of parts for the whole job (0.15.0) ----------
+// The objectives are worked out in a set order, each step on the PC as the earlier steps left it (a planned PC):
+// 1 named parts ("Install X [or better]", replace / upgrade, the parts the customer hints are broken) → 2 counts and
+// pairs built on them (dual GPU, RAM amount, a drive, SLI / CrossFire board) → 3 cooling → 4 performance (overclock,
+// 3DMark – parts an earlier step picked stay) → 5 power, parts that don't fit → 6 looks (lights, cables, RGB).
+// Each step takes its first option inside the budget (else its first). One tick adds the whole set.
+const PLAN_SECTIONS = [
+  ["hint", 12],
+  ["water", 30],
+  ["bench", 45],
+  ["power", 50],
+  ["fix", 55],
+  ["rgb", 70],
+];
+function objWeight(o) {
+  const ol = o.toLowerCase();
+  if (/parts with lights?/.test(ol) || /^\W*install\s+.+\s+cables?\s*$/.test(ol)) return 70;
+  if (MULTI_RE.test(o) || DUAL_RE.test(o)) return 20;
+  if (/\d+\s*gb\s+(of\s+)?(ram|memory)/.test(ol)) return 20;
+  if (/water ?cool|\baio\b|liquid cool/.test(ol)) return 30;
+  if (/\b(overclock\w*|oc)\b/.test(ol)) return 40;
+  if (/^\W*install\s/.test(ol)) return storageKind(ol) ? 20 : 10;
+  if (/^\W*(replace|upgrade)\s/.test(ol)) return 15;
+  return 50;
+}
+function suggestPlan(job, opts = {}) {
+  const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o));
+  const steps = [
+    ...objs.map((o, i) => ({ w: objWeight(o), i, only: [o], sections: [] })),
+    ...PLAN_SECTIONS.map(([k, w], i) => ({ w, i: 100 + i, only: [], sections: [k] })),
+  ].sort((a, b) => a.w - b.w || a.i - b.i);
+  let plan = [];
+  const tasks = [],
+    removeOld = [],
+    used = [], // { reason, sw: [...], tag, rank } – what each step added
+    met = [], // objectives already met – nothing to add
+    left = [], // objectives the set can't cover, and why
+    pinned = new Set();
+  for (const st of steps) {
+    let res = [];
+    try {
+      res = suggestSwaps(withSwaps(job, plan), {
+        ...opts,
+        picked: [],
+        pickedLights: [],
+        only: st.only,
+        sections: st.sections,
+        pinned: [...pinned],
+      });
+    } catch (e) {
+      console.warn("plan step", e);
+      continue;
+    }
+    for (const sg of res) {
+      if (/^(brandfix|fix:oclater)/.test(sg.key)) continue; // guesses / optional: per objective only
+      if (!sg.options.length) {
+        if (sg.met) met.push({ reason: sg.reason, note: sg.hint });
+        else if (/^(obj:|bench|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
+        continue;
+      }
+      const o = sg.options.find(x => !x.over) || sg.options[0];
+      const sw = [
+        ...(o.swaps || []).map(x => ({ cat: x.cat, old: x.old || "", new: x.new, price: x.price ?? priceOf(x.new) })),
+        ...(o.extras || []).filter(e => e.name).map(e => ({ cat: e.cat, old: e.old || "", new: e.name, price: e.price, extra: true })),
+      ];
+      const cant = (o.extras || []).find(e => !e.name);
+      if (cant) left.push({ reason: sg.reason, why: cant.why });
+      plan = replaceSwaps(plan, sw).swaps;
+      (o.tasks || []).forEach(t => tasks.includes(t) || tasks.push(t));
+      if (o.removeOld?.length) removeOld.push(...o.removeOld);
+      const note = o !== sg.options[0] ? `${sg.options[0].name} would go over the budget` : "";
+      used.push({ reason: sg.reason, sw, tag: o.tag, note, rank: o.rank || null, score: o.score ?? null });
+      sw.forEach(x => pinned.add(x.cat));
+    }
+  }
+  // nothing to add – or a single objective with a single suggestion: that suggestion is already "one set"
+  if (!used.length || (used.length === 1 && objs.length <= 1 && !left.length)) return null;
+  // what each part of the final set is for (a later step may have replaced an earlier step's part)
+  const parts = plan.map(x => {
+    const by = used.filter(u => u.sw.some(y => y.cat === x.cat && lowName(y.new) === lowName(x.new)));
+    const { extra: _e, ...rest } = x;
+    return {
+      ...rest,
+      for: [...new Set(by.map(u => u.reason))],
+      note:
+        by
+          .filter(u => u.sw.some(y => !y.extra && y.cat === x.cat && lowName(y.new) === lowName(x.new)))
+          .map(u => [u.tag, u.note].filter(Boolean).join(" – "))
+          .find(Boolean) || "",
+      rank: by.map(u => u.rank).find(Boolean) || null,
+    };
+  });
+  const total = parts.reduce((t, x) => t + (x.price || 0), 0);
+  const spent = (job.swaps || []).reduce((t, x) => t + ((x.price ?? priceOf(x.new)) || 0), 0),
+    budgetLeft = job.budget != null ? job.budget - spent : null,
+    back = refundFor(job, parts.map(x => x.old));
+  // 3DMark: the score of the planned PC – an earlier step (a 2nd GPU…) may already reach it
+  let score = null;
+  const target = benchTarget(job);
+  if (target) {
+    const sc = benchScore(plannedBuild(withSwaps(job, plan)));
+    if (!sc.missing.length) {
+      score = sc.off >= target ? sc.off : sc.on;
+      const xmp = sc.off < target && sc.on >= target;
+      if (xmp && !tasks.includes(XMP_TASK)) tasks.push(XMP_TASK);
+      if (sc.on >= target && !used.some(u => u.score != null))
+        met.push({ reason: `3DMark score of ${target.toLocaleString()}`, note: `reached with this set: ${score.toLocaleString()}${xmp ? " (XMP on)" : ""}` });
+    }
+  }
+  return {
+    key: "plan",
+    reason: left.length ? "Every objective it can cover – one set" : "All objectives – one set",
+    cat: "Plan",
+    met,
+    left,
+    options: [
+      {
+        multi: true,
+        plan: true,
+        name: "One set for the whole job",
+        cat: "Plan",
+        tag: "",
+        swaps: parts.map(({ cat, old, new: nw, price }) => ({ cat, old, new: nw, price })),
+        parts,
+        extras: [],
+        tasks,
+        removeOld,
+        score,
+        total,
+        price: total,
+        count: 1,
+        lvl: Math.max(0, ...parts.map(x => INDEX.find(p => p.name === x.new)?.lvl || 0)),
+        over: budgetLeft != null && total > budgetLeft + back,
+        nParts: parts.length,
+      },
+    ],
+  };
 }
 // the identical part (or the closest equal-or-better one of the same kind when it can't be bought),
 // plus the favourite brand's equal-or-better parts of the same kind
@@ -1304,6 +1448,7 @@ function benchSuggestions(job, ctx) {
       .map(p => p.cat)
   );
   if (cpuIsFixed(job)) locked.add("CPU"); // "Overclock CPU": the customer's CPU stays
+  for (const c of ctx.pinned || []) locked.add(c); // combined set: parts an earlier step picked for an objective stay
   const cur = c => build.filter(p => p.cat === c),
     cpu0 = cur("CPU")[0],
     mb0 = cur("Motherboard")[0],

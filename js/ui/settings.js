@@ -85,6 +85,8 @@ function renderSettings() {
   $("#appVersion").href = changelogUrl();
   $("#appVersion").onclick = openChangelog;
   if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
+  $("#compactStatus").checked = compactStatus;
+  $("#compactSwaps").checked = compactSwaps;
   $("#dbInfo").textContent = m.counts
     ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.`
     : "Parts database not loaded.";
@@ -164,6 +166,10 @@ $("#resetGo").onclick = () => {
 $("#dlgSettings").addEventListener("change", e => {
   if (e.target.id === "keysToggle") {
     setKeys(e.target.checked);
+    return;
+  }
+  if (e.target.id === "compactStatus" || e.target.id === "compactSwaps") {
+    setCompact(e.target.id === "compactStatus" ? "status" : "swaps", e.target.checked);
     return;
   }
   const k = e.target.dataset.dlc;

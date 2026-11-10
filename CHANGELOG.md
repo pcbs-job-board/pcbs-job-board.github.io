@@ -3,6 +3,16 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.15.0
+- Suggestions: one set of parts for the whole job – objectives worked out in order, one tick adds it all.
+- "X or better": the part asked for is suggested first; part rankings shown (asked for, current, new).
+- Job cards: objectives in a framed box under T1–T3, deadline included.
+- Job cards: Budget, required level and stars shown next to Labour.
+- Hidden objectives box in calmer blue.
+- Job focus: Enter on a card dims the other jobs and shows it in full – Esc to leave.
+- Settings: compact mode switches for job status and part swaps.
+- Dual graphics cards: also suggests a cheaper card that pairs with yours.
+
 ## 0.14.10
 - New objective: "Support for double GPU" – suggestions pick a motherboard with SLI / CrossFire.
 - PC Bay inventory: a card name read unclearly is kept and marked "check" instead of being dropped.

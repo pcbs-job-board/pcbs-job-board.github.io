@@ -101,7 +101,7 @@ function hintBtn(j) {
   return `<button class="hintbtn" aria-label="${hs.length} tip${hs.length > 1 ? "s" : ""} for this job"><span aria-hidden="true">💡</span><template><div class="hintbox"><div class="brow">💡 Tips for this job</div><ul>${hs.map(h => `<li>${esc(h.text)}</li>`).join("")}</ul></div></template></button>`;
 }
 // STATUS: one row of icon tiles under T1–T3 – colour = state, details in a small popup (hover / focus ~0.5 s)
-function statusHtml(j, { budgetHtml, budgetState, clashes }) {
+function statusHtml(j, { budgetHtml, budgetState, clashes, compact = true }) {
   const ps = powerState(j),
     pw = powerHtml(j),
     bc = benchCheck(j),
@@ -154,6 +154,11 @@ function statusHtml(j, { budgetHtml, budgetState, clashes }) {
       body: clashes.length ? compatHtml(clashes) : `<div class="stoff ok">✓ All planned parts fit together.</div>`,
     },
   ];
+  if (!compact) {
+    // expanded (0.15.0): every status the job uses on its own line, values and bars visible
+    const used = tiles.filter(t => t.state !== "off");
+    return `<div class="sec statussec"><h4>Status</h4><div class="sexp">${used.length ? used.map(t => `<div class="sxl st-${t.state}" data-sx="${t.k}">${t.body}</div>`).join("") : `<div class="hint" style="margin:0">Nothing to check yet – plan a budget, a PSU or part swaps.</div>`}</div></div>`;
+  }
   return `<div class="sec statussec"><h4>Status</h4><div class="stiles">${tiles.map(t => `<button class="stile st-${t.state}" data-stile="${t.k}" aria-label="${esc(t.label)}: ${t.word ? esc(t.word) : t.k === "fit" ? (clashes.length ? clashes.length + " problem" + (clashes.length > 1 ? "s" : "") : "fine") : word[t.state]}"><span aria-hidden="true">${t.icon}</span><template>${t.body}</template></button>`).join("")}</div></div>`;
 }
 // the popup with a tile's details: shown after ~0.5 s of hover or keyboard focus, never focusable itself;
@@ -329,9 +334,18 @@ function jobCard(j) {
         })
         .join("")}</div>`
     : "";
-  const mainHtml = main.length
-    ? `<div class="sec"><h4>Objectives</h4><ul class="mainobj">${main.map(k => `<li tabindex="-1" data-line="${k.id}">${esc(k.text)}${del(k)}</li>`).join("")}</ul></div>`
-    : "";
+  // the game's own objectives, in a framed box under T1–T3; the deadline is one of them in the game too –
+  // shown without "(2 days)" / "(Tomorrow)": the app can't know the game's current day
+  const dlLine = j.deadline && !j.softDeadline ? `Complete by End of Day ${j.deadline}` : "";
+  // a part the customer only guesses at (no hidden "check / replace" task for it) – shown under the objectives
+  const sus = String(j.suspect || "")
+    .split(/,\s*/)
+    .filter(x => x && !hid.some(k => k.text.toLowerCase().includes(x.toLowerCase())));
+  const susHtml = sus.length ? `<div class="objsus">Customer suspects: ${esc(sus.join(", "))} <small>(often wrong – verify)</small></div>` : "";
+  const mainHtml =
+    main.length || dlLine || susHtml
+      ? `<div class="objbox"><div class="objhead">Objectives</div><ul class="mainobj">${main.map(k => `<li tabindex="-1" data-line="${k.id}">${esc(k.text)}${del(k)}</li>`).join("")}${dlLine ? `<li class="dlobj" tabindex="-1" data-line="deadline">${esc(dlLine)}</li>` : ""}</ul>${susHtml}</div>`
+      : "";
   const foundHtml = found
     .map(
       k =>
@@ -344,7 +358,10 @@ function jobCard(j) {
   // tile: ☐ | category / old (red) / ↓ / new (green) / details | price | ✕ over ✎ | drag handle (full height)
   // folded unless the card is opened (▾): ticked swaps and the unticked ones after the first SWAP_SHOW
   let openNo = 0;
-  const xtra = new Set(j.swaps.filter(s => s.done || ++openNo > SWAP_SHOW).map(s => s.id));
+  const focused = focusJob === j.id,
+    statusCompact = compactStatus && !focused,
+    swapsCompact = compactSwaps && !focused; // Settings switches; job focus always shows everything
+  const xtra = new Set(swapsCompact ? j.swaps.filter(s => s.done || ++openNo > SWAP_SHOW).map(s => s.id) : []);
   const swaps = j.swaps
     .map(s => {
       const pr = swapPrice(s);
@@ -377,13 +394,15 @@ function jobCard(j) {
   const comp = j.components.length
     ? `<details><summary>Current parts (${j.components.length})</summary><ul class="parts">${j.components.map(c => `<li>${esc(c.cat)}: <span>${esc(c.name)}</span></li>`).join("")}</ul></details>`
     : `<div class="hint" style="margin:0">No parts list yet</div>`;
-  return `<article class="job ${j.story ? "story" : ""} ${swapsOpen.has(j.id) ? "swopen" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
+  return `<article class="job ${j.story ? "story" : ""} ${swapsOpen.has(j.id) ? "swopen" : ""} ${focused ? "focused" : ""}" draggable="true" data-job="${j.id}" style="--c:${TCOL[j.table || 0]}">
     ${j.story ? `<div class="storytag">📖 Story job</div>` : ""}
+    ${focused ? `<div class="focusnote" aria-live="polite">Job focus · <kbd>Esc</kbd> to leave</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}</div></div>
-    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour}</span>` : ""}${j.deadline ? `<span class="chip dl" ${j.softDeadline ? 'title="Urgent job – no exact deadline, aim for 2 days"' : ""}>⏰ ${j.softDeadline ? "~" : "by "}${esc(j.deadline)}</span>` : ""}${j.suspect ? `<span class="chip sus">Says: ${esc(j.suspect)}?</span>` : ""}${hid.some(k => !k.done) ? `<span class="chip hidchip">🔍 ${hid.filter(k => !k.done).length} hidden</span>` : ""}</div>
+    <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour.toLocaleString()}</span>` : ""}${j.budget != null ? `<span class="chip">Budget $${j.budget.toLocaleString()}</span>` : ""}${j.level != null ? `<span class="chip">Lv ${j.level}</span>` : ""}${j.stars ? `<span class="chip stars" role="img" aria-label="Requires ${j.stars} star${j.stars === 1 ? "" : "s"}" title="Requires ${j.stars} star${j.stars === 1 ? "" : "s"}">${"★".repeat(Math.min(5, j.stars))}</span>` : ""}</div>
     <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
-    ${statusHtml(j, { budgetHtml, budgetState, clashes })}
-    ${hidHtml}${mainHtml}
+    ${mainHtml}
+    ${statusHtml(j, { budgetHtml, budgetState, clashes, compact: statusCompact })}
+    ${hidHtml}
     <div class="sec"><h4>Found while working${found.length ? ` <span>${found.filter(t => t.done).length}/${found.length}</span>` : ""}</h4>${foundHtml}
       <div class="addrow"><input placeholder="New task found…" data-input="task" data-id="${j.id}"><button data-act="addTask" data-id="${j.id}">＋</button></div></div>
     <div class="sec"><h4>Part swaps</h4>${swaps}${swapMore}
@@ -403,6 +422,45 @@ const job = id => jobs.find(j => j.id === id);
 
 // ---- part swaps on a card: at most SWAP_SHOW unticked ones, ticked ones fold away; ▾ shows them all ----
 const SWAP_SHOW = 3;
+// Settings (0.15.0): compact Status (icon tiles) and compact Part swaps (up to SWAP_SHOW open ones) – both on by default
+let compactStatus = LS.get("pcbs.compactStatus", true),
+  compactSwaps = LS.get("pcbs.compactSwaps", true);
+function setCompact(k, v) {
+  if (k === "status") LS.set("pcbs.compactStatus", (compactStatus = !!v));
+  else LS.set("pcbs.compactSwaps", (compactSwaps = !!v));
+  render();
+}
+// ---- job focus: going into a card with the keyboard (Enter) dims every other job and shows the card in full;
+// Esc, Job completed or leaving the card ends it ----
+let focusJob = null;
+const focusDim = Object.assign(document.createElement("div"), { id: "focusDim", className: "focusdim" });
+document.body.append(focusDim);
+focusDim.addEventListener("mousedown", () => setFocusJob(null));
+function setFocusJob(id) {
+  if (focusJob === id) return;
+  const still = matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const prev = focusJob;
+  focusJob = id;
+  document.body.classList.toggle("jobfocus", !!id);
+  const redraw = () => {
+    if (typeof rememberFocus === "function") rememberFocus();
+    render();
+    if (typeof restoreFocus === "function") restoreFocus();
+  };
+  // the card grows / shrinks smoothly: measure, redraw, animate the height between the two
+  const card = id || prev ? document.querySelector(`.job[data-job="${id || prev}"]`) : null,
+    h0 = card?.getBoundingClientRect().height;
+  redraw();
+  const now = document.querySelector(`.job[data-job="${id || prev}"]`);
+  if (!still && now && h0) {
+    const h1 = now.getBoundingClientRect().height;
+    if (Math.abs(h1 - h0) > 2) now.animate([{ height: h0 + "px", overflow: "hidden" }, { height: h1 + "px", overflow: "hidden" }], { duration: 260, easing: "ease-in-out" });
+  }
+}
+// leaving the focused card (mouse click elsewhere, Tab out) ends job focus
+document.addEventListener("focusin", e => {
+  if (focusJob && !e.target.closest?.(`.job[data-job="${focusJob}"]`) && !e.target.closest?.("dialog, header, #ac, #stip")) setFocusJob(null);
+});
 const swapsOpen = new Set(); // cards showing every swap (until another job is selected)
 const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 function swapMoreHtml(j, xtra) {
@@ -639,6 +697,10 @@ document.addEventListener("click", e => {
     }
   } else if (a === "complete") {
     const idx = jobs.indexOf(j);
+    if (focusJob === j.id) {
+      focusJob = null; // job focus ends with the job (no animation – the card is gone)
+      document.body.classList.remove("jobfocus");
+    }
     jobs.splice(idx, 1);
     save();
     render();

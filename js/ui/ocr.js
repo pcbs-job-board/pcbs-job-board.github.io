@@ -113,19 +113,88 @@ async function readText(canvas) {
   } finally {
     giveBack(w);
   }
-  const lines = [];
+  const lines = [],
+    words = [];
   for (const b of d.blocks || [])
     for (const p of b.paragraphs || [])
-      for (const l of p.lines || []) lines.push([String(l.text || "").trim(), l.confidence, l.bbox]); // bbox: where on the (cropped) picture
-  return { text: d.text || "", lines };
+      for (const l of p.lines || []) {
+        lines.push([String(l.text || "").trim(), l.confidence, l.bbox]); // bbox: where on the (cropped) picture
+        for (const w of l.words || []) words.push({ text: String(w.text || ""), bbox: w.bbox });
+      }
+  return { text: d.text || "", lines, words };
 }
-let lastConf = null;
+// ★ required stars of an email job: the reader can't read the star signs ("Req: rk %"), so they are counted on the
+// picture – the white shapes after the "Req:" above "Req: Level N". null = not found, 0 = no star requirement.
+function starsFrom(canvas, words) {
+  const req = (words || []).filter(w => /^Re[qga]\b/i.test(w.text) && w.bbox);
+  if (!req.length) return null;
+  const lvl = (words || []).find(w => /^Level$/i.test(w.text) && w.bbox);
+  const near = (a, b) => Math.abs(a.bbox.y0 + a.bbox.y1 - b.bbox.y0 - b.bbox.y1) / 2 < (a.bbox.y1 - a.bbox.y0) * 0.7;
+  const lvlReq = lvl && req.find(r => near(r, lvl));
+  const star = req.filter(r => r !== lvlReq).sort((a, b) => a.bbox.y0 - b.bbox.y0)[0];
+  if (!star) return lvlReq ? 0 : null;
+  const b = star.bbox,
+    h = b.y1 - b.y0,
+    y0 = Math.max(0, Math.round(b.y0 - h * 0.25)),
+    y1 = Math.min(canvas.height, Math.round(b.y1 + h * 0.15)),
+    x0 = Math.max(0, Math.round(b.x0)),
+    xEnd = lvl ? Math.min(canvas.width, Math.round(lvl.bbox.x1 + h * 3)) : canvas.width;
+  if (xEnd - x0 < h || y1 - y0 < 4) return null;
+  const px = canvas.getContext("2d", { willReadFrequently: true }).getImageData(x0, y0, xEnd - x0, y1 - y0),
+    W = px.width,
+    H = px.height;
+  // bright, grey-ish pixels = the white text / stars on the blue band
+  const on = (x, y) => {
+    const i = (y * W + x) * 4,
+      r = px.data[i],
+      g = px.data[i + 1],
+      bl = px.data[i + 2];
+    return r > 175 && g > 175 && bl > 175 && Math.max(r, g, bl) - Math.min(r, g, bl) < 60;
+  };
+  const blobs = [];
+  let cur = null;
+  for (let x = 0; x < W; x++) {
+    let top = -1,
+      bot = -1;
+    for (let y = 0; y < H; y++)
+      if (on(x, y)) {
+        if (top < 0) top = y;
+        bot = y;
+      }
+    if (top >= 0) {
+      if (cur && x - cur.x1 <= 1) {
+        cur.x1 = x;
+        cur.top = Math.min(cur.top, top);
+        cur.bot = Math.max(cur.bot, bot);
+      } else blobs.push((cur = { x0: x, x1: x, top, bot }));
+    }
+  }
+  // stars: the run of same-size, wide shapes at the right end (letters of "Req:" are narrower / a different height)
+  const big = blobs.filter(o => o.x1 - o.x0 + 1 >= h * 0.45 && o.bot - o.top + 1 >= h * 0.45);
+  if (!big.length) return 0;
+  const last = big[big.length - 1],
+    w0 = last.x1 - last.x0 + 1,
+    t0 = last.bot - last.top + 1;
+  let n = 0;
+  for (let i = big.length - 1; i >= 0; i--) {
+    const o = big[i],
+      w = o.x1 - o.x0 + 1,
+      t = o.bot - o.top + 1;
+    if (Math.abs(w - w0) > w0 * 0.25 || Math.abs(t - t0) > t0 * 0.25) break;
+    n++;
+  }
+  return Math.min(5, n);
+}
+let lastConf = null,
+  lastStars = null; // ★ counted on the last email screenshot (null = not on it)
 async function ocr(img, kind) {
   await getWorker();
   $("#ocrState").textContent = `Reading ${kind === "email" ? "email" : "PC Stats"}…`;
   $("#prog").style.width = "0";
-  const r = await readText(cropCanvas(img, crops[kind === "parts" ? "stats" : kind]));
+  const cv = cropCanvas(img, crops[kind === "parts" ? "stats" : kind]),
+    r = await readText(cv);
   lastConf = r.lines; // per-line certainty, used when joining screenshots
+  lastStars = kind === "email" ? starsFrom(cv, r.words) : null;
   $("#prog").style.width = "100%";
   return r.text;
 }

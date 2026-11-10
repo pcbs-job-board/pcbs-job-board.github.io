@@ -53,7 +53,7 @@ function tickedSwaps(skipKey) {
   document.querySelectorAll("#fSugg input[data-sg]:checked").forEach(c => {
     const sg = rev?.sugg?.[+c.dataset.sg],
       o = sg?.options[+c.dataset.so];
-    if (!o || sg.key === skipKey) return;
+    if (!o || sg.key === skipKey || sg.key === "plan") return;
     o.swaps.forEach(s => out.push({ cat: s.cat, old: s.old || "", new: s.new }));
     (o.extras || []).filter(e => e.name).forEach(e => out.push({ cat: e.cat, old: e.old || "", new: e.name }));
   });
@@ -87,21 +87,34 @@ function renderSuggestions(force) {
 function drawSuggestions(box, input, key) {
   box.classList.remove("working");
   const keep = new Set([...box.querySelectorAll("input:checked")].map(c => c.dataset.pick));
-  let list = [];
+  let list = [],
+    plan = null;
   try {
     if (input) list = suggestSwaps(input.job, input.opts);
+    if (input) plan = suggestPlan(input.job, input.opts);
   } catch (e) {
     console.warn("suggestions", e);
   }
-  rev.sugg = list;
+  // 0.15.0: one set for the whole job first; the options for each objective fold away under it when the set covers
+  // everything (still there to pick from), and stay open when it can't
+  const pi = list.length;
+  rev.sugg = plan ? [...list, plan] : list;
   rev.suggKey = key;
   if (!list.length) {
     box.innerHTML = "";
     return;
   }
   const money = o => (o.total != null ? "$" + o.total.toLocaleString() : "");
+  const planHtml = plan
+    ? `<div class="sugg splan"><div class="sreason">for: <b>${esc(plan.reason)}</b></div>${planOptHtml(plan.options[0], pi, 0, "plan|" + plan.options[0].swaps.map(x => x.new).join("+"), keep)}
+      ${plan.met.map(m => `<small class="smet">✓ ${esc(m.reason)} – ${esc(m.note)}</small>`).join("")}
+      ${plan.left.map(m => `<small class="sleft">✗ not in the set: <b>${esc(m.reason)}</b>${m.why ? " – " + esc(m.why) : ""}</small>`).join("")}</div>`
+    : "";
+  const fold = plan && !plan.left.length;
   box.innerHTML =
     `<div class="sugghead"><label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label><button class="ghost" id="suggRefresh" title="Work out all suggestions again">↻ Refresh</button></div>` +
+    planHtml +
+    (fold ? `<details class="sothers"><summary>Options for each objective (${list.length})</summary>` : plan ? `<div class="sothhead">Options for each objective</div>` : "") +
     list
       .map(
         (sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>
@@ -116,13 +129,15 @@ function drawSuggestions(box, input, key) {
       <small class="stag">${esc(o.tag)}${o.lvl != null ? ` · Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
       ${o.det ? `<small class="sdet">${esc(o.det)}</small>` : ""}
       ${(o.extras || []).map(e => `<small class="sextra">+ ${esc(e.cat)}: ${e.name ? esc(e.name) + (e.price != null ? " ($" + e.price + ")" : "") : '<span class="warn">' + esc(e.why) + "</span>"}${e.name && e.why ? " – " + esc(e.why) : ""}</small>`).join("")}
+      ${rankHtml(o.rank)}
       ${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${money(o)}</b></label>`;
             })
             .join("")
-        : `<div class="hint" style="margin:2px 0">${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`
+        : `<div class="hint ${sg.met ? "smetline" : ""}" style="margin:2px 0">${sg.met ? "✓ " : ""}${esc(sg.hint || "No unlocked part fits – check the budget, your career level or the parts list.")}</div>`
     }</div>`
       )
-      .join("");
+      .join("") +
+    (fold ? "</details>" : "");
   // one choice per suggestion
   // sets that follow the other ticks: the 3DMark set of a new build, the coloured-lights set
   $("#suggRefresh").onclick = () => renderSuggestions(true);
@@ -135,6 +150,11 @@ function drawSuggestions(box, input, key) {
         box.querySelectorAll(`input[data-sg="${c.dataset.sg}"]`).forEach(o => {
           if (o !== c) o.checked = false;
         });
+      // the whole-job set and the single suggestions would add the same parts twice: one or the other
+      if (c.checked && plan)
+        box
+          .querySelectorAll(+c.dataset.sg === pi ? `input[data-sg]:not([data-sg="${pi}"])` : `input[data-sg="${pi}"]`)
+          .forEach(o => (o.checked = false));
       const k = list[+c.dataset.sg]?.key;
       if (follows.some(f => f !== k)) renderSuggestions();
     })
@@ -152,6 +172,20 @@ function benchOptHtml(o, i, k, pick, keep) {
     <small class="stag">${n > 1 ? `one tick adds <b>all ${n} parts</b> below` : n ? "one tick adds the part below" : "no parts needed"}${o.tag ? " · " + esc(o.tag) : ""}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
     ${n ? `<ul class="sset">${all.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.name)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.why ? ` <small>– ${esc(x.why)}</small>` : ""}</li>`).join("")}</ul>` : ""}
     ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
+}
+// "X or better": the in-game part ranking of the part asked for, the customer's and the suggested one
+function rankHtml(r) {
+  if (!r) return "";
+  const n = x => (x == null ? "?" : x.toLocaleString());
+  return `<small class="srank">Part ranking: asked for <b>${n(r.want)}</b>${r.cur != null ? ` · current <b>${n(r.cur)}</b>` : ""} · new <b class="${r.now >= r.want ? "ok" : "bad"}">${n(r.now)}</b></small>`;
+}
+// the whole-job set: every part with the objective(s) it is for
+function planOptHtml(o, i, k, pick, keep) {
+  return `<label class="sopt multi plan ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
+    <span><span class="sname"><b>${esc(o.name)}</b>${o.score != null ? ` → score <b class="bscore">${o.score.toLocaleString()}</b>` : ""}</span>
+    <small class="stag">${o.nParts > 1 ? `one tick adds <b>all ${o.nParts} parts</b> below` : o.nParts ? "one tick adds the part below" : "no parts needed"}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
+    <ul class="sset">${o.parts.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.new)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.for.length ? `<small class="sfor">for: ${esc(x.for.join(" · "))}${x.note ? ` <i>(${esc(x.note)})</i>` : ""}</small>` : ""}${rankHtml(x.rank)}</li>`).join("")}</ul>
+    ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
 }
 // the ticked suggestions → part swaps (+ tasks for sticks to take out)
 function pickedSuggestions() {
@@ -207,6 +241,8 @@ function saveReview() {
       subject: $("#fSubject").value.trim(),
       labour: $("#fLabour").value === "" ? null : +$("#fLabour").value,
       budget: $("#fBudget").value === "" ? null : +$("#fBudget").value,
+      level: $("#fLevel").value === "" ? null : +$("#fLevel").value,
+      stars: $("#fStars").value === "" ? null : +$("#fStars").value,
       deadline: $("#fDeadline").value.trim(),
       softDeadline: !!d.softDeadline && $("#fDeadline").value.trim() === d.deadline,
       suspect: $("#fSuspect").value.trim(),
@@ -264,7 +300,7 @@ function saveReview() {
         .filter(Boolean)
         .forEach(t => tasks.push({ id: uid(), text: t, src: "add", done: false }));
       tasks.push(...picked.tasks);
-      target = { ...fields, table: 0, id: d.id, level: d.level, tasks, swaps: picked.swaps, brands, created: Date.now() };
+      target = { ...fields, table: 0, id: d.id, tasks, swaps: picked.swaps, brands, created: Date.now() };
       jobs.push(target);
     }
     if ((target.table || 0) !== table) {

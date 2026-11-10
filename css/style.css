@@ -1,5 +1,5 @@
 :root {
-  --css-ver: "0.14.10"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
+  --css-ver: "0.15.0"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
   --bg: #12151c;
   --panel: #1a1f29;
   --card: #222836;
@@ -18,6 +18,9 @@
 }
 * {
   box-sizing: border-box;
+}
+html {
+  scroll-padding-top: 80px; /* the sticky top bar: scrolling to a card / control doesn't hide it under the bar */
 }
 [hidden] {
   display: none !important;
@@ -255,13 +258,6 @@ main {
   border-radius: 20px;
   padding: 1px 8px;
   color: var(--muted);
-}
-.chip.dl {
-  color: var(--warn);
-  border-color: var(--warn);
-}
-.chip.sus {
-  color: #ffb4b4;
 }
 .tables {
   display: flex;
@@ -856,20 +852,72 @@ header button {
   }
 }
 
-/* hidden objectives – the important part of every job */
-.hidbox {
-  margin: 10px 0 4px;
+/* the game's objectives (0.15.0): a framed box under T1–T3 – the warm look the hidden objectives had */
+.objbox {
+  margin: 8px 0 4px;
   border: 2px solid var(--warn);
   border-radius: 9px;
   background: linear-gradient(160deg, #3d2a0c, #2a1d0b 70%);
   box-shadow:
     0 0 0 1px #0006,
-    0 0 18px #f0a03340;
+    0 0 14px #f0a03333;
+  padding: 7px 10px 6px;
+}
+.objhead {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #ffc56b;
+  margin-bottom: 3px;
+}
+ul.mainobj {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff1d6;
+}
+ul.mainobj li {
+  padding: 2px 0;
+}
+ul.mainobj li::marker {
+  color: #ffc56b;
+}
+ul.mainobj li .x {
+  opacity: 0;
+  padding: 0 4px;
+}
+ul.mainobj li:hover .x {
+  opacity: 1;
+}
+.objsus {
+  margin-top: 5px;
+  padding-top: 4px;
+  border-top: 1px solid #f0a03326;
+  font-size: 12px;
+  color: #ffd2b0;
+}
+.objsus small {
+  color: #c8a98a;
+}
+.chip.stars {
+  color: #ffd25e;
+  border-color: #6b5a2a;
+  letter-spacing: 1px;
+}
+
+/* hidden objectives (0.15.0: blue – light border and title, dark background) */
+.hidbox {
+  margin: 10px 0 4px;
+  border: 2px solid #5cc4f5;
+  border-radius: 9px;
+  background: linear-gradient(160deg, #0f2b40, #0d2233 70%);
+  box-shadow: 0 0 0 1px #0006;
   padding: 8px 10px 6px;
 }
 .hidbox.alldone {
   border-color: var(--good);
-  box-shadow: 0 0 12px #3ccf7a30;
   background: linear-gradient(160deg, #173322, #16241c 70%);
 }
 .hidhead {
@@ -877,7 +925,7 @@ header button {
   font-weight: 800;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: #ffc56b;
+  color: #8fd8ff;
   display: flex;
   justify-content: space-between;
   margin-bottom: 4px;
@@ -891,7 +939,7 @@ header button {
   gap: 8px;
   padding: 5px 2px;
   cursor: pointer;
-  border-top: 1px solid #f0a03326;
+  border-top: 1px solid #5cc4f526;
 }
 .hid:first-of-type {
   border-top: 0;
@@ -913,46 +961,24 @@ header button {
 .hid b {
   display: block;
   font-size: 14px;
-  color: #fff1d6;
+  color: #eef8ff;
   font-weight: 650;
 }
 .hid small {
   display: block;
-  color: #d6b98a;
+  color: #a9c6da;
   font-size: 11.5px;
   margin-top: 1px;
 }
 .hid.done b {
   text-decoration: line-through;
-  color: #a99979;
+  color: #8aa0b0;
 }
 .hid .x {
   margin-left: auto;
   opacity: 0;
 }
 .hid:hover .x {
-  opacity: 1;
-}
-.chip.hidchip {
-  color: #1d1303;
-  background: var(--warn);
-  border-color: var(--warn);
-  font-weight: 700;
-}
-ul.mainobj {
-  margin: 0;
-  padding-left: 18px;
-  font-size: 13px;
-  color: #c9cfdb;
-}
-ul.mainobj li {
-  padding: 2px 0;
-}
-ul.mainobj li .x {
-  opacity: 0;
-  padding: 0 4px;
-}
-ul.mainobj li:hover .x {
   opacity: 1;
 }
 #fHidden {
@@ -3472,4 +3498,151 @@ dialog.pdbdlg .dlg-b {
 /* PC Bay inventory (0.14.10): a card name read unclearly – kept, marked for checking */
 .fprow small.warn {
   color: var(--warn);
+}
+
+/* STATUS expanded (0.15.0: Settings → compact mode off, and job focus) – every status on its own line */
+.sexp {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sxl {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 7px;
+  background: #1c212c;
+  padding: 3px 7px 4px;
+  font-size: 12px;
+}
+.sxl.st-ok {
+  border-left-color: var(--good);
+}
+.sxl.st-warn {
+  border-left-color: var(--warn);
+}
+.sxl.st-bad {
+  border-left-color: var(--bad);
+  background: #2a1719;
+}
+.sxl :is(.budget, .power, .compat, .bench, .ocbox) {
+  margin: 0;
+  padding: 2px 2px 3px;
+  font-size: 12px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.sxl .stoff {
+  color: var(--muted);
+  padding: 1px 2px;
+}
+.sxl .stoff.ok {
+  color: #9fdcb6;
+}
+
+/* job focus (0.15.0): Enter on a card – the rest of the board is dimmed, the top bar stays */
+.focusdim {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+body.jobfocus .focusdim {
+  opacity: 0.5;
+  pointer-events: auto;
+}
+body.jobfocus .job {
+  isolation: isolate;
+}
+.job.focused {
+  position: relative;
+  z-index: 4;
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 12px 40px #000c;
+}
+.focusnote {
+  font-size: 11.5px;
+  color: #bfe6ff;
+  background: #10324a;
+  border: 1px solid #2a6a92;
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin: -2px 0 8px;
+  text-align: center;
+  animation: fnote 0.25s ease;
+}
+.focusnote kbd {
+  font: inherit;
+  font-weight: 700;
+  border: 1px solid #5cc4f5;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+@keyframes fnote {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .focusdim,
+  .focusnote {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* suggestions (0.15.0): one set for the whole job, what each part is for, part ranking for "or better" */
+.sugg.splan {
+  border-color: #2a6a92;
+  background: #10202e;
+}
+.sopt.multi.plan .sset {
+  border-left-color: var(--accent);
+}
+.sopt.multi.plan .sset li small.sfor,
+.sopt.multi .sset li small.srank {
+  display: block;
+  margin: 0 0 2px 78px;
+}
+.sopt .srank {
+  display: block;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.srank b {
+  color: var(--text);
+}
+.srank b.ok {
+  color: var(--good);
+}
+.srank b.bad {
+  color: var(--bad);
+}
+.sugg small.smet,
+.sugg small.sleft {
+  display: block;
+  font-size: 11.5px;
+  margin-top: 3px;
+}
+.sugg small.smet,
+.sugg .smetline {
+  color: #9fdcb6;
+}
+.sugg small.sleft {
+  color: #ffb4a8;
+}
+details.sothers {
+  margin-top: 6px;
+}
+details.sothers > summary,
+.sothhead {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  margin: 8px 0 2px;
 }

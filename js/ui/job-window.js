@@ -44,6 +44,12 @@ function areaWarn(msg) {
   $("#ocrState").innerHTML = `<div class="areawarn">⚠ ${esc(msg)} <button id="warnAdjust">🎯 Adjust areas</button></div>`;
   $("#warnAdjust").onclick = adjustArea;
 }
+// ★ required stars: from whichever email screenshot shows the blue Labour / Budget band; no star line = 0
+function starsOfShots(p) {
+  const n = rev.shots.filter(s => s.kind === "email" && s.stars != null).map(s => s.stars);
+  if (n.length) return Math.max(...n);
+  return p.noStars ? 0 : null;
+}
 function blankDraft() {
   return {
     id: uid(),
@@ -52,6 +58,7 @@ function blankDraft() {
     labour: null,
     budget: null,
     level: null,
+    stars: null,
     deadline: "",
     suspect: "",
     table: 0,
@@ -173,6 +180,7 @@ async function runOcr() {
     const text = await ocr($("#shot"), sh.kind);
     sh.text = text;
     sh.conf = lastConf;
+    sh.stars = lastStars;
     $("#rawTxt").textContent = text;
     // career level / % from the HUD – only after the main reading is done, never waited for, errors ignored
     if (!sh.careerDone) {
@@ -236,6 +244,7 @@ async function runOcr() {
       labour: p.labour,
       budget: p.budget,
       level: p.level,
+      stars: starsOfShots(p),
       deadline: p.deadline,
       softDeadline: !!p.softDeadline,
       suspect: p.suspect,
@@ -441,6 +450,7 @@ function renderForm() {
     $("#revCapE").innerHTML = emailAdder;
     jb.innerHTML = `<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
+      <div class="grid2"><div><label>Req. level</label><input id="fLevel" type="number" min="1" max="99" value="${d.level ?? ""}"></div><div><label>Req. stars</label><select id="fStars"><option value="">—</option>${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${d.stars === n ? "selected" : ""}>${n ? "★".repeat(n) : "none"}</option>`).join("")}</select></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
       <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[
         1, 2, 3,

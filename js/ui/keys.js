@@ -32,7 +32,7 @@ const KEYMAP = [
       ["R", "Add part replacement"],
       ["E", "✎ Edit job – details, tasks and parts · 📦 open a PC Bay build"],
       ["P", "✎ Edit job and capture PC Stats right away"],
-      ["Enter", "Go into the card (first unfinished line) · 📦 open a PC Bay build"],
+      ["Enter", "Go into the card – job focus: other jobs dimmed, status and swaps in full (Esc leaves) · 📦 open a PC Bay build"],
       ["D", "Job completed (Undo stays available)"],
     ],
   },
@@ -196,6 +196,8 @@ function enterCard(card) {
     card.querySelector('[data-flip="open"]')?.click();
     return;
   } // 📦 PC Bay build: open its window
+  setFocusJob(card.dataset.job); // job focus: other jobs dimmed, Status and Part swaps in full (redraws the card)
+  card = document.querySelector(`.job[data-job="${card.dataset.job}"]`) || card;
   const rows = cardRows(card);
   if (!rows.length) return;
   const first =
@@ -301,7 +303,8 @@ function inCardKey(e) {
       e.preventDefault();
       t.blur();
       document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow"));
-      selectCard(p.card);
+      setFocusJob(null);
+      selectCard(document.querySelector(`.job[data-job="${p.card.dataset.job}"]`) || p.card);
       return true;
   }
   return false;
@@ -403,6 +406,7 @@ document.addEventListener("keydown", e => {
     case k === "End":
       return act(() => selectCard(cards().slice(-1)[0]));
     case k === "Escape":
+      if (focusJob) return act(() => setFocusJob(null)); // job focus first, then the selection
       return act(() => {
         selJob = null;
         markSel();
