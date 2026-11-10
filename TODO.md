@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (7)
+## Small fixes (6)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -123,34 +123,18 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    "LGA 1151 Skylake", "LGA 1151 Coffee Lake" (Mariusz: Skylake and Coffee Lake are different – don't shorten both to
    "LGA 1151"; take the exact text from the DB, same rule as sockOk). (Form factor, max GPU length, RAM runs slower,
    PSU wattage were also suggested – not picked.)
-3. **Settings: "Compact mode for job status" switch** (Mariusz 2026-11-09). A new switch in Settings, between
-   Keyboard and DLC (own "Job cards" heading), on by default, saved like the keyboard switch (LS "pcbs.compactStatus").
-   On = the Status as it is now (one row of small icons, details in the hover / focus popup). Off = every status the
-   job uses (budget, power, 3DMark, overclock, parts fit; not the "off" ones – no budget, no PSU yet) expanded, each on
-   its own line with its values and progress bar – smaller than the old big status boxes, but readable, all info
-   visible. Plan: board.js statusHtml → for "off" render the tiles' bodies inline (`.sexp st-…`) with a tighter style;
-   check keyboard navigation (tiles are buttons now – the expanded lines aren't), layout / soak tests, and a test that
-   the switch flips the card and is remembered. Not before Thursday evening (no releases until then).
-4. **Named-GPU objectives: suggest the part asked for** (Mariusz 2026-11-10, Steve Shovel "The Big Tournament":
-   "3DMark score of 14000", "Install dual graphics cards", "Install EVGA GeForce GTX 1080 Ti K|NGP|N GAMING or better").
-   What went wrong, and the fixes:
-   - The objective came in as "…K| NGP|N GAMING better" – the reader lost "or", so it was taken as a plain "Install",
-     and chipFromText turned it into "any GTX 1080 Ti" (suggested the cheaper MSI / EVGA GAMING). Fix: a trailing
-     "better" after a part name = "or better"; and a plain "Install <maker + model>" means that exact card – the
-     any-card-of-the-chip rule only when no maker/model is named ("Install GTX 1080").
-   - "Or better" options: always offer the named part first (tag "asked for"), then the cheaper / closer ones that
-     also count.
-   - "Install dual graphics cards" and the "Two new GPUs → score" option: when another objective names a GPU, pair
-     that GPU (2 × Kingpin here, or add a 2nd Kingpin when one is already in); never suggest a card worse than the
-     named one.
-5. **GPU name lost "Ti" in PC Stats** (same job). The PC has a ZOTAC GeForce GTX 1080 Ti AMP Extreme (2-line name in
+3. **Named-GPU objective read without "or"** (Mariusz 2026-11-10, Steve Shovel "The Big Tournament"): the reader
+   turned "…K|NGP|N GAMING or better" into "…K| NGP|N GAMING better", so it was taken as a plain "Install". Fix: a
+   trailing "better" after a part name = "or better". (Done in dev-0.15.0: a named maker + model = that exact card,
+   the named part offered first, the pair / 3DMark set built on it via the one-set plan.)
+4. **GPU name lost "Ti" in PC Stats** (same job). The PC has a ZOTAC GeForce GTX 1080 Ti AMP Extreme (2-line name in
    the game list); the app read ZOTAC GeForce GTX 1080 AMP Extreme, so the app's score was 7,585 vs the game's 8,848.
    Fixes: when a 2-line name matches two parts (with / without "Ti", "Super", …), read the 2nd line again on its own;
    and use the captured "Benchmark:" value as a check – pick the near-tie name whose score is closer, else mark the
    part "read unclearly – check". Note: the Ti AMP Extreme ranks above the Kingpin (rank 5885 vs 5682, $910 vs $875),
    so once read right "Kingpin or better" is already met – confirmed by Mariusz: "or better" = in-game part ranking
    (atLeast in suggest.js already compares rank `rk`). Here the right suggestion is then a 2nd 1080 Ti for the pair.
-6. **One GPU split into two in PC Stats** (Mariusz 2026-11-10, C.Lloyd@TallPentagonStaplers.info "I need something
+5. **One GPU split into two in PC Stats** (Mariusz 2026-11-10, C.Lloyd@TallPentagonStaplers.info "I need something
    fixed"). "DFL Radeon R9 290" / "GR8TOR" (2-line name) became two GPUs: "DFL Radeon R9 290 GR8" + "GR8TOR" (marked
    not found), so the card showed GPU 2/2. Likely cause: joinPCStatsLines (parts.js) only joins when the joined text
    scores ≥ the first line's score − 0.02; "DFL Radeon R9 290" alone already matches "…R9 290 GR8" well, and the 2nd
@@ -158,7 +142,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    as its own part. Fix: a non-branded line that matches no part on its own is always joined to the name above
    (unless it's a known crumb); compare the joined text with "the name above + this line" names in the database
    (R9 290 GR8 vs R9 290 GR8TOR) using editDist on the last word. Test with the raw text from this screenshot.
-7. **Customer suspects missed** (Mariusz 2026-11-10, Ryan.Fisher@SmellOffices.edu "HELP! REPAIRS NEEDED!": "Is it a
+6. **Customer suspects missed** (Mariusz 2026-11-10, Ryan.Fisher@SmellOffices.edu "HELP! REPAIRS NEEDED!": "Is it a
    problem with the RAM?" – the field stayed empty). SUSPECT_WORDS (parser.js) has "is it the" but not "is it a
    problem with", "problem with the", "something wrong with", "issue with", "is it my". Same email: "I thought the
    motherboard was dirty so I cleaned it. With the hoover." – add "i thought" to the guess words, and "hoover /
@@ -237,50 +221,13 @@ flipassist, soak, startup – all pass.
 
 ## Bigger updates (waiting for the go-ahead)
 
-### Job card layout + "job focus" mode (Mariusz 2026-11-10, planning only; example card BoringPaul "rig is broken")
-1. **Objectives move up** – between the T1–T3 buttons and STATUS, in the style the hidden objectives box has now
-   (framed box with heading), no checkboxes, but more visible than the plain list today.
-2. **Deadline stays in the objectives** – "Complete by End of Day 8/23/2018" is shown as an objective again (it's
-   detected right and also shown as the badge); cut the "(2 days)" / "(today)" / "(tomorrow)" part – the app can't
-   know the game's current day.
-3. **Hidden objectives box toned down** – blue instead of the strong orange/brown: lighter blue for the border and
-   the title text ("HIDDEN OBJECTIVES X/Y"), darker blue background, good readability (Mariusz 2026-11-10).
-4. **Badges row** – remove the deadline, "Says: …" (suspect) and "N hidden" badges (each shows elsewhere: deadline in
-   the objectives, suspect in its hidden objective, count in the hidden box header). Add next to Labour: Budget,
-   required Level, required stars as stars (★, max 5). NB: the reader doesn't keep these yet – parser.js only works
-   out `noStars`; it needs "Req: Level N" and the star count ("Req: ★★★★" – OCR of the star glyphs is unreliable,
-   probably count them from the pixels of that line) stored on the job, editable in New / Edit job.
-5. **Settings: "Compact mode for part swaps"** – after the "Compact mode for job status" switch (small fix 3), on by
-   default. On = as now: up to 3 not-yet-done swaps + "show more". Off = all swaps all the time.
-6. **Job focus mode** – when inside a card (Enter on the keyboard → enterCard in keys.js; keyboard only, not mouse
-   clicks): every other job (workbenches + open jobs) goes behind a 50% black overlay, the top bar stays fully visible;
-   a note on/near the card "Esc – leave job focus";
-   Status and Part swaps open in non-compact mode; all with a smooth animation (respect prefers-reduced-motion).
-   Leaving (Esc or Job completed): overlay fades out, Status and Part swaps go back to the compact settings.
-Tests: layout / soak (card heights change), keys tests for focus in/out, a units test for Req level / stars parsing.
-
-### Suggestions: work out objectives in a weighted order, each step building on the last (Mariusz 2026-11-10)
-Now suggest.js goes through the objectives in the order the game lists them, each on its own, against the PC as it
-is. Instead: sort them into work order, and let each step see the parts the earlier steps picked (a "planned PC").
-Example (Steve Shovel "The Big Tournament"): 1. which GPU meets "Kingpin or better" → 2. a 2nd of the same / a
-compatible GPU for "dual graphics cards" → 3. "3DMark 14000" with those GPUs fixed → 4. PSU for the whole plan.
-Proposed order (to check against the objective list before starting):
-1. **Named parts** – "Install X", "Install X or better" (by in-game ranking), brand / maker objectives (hidden ones
-   too, e.g. G.SKILL RAM), a named case. These pin parts.
-2. **Counts / pairs built on step 1** – dual GPU (same chip as the pinned GPU), "Install 5 <fan>", RAM amount (with
-   the brand RAM from step 1), storage size / kind, "Support for double GPU".
-3. **Fit follow-ups** – a board for the CPU socket / SLI–CrossFire, a case that takes the cards' length and count, a
-   cooler for the socket, water cooling objectives.
-4. **Performance** – 3DMark score, overclock: start from the planned PC, change only parts not pinned (or pinned
-   ones only to something still meeting their objective, e.g. a better "or better" GPU).
-5. **Power and money last** – PSU for the planned PC's total watts; budget check across the whole plan.
-6. Everything else (lighting, cosmetic) where it doesn't clash.
-Display (Mariusz 2026-11-10): whenever possible show ONE set of parts that covers all objectives – one tick adds
-the whole set – instead of a suggestion per objective. Per-objective suggestions only as a fallback when no single
-set works (budget, level, fit), saying which objective the set can't cover. In the set, list each part with the
-objective(s) it's for. For "X or better" show the in-game ranking of the part asked for, the current part and the
-new part (e.g. "Kingpin #… · yours #… · new #…"), so the user can see the rule worked; when the current part already
-counts, say so with both rankings. Parsing fixes (lost "or", exact maker+model) stay in small fix 4.
+### In dev-0.15.0 (not released – no releases before Thursday evening): Job card layout + job focus, Suggestions in work order
+Done 2026-11-10 (bigger updates 1 + 2, small fix 3 "compact job status" with it): objectives box under T1–T3 with the
+deadline, blue hidden box, Budget / Lv / ★ badges (stars counted on the screenshot – starsFrom in ocr.js), Settings
+"Job cards" switches (pcbs.compactStatus / pcbs.compactSwaps), job focus (Enter / Esc, keyboard only), suggestPlan in
+suggest.js (one set, work order, "for:" per part, ✓ met / ✗ not covered lines), "or better": named part first + part
+rankings + "Already met" line, dual GPU: also the cheapest card that pairs. A guessed-only suspect shows as a line
+under the objectives ("Customer suspects: …") since its badge is gone. Remove this note once released.
 
 ### Parts database window – hidden columns, filters, overclock columns (Mariusz 2026-11-09, planning only)
 General:
