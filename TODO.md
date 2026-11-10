@@ -106,7 +106,24 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (0)
+## Small fixes (2)
+
+1. **"Upgrade to 4 TB of Storage" – no suggestion, and the set says "covered"** (Mariusz 2026-11-10, story job
+   stu@theirregularcorporation.com "One last upgrade needed for a new game(!)": "3DMark score of 14000", "Upgrade
+   to 128 GB of RAM", "Upgrade to 4 TB of Storage", budget $7,000, PC has 1 × Mortoni EZStore 500GB). Causes:
+   (a) suggest.js has a rule for "Upgrade to N GB of RAM" but none for "Upgrade to N TB/GB of Storage" – add one
+   (total size of all drives ≥ N: add a drive or replace the smallest; cheapest first, free SATA / M.2 places);
+   (b) suggestPlan's 0.15.1 line "covered by this set" is added for every objective that got no suggestion – only
+   say it when the set really meets it (dual GPU: 2 GPUs in the set; RAM / storage: the planned total), else list
+   it as not covered.
+2. **3DMark: "No unlocked parts reach this score" with a $7,000 budget** (same job: i7-7700K on a Mortoni H170
+   Mtech plus (no SLI), 2 × 8 GB 2400, 1 × MSI GTX 1080 GAMING Z 8G, CORSAIR TX650M – app score 7,000, game 6,980).
+   Checked: SLI board + 2 × 1080 Ti alone gives 12,589 with the 7700K (CPU score 5,376 holds it back), so 14,000
+   needs a bigger rebuild – a new platform (board + CPU, e.g. Z370 SLI + i7-8700K / 9th gen) + 2 GPUs + PSU (+ the
+   RAM the RAM objective already adds). benchSuggestions only tries small sets, so it finds nothing. Fix: when the
+   small sets can't reach the score and the budget allows, try whole-platform sets (socket change: board + CPU +
+   cooler if it doesn't fit + RAM type if it changes) with 1 or 2 GPUs and a PSU, cheapest that reaches it; and
+   in the one-set plan, build it on the RAM / storage the other objectives add.
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
