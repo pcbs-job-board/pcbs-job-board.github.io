@@ -146,6 +146,10 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Black); 3 colours → only sets with exactly those three; etc. The colours are the colour words in the shop name
    (Mariusz: "Duo Yellow" = 1 colour Yellow; "Striped White Yellow" = White + Yellow; "Patterned Red Yellow Black" =
    3). Malcolm's "Plastic White Yellow" at Lv 25 → only Ribbon Plastic Striped White Yellow.
+   Exception – duo sets (Mariusz 2026-11-10): "Ribbon Plastic Duo <colour>" are all black + that colour, so their
+   colours are Black + <colour> (2), even though the shop name shows one: Duo Red fits a "Black Red" wish, not a
+   "Red" one. (Keep this as data – a colours field per cable set – so the name rule doesn't decide it alone.)
+   Unknown: would the game accept Duo Red for "Plastic Black Red" as well as Striped Black Red – check in game.
    Must work for 3- and 4-colour wishes too (Mariusz 2026-11-10): detectCables reads any run of 1–4 colour words
    after the type ("Plastic Red Yellow Black", "Ribbon Plastic Red Green White Black") as one wish, and the hidden
    task's examples ("e.g. …") list only the sets with exactly those colours (Patterned Red Yellow Black, Patterned
