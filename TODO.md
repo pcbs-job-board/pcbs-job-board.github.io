@@ -148,7 +148,8 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    Fixes: when a 2-line name matches two parts (with / without "Ti", "Super", …), read the 2nd line again on its own;
    and use the captured "Benchmark:" value as a check – pick the near-tie name whose score is closer, else mark the
    part "read unclearly – check". Note: the Ti AMP Extreme ranks above the Kingpin (rank 5885 vs 5682, $910 vs $875),
-   so once read right the app may call "Kingpin or better" already met – ask Mariusz whether the game accepts it.
+   so once read right "Kingpin or better" is already met – confirmed by Mariusz: "or better" = in-game part ranking
+   (atLeast in suggest.js already compares rank `rk`). Here the right suggestion is then a 2nd 1080 Ti for the pair.
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
@@ -221,6 +222,25 @@ flipassist, soak, startup – all pass.
 ---
 
 ## Bigger updates (waiting for the go-ahead)
+
+### Suggestions: work out objectives in a weighted order, each step building on the last (Mariusz 2026-11-10)
+Now suggest.js goes through the objectives in the order the game lists them, each on its own, against the PC as it
+is. Instead: sort them into work order, and let each step see the parts the earlier steps picked (a "planned PC").
+Example (Steve Shovel "The Big Tournament"): 1. which GPU meets "Kingpin or better" → 2. a 2nd of the same / a
+compatible GPU for "dual graphics cards" → 3. "3DMark 14000" with those GPUs fixed → 4. PSU for the whole plan.
+Proposed order (to check against the objective list before starting):
+1. **Named parts** – "Install X", "Install X or better" (by in-game ranking), brand / maker objectives (hidden ones
+   too, e.g. G.SKILL RAM), a named case. These pin parts.
+2. **Counts / pairs built on step 1** – dual GPU (same chip as the pinned GPU), "Install 5 <fan>", RAM amount (with
+   the brand RAM from step 1), storage size / kind, "Support for double GPU".
+3. **Fit follow-ups** – a board for the CPU socket / SLI–CrossFire, a case that takes the cards' length and count, a
+   cooler for the socket, water cooling objectives.
+4. **Performance** – 3DMark score, overclock: start from the planned PC, change only parts not pinned (or pinned
+   ones only to something still meeting their objective, e.g. a better "or better" GPU).
+5. **Power and money last** – PSU for the planned PC's total watts; budget check across the whole plan.
+6. Everything else (lighting, cosmetic) where it doesn't clash.
+Display: keep the game's order on screen (or show the step numbers – decide when started); one "do the whole plan"
+tick that adds every step's parts. Parsing fixes (lost "or", exact maker+model) stay in small fix 4.
 
 ### Parts database window – hidden columns, filters, overclock columns (Mariusz 2026-11-09, planning only)
 General:
