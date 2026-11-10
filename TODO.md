@@ -143,8 +143,9 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    "Plastic White Yellow").
    Rule (Mariusz 2026-11-10): the set's colours must be exactly the wished colours – 1 colour asked → only sets
    in that one colour; 2 colours → only 2-colour sets with those two (no 3-colour sets like Patterned Red Yellow
-   Black); 3 colours → only sets with exactly those three; etc. (Check how the game counts the duo sets: "Duo
-   Yellow" may be yellow + black – then it's a 2-colour set "Black Yellow".)
+   Black); 3 colours → only sets with exactly those three; etc. The colours are the colour words in the shop name
+   (Mariusz: "Duo Yellow" = 1 colour Yellow; "Striped White Yellow" = White + Yellow; "Patterned Red Yellow Black" =
+   3). Malcolm's "Plastic White Yellow" at Lv 25 → only Ribbon Plastic Striped White Yellow.
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
