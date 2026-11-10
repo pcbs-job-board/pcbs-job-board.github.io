@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (6)
+## Small fixes (7)
 
 1. **"Install 5 ARCTIC BioniX F140 (Green) or better" – a number of parts** (Mariusz 2026-11-09, story-like email
    mona@cryptomaniacs.com "overheating when mining crypto?", Labour $140, Budget $70, Req: Level 24 – the budget is
@@ -158,6 +158,12 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    as its own part. Fix: a non-branded line that matches no part on its own is always joined to the name above
    (unless it's a known crumb); compare the joined text with "the name above + this line" names in the database
    (R9 290 GR8 vs R9 290 GR8TOR) using editDist on the last word. Test with the raw text from this screenshot.
+7. **Customer suspects missed** (Mariusz 2026-11-10, Ryan.Fisher@SmellOffices.edu "HELP! REPAIRS NEEDED!": "Is it a
+   problem with the RAM?" – the field stayed empty). SUSPECT_WORDS (parser.js) has "is it the" but not "is it a
+   problem with", "problem with the", "something wrong with", "issue with", "is it my". Same email: "I thought the
+   motherboard was dirty so I cleaned it. With the hoover." – add "i thought" to the guess words, and "hoover /
+   vacuum(ed)" to BLAME_WORDS (handled badly), so Motherboard is listed too (the hoover sentence is split from the
+   motherboard one – look one sentence back when a blame sentence names no part). Add both to the units test.
 
 _0.14.10 released 2026-11-09 (backup-0.14.9 made first) – "Support for double GPU" objective (MULTI_RE in suggest.js:
 SLI / CrossFire board in the objective's own line, the 3DMark / new-build sets and cpuWithBoard; no 2nd card), story job
