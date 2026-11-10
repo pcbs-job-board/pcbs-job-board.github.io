@@ -106,7 +106,7 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
 
 ---
 
-## Small fixes (2)
+## Small fixes (3)
 
 1. **"Upgrade to 4 TB of Storage" – no suggestion, and the set says "covered"** (Mariusz 2026-11-10, story job
    stu@theirregularcorporation.com "One last upgrade needed for a new game(!)": "3DMark score of 14000", "Upgrade
@@ -129,6 +129,16 @@ All tests pass (run.js 366, flow 44, units 115, pcbay 30, edgetest).
    whole platform, 2 GPUs, overclock) until a set reaches the score and meets the other objectives; inside the
    budget first, but for story jobs (budget only counts when an objective mentions it) go over it if needed and say
    so. If the search still fails, that's an app bug – show "couldn't find a set – please report this job" instead.
+3. **Duo cables missing from cable suggestions** (Mariusz 2026-11-10, Cooke.Malcolm@MalcolmAnalytics.gov "please
+   help": "I'd love some Plastic White Yellow cables" → hidden task "Change all cables → Plastic White / Plastic
+   Yellow", e.g. Loose Plastic White, Ribbon Plastic Yellow). Causes: (a) cablesFor (parts.js) leaves out every duo /
+   striped / patterned set unless the wish names that type; (b) the database names the duo sets wrongly – the shop
+   (screenshots 2026-11-10) sells "Ribbon Plastic Duo Blue / Cyan / Green / Light Grey / Lime / Orange / Pink /
+   Purple / Red / White / Yellow" ($400 each), the database has "Ribbon Plastic Duo Black <colour>"; also "Ribbon
+   Plastic Patterned Lime Black Light Grey" (DB: "… Lime Black Grey"). Fix: rename those in cables.csv (keep the old
+   names as aliases for saved jobs); offer the duo sets of the asked colour(s) too; "Plastic White Yellow" (two
+   colours in one wish) – also offer the set with both colours (Ribbon Plastic Striped White Yellow). Ask Mariusz:
+   which sets does the game accept for "Plastic White Yellow" – only ones with both colours, or either colour?
 
 _0.15.1 released 2026-11-10 (backup-0.15.0 first; Prettier run after – the site's format check had failed since 0.15.0): suggestPlan retries with other options / 3DMark sets when an objective is left out._
 
