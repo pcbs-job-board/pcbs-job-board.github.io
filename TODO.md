@@ -239,8 +239,12 @@ Proposed order (to check against the objective list before starting):
    ones only to something still meeting their objective, e.g. a better "or better" GPU).
 5. **Power and money last** – PSU for the planned PC's total watts; budget check across the whole plan.
 6. Everything else (lighting, cosmetic) where it doesn't clash.
-Display: keep the game's order on screen (or show the step numbers – decide when started); one "do the whole plan"
-tick that adds every step's parts. Parsing fixes (lost "or", exact maker+model) stay in small fix 4.
+Display (Mariusz 2026-11-10): whenever possible show ONE set of parts that covers all objectives – one tick adds
+the whole set – instead of a suggestion per objective. Per-objective suggestions only as a fallback when no single
+set works (budget, level, fit), saying which objective the set can't cover. In the set, list each part with the
+objective(s) it's for. For "X or better" show the in-game ranking of the part asked for, the current part and the
+new part (e.g. "Kingpin #… · yours #… · new #…"), so the user can see the rule worked; when the current part already
+counts, say so with both rankings. Parsing fixes (lost "or", exact maker+model) stay in small fix 4.
 
 ### Parts database window – hidden columns, filters, overclock columns (Mariusz 2026-11-09, planning only)
 General:
