@@ -865,10 +865,10 @@ function suggestSwaps(job, opts = {}) {
 //   B1 only when no other suggestion has an option; not a step of the one set (suggestPlan never asks for "budget")
 //   B2 always the same part again (like for like), sold in the shop and unlocked – never a cheaper or other part
 //   B3 inside the budget left only – a part the budget can't replace can't be the expected fix; cheapest first
-//   B4 parts that can't stop a PC from working are left out: case, CPU cooler, fans, cables, coolant / pipes / fittings,
+//   B4 parts that can't stop a PC from working are left out: case, fans, cables, coolant / pipes / fittings,
 //      and drives when there are several (one drive = it may be the boot drive). Custom loop parts (CPU block,
-//      reservoir, radiator) and watercooled GPUs count.
-const BUDGET_SKIP = new Set(["Case", "CPU Cooler", "Case Fan", "Cables", "Other"]);
+//      reservoir, radiator), watercooled GPUs and the CPU cooler count.
+const BUDGET_SKIP = new Set(["Case", "Case Fan", "Cables", "Other"]);
 function budgetFixSuggestion(job, ctx) {
   // no budget, or a story job whose budget doesn't count – nothing to go by
   if (ctx.left == null || (job.story && !budgetInObjectives(jobObjectives(job)))) return null;
