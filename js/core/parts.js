@@ -173,26 +173,6 @@ function searchParts(q, cat, limit = 14, brands = [], buyable = false) {
     .slice(0, limit)
     .map(x => x.p);
 }
-// best database match for an OCR'd name (used to clean up PC Stats parts)
-function matchPart(name) {
-  const t = normP(name)
-    .split(" ")
-    .filter(w => w.length > 1);
-  if (t.length < 2) return null;
-  let best = null,
-    bs = 0;
-  for (const p of INDEX) {
-    if (p.hist) continue;
-    const hit = t.filter(w => p.w.includes(w)).length;
-    if (hit / t.length < 0.8) continue;
-    const s = (hit / t.length) * 0.7 + (hit / p.w.length) * 0.3;
-    if (s > bs) {
-      bs = s;
-      best = p;
-    }
-  }
-  return best && best.w.length && t.filter(w => best.w.includes(w)).length / best.w.length >= 0.55 ? best : null;
-}
 // cables: the colour words of a shop name, e.g. "Ribbon Plastic Striped White Yellow" → white, yellow (0.15.2)
 const CABLE_COLOURS = [
   "dark grey",

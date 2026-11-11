@@ -43,7 +43,7 @@ export default [
   { ignores: ["data/parts-db.js", "node_modules/**"] },
   {
     files: ["js/**/*.js"],
-    languageOptions: { ecmaVersion: 2023, sourceType: "script", globals: { ...browser, ...shared, module: "readonly" } },
+    languageOptions: { ecmaVersion: 2023, sourceType: "script", globals: { ...browser, ...shared } },
     linterOptions: { reportUnusedDisableDirectives: "warn" },
     rules: {
       "no-undef": "error",

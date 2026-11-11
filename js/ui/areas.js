@@ -339,7 +339,6 @@ function areaImage(src) {
   g.drawImage(src, 0, 0, AREA_W, h);
   return g.getImageData(0, 0, AREA_W, h);
 }
-if (typeof module !== "undefined") module.exports = { detectArea, findLevelBar, AREA_W, invColumns };
 
 // ================= "Set up screen areas" window (browser only) =================
 // Hidden "set up" flag per area. Boxes that were moved before this existed count as set up.

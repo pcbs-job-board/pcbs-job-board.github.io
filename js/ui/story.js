@@ -65,11 +65,6 @@ function storyReportData() {
     details: $("#sDetails").value.trim(),
   };
 }
-const storyNumber = () => {
-  const d = new Date(),
-    p = n => String(n).padStart(2, "0");
-  return `${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
-};
 function storyReportText(r) {
   return `Sender's email: ${r.email || "?"}\nSubject: ${r.subject || "?"}\nSigned: ${r.name || "?"}\n\n${r.details || ""}\n\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""})`;
 }

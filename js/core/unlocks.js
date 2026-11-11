@@ -73,4 +73,3 @@ function unlocksHtml() {
         <div class="ulapp ${cls}">${app.map(g => `<span class="ul">${mark} ${esc(g.app)}</span>`).join("") || `<span class="ulnone">–</span>`}</div>`;
     }).join("")}</div></div>`;
 }
-if (typeof module !== "undefined") module.exports = { UNLOCKS, GATES, hasUnlock };

@@ -273,5 +273,3 @@ function ocCheck(j) {
   if (items.every(i => i.state === "off")) state = "off";
   return { items, psu, missing: [...missing], state };
 }
-if (typeof module !== "undefined")
-  module.exports = { cpuIsFixed, boardIsFixed, ocOf, ocTargets, ocCheck, ocReach, ocEst, throttleOf, ocSettings };

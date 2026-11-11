@@ -128,8 +128,6 @@ function benchCheck(j) {
     state: s.missing.length ? "off" : s.off >= target || (xmp && s.on >= target) ? "ok" : s.on >= target ? "warn" : "bad",
   };
 }
-if (typeof module !== "undefined")
-  module.exports = { benchOf, benchScore, benchTarget, benchCheck, sysBench, cpuBench, xmpSpeed };
 // PC Stats shows the PC's 3DMark ("Benchmark: 8848"). A GPU / CPU name that lost (or gained) "Ti", "Super" or "XT" in
 // reading ("ZOTAC GeForce GTX 1080 / Ti AMP Extreme" read without the Ti) is put right when the parts as read don't
 // give that number and the other version does (within 1 %). parts: [{cat, name}] – changed in place; returns the changes.

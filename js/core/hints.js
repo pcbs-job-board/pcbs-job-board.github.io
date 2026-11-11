@@ -53,4 +53,3 @@ function jobHints(j) {
     }
   });
 }
-if (typeof module !== "undefined") module.exports = { HINTS, jobHints };

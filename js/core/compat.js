@@ -325,4 +325,3 @@ function compatRank(j, replaceName, items) {
   scored.sort((a, b) => (a.warn.length > 0) - (b.warn.length > 0) || a.i - b.i);
   return scored.map(s => Object.assign(Object.create(Object.getPrototypeOf(s.p)), s.p, { warn: s.warn }));
 }
-if (typeof module !== "undefined") module.exports = { compatOf, compatBuild, compatIssues, jobCompatIssues, compatRank };
