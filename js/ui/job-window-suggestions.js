@@ -43,6 +43,7 @@ function suggestInput() {
       broken: hid.filter(h => h.part).map(h => h.part),
       rgb: hid.some(h => /^add rgb/i.test(h.task)),
       waterCooling: hid.some(h => /^water cooling requested/i.test(h.task)),
+      body: d.body || "", // the email – "Based on budget" puts the parts that fit what it says first
     },
   };
 }
