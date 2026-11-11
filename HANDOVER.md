@@ -73,7 +73,11 @@ Last updated: 2026-11-11 · live version **0.15.2** · next dev branch: none yet
   with SLI / CrossFire – the pair score averages the cards. PC Stats shows the game's "Benchmark: N": the app's score
   matched the game exactly on a checked PC, so it's used to correct misread names (Ti / non-Ti).
   **The game never gives a 3DMark objective that can't be reached at the job's level** – "nothing reaches it" is an
-  app bug (open ToDo item).
+  app bug.
+  **Overclock for 3DMark** (Mariusz, in 0.15.2): the search tries overclocking only when an objective asks for an
+  overclock, when no set reaches the score at stock, or when every stock set is over the budget – then cheaper sets at
+  ~60 % of the overclock potential (50–75 % is safer); the full potential only when nothing else completes the
+  objectives.
 - **Overclocking** (`oc.js`): CPU multiplier on 100 MHz + voltage (0.05 V steps), GPU core / memory + power limit.
   Temperatures depend on cooler, case and GPU heat – no reliable formula, so the app doesn't promise "safe with this
   cooler"; the parts database plan uses "safe with any cooler, else the midpoint".
@@ -85,7 +89,7 @@ Last updated: 2026-11-11 · live version **0.15.2** · next dev branch: none yet
   `oc` (CPU/GPU stock clocks or overclockable board/CPU), `rk` ranking, `lvl` unlock level, radiator places
   `r120` / `r140` (also used as the fan-place approximation). Watercooled GPUs have " | " in the name (EVGA
   "K|NGP|N" is not one). Cables: colours must match the wish **exactly** (1–4 colours); "Duo <colour>" sets are
-  black + that colour; the shop names differ from the database for duo sets (open ToDo item).
+  black + that colour (confirmed in game); the app uses the shop names for duo sets.
 
 ## 5. The app (where things are)
 
