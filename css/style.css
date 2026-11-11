@@ -3694,25 +3694,31 @@ details.sothers > summary,
 }
 
 /* PC Bay: capture buttons + the parts added last stay at the bottom of the window; shine once after a scan */
+.fprow.inv.shine:nth-child(n),
 .shine {
-  animation: fshine 1.8s ease-out 1;
+  background-image: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 210, 122, 0.16) 45%,
+    rgba(255, 210, 122, 0.16) 55%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  animation: fshine 1.4s ease-in-out 1;
 }
 @keyframes fshine {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 210, 122, 0.9);
-    background-color: #5a4a1c;
+  from {
+    background-position: -50% 0;
   }
-  60% {
-    box-shadow: 0 0 14px 3px rgba(255, 210, 122, 0.45);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 210, 122, 0);
+  to {
+    background-position: 150% 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .shine {
     animation: none;
-    outline: 1px solid #ffd27a;
+    background-image: none;
   }
 }
 .fgroup {
