@@ -10,13 +10,9 @@ counts of small fixes / bigger updates; this file is pushed to `todo` after ever
 
 ---
 
-## Small fixes (1)
+## Small fixes (0)
 
-1. **GPU table: Core clock and Memory clock are too squished** (Mariusz 2026-11-11). Screenshot:
-   `todo-files/gpu-table-clocks-squished.png` (Parts database → GPU tab). Suggested solutions:
-   - Remove "GeForce " / "Radeon " from the chipset name (e.g. "Radeon RX560" → "RX560").
-   - Split the Power value into 2 lines when an OC value is present (e.g. "60 W (OC 72 W)" → "60 W" / "(OC 72 W)").
-   - Column title "3DMark (1/2 cards)" → "3DMark (1/2 GPU)" on 2 lines ("3DMark" / "(1/2 GPU)").
+None open.
 
 
 ## Bigger updates (waiting for the go-ahead)
