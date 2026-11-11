@@ -410,11 +410,14 @@ function extendName(cur, line) {
   if (!base || w.length < 3) return null;
   let best = null,
     bd = Infinity,
-    tie = false;
+    tie = false,
+    head = Infinity;
+  const dist = (a, b) => Math.min(editDist(a, b), editDist(shape(a), shape(b))); // B / 8, O / 0 read for each other
   for (const [name, n] of allNames()) {
     if (!n.startsWith(base + " ")) continue;
     const rest = n.slice(base.length + 1).replace(/ /g, ""),
-      d = Math.min(editDist(rest, w), editDist(shape(rest), shape(w))); // B / 8, O / 0 read for each other
+      d = dist(rest, w);
+    if (rest.length > w.length) head = Math.min(head, dist(rest.slice(0, w.length), w));
     if (d < bd) {
       bd = d;
       best = name;
@@ -422,7 +425,9 @@ function extendName(cur, line) {
     } else if (d === bd) tie = true;
   }
   // two names fit equally well ("ASUS ROG Strix Z370-" + "Gaming" = Z370-E or Z370-I Gaming, the "I" lost) → don't guess
-  return best && !tie && bd <= Math.max(1, Math.floor(w.length / 4)) ? best : null;
+  // the line is the middle of a longer name ("GIGABYTE AORUS" / "GeForce GTX 1080 Xtreme" / "Edition 8G") rather than
+  // a whole other one with slips (RTX 2080 XTREME 8G) → the next line still decides
+  return best && !tie && head >= bd && bd <= Math.max(1, Math.floor(w.length / 4)) ? best : null;
 }
 function joinPCStatsLines(lines) {
   const items = [];
