@@ -395,6 +395,8 @@ function partFieldsHtml(comps) {
   const ramOdd = oddRam(comps.filter(c => c.name && slotOf(c.cat, c.name).k === "RAM").map(c => c.name));
   return `<div id="fParts">${PART_SLOTS.map(sl => {
     const rows = comps.filter(c => slotOf(c.cat, c.name) === sl),
+      // a CPU block (custom water cooling) does the job of the CPU cooler, so either one fills the cooling slot
+      coolOk = sl.k === "CPU Cooler" && comps.some(c => c.name && slotOf(c.cat, c.name).k === "WC:CPU Block"),
       shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
     if (sl.onlyIfUsed && !rows.length) return "";
     const row = c =>
@@ -407,7 +409,7 @@ function partFieldsHtml(comps) {
             ? row({ cat: "Other", name: "" })
             : ""
         : "";
-    return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
+    return `<div class="pslot${!sl.other && !sl.opt && !rows.length && !coolOk ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
 }
 // part names are never cut off: each field grows to show the whole name (CSS field-sizing does it where supported)

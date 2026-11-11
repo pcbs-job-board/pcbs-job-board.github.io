@@ -2136,7 +2136,8 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
         extras.push({ cat: "PSU", old: "", name: psu.name, price: psu.price, why: `PSU for ~${need} W` });
       }
     }
-    if (!have("CPU Cooler").length) {
+    // a CPU block (custom water cooling) cools the CPU just as well as a cooler does
+    if (!have("CPU Cooler").length && !build.some(p => p.cat === "Water Cooling" && wcKind(p) === "CPU Block")) {
       const j3 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]),
         own = keep["CPU Cooler"] && { name: keep["CPU Cooler"], cat: "CPU Cooler" };
       if (!own || !fitsBuild(j3, own, "")) {
