@@ -4029,3 +4029,6 @@ details.sothers > summary,
     grid-template-columns: minmax(0, 1fr);
   }
 }
+#capRow.noshot #areaHintP {
+  display: none;
+}
