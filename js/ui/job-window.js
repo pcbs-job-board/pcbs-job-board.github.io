@@ -85,6 +85,7 @@ function openReview(dataUrl, editJob, forJob) {
   showBlack(false);
   renderShots();
   dlg.showModal();
+  fitPartNames();
   warmReader();
   $("#fSender")?.focus({ preventScroll: true }); // not the ✕ in the corner (Enter would close the window)
   if (dataUrl) addShot(dataUrl, forJob ? "parts" : "email");
@@ -397,7 +398,7 @@ function partFieldsHtml(comps) {
       shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
     if (sl.onlyIfUsed && !rows.length) return "";
     const row = c =>
-      `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" title="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
+      `<div class="prow"><textarea class="pname" rows="1" spellcheck="false" data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" title="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${esc(c.name)}</textarea>${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more =
       sl.other || rows.length < sl.max
         ? rows.length
@@ -409,12 +410,20 @@ function partFieldsHtml(comps) {
     return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
 }
+// part names are never cut off: each field grows to show the whole name (CSS field-sizing does it where supported)
+function fitPartNames() {
+  document.querySelectorAll("#fParts .pname").forEach(t => {
+    t.style.height = "auto";
+    if (t.scrollHeight) t.style.height = t.scrollHeight + "px";
+  });
+}
+window.addEventListener("resize", fitPartNames);
 // fields → hidden text box (+ "input" so the suggestions follow); text box → fields
 function partsFromFields() {
   const ta = $("#fComps"),
     box = $("#fParts");
   if (!ta || !box) return;
-  const list = [...box.querySelectorAll("input[data-slot]")]
+  const list = [...box.querySelectorAll("[data-slot]")]
     .map(i => {
       const v = i.value.trim();
       if (!v) return null;
@@ -449,6 +458,7 @@ function renderPartFields() {
         box = $("#fParts");
       if (ta && box?.isConnected) box.outerHTML = partFieldsHtml(parseCompText(ta.value));
     } while (pfAgain);
+    fitPartNames();
   } finally {
     pfBusy = false;
   }
@@ -456,13 +466,17 @@ function renderPartFields() {
 function bindPartFields() {
   const wrap = $("#revForm");
   wrap.addEventListener("change", e => {
-    if (e.target.matches("#fParts input[data-slot]")) {
+    if (e.target.matches("#fParts [data-slot]")) {
       partsFromFields();
       renderPartFields();
     }
   });
+  wrap.addEventListener("keydown", e => {
+    if (e.key === "Enter" && e.target.matches(".pname") && !e.defaultPrevented) e.preventDefault(); // one line of text, only wrapped
+  });
   wrap.addEventListener("input", e => {
-    if (e.target.matches("#fParts input[data-slot]")) {
+    if (e.target.matches(".pname")) fitPartNames();
+    if (e.target.matches("#fParts [data-slot]")) {
       clearTimeout(bindPartFields.t);
       bindPartFields.t = setTimeout(partsFromFields, 400);
     }
@@ -470,7 +484,7 @@ function bindPartFields() {
   wrap.addEventListener("click", e => {
     const rm = e.target.closest("[data-prm]");
     if (rm) {
-      rm.closest(".prow").querySelector("input").value = "";
+      rm.closest(".prow").querySelector(".pname").value = "";
       partsFromFields();
       renderPartFields();
       return;
@@ -479,9 +493,10 @@ function bindPartFields() {
     if (add) {
       add.insertAdjacentHTML(
         "beforebegin",
-        `<div class="prow"><input data-ac data-ac-cat="${add.dataset.padd === "Other" ? OTHER_CATS() : esc(add.dataset.padd)}" data-slot="${esc(add.dataset.padd)}" data-cat="${esc(add.dataset.padd)}" placeholder="(empty)" autocomplete="off"></div>`
+        `<div class="prow"><textarea class="pname" rows="1" spellcheck="false" data-ac data-ac-cat="${add.dataset.padd === "Other" ? OTHER_CATS() : esc(add.dataset.padd)}" data-slot="${esc(add.dataset.padd)}" data-cat="${esc(add.dataset.padd)}" placeholder="(empty)" autocomplete="off"></textarea></div>`
       );
-      add.previousElementSibling.querySelector("input").focus();
+      add.previousElementSibling.querySelector(".pname").focus();
+      fitPartNames();
       if (add.closest(".pslot").querySelectorAll(".prow").length >= slotOf(add.dataset.padd).max) add.remove();
     }
   });
@@ -531,6 +546,7 @@ function renderForm() {
   }
   $("#fSave").onclick = saveReview;
   bindObjectives();
+  fitPartNames();
   // switching "Story job" unticks / ticks the hidden objectives in one go
   $("#fStory")?.addEventListener("change", e => {
     rev.storyTouched = true;

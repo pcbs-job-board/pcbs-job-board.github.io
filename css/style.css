@@ -3103,7 +3103,8 @@ dialog.flipdlg {
   flex: 1;
   min-width: 0;
 }
-.prow input::placeholder {
+.prow input::placeholder,
+.prow textarea::placeholder {
   color: var(--muted);
   font-style: italic;
 }
@@ -3933,7 +3934,7 @@ details.sothers > summary,
 }
 /* parts: compact, always open; a long name takes two cells so it can be read whole */
 #dlgReview #fParts {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-flow: dense;
   gap: 4px;
   margin: 0 0 8px;
@@ -3942,14 +3943,12 @@ details.sothers > summary,
   padding: 4px 6px;
   min-width: 0;
 }
-#dlgReview .pslot.plong {
-  grid-column: span 2;
-}
 #dlgReview .pslot > label {
   margin: 0 0 3px;
   font-size: 9.5px;
 }
-#dlgReview .prow input {
+#dlgReview .prow input,
+#dlgReview .prow textarea {
   padding: 3px 6px;
   min-height: 0;
   font-size: 12.5px;
@@ -4003,11 +4002,6 @@ details.sothers > summary,
     animation: none;
   }
 }
-@media (max-width: 1100px) {
-  #dlgReview #fParts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 @media (max-width: 900px) {
   #dlgReview[open] {
     height: auto;
@@ -4031,4 +4025,16 @@ details.sothers > summary,
 }
 #capRow.noshot #areaHintP {
   display: none;
+}
+/* part names wrap instead of being cut off */
+textarea.pname {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;
+  line-height: 1.3;
+  font-family: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
