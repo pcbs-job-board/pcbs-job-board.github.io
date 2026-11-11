@@ -3694,39 +3694,6 @@ details.sothers > summary,
 }
 
 /* PC Bay: capture buttons + the parts added last stay at the bottom of the window; shine once after a scan */
-.finvdock {
-  margin: 4px 0 8px;
-}
-.finvdock .fcap {
-  margin-bottom: 0;
-}
-.frecent {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  margin-top: 8px;
-}
-.frecent small {
-  color: var(--muted);
-}
-.fchip {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  max-width: 100%;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #161b25;
-  font-size: 12px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.fchip .cat {
-  color: var(--muted);
-}
 .shine {
   animation: fshine 1.8s ease-out 1;
 }

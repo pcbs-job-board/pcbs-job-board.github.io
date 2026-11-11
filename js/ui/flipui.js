@@ -112,7 +112,8 @@ function flipRender() {
   nx.disabled = f.step === 3 && !ready;
   nx.classList.toggle("good", f.step === 4);
   d.querySelector(".flipconfirm").hidden = true;
-  if (flipShine) d.querySelector(".finvdock")?.scrollIntoView({ block: "nearest" });
+  // after a scan: the capture buttons at the top of the window, so the newest parts (listed first) are in view below them
+  if (flipShine) d.querySelector(".finv .fcap")?.scrollIntoView({ block: "start" });
   flipShine = 0; // the shine plays once
 }
 // ---------- step 1: the parts as bought ----------
@@ -220,7 +221,7 @@ function invHtml(f) {
   const rows = invOrder(inv.filter(i => i.cat === flipInvTab));
   return `<div class="finv"><div class="fh">Your inventory for this build</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
-    ${invDock(f, inv)}
+    <div class="fcap"><button class="primary" data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
     ${
       cats.length
         ? `<div class="pdbtabs finvtabs" role="tablist">${cats
@@ -240,15 +241,8 @@ function invHtml(f) {
     }
     <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
 }
-// the capture buttons + the parts added last, at the top of the inventory box (scrolled into view after a scan; shine once)
-let flipShine = 0; // scan time of the capture just made: its parts shine once (cleared after the next draw)
-function invDock(f, inv) {
-  const last = invOrder(inv).slice(0, 4),
-    at = last[0]?.at,
-    more = at ? inv.filter(i => i.at === at).length - last.filter(i => i.at === at).length : 0;
-  return `<div class="finvdock"><div class="fcap"><button class="primary" data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
-    ${last.length ? `<div class="frecent"><small>Added last:</small>${last.map(i => `<span class="fchip${i.at && i.at === flipShine ? " shine" : ""}${i.broken ? " broken" : ""}" title="${esc(i.name)}"><span class="cat">${esc(CAT_LABEL[i.cat] || i.cat)}</span>${esc(i.name)}${i.broken ? ` <span class="tag broken">BROKEN</span>` : i.used ? "" : ` <span class="tag new">NEW</span>`}</span>`).join("")}${more > 0 ? `<small>+ ${more} more from that scan</small>` : ""}</div>` : ""}</div>`;
-}
+// scan time of the capture just made: its rows shine once (cleared after the next draw)
+let flipShine = 0;
 const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
 // the assistant's results, worked out again only when the build / inventory changes (or ↻)
 let flipCache = { key: "", plan: null, ups: null };
