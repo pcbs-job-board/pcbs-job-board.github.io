@@ -40,55 +40,13 @@ changed is in CHANGELOG.md – this list only has what's still to do.
 
 ---
 
-## Small fixes (3)
+## Small fixes (0)
 
-1. **"Upgrade to 4 TB of Storage" – no suggestion, and the set says "covered"** (Mariusz 2026-11-10, story job
-   stu@theirregularcorporation.com "One last upgrade needed for a new game(!)": "3DMark score of 14000", "Upgrade
-   to 128 GB of RAM", "Upgrade to 4 TB of Storage", budget $7,000, PC has 1 × Mortoni EZStore 500GB). Causes:
-   (a) suggest.js has a rule for "Upgrade to N GB of RAM" but none for "Upgrade to N TB/GB of Storage" – add one
-   (total size of all drives ≥ N: add a drive or replace the smallest; cheapest first, free SATA / M.2 places);
-   (b) suggestPlan's 0.15.1 line "covered by this set" is added for every objective that got no suggestion – only
-   say it when the set really meets it (dual GPU: 2 GPUs in the set; RAM / storage: the planned total), else list
-   it as not covered.
-2. **3DMark: "No unlocked parts reach this score" with a $7,000 budget** (same job: i7-7700K on a Mortoni H170
-   Mtech plus (no SLI), 2 × 8 GB 2400, 1 × MSI GTX 1080 GAMING Z 8G, CORSAIR TX650M – app score 7,000, game 6,980).
-   Checked: SLI board + 2 × 1080 Ti alone gives 12,589 with the 7700K (CPU score 5,376 holds it back), so 14,000
-   needs a bigger rebuild – a new platform (board + CPU, e.g. Z370 SLI + i7-8700K / 9th gen) + 2 GPUs + PSU (+ the
-   RAM the RAM objective already adds). benchSuggestions only tries small sets, so it finds nothing. Fix: when the
-   small sets can't reach the score and the budget allows, try whole-platform sets (socket change: board + CPU +
-   cooler if it doesn't fit + RAM type if it changes) with 1 or 2 GPUs and a PSU, cheapest that reaches it; and
-   in the one-set plan, build it on the RAM / storage the other objectives add.
-   Rule (Mariusz 2026-11-10): the game never gives a 3DMark objective that can't be reached at the job's level, so
-   "No unlocked parts reach this score" should never be the answer – keep widening the search (more parts changed,
-   whole platform, 2 GPUs, overclock) until a set reaches the score and meets the other objectives; inside the
-   budget first, but for story jobs (budget only counts when an objective mentions it) go over it if needed and say
-   so. If the search still fails, that's an app bug – show "couldn't find a set – please report this job" instead.
-3. **Duo cables missing from cable suggestions** (Mariusz 2026-11-10, Cooke.Malcolm@MalcolmAnalytics.gov "please
-   help": "I'd love some Plastic White Yellow cables" → hidden task "Change all cables → Plastic White / Plastic
-   Yellow", e.g. Loose Plastic White, Ribbon Plastic Yellow). Causes: (a) cablesFor (parts.js) leaves out every duo /
-   striped / patterned set unless the wish names that type; (b) the database names the duo sets wrongly – the shop
-   (screenshots 2026-11-10) sells "Ribbon Plastic Duo Blue / Cyan / Green / Light Grey / Lime / Orange / Pink /
-   Purple / Red / White / Yellow" ($400 each), the database has "Ribbon Plastic Duo Black <colour>"; also "Ribbon
-   Plastic Patterned Lime Black Light Grey" (DB: "… Lime Black Grey"). Fix: rename those in cables.csv (keep the old
-   names as aliases for saved jobs); offer the duo sets of the asked colour too. Two colours in one wish
-   ("Plastic White Yellow") = ONE wish: only sets that have both colours count (Mariusz 2026-11-10) – e.g. Ribbon
-   Plastic Striped White Yellow, any duo / striped / patterned set with white and yellow; not plain White / Yellow
-   and not "White / Yellow" as two options. Fix detectCables to keep "plastic white yellow" together (label
-   "Plastic White Yellow").
-   Rule (Mariusz 2026-11-10): the set's colours must be exactly the wished colours – 1 colour asked → only sets
-   in that one colour; 2 colours → only 2-colour sets with those two (no 3-colour sets like Patterned Red Yellow
-   Black); 3 colours → only sets with exactly those three; etc. The colours are the colour words in the shop name
-   (Mariusz: "Duo Yellow" = 1 colour Yellow; "Striped White Yellow" = White + Yellow; "Patterned Red Yellow Black" =
-   3). Malcolm's "Plastic White Yellow" at Lv 25 → only Ribbon Plastic Striped White Yellow.
-   Exception – duo sets (Mariusz 2026-11-10): "Ribbon Plastic Duo <colour>" are all black + that colour, so their
-   colours are Black + <colour> (2), even though the shop name shows one: Duo Red fits a "Black Red" wish, not a
-   "Red" one. (Keep this as data – a colours field per cable set – so the name rule doesn't decide it alone.)
-   Unknown: would the game accept Duo Red for "Plastic Black Red" as well as Striped Black Red – check in game.
-   Must work for 3- and 4-colour wishes too (Mariusz 2026-11-10): detectCables reads any run of 1–4 colour words
-   after the type ("Plastic Red Yellow Black", "Ribbon Plastic Red Green White Black") as one wish, and the hidden
-   task's examples ("e.g. …") list only the sets with exactly those colours (Patterned Red Yellow Black, Patterned
-   Red Green White Black). Cables are only in the hidden task (not in the one-tick set). Unit tests: 1, 2, 3 and 4
-   colours.
+Nothing open. Notes from the 0.15.2 fixes (storage, 3DMark, cables – done in `dev-0.15.2`):
+- Check in game: is Ribbon Plastic Duo Red accepted for a "Plastic Black Red" wish, as well as Striped Black Red? The
+  app offers both (a duo set counts as black + its colour).
+- 3DMark: the wider search tries a new platform (board + CPU, 1–2 GPUs, PSU / cooler when needed), not overclocking
+  yet. If a job still shows "couldn't find a set – please report this job", that's the next step.
 
 ## Bigger updates (waiting for the go-ahead)
 
