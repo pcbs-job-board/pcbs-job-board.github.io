@@ -28,21 +28,32 @@ css/style.css                  all styles (colour tokens at the top)
 js/config.js                   version + report settings (stays here: released versions check it for updates)
 js/core/                       the logic – no page access, also run by the tests in Node
   util.js                        localStorage helper, small shared helpers
-  parser.js                      email / PC Stats text → job fields, hidden-objective rules
+  parser/                        email / PC Stats text → job fields
+    rules.js · hidden.js           hidden-objective rules; suspects, brands, cables, coolant
+    pcstats.js · email.js          PC Stats → parts; email → job, story jobs
+    merge.js                       joining several screenshots of one email
   parts.js                       parts index, DLC / version / career filters, search, PC Stats matching, prices, power
   compat.js                      which parts fit together (sockets, sizes, radiators, reservoirs…)
   unlocks.js                     what each career level unlocks
   bench.js · oc.js               3DMark score, overclocking checks
   hints.js                       💡 tips per job
-  suggest.js                     suggested part swaps (objectives, hidden objectives, 3DMark sets…)
-  flip.js                        PC Bay builds: value, broken parts, upgrades, Resale Value / inventory parsing
+  suggest/                       suggested part swaps
+    common.js · swaps.js           shared helpers; the swaps per objective
+    plan.js                        one set of parts for the whole job
+    cooling.js · lights.js         water cooling / AIO / overclock; parts with lights
+    score.js                       3DMark sets (small sets, new platform, PC from nothing)
+  flip/                          PC Bay builds
+    build.js · assist.js           value, broken parts, state; the build assistant (upgrades, NEW parts)
+    read.js                        Resale Value / inventory screenshot text
 js/ui/                         the page – windows, board, capture
   state.js                       saved jobs, rules, screen areas
-  board.js                       job cards, Status tiles, tables, drag & drop, Undo notices
+  board/                         the board
+    status.js · tooltip.js         Status tiles, their details popup
+    cards.js · events.js           tables + job cards + job focus; moving jobs, clicks, drag & drop, Undo notices
   capture.js · ocr.js            screen sharing, paste / drop, the text reader (Tesseract.js)
-  job-window.js                  new-job / Edit window (+ job-window-suggestions.js: suggested swaps)
+  job-window/                    new-job / Edit window (window.js) and its suggested swaps (suggestions.js)
   autocomplete.js                part name dropdown
-  flipui.js                      📦 PC Bay window and tile
+  flip/                          📦 PC Bay window and tile (window.js), its clicks (events.js), screenshots (capture.js)
   areas.js                       finds the email / PC Stats / PC Bay windows on screenshots, area set-up
   settings.js · backup.js · reports.js · rules.js · partsdb.js · story.js · notify.js · keys.js
   start.js                       start-up (runs last of the board scripts)

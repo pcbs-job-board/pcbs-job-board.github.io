@@ -15,7 +15,9 @@ Python 3 is used for the data tools (`pip install pandas openpyxl` only for the 
 - Plain scripts, loaded in the order written in `index.html`; top-level names are shared between files. Top-level
   code may only use what an *earlier* script defines – anything else goes inside a function.
 - `js/config.js` stays in `js/`: released versions fetch it to find out about updates.
-- One concern per file. A file that grows past ~700 lines is a sign to split it.
+- One concern per file. A file that grows past ~700 lines is a sign to split it; an area with several files gets its
+  own folder (`js/core/suggest/`, `parser/`, `flip/`, `js/ui/board/`, `flip/`, `job-window/`).
+- Look parts up by name with `ixByName(name)` (a cached map), not `INDEX.find(p => p.name === name)`.
 - Comments say *why* (game rules, edge cases); names say *what*.
 - Player data stays in the browser (`localStorage` via `LS`). Nothing personal is ever sent anywhere.
 
