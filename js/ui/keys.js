@@ -59,7 +59,7 @@ const KEYMAP = [
     keys: [
       ["Ctrl + Enter", "Create / save the job"],
       ["Alt + E", "📸 Add email capture"],
-      ["Alt + P", "📸 Add PC parts capture"] /* also shown on those buttons (js/app.js .capkey) */,
+      ["Alt + P", "📸 Add PC parts capture"] /* also shown on those buttons (js/ui/job-window/window.js .capkey) */,
       ["Alt + A", "🎯 Adjust areas"],
     ],
   },

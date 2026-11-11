@@ -1,5 +1,5 @@
 /* 📦 PC Bay build – a broken PC bought on PC Bay: fix it, improve it, XMP / overclock, run 3DMark, sell.
-   Lives in the jobs list (kind: "flip") so it can sit on T1–T3 or in Open jobs; the window is in js/ui/flipui.js.
+   Lives in the jobs list (kind: "flip") so it can sit on T1–T3 or in Open jobs; the window is in js/ui/flip/.
    Files (js/core/flip/): build.js the build + its state, read.js reading the screenshots, assist.js the build assistant.
    Resale value (community formula; matches the game: $441 broken → $591 booted → $949 at 4,288 points):
      value = sum of used part values × multiplier + $100 once the PC has booted to the OS

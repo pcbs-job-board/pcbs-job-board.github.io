@@ -1,5 +1,5 @@
 /* Overclocking helper for jobs – only when an OBJECTIVE asks for an overclock ("OC CPU to 4000MHz", "Overclock the GPU…").
-   A mention in the email body ("I'll overclock it later") only feeds the PSU check (see suggest.js, "overclock later").
+   A mention in the email body ("I'll overclock it later") only feeds the PSU check (see js/core/suggest/, "overclock later").
    Level 1 – certain: can it overclock at all (unlocked CPU + a motherboard that can overclock), is the target inside the
              part's hard limit (GPU core / memory maximum), overclocked watts vs the PSU.
    Level 2 – an estimate: every part at its full overclock potential (the workbook's overclock base – 0.14.5, was 90 %);

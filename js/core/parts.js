@@ -38,7 +38,7 @@ function setCareer(level, pct) {
   LS.set("pcbs.career", career);
 }
 // unlocked at the player's progress? Parts listed at 0–1 % unlock right at the level-up.
-// Custom water cooling parts come from their own shop, unlocked at career level 16 (js/unlocks.js)
+// Custom water cooling parts come from their own shop, unlocked at career level 16 (js/core/unlocks.js)
 // watercooled GPUs (Custom Water Cooling Shop: "NVIDIA GeForce GTX 1080 | EKWB EK-FC Plexi") – still GPUs, but sold in the
 // custom water cooling shop, so they unlock with it (level 16)
 function isWaterGPU(p) {
