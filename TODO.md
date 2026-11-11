@@ -42,11 +42,12 @@ changed is in CHANGELOG.md – this list only has what's still to do.
 
 ## Small fixes (0)
 
-Nothing open. Notes from the 0.15.2 fixes (storage, 3DMark, cables – done in `dev-0.15.2`):
-- Check in game: is Ribbon Plastic Duo Red accepted for a "Plastic Black Red" wish, as well as Striped Black Red? The
-  app offers both (a duo set counts as black + its colour).
-- 3DMark: the wider search tries a new platform (board + CPU, 1–2 GPUs, PSU / cooler when needed), not overclocking
-  yet. If a job still shows "couldn't find a set – please report this job", that's the next step.
+Nothing open. Done in `dev-0.15.2` (not released): storage objective, 3DMark new-platform search + overclock rules,
+exact cable colours.
+- Rules kept for later work (Mariusz 2026-11-11): "Ribbon Plastic Duo <colour>" sets are black + that colour (confirmed in
+  game). The 3DMark search tries overclocking only when an objective asks for an overclock, when no set reaches the score
+  at stock, or when every stock set is over the budget – then cheaper sets at ~60 % of the overclock potential (50–75 %
+  is safer); the full potential only when nothing else completes the objectives.
 
 ## Bigger updates (waiting for the go-ahead)
 
