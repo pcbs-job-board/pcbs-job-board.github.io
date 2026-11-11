@@ -19,7 +19,7 @@ const PDB_TABS = [
   { k: "Water Cooling", wc: /^coolant/i, label: "Coolants" },
   { k: "Cables", label: "Cables" },
 ];
-const pdb = { tab: 0, sort: null, desc: false };
+const pdb = { tab: 0, sort: null, desc: false, all: false, f: {} }; // all = "Show hidden details"; f = filter label → chosen value
 
 // one row → a readable part object
 function pdbPart(r) {
@@ -51,11 +51,17 @@ const pdbW = p => {
 };
 const pdbMm = v => (v ? `${v} mm` : "");
 const pdbYes = v => (v === "1" ? "yes" : v === "0" ? "no" : "");
-const pdbSocks = v =>
-  (v || "")
+// long socket lists go on two lines
+const pdbSocks = v => {
+  const l = (v || "")
     .split("|")
-    .map(s => s.replace(/^LGA 1151 \((\w+) ?\w*\)$/, "LGA 1151 $1"))
-    .join(", ");
+    .filter(Boolean)
+    .map(s => s.replace(/^LGA 1151 \((\w+) ?\w*\)$/, "LGA 1151 $1"));
+  const n = l.length > 3 ? Math.ceil(l.length / 2) : l.length;
+  return l.slice(0, n).join(", ") + (l.length > n ? ",\n" + l.slice(n).join(", ") : "");
+};
+// lights: "RGB" (any colour), a single colour ("Blue", "Purple/Blue", "Mixed") – read from the details text – or none
+const pdbLights = p => (p.c.lt ? (p.det.match(/(?:^|· )([^·]*?) lighting(?: ·|$)/) || [])[1] || "RGB" : "");
 const pdbGB = v => (!v ? "" : +v >= 1000 ? `${+v / 1000} TB` : `${v} GB`);
 let PDB_RES = null; // reservoir number → name (for the case column)
 function pdbReservoirs() {
@@ -71,10 +77,30 @@ function pdbReservoirs() {
 // a case's reservoirs: "all 11", "none" or "6 – up to EKWB EK-XRES 140 Revo D5" (the lists go by reservoir height)
 function pdbCaseRes(rs) {
   if (!rs) return "";
-  if (rs === "-") return "none – no custom water cooling";
+  if (rs === "-") return "none";
   const all = Object.keys(pdbReservoirs()).length,
     ids = rs.split(",");
   return ids.length >= all ? `all ${all}` : `${ids.length} of ${all}`;
+}
+// CPU: "Stock / Mid / Max" clock and voltage – mid = the multiplier below the midpoint of stock and the full potential
+function pdbCpuClocks(p) {
+  const d = ocOf(p.name);
+  if (!d) return p.bench[4] ? `Stock: ${p.bench[4]} MHz` : "";
+  const stock = `Stock: ${d.mhz} MHz @ ${d.v} V`;
+  if (p.c.oc !== "1") return stock;
+  const mid = ocSettings(p.name, Math.floor((d.mhz + ocReach(p.name)) / 200) * 100),
+    max = ocSettings(p.name),
+    line = (t, s) => `${t}: ${s.mhz} MHz${s.volt ? ` @ ${s.volt.toFixed(2)} V` : ""}`;
+  return [stock, mid.mhz > d.mhz && mid.mhz < max.mhz && line("Mid", mid), line("Max", max)].filter(Boolean).join("\n");
+}
+// GPU: "Stock / Mid / Max" for the core (i = 0) or the memory clock (i = 3); max = the full overclock potential
+function pdbGpuClocks(p, i) {
+  const o = p.oc.map(Number),
+    stock = o[i],
+    max = o[i + 1];
+  if (!stock) return "";
+  const mid = Math.round((stock + max) / 2);
+  return [`Stock: ${stock} MHz`, max > stock && `Mid: ${mid} MHz`, max > stock && `Max: ${max} MHz`].filter(Boolean).join("\n");
 }
 const pdbCasesFor = ri => {
   let n = 0;
@@ -99,7 +125,17 @@ const PDB_COLS = {
         [+p.c.r120 && `${p.c.r120}×120`, +p.c.r140 && `${p.c.r140}×140`].filter(Boolean).join(" / ") ||
         (p.c.r120 === "0" ? "none" : ""),
     ],
-    ["Reservoirs", p => pdbCaseRes(p.c.rs)],
+    [
+      "Reservoirs",
+      p => pdbCaseRes(p.c.rs),
+      0,
+      p => {
+        const t = pdbCaseRes(p.c.rs),
+          res = pdbReservoirs(),
+          tip = (p.c.rs && p.c.rs !== "-" ? p.c.rs.split(",") : []).map(i => res[i]).filter(Boolean);
+        return esc(t) + (tip.length ? ` <span class="pdbi" tabindex="0" title="${esc(tip.join("\n"))}">ⓘ</span>` : "");
+      },
+    ],
     ["Open bench", p => (p.c.open ? "yes" : "")],
   ],
   Motherboard: [
@@ -125,10 +161,10 @@ const PDB_COLS = {
   ],
   CPU: [
     ["Socket", p => p.c.s || ""],
-    ["Clock", p => (p.bench[4] ? `${p.bench[4]} MHz` : ""), 1],
-    ["Power", p => pdbW(p), 1],
-    ["Overclock", p => (p.c.oc === "1" ? (p.oc[0] ? `yes – from ${p.oc[0]} MHz @ ${p.oc[1]} V` : "yes") : pdbYes(p.c.oc))],
+    ["Overclock", p => (p.c.oc === "1" ? "Yes" : "No")],
+    ["Clock and voltage", pdbCpuClocks, 1],
     ["Throttles at", p => (p.oc[4] ? `${p.oc[4]} °C` : ""), 1],
+    ["Power", p => pdbW(p), 1],
     ["RAM channels", p => p.bench[5] || "", 1],
     ["Default RAM", p => (p.bench[6] ? `${p.bench[6]} MHz` : ""), 1],
     ["Ranking", p => p.c.rk || "", 1],
@@ -148,15 +184,15 @@ const PDB_COLS = {
   ],
   GPU: [
     ["Chipset", p => p.c.c || ""],
-    ["Memory", p => p.spec.replace(/\s*water$/i, "")],
+    ["VRAM", p => p.spec.replace(/\s*water$/i, "")],
     ["Cooling", p => (/\bwater\b/i.test(p.spec) || p.name.includes("|") ? "💧 water" : "air")],
     ["Length", p => pdbMm(p.c.l), 1],
     ["Slots", p => p.c.sl || "", 1],
     ["Two GPUs", p => p.c.m || ""],
     ["Power", p => pdbW(p), 1],
     ["3DMark (1 / 2 cards)", p => (p.bench[0] ? `${p.bench[0]}${+p.bench[1] ? " / " + p.bench[1] : ""}` : ""), 1],
-    ["Core clock", p => (p.oc[0] ? `${p.oc[0]}–${p.oc[2]} MHz` : "")],
-    ["Memory clock", p => (p.oc[3] ? `${p.oc[3]}–${p.oc[5]} MHz` : "")],
+    ["Core clock", p => pdbGpuClocks(p, 0), 1],
+    ["Memory clock", p => pdbGpuClocks(p, 3), 1],
     ["Throttles at", p => (p.oc[6] ? `${p.oc[6]} °C` : ""), 1],
     ["Ranking", p => p.c.rk || "", 1],
   ],
@@ -183,6 +219,7 @@ const PDB_COLS = {
   "CPU Block": [["Sockets", p => pdbSocks(p.c.ss)]],
 };
 const BOARD_NAME_PDB = { ITX: "Mini-ITX", mATX: "Micro-ATX", ATX: "ATX", EATX: "E-ATX", XL: "XL-ATX", EEB: "SSI-EEB" };
+const pdbDlc = p => ((window.PARTS_DLC || []).find(d => d.key === p.dlc) || {}).label || p.dlc;
 const PDB_START = [
   ["Part", p => p.name],
   [
@@ -193,8 +230,9 @@ const PDB_START = [
   ["Price", p => (p.price == null ? "" : `$${p.price}`), 1],
 ];
 const PDB_END = [
-  ["Lights", p => (p.c.lt ? "RGB" : "")],
-  ["DLC", p => (p.dlc ? ((window.PARTS_DLC || []).find(d => d.key === p.dlc) || {}).label || p.dlc : "")],
+  ["Lights", pdbLights],
+  // a small ✓ for a DLC part – hover shows the DLC's name
+  ["DLC", p => (p.dlc ? "✓" : ""), 0, p => (p.dlc ? `<span title="${esc(pdbDlc(p))}">✓</span>` : "")],
   ["Game version", p => p.ver],
   ["Random jobs", p => (p.nj ? "never" : "")],
   [
@@ -207,12 +245,109 @@ const PDB_END = [
   ],
 ];
 
+// columns hidden until "Show hidden details" is on (by tab label)
+const PDB_HIDE = {
+  Case: ["Open bench", "Game version", "Random jobs", "Details"],
+  Motherboard: ["Game version", "Details"],
+  CPU: ["Ranking", "Game version", "Details"],
+  "CPU Cooling": ["Game version", "Random jobs", "Details"],
+  RAM: ["Game version", "Details"],
+  GPU: ["Ranking", "Game version", "Random jobs", "Details"],
+  PSU: ["Game version", "Details"],
+  Storage: ["Game version", "Details"],
+  "Case Fans": ["Game version", "Random jobs", "Details"],
+  Reservoir: ["Game version", "Details"],
+  Radiator: ["Game version", "Details"],
+  "CPU Block": ["Game version", "Details"],
+  Pipes: ["Game version"],
+  Connectors: ["Game version", "Details"],
+  Coolants: ["Game version"],
+  Cables: ["Game version"],
+};
+// drop-down filters per tab: [label, values(part) → a string or a list, order?] – the options come from the data;
+// order = a list of values to put first, or a compare function
+const pdbBand = (n, w, unit) => (n ? `${Math.floor(n / w) * w}–${Math.floor(n / w) * w + w - 1} ${unit}` : "");
+const pdbLightsF = ["Lights", p => pdbLights(p) || "None", (a, b) => pdbLightRank(a).localeCompare(pdbLightRank(b))];
+const pdbLightRank = v => (v === "RGB" ? "0" : v === "None" ? "2" : "1" + v);
+const pdbSocketList = p =>
+  (p.c.ss || "")
+    .split("|")
+    .filter(Boolean)
+    .map(s => pdbSocks(s));
+const PDB_FILTERS = {
+  Case: [
+    ["Case type", p => p.spec.replace(/,.*$/, ""), ["Micro", "Cube", "Open Frame", "Mid Tower", "Full Tower", "Super Tower"]],
+    [
+      "Board size",
+      p =>
+        (p.c.b || "")
+          .split(",")
+          .filter(Boolean)
+          .map(b => BOARD_NAME_PDB[b] || b),
+      Object.values(BOARD_NAME_PDB),
+    ],
+    pdbLightsF,
+  ],
+  Motherboard: [
+    ["Socket", p => p.c.s || ""],
+    ["Size", p => BOARD_NAME_PDB[p.c.f] || p.c.f || "", Object.values(BOARD_NAME_PDB)],
+    ["Multi GPU", p => [p.c.sli === "1" && "SLI", p.c.cf === "1" && "CrossFire"].filter(Boolean).concat([]) || [], null],
+    ["Overclocking", p => (p.c.oc === "1" ? "Yes" : "No")],
+    pdbLightsF,
+  ],
+  CPU: [
+    ["Socket", p => p.c.s || ""],
+    ["Overclock", p => (p.c.oc === "1" ? "Yes" : "No")],
+  ],
+  "CPU Cooling": [["Type", p => (p.c.aio ? "Liquid (AIO)" : "Air")], ["Socket", pdbSocketList], pdbLightsF],
+  RAM: [
+    [
+      "Size",
+      p => pdbGB(p.c.gb),
+      (a, b) =>
+        pdbNum(a.replace(/\D+/g, "")) * (/TB/.test(a) ? 1000 : 1) - pdbNum(b.replace(/\D+/g, "")) * (/TB/.test(b) ? 1000 : 1),
+    ],
+    ["Speed", p => pdbBand(+p.c.mhz, 500, "MHz")],
+    pdbLightsF,
+  ],
+  GPU: [
+    ["Chipset", p => p.c.c || ""],
+    ["VRAM", p => p.spec.replace(/\s*water$/i, "").replace(/(\d)GB/, "$1 GB")],
+    ["SLI / CrossFire", p => p.c.m || "None"],
+    pdbLightsF,
+  ],
+  PSU: [
+    ["Power", p => pdbBand(parseInt(p.pw), 250, "W")],
+    ["Type", p => p.spec.replace(/^\d+W\s*/i, "").replace(/\s*(ATX|SFX)$/, "")],
+    ["Format", p => p.c.f || ""],
+  ],
+  Storage: [["Type", p => ({ 1: "HDD", 2: "SSD", 3: "M.2" })[p.c.k] || p.spec], pdbLightsF],
+  "Case Fans": [["Size", p => pdbMm(p.c.z)], pdbLightsF],
+  Reservoir: [pdbLightsF],
+  Radiator: [["Size", p => (p.c.r ? p.c.r.replace(/x.*/, " mm") : "")], pdbLightsF],
+  "CPU Block": [["Socket", pdbSocketList], pdbLightsF],
+};
+const pdbList = v => (Array.isArray(v) ? v : [v]).filter(Boolean);
+function pdbFilterOptions(defs, all) {
+  return defs.map(([label, f, order]) => {
+    const vals = [...new Set(all.flatMap(p => pdbList(f(p))))];
+    const rank = v => (Array.isArray(order) ? order.indexOf(v) : -1);
+    vals.sort(
+      typeof order === "function"
+        ? order
+        : (a, b) => (rank(a) < 0 ? 99 : rank(a)) - (rank(b) < 0 ? 99 : rank(b)) || a.localeCompare(b, "en", { numeric: true })
+    );
+    return { label, vals };
+  });
+}
+
 function pdbRows(t) {
   return ((window.PARTS_DB || {})[t.k] || []).map(pdbPart).filter(p => !t.wc || t.wc.test(p.spec));
 }
 function pdbCols(t, parts) {
-  const cols = [...PDB_START, ...(PDB_COLS[t.wc ? t.label : t.k] || [["Type", p => p.spec]]), ...PDB_END];
-  return cols.filter((col, i) => i === 0 || parts.some(p => col[1](p) !== "")); // no empty columns
+  const cols = [...PDB_START, ...(PDB_COLS[t.wc ? t.label : t.k] || [["Type", p => p.spec]]), ...PDB_END],
+    hide = pdb.all ? [] : PDB_HIDE[t.label] || [];
+  return cols.filter((col, i) => i === 0 || (!hide.includes(col[0]) && parts.some(p => col[1](p) !== ""))); // no empty columns
 }
 function renderPartsDb() {
   const t = PDB_TABS[pdb.tab],
@@ -229,7 +364,17 @@ function renderPartsDb() {
       `<button class="pdbtab${i === pdb.tab ? " on" : ""}" data-pdbtab="${i}" aria-pressed="${i === pdb.tab}">${esc(x.label)}</button>`
   ).join("");
   const cols = pdbCols(t, all);
-  let rows = all.filter(p => q.every(w => w.test(p.name)));
+  const fdefs = PDB_FILTERS[t.label] || [],
+    opts = pdbFilterOptions(fdefs, all);
+  $("#pdbFilters").innerHTML = opts
+    .map(
+      ({ label, vals }) =>
+        `<label class="pdbf">${esc(label)} <select data-pdbf="${esc(label)}"><option value="">All</option>${vals.map(v => `<option${pdb.f[label] === v ? " selected" : ""}>${esc(v)}</option>`).join("")}</select></label>`
+    )
+    .join("");
+  let rows = all.filter(
+    p => q.every(w => w.test(p.name)) && fdefs.every(([label, f]) => !pdb.f[label] || pdbList(f(p)).includes(pdb.f[label]))
+  );
   if (pdb.sort != null && cols[pdb.sort]) {
     const [, f, numeric] = cols[pdb.sort],
       key = p => {
@@ -251,12 +396,15 @@ function renderPartsDb() {
       : "";
   $("#pdbTable").innerHTML =
     `<thead><tr>${cols.map((c, i) => `<th data-pdbsort="${i}" class="${pdb.sort === i ? (pdb.desc ? "sd" : "sa") : ""}" title="Sort by ${esc(c[0])}">${esc(c[0])}</th>`).join("")}</tr></thead>
-    <tbody>${rows.map(p => `<tr>${cols.map((c, i) => `<td${i === 0 ? ' class="pdbname"' : c[0] === "Details" ? ' class="pdbdet"' : ""}>${esc(String(c[1](p)))}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}" class="hint">No part matches.</td></tr>`}</tbody>`;
+    <tbody>${rows.map(p => `<tr>${cols.map((c, i) => `<td${i === 0 ? ' class="pdbname"' : c[0] === "Details" ? ' class="pdbdet"' : ""}>${c[3] ? c[3](p) : esc(String(c[1](p))).replace(/\n/g, "<br>")}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}" class="hint">No part matches.</td></tr>`}</tbody>`;
 }
 function openPartsDb() {
   pdb.tab = 0;
   pdb.sort = null;
   pdb.desc = false;
+  pdb.all = false; // "Show hidden details" starts off every time
+  pdb.f = {};
+  $("#pdbAll").checked = false;
   $("#pdbFilter").value = "";
   renderPartsDb();
   $("#dlgPartsDb").showModal();
@@ -272,6 +420,7 @@ $("#pdbTabs").addEventListener("click", e => {
   const b = e.target.closest("[data-pdbtab]");
   if (!b) return;
   pdb.tab = +b.dataset.pdbtab;
+  pdb.f = {};
   pdb.sort = null;
   pdb.desc = false;
   renderPartsDb();
@@ -283,5 +432,16 @@ $("#pdbTable").addEventListener("click", e => {
   const i = +h.dataset.pdbsort;
   pdb.desc = pdb.sort === i ? !pdb.desc : false;
   pdb.sort = i;
+  renderPartsDb();
+});
+$("#pdbFilters").addEventListener("change", e => {
+  const s = e.target.closest("[data-pdbf]");
+  if (!s) return;
+  pdb.f[s.dataset.pdbf] = s.value;
+  renderPartsDb();
+  $("#pdbWrap").scrollTo(0, 0);
+});
+$("#pdbAll").addEventListener("change", e => {
+  pdb.all = e.target.checked;
   renderPartsDb();
 });
