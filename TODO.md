@@ -40,9 +40,15 @@ changed is in CHANGELOG.md – this list only has what's still to do.
 
 ---
 
-## Small fixes (0)
+## Small fixes (1)
 
-Nothing open. Done in `dev-0.15.2` (not released): storage objective, 3DMark new-platform search + overclock rules,
+1. **GPU table: Core clock and Memory clock are too squished** (Mariusz 2026-11-11). Screenshot:
+   `todo-files/gpu-table-clocks-squished.png` (Parts database → GPU tab). Suggested solutions:
+   - Remove "GeForce " / "Radeon " from the chipset name (e.g. "Radeon RX560" → "RX560").
+   - Split the Power value into 2 lines when an OC value is present (e.g. "60 W (OC 72 W)" → "60 W" / "(OC 72 W)").
+   - Column title "3DMark (1/2 cards)" → "3DMark (1/2 GPU)" on 2 lines ("3DMark" / "(1/2 GPU)").
+
+Done in `dev-0.15.2` (not released): storage objective, 3DMark new-platform search + overclock rules,
 exact cable colours.
 - Rules kept for later work (Mariusz 2026-11-11): "Ribbon Plastic Duo <colour>" sets are black + that colour (confirmed in
   game). The 3DMark search tries overclocking only when an objective asks for an overclock, when no set reaches the score
