@@ -347,7 +347,6 @@ main {
   background: #191e28;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 6px 0 6px 9px;
   margin: 4px 0;
   display: flex;
   gap: 8px;
@@ -378,13 +377,9 @@ main {
 .swap .sacts {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   align-items: center;
 }
 .swap .sx {
-  padding: 2px 5px;
-  font-size: 13px;
-  line-height: 1;
   color: var(--muted);
 }
 .swap .sx:hover,
@@ -588,7 +583,6 @@ dialog::backdrop {
   }
 }
 #shotWrap {
-  position: relative;
   user-select: none;
   cursor: default;
   border: 1px solid var(--line);
@@ -691,12 +685,6 @@ dialog::backdrop {
 }
 .hidrow small {
   color: var(--muted);
-}
-.ctrls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
 }
 #drop {
   position: fixed;
@@ -829,9 +817,6 @@ h4.sub:first-child {
 } /* shortcut on the right (keep in step with js/keys.js) */
 #shotTabs button {
   font-size: 12.5px;
-}
-.ctrls .spacer {
-  flex: 1;
 }
 header button {
   white-space: nowrap;
@@ -1078,8 +1063,6 @@ ul.mainobj li:hover .x {
   color: #e3a3a1;
 }
 .swap .price {
-  padding: 1px 7px;
-  font-size: 12px;
   font-weight: 600;
   color: #c9f5da;
   background: #16301f;
@@ -1143,9 +1126,6 @@ kbd {
   padding: 0 6px;
   color: var(--text);
 }
-.keyslist summary {
-  margin: 6px 0;
-}
 
 /* keyboard movement inside a card */
 .job .kbrow {
@@ -1201,7 +1181,6 @@ dialog.rulesdlg {
   padding: 7px;
 }
 .rrow.rhead {
-  background: none;
   border: 0;
   padding: 0 7px;
   font-size: 11px;
@@ -2065,18 +2044,14 @@ dialog.helpdlg {
 /* drag handle: two columns of dots from the top of the tile to the bottom */
 .swap .grip {
   cursor: grab;
-  align-self: stretch;
   width: 16px;
-  margin: -6px 0 -6px 0;
   flex: none;
   user-select: none;
   opacity: 0.55;
-  border-radius: 0 8px 8px 0;
   background:
     radial-gradient(circle, var(--muted) 1.6px, transparent 1.8px) 0 50%/8px 8px repeat-y,
     radial-gradient(circle, var(--muted) 1.6px, transparent 1.8px) 7px 50%/8px 8px repeat-y;
   background-origin: content-box;
-  padding: 6px 2px 6px 0;
 }
 .swap:hover .grip {
   opacity: 1;
@@ -2243,8 +2218,6 @@ dialog.helpdlg {
 }
 /* 3DMark tile + its details */
 .stile .bicon {
-  width: 22px;
-  height: 22px;
   display: block;
 }
 .bench {
@@ -3059,9 +3032,6 @@ dialog.flipdlg {
 }
 
 /* new-job window (0.13.0): job fields under the screenshot, parts on the right – one field per part type */
-#revJob {
-  margin-top: 10px;
-}
 #revJob:empty {
   display: none;
 }
@@ -3146,7 +3116,6 @@ dialog.flipdlg {
   margin: 0 0 10px;
 }
 /* screenshot tabs + Adjust areas: compact; "Read again" = round ↻ over the picture */
-#shotPane .ctrls button,
 #shotTabs button {
   padding: 3px 9px;
   font-size: 12.5px;
@@ -3666,8 +3635,7 @@ body.jobfocus .job {
 details.sothers {
   margin-top: 6px;
 }
-details.sothers > summary,
-.sothhead {
+details.sothers > summary {
   font-size: 12px;
   color: var(--muted);
   cursor: pointer;
@@ -3911,7 +3879,6 @@ details.sothers > summary,
 .objrow .px:focus-visible {
   opacity: 1;
 }
-#objHid,
 .objhid #fHidden {
   margin: 0;
 }
