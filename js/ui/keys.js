@@ -44,7 +44,7 @@ const KEYMAP = [
     keys: [
       ["↑ ↓", "Previous / next line (objective, task, swap, Status tiles, button…)"],
       ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
-      ["Space / Enter", "Tick the box · press the button · show a Status tile's details"],
+      ["Space / Enter", "Tick the box · press the button · show a Status tile's details (Enter first goes into the card after a mouse click)"],
       ["Delete", "Remove the line (objective, task, swap) – Undo stays available"],
       ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"],
       ["Esc", "Close the details popup · back to choosing jobs"],
@@ -288,6 +288,12 @@ function inCardKey(e) {
       return true;
     }
     case "Enter":
+      // a control still focused from a mouse click: Enter goes into the card (job focus) instead of pressing it again
+      if (!text && focusJob !== p.card.dataset.job) {
+        e.preventDefault();
+        enterCard(p.card);
+        return true;
+      }
       if (t.type === "checkbox") {
         e.preventDefault();
         t.click();
