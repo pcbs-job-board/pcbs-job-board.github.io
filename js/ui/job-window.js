@@ -391,25 +391,29 @@ function oddRam(names) {
     common = Object.keys(count).filter(k => count[k] === top);
   return new Set(names.filter((n, i) => common.length > 1 || keys[i] !== common[0])); // a tie: check all of them
 }
+const COOL_PAIR = { "CPU Cooler": "WC:CPU Block", "WC:CPU Block": "CPU Cooler" };
 function partFieldsHtml(comps) {
   const ramOdd = oddRam(comps.filter(c => c.name && slotOf(c.cat, c.name).k === "RAM").map(c => c.name));
   return `<div id="fParts">${PART_SLOTS.map(sl => {
     const rows = comps.filter(c => slotOf(c.cat, c.name) === sl),
-      // a CPU block (custom water cooling) does the job of the CPU cooler, so either one fills the cooling slot
-      coolOk = sl.k === "CPU Cooler" && comps.some(c => c.name && slotOf(c.cat, c.name).k === "WC:CPU Block"),
-      shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
+      // CPU cooler and CPU block (custom water cooling): exactly one of the two, never both
+      twin = COOL_PAIR[sl.k],
+      twinUsed = !!twin && comps.some(c => c.name && slotOf(c.cat, c.name).k === twin),
+      shown = rows.length || sl.other ? rows : twinUsed ? [] : [{ cat: sl.k, name: "" }];
     if (sl.onlyIfUsed && !rows.length) return "";
     const row = c =>
       `<div class="prow"><textarea class="pname" rows="1" spellcheck="false" data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" title="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${esc(c.name)}</textarea>${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more =
-      sl.other || rows.length < sl.max
-        ? rows.length
-          ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>`
-          : sl.other
-            ? row({ cat: "Other", name: "" })
-            : ""
-        : "";
-    return `<div class="pslot${!sl.other && !sl.opt && !rows.length && !coolOk ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
+      twinUsed && !rows.length
+        ? `<div class="prow pnote"><small>one cooler <b>or</b> block – remove the other first</small></div>`
+        : sl.other || rows.length < sl.max
+          ? rows.length
+            ? `<button class="ghost padd" data-padd="${esc(sl.k)}">＋ add${sl.max < 99 ? ` (max ${sl.max})` : ""}</button>`
+            : sl.other
+              ? row({ cat: "Other", name: "" })
+              : ""
+          : "";
+    return `<div class="pslot${!sl.other && (!sl.opt || twin) && !rows.length && !twinUsed ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
 }
 // part names are never cut off: each field grows to show the whole name (CSS field-sizing does it where supported)
