@@ -1,5 +1,5 @@
 :root {
-  --css-ver: "0.15.1"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
+  --css-ver: "0.15.2"; /* = PCBS_CONFIG.version – the app reloads the stylesheet when an old one was cached */
   --bg: #12151c;
   --panel: #1a1f29;
   --card: #222836;

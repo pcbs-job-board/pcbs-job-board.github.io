@@ -4,6 +4,8 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
 ## 0.15.2
+- Parts database window: hidden columns with "Show hidden details", drop-down filters, stock / mid / max overclock columns, real light colours.
+- 1 new story job added.
 - 3DMark: when small changes can't reach the score, a new platform (motherboard + CPU, 1 or 2 GPUs) is suggested – no more "no parts reach this score".
 - 3DMark: overclocked sets (~60 % of the potential) when an objective asks for an overclock, nothing reaches the score at stock, or the stock sets are over the budget.
 - "Upgrade to N TB of Storage" gets a suggestion (add a drive or replace the smallest).
