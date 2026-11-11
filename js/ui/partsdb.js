@@ -49,6 +49,8 @@ const pdbW = p => {
   const [a, b] = p.pw.split(">");
   return a ? (b ? `${a} W (OC ${b} W)` : `${a} W`) : "";
 };
+// two lines when an overclock value is present (GPU table)
+const pdbW2 = p => pdbW(p).replace(" (OC", "\n(OC");
 const pdbMm = v => (v ? `${v} mm` : "");
 const pdbYes = v => (v === "1" ? "yes" : v === "0" ? "no" : "");
 // long socket lists go on two lines
@@ -183,14 +185,14 @@ const PDB_COLS = {
     ["Overclock", p => (p.oc[1] ? `from ${p.oc[1]} MHz @ ${p.oc[2]} V` : "")],
   ],
   GPU: [
-    ["Chipset", p => p.c.c || ""],
+    ["Chipset", p => (p.c.c || "").replace(/^(GeForce|Radeon) /, "")],
     ["VRAM", p => p.spec.replace(/\s*water$/i, "")],
     ["Cooling", p => (/\bwater\b/i.test(p.spec) || p.name.includes("|") ? "💧 water" : "air")],
     ["Length", p => pdbMm(p.c.l), 1],
     ["Slots", p => p.c.sl || "", 1],
     ["Two GPUs", p => p.c.m || ""],
-    ["Power", p => pdbW(p), 1],
-    ["3DMark (1 / 2 cards)", p => (p.bench[0] ? `${p.bench[0]}${+p.bench[1] ? " / " + p.bench[1] : ""}` : ""), 1],
+    ["Power", p => pdbW2(p), 1],
+    ["3DMark (1 / 2 GPU)", p => (p.bench[0] ? `${p.bench[0]}${+p.bench[1] ? " / " + p.bench[1] : ""}` : ""), 1],
     ["Core clock", p => pdbGpuClocks(p, 0), 1],
     ["Memory clock", p => pdbGpuClocks(p, 3), 1],
     ["Throttles at", p => (p.oc[6] ? `${p.oc[6]} °C` : ""), 1],
@@ -395,7 +397,7 @@ function renderPartsDb() {
       ? "Reservoirs: the cases the game's shop lists for each one. The game also checks 3D collision live, so a listed reservoir can still hit other parts in a listed case."
       : "";
   $("#pdbTable").innerHTML =
-    `<thead><tr>${cols.map((c, i) => `<th data-pdbsort="${i}" class="${pdb.sort === i ? (pdb.desc ? "sd" : "sa") : ""}" title="Sort by ${esc(c[0])}">${esc(c[0])}</th>`).join("")}</tr></thead>
+    `<thead><tr>${cols.map((c, i) => `<th data-pdbsort="${i}" class="${pdb.sort === i ? (pdb.desc ? "sd" : "sa") : ""}" title="Sort by ${esc(c[0])}">${esc(c[0]).replace(" (", "<br>(")}</th>`).join("")}</tr></thead>
     <tbody>${rows.map(p => `<tr>${cols.map((c, i) => `<td${i === 0 ? ' class="pdbname"' : c[0] === "Details" ? ' class="pdbdet"' : ""}>${c[3] ? c[3](p) : esc(String(c[1](p))).replace(/\n/g, "<br>")}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}" class="hint">No part matches.</td></tr>`}</tbody>`;
 }
 function openPartsDb() {
