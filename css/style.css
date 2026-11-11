@@ -4038,3 +4038,7 @@ textarea.pname {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.fnewopts .fnewhint {
+  display: block;
+  margin: 2px 8px 4px;
+}

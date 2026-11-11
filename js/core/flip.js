@@ -883,15 +883,13 @@ function flipNewOptions(f, plan) {
         );
   }
   // best first; one line per label (the same part from the inventory and the shop: the inventory one)
-  // shop cards / CPUs of one model score the same: one of them (the most profit, then the cheapest), at most 3
-  const mineLabels = new Set(out.filter(o => o.src === "inv").map(o => o.label)),
-    seen = new Set(),
-    key = o => (o.src === "shop" ? `shop:${o.build.find(p => p.inv && p.inv.id.startsWith("shop:")).cat}:${o.score}` : o.label);
-  const best = out
-    .filter(o => o.src === "inv" || !mineLabels.has(o.label))
+  // the best one per category from the inventory and the best one per category from the shop (Mariusz: not overwhelming)
+  const cat = o => (o.build.find(p => p.inv && !p.inv.used && !b.includes(p)) || {}).cat || "",
+    seen = new Set();
+  return out
     .sort((x, y) => y.profit - x.profit || x.price - y.price)
-    .filter(o => !seen.has(key(o)) && seen.add(key(o)));
-  return [...best.filter(o => o.src === "inv"), ...best.filter(o => o.src === "shop").slice(0, 3)];
+    .filter(o => !seen.has(o.src + ":" + cat(o)) && seen.add(o.src + ":" + cat(o)))
+    .sort((x, y) => (x.src === "inv" ? 0 : 1) - (y.src === "inv" ? 0 : 1) || y.profit - x.profit);
 }
 // put a planned build into the real one: the parts that differ become changes (in place of a part of the same type)
 function flipApply(f, target) {

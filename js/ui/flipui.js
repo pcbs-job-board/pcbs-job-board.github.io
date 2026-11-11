@@ -334,18 +334,17 @@ function flipStep3(f, st) {
 // NEW parts that pay off on top of the plan – with the sum worked out, so the player sees what's really left
 function newOptsHtml(plan, opts) {
   if (!opts.length) return "";
-  const was = plan.changes.length ? "Best build above" : "Current build";
-  return `<div class="fh">NEW parts that pay off</div>
-    <p class="hint">A new part keeps only ⅓ of its price in the sale value – it pays only by lifting the whole PC toward 3DMark 10,000. Parts from the shop are shown only for ${money(FLIP_SHOP_MIN)}+ profit after next-day delivery (${money(FLIP_DELIVERY)}).</p>
+  const was = plan.changes.length ? "best build" : "now",
+    top = Math.max(...opts.map(o => o.profit));
+  return `<details class="fgroup fnewopts" data-fg="NEW"${flipOpenGroups.has("NEW") ? " open" : ""}><summary><b>NEW parts that pay off</b> <small>${opts.length} option${opts.length > 1 ? "s" : ""} · best profit +${money(top)}</small></summary>
+    <small class="hint fnewhint">A new part keeps ⅓ of its price in the sale value – it pays only by lifting the whole PC toward 10,000. Shop parts: ${money(FLIP_SHOP_MIN)}+ profit after ${money(FLIP_DELIVERY)} next-day delivery.</small>
     ${opts
       .map(
         (o, k) =>
-          `<div class="fup fnewopt"><div><b>${esc(o.label)}</b> <span class="tag new">NEW – ${o.src === "shop" ? "from the shop" : "in your inventory"}</span>${o.small ? ` <small class="warn">small gain</small>` : ""}
-      <br><small>${was}: ~${money(o.from)} (3DMark ~${(o.fromScore ?? 0).toLocaleString()})</small>
-      <br><small>After the swap: ~${money(o.value)} (3DMark ~${(o.score ?? 0).toLocaleString()})</small>
-      <br><small>Profit difference: ${money(o.value)} (after the swap) − ${money(o.from)} (${was.toLowerCase()}) − ${money(o.price)} (new part)${o.fee ? ` − ${money(o.fee)} (next-day delivery)` : ""} = <b>~${money(o.profit)}</b></small></div>${o.src === "inv" ? `<button data-fx="newopt" data-k="${k}">${plan.changes.length ? "Use with the best build" : "Use"}</button>` : ""}</div>`
+          `<div class="fup fnewopt"><div><b>${esc(o.label)}</b> <span class="tag new">${o.src === "shop" ? "SHOP" : "NEW – inventory"}</span>${o.small ? ` <small class="warn">small gain</small>` : ""}
+      <br><small>3DMark ~${(o.fromScore ?? 0).toLocaleString()} → ~${(o.score ?? 0).toLocaleString()} · ${money(o.value)} (after) − ${money(o.from)} (${was}) − ${money(o.price)} (part)${o.fee ? ` − ${money(o.fee)} (delivery)` : ""} = <b>~${money(o.profit)}</b></small></div>${o.src === "inv" ? `<button data-fx="newopt" data-k="${k}" title="${plan.changes.length ? "Puts in the best build with this part" : ""}">Use</button>` : ""}</div>`
       )
-      .join("")}`;
+      .join("")}</details>`;
 }
 // ---------- step 4: software ----------
 function flipStep4(f, st) {
