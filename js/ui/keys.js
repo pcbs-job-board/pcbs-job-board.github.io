@@ -44,7 +44,10 @@ const KEYMAP = [
     keys: [
       ["↑ ↓", "Previous / next line (objective, task, swap, Status tiles, button…)"],
       ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
-      ["Space / Enter", "Tick the box · press the button · show a Status tile's details (Enter first goes into the card after a mouse click)"],
+      [
+        "Space / Enter",
+        "Tick the box · press the button · show a Status tile's details (Enter first goes into the card after a mouse click)",
+      ],
       ["Delete", "Remove the line (objective, task, swap) – Undo stays available"],
       ["Alt + ↑ / Alt + ↓", "Move a part swap up / down (higher wins when parts don't fit together)"],
       ["Esc", "Close the details popup · back to choosing jobs"],
