@@ -18,8 +18,12 @@ changed is in CHANGELOG.md – this list only has what's still to do.
   repository only gets `main`.
 - **This list is pushed to the `todo` branch after every change** – Mariusz checks it there. "Don't push"
   means don't push to `main` / live; dev branches, `tests` and `todo` are always kept up to date.
-- Before a release: back up the live `main` as `backup-<live version>` here. Then **ask Mariusz before
-  merging a dev version into `main`**, merge, and check the live site.
+- **Releases**: only when Mariusz says "release" – then `sh release.sh <app checkout>` from the `tests` branch (checks,
+  backup of the live main as `backup-<live version>`, push, waits for GitHub, confirms the live version).
+- **Batch releases (Mariusz 2026-11-11)**: fixes are collected in the dev branch and released together (about once a
+  day), unless something breaks the app.
+- GitHub's "Checks" now also run on every `dev-*` push in this repository (from dev-0.15.2 on) – a red check there is
+  fixed before asking to release.
 - **Version bump**: `python tools/bump_version.py X.Y.Z` (js/config.js, every `?v=`, `--css-ver`, package.json), then a
   new CHANGELOG.md section by hand.
 - Changelog: very short lines, most important change first. Versions are X.Y.Z (X major, Y features, Z fixes).
