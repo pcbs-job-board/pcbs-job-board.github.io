@@ -6,6 +6,7 @@ repository `pcbs-job-board/pcbs-job-board.github.io`, site https://pcbs-job-boar
 changed is in CHANGELOG.md – this list only has what's still to do.
 
 ## How this list is used
+- New session / thread: read `HANDOVER.md` (this branch) first.
 - **Nothing is started without Mariusz saying so** – small fixes and bigger updates alike.
 - When he starts a bigger update, every small fix still open goes into it too.
 - **After adding an item, tell Mariusz how many small fixes and bigger updates are on the list.**
