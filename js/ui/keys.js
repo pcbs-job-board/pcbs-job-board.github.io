@@ -292,7 +292,8 @@ function inCardKey(e) {
     }
     case "Enter":
       // a control still focused from a mouse click: Enter goes into the card (job focus) instead of pressing it again
-      if (!text && focusJob !== p.card.dataset.job) {
+      // (only the clicked one – a control reached with Tab is pressed as usual)
+      if (!text && focusJob !== p.card.dataset.job && fromMouse(t)) {
         e.preventDefault();
         enterCard(p.card);
         return true;
@@ -479,10 +480,22 @@ document.addEventListener(
   },
   true
 );
+// the control the last mouse press was on (Enter on it goes into the card, see inCardKey) – kept by its selector too,
+// because a click often redraws the card
+let mouseDown = null;
+function fromMouse(t) {
+  if (!mouseDown) return false;
+  const { el, id, job } = mouseDown;
+  if (el.isConnected) return t === el || t.contains(el) || el.closest?.("label")?.control === t;
+  return !!id && t.closest(".job")?.dataset.job === job && t.matches(id);
+}
 document.addEventListener(
   "mousedown",
-  () => {
+  e => {
     viaKeys = false;
+    const el = e.target,
+      c = el.closest?.("label")?.control || el.closest?.("[data-act],[data-input],[data-line],[data-f]");
+    mouseDown = el.closest ? { el, id: c ? ctrlId(c) : null, job: el.closest(".job")?.dataset.job } : null;
   },
   true
 );
