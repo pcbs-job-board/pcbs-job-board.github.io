@@ -1,9 +1,10 @@
 # Code checks on every push and pull request: lint, formatting, and that the parts database matches its CSVs.
 # Tool versions are pinned in package.json – a newer Prettier formats some lines differently and would fail the check.
+# dev-* branches too (in the private dev repository), so a problem shows up before a release, not after.
 name: Checks
 on:
   push:
-    branches: [main]
+    branches: [main, "dev-*"]
   pull_request:
   workflow_dispatch:
 permissions:
