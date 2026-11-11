@@ -3695,15 +3695,7 @@ details.sothers > summary,
 
 /* PC Bay: capture buttons + the parts added last stay at the bottom of the window; shine once after a scan */
 .finvdock {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  margin: 10px -4px 0 0;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #2f5e8f;
-  background: #101a28;
-  box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.45);
+  margin: 4px 0 8px;
 }
 .finvdock .fcap {
   margin-bottom: 0;
@@ -3758,13 +3750,14 @@ details.sothers > summary,
 }
 .fgroup {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  margin-bottom: 6px;
+  border-radius: 6px;
+  margin-bottom: 3px;
   background: #161b25;
 }
 .fgroup > summary {
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 2px 8px;
+  font-size: 12.5px;
   list-style: none;
 }
 .fgroup > summary::before {
@@ -3779,5 +3772,7 @@ details.sothers > summary,
   margin-left: 6px;
 }
 .fgroup .fup {
-  margin: 0 8px 6px;
+  margin: 0 6px 4px;
+  padding: 4px 8px;
+  font-size: 12.5px;
 }

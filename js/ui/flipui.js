@@ -49,6 +49,7 @@ function openFlip(id) {
   if (!f) return;
   flipCur = f;
   flipInvTab = null; // the inventory opens on its first tab
+  flipOpenGroups.clear(); // single changes start collapsed
   flipRender();
   const d = $("#dlgFlip");
   if (!d.open) d.showModal();
@@ -111,6 +112,7 @@ function flipRender() {
   nx.disabled = f.step === 3 && !ready;
   nx.classList.toggle("good", f.step === 4);
   d.querySelector(".flipconfirm").hidden = true;
+  if (flipShine) d.querySelector(".finvdock")?.scrollIntoView({ block: "nearest" });
   flipShine = 0; // the shine plays once
 }
 // ---------- step 1: the parts as bought ----------
@@ -218,6 +220,7 @@ function invHtml(f) {
   const rows = invOrder(inv.filter(i => i.cat === flipInvTab));
   return `<div class="finv"><div class="fh">Your inventory for this build</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
+    ${invDock(f, inv)}
     ${
       cats.length
         ? `<div class="pdbtabs finvtabs" role="tablist">${cats
@@ -235,9 +238,9 @@ function invHtml(f) {
       .join("")}`
         : `<div class="hint">Nothing yet.</div>`
     }
-    <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>${invDock(f, inv)}`;
+    <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
 }
-// stays at the bottom of the window while the page is longer: the capture buttons + the parts added last (shine once after a scan)
+// the capture buttons + the parts added last, at the top of the inventory box (scrolled into view after a scan; shine once)
 let flipShine = 0; // scan time of the capture just made: its parts shine once (cleared after the next draw)
 function invDock(f, inv) {
   const last = invOrder(inv).slice(0, 4),
