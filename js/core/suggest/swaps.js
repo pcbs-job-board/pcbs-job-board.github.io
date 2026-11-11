@@ -22,7 +22,7 @@ function suggestSwaps(job, opts = {}) {
   const missing = (key, reason, need, extra = {}) => out.push({ key, reason, options: [], hint: need, ...extra });
   const ref = name => {
     const m = bestPartMatch(name);
-    return m ? INDEX.find(p => p.name === m.name) || { name: m.name, cat: m.cat } : null;
+    return m ? ixByName(m.name) || { name: m.name, cat: m.cat } : null;
   };
   const handled = new Set(opts.pinned || []); // categories an earlier step of the combined set already picked
   ctx.objCats = handled;
@@ -206,7 +206,7 @@ function suggestSwaps(job, opts = {}) {
       const fav = ctx.brands.length ? ctx.brands.find(b => shopParts("RAM").some(p => brandMatch(p, b))) : null;
       if (fav) {
         const isFav = name => {
-          const ix = INDEX.find(x => x.name === name);
+          const ix = ixByName(name);
           return !!ix && ctx.brands.some(b => brandMatch(ix, b));
         };
         opts2.forEach(x => isFav(x.name) && (x.tag = `★ ${fav} · ${x.tag}`));
@@ -466,7 +466,7 @@ function suggestSwaps(job, opts = {}) {
           const half = { ...ctx, left: ctx.left == null ? null : ctx.left / 2 }; // two cards share the budget
           const opts2 = pickOptions(job, half, duo, { replace: hdd.name, upgrade: true, base: hdd })
             .map(op => {
-              const card = INDEX.find(x => x.name === op.name),
+              const card = ixByName(op.name),
                 swaps = [
                   { cat: "GPU", old: hdd.name, new: op.name },
                   { cat: "GPU", old: "", new: op.name },
@@ -498,7 +498,7 @@ function suggestSwaps(job, opts = {}) {
             o,
             pickOptions(job, ctx, better, { replace: hdd.name, upgrade: true, base: hdd }).map(op => ({
               ...op,
-              rank: upRank(INDEX.find(x => x.name === op.name) || op),
+              rank: upRank(ixByName(op.name) || op),
             })),
             { cat, old: hdd.name }
           );
@@ -538,7 +538,7 @@ function suggestSwaps(job, opts = {}) {
     const own = plannedBuild({ ...job, swaps: [] }),
       planned = p => (job.swaps || []).find(s => lowName(s.old) === lowName(p.name));
     const isFan = p => {
-      const ix = INDEX.find(x => x.name === p.name);
+      const ix = ixByName(p.name);
       return ix && ctx.brands.some(b => brandMatch(ix, b));
     };
     const fanParts = CATS.flatMap(cat =>
@@ -561,7 +561,7 @@ function suggestSwaps(job, opts = {}) {
     for (const p0 of mine) {
       if (seenP.has(p0.cat + p0.name)) continue;
       seenP.add(p0.cat + p0.name);
-      const ix = INDEX.find(x => x.name === p0.name),
+      const ix = ixByName(p0.name),
         b = ctx.brands.find(x => brandMatch(ix, x));
       add(
         "brandfix:" + p0.cat + ":" + p0.name,

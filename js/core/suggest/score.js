@@ -211,7 +211,7 @@ function benchSuggestions(job, ctx) {
       return (
         rel.length > 0 &&
         rel.every(s => {
-          const ix = INDEX.find(x => x.name === s.new);
+          const ix = ixByName(s.new);
           return ix && ctx.brands.some(b => brandMatch(ix, b));
         })
       );
@@ -538,7 +538,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
     return (
       rel.length > 0 &&
       rel.every(s => {
-        const ix = INDEX.find(x => x.name === s.new);
+        const ix = ixByName(s.new);
         return ix && ctx.brands.some(b => brandMatch(ix, b));
       })
     );

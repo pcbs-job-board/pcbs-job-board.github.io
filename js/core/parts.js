@@ -43,7 +43,7 @@ function setCareer(level, pct) {
 // custom water cooling shop, so they unlock with it (level 16)
 function isWaterGPU(p) {
   if (!p || p.cat !== "GPU") return false;
-  const ix = p.spec != null ? p : INDEX.find(x => x.name === p.name);
+  const ix = p.spec != null ? p : ixByName(p.name);
   return /\bwater\b/i.test((ix && ix.spec) || "") || /\s\|\s/.test(p.name || ""); // " | EKWB …" – not EVGA's "K|NGP|N"
 }
 const WATER_GPU_TAG = "💧 Watercooled – Custom Water Cooling Shop";
@@ -103,6 +103,22 @@ function buildIndex() {
       INDEX.push({ cat: h.cat, name: h.name, hist: true, n, c: n.replace(/ /g, ""), w: n.split(" ") });
     }
 }
+// name → part, the first one with that name (what INDEX.find(p => p.name === name) gives, without going through the
+// whole list each time); made again whenever INDEX is rebuilt or grows
+const firstBy = (list, key) => {
+  const m = new Map();
+  for (const p of list) {
+    const k = key(p);
+    if (!m.has(k)) m.set(k, p);
+  }
+  return m;
+};
+let ixNames = { list: null, len: 0, map: null };
+function ixByName(name) {
+  if (ixNames.list !== INDEX || ixNames.len !== INDEX.length)
+    ixNames = { list: INDEX, len: INDEX.length, map: firstBy(INDEX, p => p.name) };
+  return ixNames.map.get(name);
+}
 // buyable = only parts unlocked at the player's career progress (parts to buy for a swap);
 // searchParts.hidden tells how many matches were left out because of that
 // custom water cooling split by what the part is (0.14.0): Reservoir, Radiator, CPU Block (the data keeps "Water Cooling")
@@ -112,7 +128,7 @@ const WC_KINDS = [
   ["CPU Block", /^cpu block/i],
 ];
 function wcKind(p) {
-  const ix = p && (p.spec != null ? p : INDEX.find(x => x.name === p.name));
+  const ix = p && (p.spec != null ? p : ixByName(p.name));
   if (!ix || ix.cat !== "Water Cooling") return null;
   const k = WC_KINDS.find(([, re]) => re.test(ix.spec || ""));
   return k ? k[0] : null;
@@ -282,6 +298,24 @@ const dice = (a, b) => {
   for (const g of a) if (b.has(g)) c++;
   return (2 * c) / (a.size + b.size);
 };
+// the same lookups on every part: lower-case name → the first part with it, and normalised name (n) → every part with it
+let fullNames = { list: null, lower: null, byN: null };
+function fullLookup() {
+  const all = fullIndex();
+  if (fullNames.list !== all) {
+    const byN = new Map(),
+      byLower = new Map();
+    for (const p of all) {
+      const k = p.name.toLowerCase();
+      if (!byLower.has(k)) byLower.set(k, []);
+      byLower.get(k).push(p);
+      if (!byN.has(p.n)) byN.set(p.n, []);
+      byN.get(p.n).push(p);
+    }
+    fullNames = { list: all, lower: byLower, byN };
+  }
+  return fullNames;
+}
 function fullIndex() {
   if (FULL) return FULL;
   FULL = [];
@@ -307,13 +341,14 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
   // read perfectly → that part ("GAMING X+ 6G" and "GAMING X 6G" only differ in the "+", so the letters decide first)
   const lc = cleanOcrPart(raw).toLowerCase().replace(/\s+/g, " ").trim(),
     inCat = p => !onlyCat || p.cat === onlyCat;
-  const exact = fullIndex().find(p => inCat(p) && p.name.toLowerCase() === lc) || fullIndex().find(p => inCat(p) && p.n === s);
+  const L = fullLookup(),
+    exact = (L.lower.get(lc) || []).find(inCat) || (L.byN.get(s) || []).find(inCat);
   if (exact) return { name: exact.name, cat: exact.cat, score: 1, amb: false };
   // "I" read as 1 / l / | on its own in a model name ("X470-1 Gaming" = X470-I, not the X470-F): exact that way → it
   // …also glued onto the number when the hyphen was lost too ("Z3701 Gaming" = Z370-I)
   const alt = s.replace(/(^| )[1l|](?= |$)/g, "$1i").replace(/(\d)[1l](?= |$)/g, "$1 i");
   if (alt !== s) {
-    const ex2 = fullIndex().find(p => inCat(p) && p.n === alt);
+    const ex2 = (L.byN.get(alt) || []).find(inCat);
     if (ex2) return { name: ex2.name, cat: ex2.cat, score: 0.99, amb: false };
   }
   const tri = trigrams(s);
@@ -701,7 +736,7 @@ function plannedBuild(j) {
   for (const s of j.swaps || []) {
     const i = s.old ? b.findIndex(c => !c.swapped && c.name.toLowerCase() === s.old.toLowerCase()) : -1;
     // category as chosen; left on "Other" → from the parts database, else the replaced part's
-    const db = fullIndex().find(p => p.name.toLowerCase() === String(s.new).trim().toLowerCase());
+    const db = (fullLookup().lower.get(String(s.new).trim().toLowerCase()) || [])[0];
     const cat = s.cat && s.cat !== "Other" ? s.cat : db ? db.cat : i >= 0 ? b[i].cat : s.cat;
     if (i >= 0) b[i] = { cat, name: s.new, swapped: true };
     else b.push({ cat, name: s.new, swapped: true });

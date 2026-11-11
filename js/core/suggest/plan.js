@@ -206,7 +206,7 @@ function suggestPlan(job, opts = {}) {
         total,
         price: total,
         count: 1,
-        lvl: Math.max(0, ...parts.map(x => INDEX.find(p => p.name === x.new)?.lvl || 0)),
+        lvl: Math.max(0, ...parts.map(x => ixByName(x.new)?.lvl || 0)),
         over: budgetLeft != null && total > budgetLeft + back,
         nParts: parts.length,
       },

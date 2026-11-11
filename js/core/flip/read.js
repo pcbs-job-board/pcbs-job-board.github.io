@@ -74,7 +74,7 @@ function nameMid(bs) {
 function gpuBySpecs(c) {
   const sp = c.spec,
     facts = n => {
-      const ix = INDEX.find(x => x.name === n) || {};
+      const ix = ixByName(n) || {};
       return {
         l: +(compatOf(n) || {}).l || null,
         core: (ocOf(n) || {}).core ?? null,

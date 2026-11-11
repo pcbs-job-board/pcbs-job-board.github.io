@@ -145,7 +145,7 @@ document.addEventListener("click", e => {
     // CPU cooler ↔ CPU block (custom water cooling): picking one replaces the other, the PC has only one of the two
     const cooling = c => c && (c.cat === "CPU Cooler" || wcKind(c) === "CPU Block");
     let cat = cat0;
-    const nwIx = INDEX.find(x => x.name === nw);
+    const nwIx = ixByName(nw);
     if (cooling(nwIx)) {
       cat = nwIx.cat;
       const cur = j.components.find(cooling);

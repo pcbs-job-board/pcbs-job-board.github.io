@@ -4,7 +4,7 @@ const lightsWanted = job =>
   Math.max(0, ...jobObjectives(job).map(o => +((o.match(/parts with lights?\s*:?\s*(\d+)/i) || [])[1] || 0)));
 // RGB = lighting whose colour can be set ("· RGB" in the details); "White lighting" etc. can't be coloured
 function isRGB(p) {
-  const ix = INDEX.find(x => x.name === p.name);
+  const ix = ixByName(p.name);
   return !!ix && /(^|·\s*)RGB(\s*·|$)/.test(ix.det || "");
 }
 // N parts with coloured lighting: count the RGB parts planned, then the cheapest way to the rest – RGB fans for free
@@ -60,7 +60,7 @@ function lightsSuggestion(job, ctx, want, reason) {
   }
   for (const cat of ["CPU Cooler", "Storage", "GPU"])
     for (const p of build.filter(x => x.cat === cat && !isRGB(x) && !x.req)) {
-      const better = atLeast(INDEX.find(x => x.name === p.name) || p, cat),
+      const better = atLeast(ixByName(p.name) || p, cat),
         c = rgbShop(cat).find(x => better(x) && fitsBuild(job, x, p.name));
       if (c) items.push({ n: 1, cost: c.price, swaps: [{ cat, old: p.name, new: c.name, price: c.price, lvl: c.lvl }] });
     }

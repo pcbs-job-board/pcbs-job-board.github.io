@@ -60,7 +60,7 @@ flipDlg.addEventListener("click", e => {
   } else if (t.dataset.fa === "add") {
     const n = flipDlg.querySelector('[data-fa="addname"]').value.trim();
     if (!n) return;
-    const m = INDEX.find(p => p.name === n) || bestPartMatch(n);
+    const m = ixByName(n) || bestPartMatch(n);
     const v = flipDlg.querySelector('[data-fa="addval"]').value;
     f.parts.push({
       id: flipUid(),
@@ -74,7 +74,7 @@ flipDlg.addEventListener("click", e => {
   } else if (t.dataset.fa === "invadd") {
     const n = flipDlg.querySelector('[data-fa="invname"]').value.trim();
     if (!n) return;
-    const m = INDEX.find(p => p.name === n) || bestPartMatch(n);
+    const m = ixByName(n) || bestPartMatch(n);
     const cat = m ? m.cat : categorize(n);
     f.inv.push({
       id: flipUid(),
@@ -108,7 +108,7 @@ flipDlg.addEventListener("click", e => {
     const k = t.dataset.part,
       n = flipDlg.querySelector(`[data-fx-name="${k}"]`).value.trim();
     if (!n) return;
-    const m = INDEX.find(p => p.name === n) || bestPartMatch(n),
+    const m = ixByName(n) || bestPartMatch(n),
       p = f.parts.find(x => x.id === k),
       used = flipDlg.querySelector(`[data-fx-used="${k}"]`).checked;
     flipChange(f, {
