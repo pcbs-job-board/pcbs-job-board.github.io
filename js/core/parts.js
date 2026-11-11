@@ -330,7 +330,8 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
   const exact = fullIndex().find(p => inCat(p) && p.name.toLowerCase() === lc) || fullIndex().find(p => inCat(p) && p.n === s);
   if (exact) return { name: exact.name, cat: exact.cat, score: 1, amb: false };
   // "I" read as 1 / l / | on its own in a model name ("X470-1 Gaming" = X470-I, not the X470-F): exact that way → it
-  const alt = s.replace(/(^| )[1l|](?= |$)/g, "$1i");
+  // …also glued onto the number when the hyphen was lost too ("Z3701 Gaming" = Z370-I)
+  const alt = s.replace(/(^| )[1l|](?= |$)/g, "$1i").replace(/(\d)[1l](?= |$)/g, "$1 i");
   if (alt !== s) {
     const ex2 = fullIndex().find(p => inCat(p) && p.n === alt);
     if (ex2) return { name: ex2.name, cat: ex2.cat, score: 0.99, amb: false };
@@ -396,23 +397,32 @@ function bestPartMatch(raw, onlyCat, min = 0.5) {
 // drop extras beyond the limits (a duplicate Case/CPU/PSU… is an OCR repeat, not a second part)
 // join wrapped names ("ASUS ROG Strix RX" + "VEGA64 OC Edition") only when the database agrees
 let ALL_NAMES = null; // [name, normP(name)] of every part in the database
+const allNames = () =>
+  ALL_NAMES || (ALL_NAMES = Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => [r[0], normP(r[0])])));
+// a run of words found as whole words in some part name ("rock 3" in "be quiet shadow rock 3")
+const inSomeName = phrase => {
+  const p = " " + normP(phrase) + " ";
+  return p.trim().length > 0 && allNames().some(([, n]) => (" " + n + " ").includes(p));
+};
 function extendName(cur, line) {
   const base = normP(cur),
     w = normP(line).replace(/ /g, "");
   if (!base || w.length < 3) return null;
-  if (!ALL_NAMES) ALL_NAMES = Object.values(window.PARTS_DB || {}).flatMap(rows => rows.map(r => [r[0], normP(r[0])]));
   let best = null,
-    bd = Infinity;
-  for (const [name, n] of ALL_NAMES) {
+    bd = Infinity,
+    tie = false;
+  for (const [name, n] of allNames()) {
     if (!n.startsWith(base + " ")) continue;
     const rest = n.slice(base.length + 1).replace(/ /g, ""),
       d = Math.min(editDist(rest, w), editDist(shape(rest), shape(w))); // B / 8, O / 0 read for each other
     if (d < bd) {
       bd = d;
       best = name;
-    }
+      tie = false;
+    } else if (d === bd) tie = true;
   }
-  return best && bd <= Math.max(1, Math.floor(w.length / 4)) ? best : null;
+  // two names fit equally well ("ASUS ROG Strix Z370-" + "Gaming" = Z370-E or Z370-I Gaming, the "I" lost) → don't guess
+  return best && !tie && bd <= Math.max(1, Math.floor(w.length / 4)) ? best : null;
 }
 function joinPCStatsLines(lines) {
   const items = [];
@@ -544,7 +554,9 @@ function denoisePartLines(lines) {
       (toks[i] === "II" || (MODEL2.test(toks[i]) && good[i + 1]) || !/^[a-z]{1,2}$/i.test(toks[i].replace(/[^a-z0-9]/gi, "")));
     let a = 0,
       z = toks.length - 1;
-    while (a <= z && !edgeOk(a)) a++;
+    // a line that starts with a brand starts right there – short brand words ("be quiet!", "In Win", "WD") are no crumbs
+    const brandStart = i => i === 0 && l.branded && good[0];
+    while (a <= z && !edgeOk(a) && !brandStart(a)) a++;
     // …except a capital model letter / suffix right after a real word ("Phantom Gaming D", "RX580 8G OC") – it can decide
     // between two parts; a lone "I" / "l" is too often a bar of the picture
     const capEnd = i =>
@@ -554,6 +566,12 @@ function denoisePartLines(lines) {
       (toks[i].length === 1 || partVocab().has(toks[i].toLowerCase()));
     while (z >= a && !edgeOk(z) && !/^\(?[a-z]+\)$/i.test(toks[z]) && !/^logo\)?$/i.test(toks[z])) z--;
     if (z + 1 < toks.length && capEnd(z + 1) && !(z + 2 < toks.length && capEnd(z + 2))) z++;
+    // …and a one-digit model number at the very end when a part name has it right after the word before
+    // ("be quiet! Shadow Rock 3", "Dark Rock 4") – without it every Shadow Rock fits the same
+    else if (z + 1 < toks.length && z >= a && /^\d$/.test(toks[z + 1]) && good[z] && inSomeName(toks[z] + " " + toks[z + 1])) {
+      z++;
+      good[z] = true;
+    }
     if (a > z) continue;
     const keep = toks.slice(a, z + 1),
       kg = good.slice(a, z + 1),

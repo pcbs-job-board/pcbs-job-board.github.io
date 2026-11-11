@@ -465,6 +465,8 @@ function categorize(name) {
 
 function cleanPartLine(line) {
   let l = line
+    // a thin "I" after a hyphen read as a symbol ("Z370-|", "Z370-!", "X470-]") – before the symbols are blanked
+    .replace(/(\w-)[|!\[\]\/](?=\s|$)/g, "$1I")
     .replace(/[|\[\]{}‘’'`~_—–]+/g, " ")
     .replace(/\s+[-:.,;=]+\s*$/, "")
     .replace(/\s{2,}/g, " ")
