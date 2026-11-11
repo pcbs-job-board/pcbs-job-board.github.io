@@ -828,6 +828,71 @@ function flipPlan(f) {
     from: { score: start.score, value: start.value }, // the PC as it is now, worked out the same way
   };
 }
+// NEW parts (Mariusz, 0.15.3): a new part keeps only ⅓ of its price in the sale value, so it pays only by lifting the
+// score toward 10,000 – the ×3.0 then counts for the whole PC. On top of the plan (the best build without them):
+// NEW parts in the inventory are shown whenever they add profit (small gains too, marked); parts from the shop only
+// with at least FLIP_SHOP_MIN profit after next-day delivery – ordering, waiting and a workbench taken longer must pay
+const FLIP_NEW_SMALL = 250,
+  FLIP_SHOP_MIN = 250,
+  FLIP_DELIVERY = 30;
+function flipNewOptions(f, plan) {
+  plan = plan || flipPlan(f);
+  const b = plan.build,
+    base = flipEval(b),
+    out = [];
+  if (!base.check.ok) return out;
+  const priceIn = items => items.reduce((t, x) => t + (x.inv ? (x.inv.price ?? priceOf(x.inv.name) ?? 0) : 0), 0);
+  const add = (m, src) => {
+    const b2 = flipApplyItems(b, m.items),
+      score = flipScore(b2, { xmp: true, ...softOk(null, b2) }),
+      value = flipValue(flipSum(b2), true, score),
+      price = priceIn(m.items),
+      fee = src === "shop" ? FLIP_DELIVERY : 0,
+      profit = value - base.value - price - fee;
+    if (profit < 1 || (src === "shop" && profit < FLIP_SHOP_MIN)) return; // cheap checks first, the fit check last
+    if (flipTier({ score }) < flipTier(base) || !flipCheck(b2).ok) return;
+    out.push({
+      label: m.label,
+      src,
+      price,
+      fee,
+      profit,
+      from: base.value,
+      value,
+      fromScore: base.score,
+      score,
+      build: b2,
+      small: profit < FLIP_NEW_SMALL,
+    });
+  };
+  // NEW parts the player already has
+  const taken = new Set(b.filter(p => p.inv).map(p => p.inv.id)),
+    mine = flipInventory(f).filter(i => !i.used && !i.taken && !taken.has(i.id));
+  for (const m of flipMoves(b, mine)) if (m.items.some(x => x.inv)) add(m, "inv");
+  // the shop: a GPU or a CPU in place of the one in the PC
+  for (const cat of ["GPU", "CPU"]) {
+    const now = b.find(p => p.cat === cat);
+    for (const p of shopParts(cat))
+      if (!now || p.name !== now.name)
+        add(
+          {
+            label: `${CAT_LABEL[cat] || cat}: ${p.name}`,
+            items: [{ inv: { id: "shop:" + p.name, cat, name: p.name, used: false, price: p.price }, old: now || null }],
+          },
+          "shop"
+        );
+  }
+  // best first; one line per label (the same part from the inventory and the shop: the inventory one)
+  // shop cards / CPUs of one model score the same: one of them (the most profit, then the cheapest), at most 3
+  const mineLabels = new Set(out.filter(o => o.src === "inv").map(o => o.label)),
+    seen = new Set(),
+    key = o => (o.src === "shop" ? `shop:${o.build.find(p => p.inv && p.inv.id.startsWith("shop:")).cat}:${o.score}` : o.label);
+  const best = out
+    .filter(o => o.src === "inv" || !mineLabels.has(o.label))
+    .sort((x, y) => y.profit - x.profit || x.price - y.price)
+    .filter(o => !seen.has(key(o)) && seen.add(key(o)));
+  return [...best.filter(o => o.src === "inv"), ...best.filter(o => o.src === "shop").slice(0, 3)];
+}
 // put a planned build into the real one: the parts that differ become changes (in place of a part of the same type)
 function flipApply(f, target) {
   const key = r => (r.changed ? "c:" + r.changed : r.partId ? "p:" + r.partId : null);
@@ -943,6 +1008,7 @@ if (typeof module !== "undefined")
     flipDiff,
     invNameGaps,
     flipEnough,
+    flipNewOptions,
     brokenWhy,
     flipScore,
   };

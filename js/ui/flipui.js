@@ -249,7 +249,10 @@ const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
 let flipCache = { key: "", plan: null, ups: null };
 function flipAdvice(f) {
   const key = JSON.stringify([f.id, f.parts, f.inv, f.changes, career.level, !!f.allowNew]);
-  if (flipCache.key !== key) flipCache = { key, plan: flipPlan(f), ups: flipUpgrades(f) };
+  if (flipCache.key !== key) {
+    const plan = flipPlan(f);
+    flipCache = { key, plan, ups: flipUpgrades(f), opts: flipNewOptions(f, plan) };
+  }
   return flipCache;
 }
 // ---------- step 2: fix ----------
@@ -307,7 +310,7 @@ function singleChangesHtml(ups, chk, sc, plus) {
 }
 // ---------- step 3: hardware – the build assistant ----------
 function flipStep3(f, st) {
-  const { plan, ups } = flipAdvice(f),
+  const { plan, ups, opts } = flipAdvice(f),
     notes = flipNotes(f),
     chk = flipCheck(st.build);
   const sc = v => (v == null ? "–" : "~" + v.toLocaleString()),
@@ -322,10 +325,27 @@ function flipStep3(f, st) {
     ${checkHtml(chk)}
     <div class="fh">Now: 3DMark ${sc(st.best)} → sale ~${money(st.estValue)} <button class="ghost fref" data-fa="refresh" title="Work out the suggestions again">↻ Refresh</button></div>
     ${planBox}
+    ${newOptsHtml(plan, opts)}
     <div class="fh">Single changes</div>
     ${singleChangesHtml(ups, chk, sc, plus)}
     ${pcNowHtml(f, st)}
     ${invHtml(f)}</div>`;
+}
+// NEW parts that pay off on top of the plan – with the sum worked out, so the player sees what's really left
+function newOptsHtml(plan, opts) {
+  if (!opts.length) return "";
+  const was = plan.changes.length ? "Best build above" : "Current build";
+  return `<div class="fh">NEW parts that pay off</div>
+    <p class="hint">A new part keeps only ⅓ of its price in the sale value – it pays only by lifting the whole PC toward 3DMark 10,000. Parts from the shop are shown only for ${money(FLIP_SHOP_MIN)}+ profit after next-day delivery (${money(FLIP_DELIVERY)}).</p>
+    ${opts
+      .map(
+        (o, k) =>
+          `<div class="fup fnewopt"><div><b>${esc(o.label)}</b> <span class="tag new">NEW – ${o.src === "shop" ? "from the shop" : "in your inventory"}</span>${o.small ? ` <small class="warn">small gain</small>` : ""}
+      <br><small>${was}: ~${money(o.from)} (3DMark ~${(o.fromScore ?? 0).toLocaleString()})</small>
+      <br><small>After the swap: ~${money(o.value)} (3DMark ~${(o.score ?? 0).toLocaleString()})</small>
+      <br><small>Profit difference: ${money(o.value)} (after the swap) − ${money(o.from)} (${was.toLowerCase()}) − ${money(o.price)} (new part)${o.fee ? ` − ${money(o.fee)} (next-day delivery)` : ""} = <b>~${money(o.profit)}</b></small></div>${o.src === "inv" ? `<button data-fx="newopt" data-k="${k}">${plan.changes.length ? "Use with the best build" : "Use"}</button>` : ""}</div>`
+      )
+      .join("")}`;
 }
 // ---------- step 4: software ----------
 function flipStep4(f, st) {
@@ -539,7 +559,10 @@ flipDlg.addEventListener("click", e => {
       price: used ? null : priceOf(m ? m.name : n),
     });
   } else if (t.dataset.fx === "undo") flipUnchange(f, t.dataset.k);
-  else if (t.dataset.fx === "up" || t.dataset.fx === "plan") {
+  else if (t.dataset.fx === "newopt") {
+    const o = flipAdvice(f).opts[+t.dataset.k];
+    if (o) flipApply(f, o.build);
+  } else if (t.dataset.fx === "up" || t.dataset.fx === "plan") {
     const a = flipAdvice(f),
       u = t.dataset.fx === "plan" ? a.plan : a.ups[+t.dataset.k];
     if (!u) return;
