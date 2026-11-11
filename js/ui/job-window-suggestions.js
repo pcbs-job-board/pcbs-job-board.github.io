@@ -181,7 +181,7 @@ function benchOptHtml(o, i, k, pick, keep) {
 function rankHtml(r) {
   if (!r) return "";
   const n = x => (x == null ? "?" : x.toLocaleString());
-  return `<small class="srank">Part ranking: asked for <b>${n(r.want)}</b>${r.cur != null ? ` · current <b>${n(r.cur)}</b>` : ""} · new <b class="${r.now >= r.want ? "ok" : "bad"}">${n(r.now)}</b></small>`;
+  return `<small class="srank">Part ranking: ${r.want != null ? `asked for <b>${n(r.want)}</b>` : ""}${r.cur != null ? `${r.want != null ? " · " : ""}current <b>${n(r.cur)}</b>` : ""} · new <b class="${r.now >= (r.want ?? r.cur ?? 0) ? "ok" : "bad"}">${n(r.now)}</b></small>`;
 }
 // the whole-job set: every part with the objective(s) it is for
 function planOptHtml(o, i, k, pick, keep) {

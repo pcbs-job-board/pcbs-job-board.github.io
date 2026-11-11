@@ -623,6 +623,8 @@ function suggestSwaps(job, opts = {}) {
           const b = benchOf(p.name);
           return g0 && b ? b.one > g0.one : rk(p) > rk(hdd);
         };
+        // the ranking of the part the PC came with and of the replacement – shown with the option
+        const upRank = p => (RATED.has(cat) && rk(hdd) > 0 ? { want: null, cur: rk(hdd), curName: hdd.name, now: rk(p) } : null);
         const better = shopParts(cat).filter(p =>
           cat === "GPU"
             ? gBetter(p)
@@ -653,6 +655,7 @@ function suggestSwaps(job, opts = {}) {
               return {
                 ...op,
                 count: 2,
+                rank: upRank(card),
                 tag: op.tag + " · pair (" + cInfo(card).m + ")",
                 swaps,
                 extras,
@@ -667,10 +670,15 @@ function suggestSwaps(job, opts = {}) {
             hint: "No better SLI / CrossFire card fits – pick a pair yourself.",
           });
         } else
-          add("obj:" + o, o, pickOptions(job, ctx, better, { replace: hdd.name, upgrade: true, base: hdd }), {
-            cat,
-            old: hdd.name,
-          });
+          add(
+            "obj:" + o,
+            o,
+            pickOptions(job, ctx, better, { replace: hdd.name, upgrade: true, base: hdd }).map(op => ({
+              ...op,
+              rank: upRank(INDEX.find(x => x.name === op.name) || op),
+            })),
+            { cat, old: hdd.name }
+          );
       }
       handled.add(cat);
       continue;
