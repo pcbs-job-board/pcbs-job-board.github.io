@@ -251,7 +251,7 @@ function flipAdvice(f) {
   const key = JSON.stringify([f.id, f.parts, f.inv, f.changes, career.level, !!f.allowNew]);
   if (flipCache.key !== key) {
     const plan = flipPlan(f);
-    flipCache = { key, plan, ups: flipUpgrades(f), opts: flipNewOptions(f, plan) };
+    flipCache = { key, plan, ups: flipUpgrades(f), opts: flipNewOptions(f) };
   }
   return flipCache;
 }
@@ -325,24 +325,23 @@ function flipStep3(f, st) {
     ${checkHtml(chk)}
     <div class="fh">Now: 3DMark ${sc(st.best)} → sale ~${money(st.estValue)} <button class="ghost fref" data-fa="refresh" title="Work out the suggestions again">↻ Refresh</button></div>
     ${planBox}
-    ${newOptsHtml(plan, opts)}
+    ${newOptsHtml(opts)}
     <div class="fh">Single changes</div>
     ${singleChangesHtml(ups, chk, sc, plus)}
     ${pcNowHtml(f, st)}
     ${invHtml(f)}</div>`;
 }
 // NEW parts that pay off on top of the plan – with the sum worked out, so the player sees what's really left
-function newOptsHtml(plan, opts) {
+function newOptsHtml(opts) {
   if (!opts.length) return "";
-  const was = plan.changes.length ? "best build" : "now",
-    top = Math.max(...opts.map(o => o.profit));
+  const top = Math.max(...opts.map(o => o.profit));
   return `<details class="fgroup fnewopts" data-fg="NEW"${flipOpenGroups.has("NEW") ? " open" : ""}><summary><b>NEW parts that pay off</b> <small>${opts.length} option${opts.length > 1 ? "s" : ""} · best profit +${money(top)}</small></summary>
     <small class="hint fnewhint">A new part keeps ⅓ of its price in the sale value – it pays only by lifting the whole PC toward 10,000. Shop parts: ${money(FLIP_SHOP_MIN)}+ profit after ${money(FLIP_DELIVERY)} next-day delivery.</small>
     ${opts
       .map(
         (o, k) =>
           `<div class="fup fnewopt"><div><b>${esc(o.label)}</b> <span class="tag new">${o.src === "shop" ? "SHOP" : "NEW – inventory"}</span>${o.small ? ` <small class="warn">small gain</small>` : ""}
-      <br><small>3DMark ~${(o.fromScore ?? 0).toLocaleString()} → ~${(o.score ?? 0).toLocaleString()} · ${money(o.value)} (after) − ${money(o.from)} (${was}) − ${money(o.price)} (part)${o.fee ? ` − ${money(o.fee)} (delivery)` : ""} = <b>~${money(o.profit)}</b></small></div>${o.src === "inv" ? `<button data-fx="newopt" data-k="${k}" title="${plan.changes.length ? "Puts in the best build with this part" : ""}">Use</button>` : ""}</div>`
+      <br><small>3DMark ~${(o.fromScore ?? 0).toLocaleString()} → ~${(o.score ?? 0).toLocaleString()} · ${money(o.value)} (after) − ${money(o.from)} (current build) − ${money(o.price)} (new part)${o.fee ? ` − ${money(o.fee)} (delivery)` : ""} = <b>~${money(o.profit)}</b></small></div>${o.src === "inv" ? `<button data-fx="newopt" data-k="${k}">Use</button>` : ""}</div>`
       )
       .join("")}</details>`;
 }

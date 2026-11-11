@@ -829,15 +829,15 @@ function flipPlan(f) {
   };
 }
 // NEW parts (Mariusz, 0.15.3): a new part keeps only ⅓ of its price in the sale value, so it pays only by lifting the
-// score toward 10,000 – the ×3.0 then counts for the whole PC. On top of the plan (the best build without them):
+// score toward 10,000 – the ×3.0 then counts for the whole PC. Against the current build, one new part at a time:
 // NEW parts in the inventory are shown whenever they add profit (small gains too, marked); parts from the shop only
 // with at least FLIP_SHOP_MIN profit after next-day delivery – ordering, waiting and a workbench taken longer must pay
 const FLIP_NEW_SMALL = 250,
   FLIP_SHOP_MIN = 250,
   FLIP_DELIVERY = 30;
-function flipNewOptions(f, plan) {
-  plan = plan || flipPlan(f);
-  const b = plan.build,
+function flipNewOptions(f) {
+  // the PC as it is now (installed / selected parts) against the same PC with only the new part changed (Mariusz)
+  const b = flipState(f).build,
     base = flipEval(b),
     out = [];
   if (!base.check.ok) return out;
