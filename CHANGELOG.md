@@ -3,6 +3,13 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.15.2
+- 3DMark: when small changes can't reach the score, a new platform (motherboard + CPU, 1 or 2 GPUs) is suggested – no more "no parts reach this score".
+- "Upgrade to N TB of Storage" gets a suggestion (add a drive or replace the smallest).
+- One-set suggestion: an objective is only marked "covered" when the set really meets it.
+- Cables: wished colours must match exactly (1–4 colours, e.g. "Plastic White Yellow" = one set with both); duo / striped / patterned sets included.
+- Cables: duo sets renamed to their shop names ("Ribbon Plastic Duo Red").
+
 ## 0.15.1
 - One-set suggestion: when an objective can't be covered, other options are tried (e.g. 2 new GPUs that reach the 3DMark score also cover "dual graphics cards").
 

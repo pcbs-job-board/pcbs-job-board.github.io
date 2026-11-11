@@ -222,16 +222,13 @@ function suggestSwaps(job, opts = {}) {
       if (sg) out.push(sg);
       continue;
     }
-    // 3c "Install Purple cables": cables are a part in the shop (category Cables) – the cheapest set in that colour
-    //     (one colour asked → plain sets first, no duo / striped / patterned ones)
+    // 3c "Install Purple cables": cables are a part in the shop (category Cables) – the cheapest set in exactly those
+    //     colours (cablesFor: one colour asked → one-colour sets, no duo / striped / patterned ones)
     const mC = o.match(/^\W*install\s+(.+?)\s+cables?\s*$/i);
     if (mC) {
-      const words = mC[1].toLowerCase().split(/\s+/).filter(Boolean),
+      const names = new Set(cablesFor(mC[1]).map(n => n.toLowerCase())),
         cands = shopParts("Cables")
-          .filter(
-            p =>
-              words.every(w => p.name.toLowerCase().includes(w)) && (words.length > 1 || !/duo|striped|patterned/i.test(p.name))
-          )
+          .filter(p => names.has(p.name.toLowerCase()))
           .sort((a, b) => a.price - b.price);
       add("obj:" + o, o, pickOptions(job, ctx, cands, {}), {
         cat: "Cables",
@@ -426,6 +423,41 @@ function suggestSwaps(job, opts = {}) {
       }
       add("obj:" + o, o, opts2.slice(0, 3), { cat: "RAM" });
       handled.add("RAM");
+      continue;
+    }
+    // 7b "Upgrade to 4 TB of Storage" (0.15.2): all drives together hold at least N – a drive added in a free SATA / M.2
+    //    place, or the smallest drive replaced by a bigger one; cheapest first
+    const want = storageWant(o);
+    if (want) {
+      const drives = cur("Storage"),
+        have = drives.reduce((t, d) => t + +(cInfo(d).gb || 0), 0);
+      if (!drives.length && !newBuild) {
+        missing("obj:" + o, o, "capture PC Stats to get a storage suggestion");
+        continue;
+      }
+      if (have >= want) {
+        missing("obj:" + o, o, `Already met – the drives hold ${gbText(have)}`, { met: true, cat: "Storage" });
+        handled.add("Storage");
+        continue;
+      }
+      const big = gb => shopParts("Storage").filter(p => +(cInfo(p).gb || 0) >= gb);
+      const added = pickOptions(job, ctx, big(want - have)).map(x => ({ ...x, tag: "add a drive" }));
+      const small = [...drives].sort((a, b) => +(cInfo(a).gb || 0) - +(cInfo(b).gb || 0))[0],
+        rest = small ? have - +(cInfo(small).gb || 0) : 0,
+        swapped = small
+          ? pickOptions(job, ctx, big(want - rest), { replace: small.name }).map(x => ({
+              ...x,
+              tag: `in place of ${small.name}`,
+            }))
+          : [];
+      const opts2 = [...added, ...swapped].sort((a, b) => a.over - b.over || a.total - b.total).slice(0, 3);
+      if (opts2[0]) opts2[0].tag = "cheapest · " + opts2[0].tag;
+      add("obj:" + o, `${o} – now ${gbText(have)}`, opts2, {
+        cat: "Storage",
+        old: "",
+        hint: "No unlocked drive is big enough or fits – check the budget, your career level or the free SATA / M.2 places.",
+      });
+      handled.add("Storage");
       continue;
     }
     // 9b Support for double GPU: a board with SLI / CrossFire (no 2nd card)
@@ -888,6 +920,7 @@ function objWeight(o) {
   if (/parts with lights?/.test(ol) || /^\W*install\s+.+\s+cables?\s*$/.test(ol)) return 70;
   if (MULTI_RE.test(o) || DUAL_RE.test(o)) return 20;
   if (/\d+\s*gb\s+(of\s+)?(ram|memory)/.test(ol)) return 20;
+  if (storageWant(o)) return 20;
   if (/water ?cool|\baio\b|liquid cool/.test(ol)) return 30;
   if (/\b(overclock\w*|oc)\b/.test(ol)) return 40;
   if (/^\W*install\s/.test(ol)) return storageKind(ol) ? 20 : 10;
@@ -998,9 +1031,18 @@ function suggestPlan(job, opts = {}) {
   }
   const { plan, tasks, removeOld, used, met, left } = best;
   // objectives a part of the set covers without a step of their own (two GPUs from a 3DMark set → "dual graphics")
-  for (const o of objs)
-    if (![...used, ...met, ...left].some(u => u.reason === o) && !/3dmark|benchmark|score/i.test(o) && used.length)
-      met.push({ reason: o, note: "covered by this set" });
+  // (0.15.2: only when the planned PC really meets it – else it's listed as not covered)
+  const done = plannedBuild(withSwaps(job, plan));
+  for (const o of objs) {
+    if (
+      [...used, ...met, ...left].some(u => u.reason === o || u.reason.startsWith(o + " – ")) ||
+      /3dmark|benchmark|score/i.test(o)
+    )
+      continue;
+    const ok = planMeets(o, done);
+    if (ok === true && used.length) met.push({ reason: o, note: "covered by this set" });
+    else if (ok === false) left.push({ reason: o, why: "not covered by this set – add the parts yourself" });
+  }
   // nothing to add – or a single objective with a single suggestion: that suggestion is already "one set"
   if (!used.length || (used.length === 1 && objs.length <= 1 && !left.length)) return null;
   // what each part of the final set is for (a later step may have replaced an earlier step's part)
@@ -1069,6 +1111,16 @@ function suggestPlan(job, opts = {}) {
       },
     ],
   };
+}
+// does a planned PC meet this objective? true / false, or null when there's no check for it (counts and pairs only)
+function planMeets(o, build) {
+  const sum = cat => build.filter(p => p.cat === cat).reduce((t, p) => t + +(cInfo(p).gb || 0), 0);
+  const ram = o.match(/(\d+)\s*gb\s+(of\s+)?(ram|memory)/i);
+  if (ram) return sum("RAM") >= +ram[1];
+  if (storageWant(o)) return sum("Storage") >= storageWant(o);
+  if (MULTI_RE.test(o)) return build.some(p => p.cat === "Motherboard" && multiOk(p));
+  if (DUAL_RE.test(o)) return build.filter(p => p.cat === "GPU").length >= 2;
+  return null;
 }
 // the identical part (or the closest equal-or-better one of the same kind when it can't be bought),
 // plus the favourite brand's equal-or-better parts of the same kind
@@ -1182,6 +1234,12 @@ function storageKind(t) {
   if (/\bhdd\b|hard (disk|drive)/i.test(t)) return "1";
   return "";
 }
+// "Upgrade to 4 TB of Storage" → 4000 (GB, as the database counts them); 0 for other objectives
+const storageWant = o =>
+  /\b(upgrade|install|at least|need)\b/i.test(o)
+    ? sizeGB((o.match(/\d+(?:\.\d+)?\s*(tb|gb)\s+(of\s+)?(storage|disk)/i) || [""])[0])
+    : 0;
+const gbText = gb => (gb >= 1000 ? `${+(gb / 1000).toFixed(2)} TB` : `${gb} GB`);
 const sizeGB = t => {
   const m = String(t).match(/(\d+(?:\.\d+)?)\s*(tb|gb)\b/i);
   return m ? +m[1] * (/tb/i.test(m[2]) ? 1000 : 1) : 0;
@@ -1728,20 +1786,78 @@ function benchSuggestions(job, ctx) {
     const o = options.find(o => o.swaps.map(s => s.new).join() === brandBest.o.swaps.map(s => s.new).join());
     o.tag = (o.tag ? o.tag + " · " : "") + `★ ${ctx.brands[0]}`;
   }
-  return [
-    {
-      key: "bench",
-      reason: why,
-      cat: "3DMark",
-      options,
-      hint: options.length ? "" : "No unlocked parts reach this score – check the budget or your career level.",
-    },
-  ];
+  // no small set reaches it: a new platform (0.15.2) – the game never asks for a score that can't be reached
+  if (!options.length) options = platformBench(job, ctx, target, why, set, locked);
+  return [{ key: "bench", reason: why, cat: "3DMark", options, hint: options.length ? "" : BENCH_REPORT }];
+}
+// the search found nothing – an app bug by the game's rule (every 3DMark objective can be reached at the job's level)
+const BENCH_REPORT = "Couldn't find a set that reaches this score – please report this job.";
+// 3DMark, when no small set reaches the score: a whole new platform – motherboard + CPU, with the GPU(s) and RAM when
+// they may change (parts an objective or an earlier step of the one-tick set picked stay, e.g. the RAM of "Upgrade to
+// 128 GB"). The search is the one for a PC built from nothing, on the PC without those parts; the PSU and CPU cooler
+// are only replaced when the old ones can't carry / don't fit the new parts.
+function platformBench(job, ctx, target, why, set, locked) {
+  if (locked.has("CPU") || locked.has("Motherboard")) return [];
+  const olds = c =>
+    plannedBuild(job)
+      .filter(p => p.cat === c)
+      .map(p => p.name);
+  // the RAM sticks stay when the score can be reached with them (no worse sticks), else they may change too
+  for (const ram of locked.has("RAM") ? [false] : [false, true]) {
+    const free = ["CPU", "Motherboard", "GPU", "CPU Cooler", "PSU", ...(ram ? ["RAM"] : [])].filter(c => !locked.has(c));
+    const bare = {
+      ...job,
+      components: (job.components || []).filter(p => !free.includes(p.cat)),
+      swaps: (job.swaps || []).filter(s => !free.includes(s.cat)),
+    };
+    const keep = Object.fromEntries(["PSU", "CPU Cooler"].filter(c => free.includes(c)).map(c => [c, olds(c)[0]]));
+    const res = newBuildBench(bare, { ...ctx, objCats: new Set() }, target, plannedBuild(bare), why, set, { keep });
+    const out = [];
+    for (const o of res[0]?.options || []) {
+      const q = Object.fromEntries(free.map(c => [c, olds(c)])),
+        old = cat => (q[cat] || []).shift() || "";
+      const swaps = o.swaps.map(s => ({ ...s, old: old(s.cat) })).filter(s => s.old !== s.new), // a part that stays: no swap
+        extras = o.extras.map(e => ({ ...e, old: old(e.cat) }));
+      if (q.GPU?.length) continue; // fewer GPUs than now: the old card would stay in the PC
+      const total = [...swaps, ...extras].reduce((t, x) => t + (x.price || 0), 0);
+      out.push({
+        ...o,
+        name:
+          "New platform for the score: " +
+          [...new Set(swaps.map(s => (s.cat === "Motherboard" ? "motherboard" : s.cat)))].join(" + "),
+        swaps,
+        extras,
+        removeOld: q.RAM || [],
+        total,
+        price: total,
+        over: !priceOk({ price: total }, ctx.left),
+        nParts: swaps.length + extras.length,
+      });
+    }
+    if (!out.length) continue;
+    // story job (the budget only counts when an objective mentions it): going over the budget is fine – said on the option
+    const loose = job.story && !budgetInObjectives(jobObjectives(job));
+    out.sort((a, b) => a.over - b.over || a.total - b.total);
+    out.forEach(
+      (o, i) =>
+        (o.tag = [i === 0 ? "cheapest" : o.tag, o.over && loose ? "over the budget – story job, the budget doesn't count" : ""]
+          .filter(Boolean)
+          .join(" · "))
+    );
+    return out.slice(0, 4);
+  }
+  return [];
+}
+// can this board run two of this card (SLI / CrossFire of the card's kind, room for two cards this wide)?
+function takesPair(board, card) {
+  const bi = cInfo(board),
+    gi = cInfo(card);
+  return !!gi.m && (gi.m === "SLI" ? bi.sli === "1" : bi.cf === "1") && (!bi.ds || !gi.sl || +bi.ds >= +gi.sl);
 }
 // 3DMark for a PC built from nothing: the cheapest CPU + motherboard + RAM (+ GPU) that reach the score – parts already
 // planned (an objective's GPU, RAM…) stay – plus the PSU and CPU cooler it needs to run. Search: per category only the
 // parts that are the best for their price (a dearer part must score higher), then every mix of them.
-function newBuildBench(job, ctx, target, build, why, set) {
+function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
   const have = c => build.filter(p => p.cat === c),
     WANT = ["GPU", "CPU", "Motherboard", "RAM"];
   const wait = WANT.filter(c => !have(c).length && ctx.objCats && ctx.objCats.has(c));
@@ -1843,7 +1959,9 @@ function newBuildBench(job, ctx, target, build, why, set) {
             };
             for (const list of gpuLists)
               for (const cs of new Set([cOn, cOff])) {
-                const g = list.find(x => x.g >= need(cs) - 1 && sysBench(cs, x.g) >= target);
+                const g = list.find(
+                  x => x.g >= need(cs) - 1 && sysBench(cs, x.g) >= target && (x.k < 2 || !x.p || takesPair(m.p || m0, x.p))
+                );
                 if (!g) continue;
                 const sc = { off: sysBench(cOff, g.g), on: sysBench(cOn, g.g) };
                 const swaps = [
@@ -1866,15 +1984,28 @@ function newBuildBench(job, ctx, target, build, why, set) {
       w = name => (powerOf(name) || {}).w || 0;
     if (!have("PSU").length) {
       const need = POWER_OTHER + b2.filter(p => p.cat === "CPU" || p.cat === "GPU").reduce((t, p) => t + w(p.name), 0);
-      const psu = cheapFirst("PSU").find(p => w(p.name) >= need && fitsBuild(j2, p, ""));
-      if (!psu) return null;
-      extras.push({ cat: "PSU", old: "", name: psu.name, price: psu.price, why: `PSU for ~${need} W` });
+      // a new platform (platformBench): the old PSU stays when it carries the new parts and fits
+      const own = keep.PSU && { name: keep.PSU, cat: "PSU" };
+      if (!own || w(own.name) < need || !fitsBuild(j2, own, "")) {
+        const psu = cheapFirst("PSU").find(p => w(p.name) >= need && fitsBuild(j2, p, ""));
+        if (!psu) return null;
+        extras.push({ cat: "PSU", old: "", name: psu.name, price: psu.price, why: `PSU for ~${need} W` });
+      }
     }
     if (!have("CPU Cooler").length) {
-      const j3 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]);
-      const cool = cheapFirst("CPU Cooler").find(p => fitsBuild(j3, p, ""));
-      if (!cool) return null;
-      extras.push({ cat: "CPU Cooler", old: "", name: cool.name, price: cool.price, why: "CPU cooler" });
+      const j3 = withSwaps(job, [...swaps, ...extras.map(e => ({ cat: e.cat, old: "", new: e.name }))]),
+        own = keep["CPU Cooler"] && { name: keep["CPU Cooler"], cat: "CPU Cooler" };
+      if (!own || !fitsBuild(j3, own, "")) {
+        const cool = cheapFirst("CPU Cooler").find(p => fitsBuild(j3, p, ""));
+        if (!cool) return null;
+        extras.push({
+          cat: "CPU Cooler",
+          old: "",
+          name: cool.name,
+          price: cool.price,
+          why: own ? "CPU cooler for the new socket" : "CPU cooler",
+        });
+      }
     }
     // a drive to boot from – the cheapest that fits, unless an objective picks it
     if (!have("Storage").length && !(ctx.objCats && ctx.objCats.has("Storage"))) {
@@ -1957,7 +2088,7 @@ function newBuildBench(job, ctx, target, build, why, set) {
         ? ""
         : !cands.length && g0.length
           ? `The ${g0[0].name} can't reach this score with any CPU – pick a stronger GPU.`
-          : "No unlocked parts reach this score – check the budget or your career level.",
+          : BENCH_REPORT,
     },
   ];
 }

@@ -40,5 +40,7 @@ let crops = Object.assign(structuredClone(DEFAULT_CROPS), LS.get("pcbs.crops", {
     else if (j.table) seen.add(j.table);
   });
 })();
+// 0.15.2: cable sets renamed to their shop names ("Ribbon Plastic Duo Black Red" → "Ribbon Plastic Duo Red")
+jobs.forEach(j => (j.swaps || []).forEach(s => ((s.old = renamedPart(s.old)), (s.new = renamedPart(s.new)))));
 const save = () => LS.set("pcbs.jobs", jobs);
 const TCOL = ["var(--t0)", "var(--t1)", "var(--t2)", "var(--t3)"];

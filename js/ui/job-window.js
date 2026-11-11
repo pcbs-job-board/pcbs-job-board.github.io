@@ -237,7 +237,7 @@ async function runOcr() {
     });
     p.hidden.forEach(h => {
       if (h.want) {
-        const ex = h.want.map(w => cablesFor(w)[0]).filter(Boolean);
+        const ex = h.want.flatMap(w => cableExamples(w));
         if (ex.length) h.task += " (e.g. " + ex.join(", ") + ")";
       }
     });

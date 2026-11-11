@@ -662,17 +662,21 @@ function detectCables(body) {
       t.split(/\s+/)
         .filter(Boolean)
         .forEach(x => types.add(x));
-    if (c && !cols.includes(c)) cols.push(c);
+    // one colour group per wish; a group inside one already found ("yellow" of "white yellow") adds nothing
+    c = c && c.replace(/\s+/g, " ").trim();
+    if (c && !cols.some(x => (" " + x + " ").includes(" " + c + " "))) {
+      for (let i = cols.length - 1; i >= 0; i--) if ((" " + c + " ").includes(" " + cols[i] + " ")) cols.splice(i, 1);
+      cols.push(c);
+    }
     if (q) quotes.push(q.trim());
   };
-  // type + colour, in either order: "plastic yellow", "braided dark grey", "yellow braided"
-  for (const m of b.matchAll(
-    new RegExp("\\b((?:(?:" + CABLE_TYPE + ")\\s+)+)(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\b", "g")
-  ))
+  // 1–4 colour words in a row are ONE wish (0.15.2): "plastic white yellow" = a set with both colours, not two options
+  const COL1 = CABLE_SHADE + "(?:" + CABLE_COL + ")",
+    GROUP = "(" + COL1 + "(?:\\s+" + COL1 + "){0,3})";
+  // type + colour(s), in either order: "plastic yellow", "braided dark grey", "plastic white yellow", "yellow braided"
+  for (const m of b.matchAll(new RegExp("\\b((?:(?:" + CABLE_TYPE + ")\\s+)+)" + GROUP + "\\b", "g")))
     add(m[1].trim(), m[2], m[0]);
-  for (const m of b.matchAll(
-    new RegExp("\\b(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\s+((?:plastic|braided|sleeved|ribbon)\\b)", "g")
-  ))
+  for (const m of b.matchAll(new RegExp("\\b" + GROUP + "\\s+((?:plastic|braided|sleeved|ribbon)\\b)", "g")))
     add(m[2], m[1], m[0]);
   // only with the word cable(s) and a wish in the sentence: "I love yellow cables", "braided cables please"
   for (const s of b.split(/[.!?]/)) {
@@ -683,10 +687,7 @@ function detectCables(body) {
       );
     if (!wish) continue;
     for (const m of s.matchAll(
-      new RegExp(
-        "\\b(" + CABLE_SHADE + "(?:" + CABLE_COL + "))\\s+(?:(?:" + CABLE_TYPE + ")\\s+)?(?:cables?|wires?|cabling)\\b",
-        "g"
-      )
+      new RegExp("\\b" + GROUP + "\\s+(?:(?:" + CABLE_TYPE + ")\\s+)?(?:cables?|wires?|cabling)\\b", "g")
     ))
       add("", m[1], m[0]);
     for (const m of s.matchAll(/\b(plastic|braided|sleeved|ribbon)\s+(?:cables?|wires?|cabling)\b/g)) add(m[1], "", m[0]);

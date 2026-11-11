@@ -193,20 +193,82 @@ function matchPart(name) {
   }
   return best && best.w.length && t.filter(w => best.w.includes(w)).length / best.w.length >= 0.55 ? best : null;
 }
-// cables in the database that fit a customer request like "Braided Dark Grey" or "Plain Red"
+// cables: the colour words of a shop name, e.g. "Ribbon Plastic Striped White Yellow" → white, yellow (0.15.2)
+const CABLE_COLOURS = [
+  "dark grey",
+  "light grey",
+  "black",
+  "blue",
+  "cyan",
+  "green",
+  "grey",
+  "lime",
+  "orange",
+  "pink",
+  "purple",
+  "red",
+  "white",
+  "yellow",
+  "rainbow",
+];
+const CABLE_KINDS = ["duo", "patterned", "striped"];
+function colourWords(t) {
+  const out = [];
+  let rest = " " + normP(t) + " ";
+  for (const c of CABLE_COLOURS) // longest first ("light grey" before "grey"), each colour once
+    if (rest.includes(" " + c + " ")) {
+      out.push(c);
+      rest = rest.replace(" " + c + " ", " ");
+    }
+  return out;
+}
+// a cable set's colours: the data's col= field (duo sets are black + the colour in their name), else the name's colours
+function cableColours(p) {
+  const col = (compatOf(p.name) || {}).col;
+  return col ? col.split("|").map(normP) : colourWords(p.name);
+}
+// shop names before 0.15.2 (saved jobs may still have them)
+const CABLE_RENAMED = {
+  "ribbon plastic patterned lime black grey": "Ribbon Plastic Patterned Lime Black Light Grey",
+  ...Object.fromEntries(
+    ["Blue", "Cyan", "Green", "Light Grey", "Lime", "Orange", "Pink", "Purple", "Red", "White", "Yellow"].map(c => [
+      "ribbon plastic duo black " + c.toLowerCase(),
+      "Ribbon Plastic Duo " + c,
+    ])
+  ),
+};
+const renamedPart = name =>
+  CABLE_RENAMED[
+    String(name || "")
+      .trim()
+      .toLowerCase()
+  ] || name;
+// cables in the database that fit a customer request like "Braided Dark Grey", "Plain Red" or "Plastic White Yellow":
+// the type words must be in the name and the set's colours must be EXACTLY the wished ones (Mariusz 2026-11-10) –
+// 1 colour → sets in that one colour, 2 → 2-colour sets with those two, … (a duo set counts as black + its colour)
 function cablesFor(want) {
   const t = normP(want).split(" "),
-    plain = t.includes("plain");
-  const need = t.filter(w => w !== "plain" && w !== "sleeved");
-  return INDEX.filter(
-    p =>
-      p.cat === "Cables" &&
-      need.every(w => p.w.includes(w)) &&
-      (!plain || !/duo|patterned|striped|rainbow/.test(p.n)) &&
-      ["duo", "patterned", "striped", "rainbow"].every(w => need.includes(w) || !p.w.includes(w)) &&
-      (need.includes("dark") || !p.w.includes("dark")) &&
-      (need.includes("light") || !p.w.includes("light"))
-  ).map(p => p.name);
+    plain = t.includes("plain"),
+    cols = colourWords(want),
+    kinds = t.filter(w => CABLE_KINDS.includes(w));
+  const types = t.filter(
+    w => w && !["plain", "sleeved", ...CABLE_KINDS].includes(w) && !cols.some(c => c.split(" ").includes(w))
+  );
+  const same = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+  return INDEX.filter(p => {
+    if (p.cat !== "Cables" || !types.every(w => p.w.includes(w)) || !kinds.every(w => p.w.includes(w))) return false;
+    const fancy = CABLE_KINDS.some(w => p.w.includes(w));
+    if (plain && fancy) return false;
+    if (!cols.length) return !fancy || kinds.length > 0; // type only: plain sets, unless a pattern is named
+    return same(cols, kinds.includes("duo") ? colourWords(p.name) : cableColours(p));
+  })
+    .sort((a, b) => (a.price ?? 0) - (b.price ?? 0) || (a.lvl ?? 0) - (b.lvl ?? 0))
+    .map(p => p.name);
+}
+// the hidden task's examples for one wish: sets the player can buy first (cheapest), at most 2
+function cableExamples(want) {
+  const all = cablesFor(want).map(n => INDEX.find(p => p.cat === "Cables" && p.name === n));
+  return [...all.filter(unlocked), ...all.filter(p => !unlocked(p))].slice(0, 2).map(p => p.name);
 }
 // which categories a brand makes (from parts the user has enabled), e.g. NZXT → Case, Motherboard, CPU Cooler…
 const BRAND_SEARCH = { NVIDIA: ["geforce", "nvidia"], AMD: ["radeon", "ryzen", "amd"] };
@@ -709,7 +771,7 @@ function priceOf(name) {
   }
   return (
     PRICE.get(
-      String(name || "")
+      String(renamedPart(name) || "")
         .trim()
         .toLowerCase()
     ) ?? null
