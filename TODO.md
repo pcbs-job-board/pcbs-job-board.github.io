@@ -16,6 +16,8 @@ changed is in CHANGELOG.md – this list only has what's still to do.
   dev branch's changelog records it.
 - All dev branches and backups live in this private repository (`pcbs-job-board-dev`). The public
   repository only gets `main`.
+- **This list is pushed to the `todo` branch after every change** – Mariusz checks it there. "Don't push"
+  means don't push to `main` / live; dev branches, `tests` and `todo` are always kept up to date.
 - Before a release: back up the live `main` as `backup-<live version>` here. Then **ask Mariusz before
   merging a dev version into `main`**, merge, and check the live site.
 - **Version bump**: `python tools/bump_version.py X.Y.Z` (js/config.js, every `?v=`, `--css-ver`, package.json), then a
