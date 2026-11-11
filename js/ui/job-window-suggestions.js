@@ -111,15 +111,11 @@ function drawSuggestions(box, input, key) {
       ${plan.met.map(m => `<small class="smet">✓ ${esc(m.reason)} – ${esc(m.note)}</small>`).join("")}
       ${plan.left.map(m => `<small class="sleft">✗ not in the set: <b>${esc(m.reason)}</b>${m.why ? " – " + esc(m.why) : ""}</small>`).join("")}</div>`
     : "";
-  const fold = plan && !plan.left.length;
+  const fold = !!plan; // 0.15.3: folded away by default (the one set is shown first)
   box.innerHTML =
     `<div class="sugghead"><label>💡 Suggested swaps <small>(tick one to add it – nothing is added by itself)</small></label><button class="ghost" id="suggRefresh" title="Work out all suggestions again">↻ Refresh</button></div>` +
     planHtml +
-    (fold
-      ? `<details class="sothers"><summary>Options for each objective (${list.length})</summary>`
-      : plan
-        ? `<div class="sothhead">Options for each objective</div>`
-        : "") +
+    (fold ? `<details class="sothers"><summary>Options for each objective (${list.length})</summary>` : "") +
     list
       .map(
         (sg, i) => `<div class="sugg"><div class="sreason">for: <b>${esc(sg.reason)}</b></div>

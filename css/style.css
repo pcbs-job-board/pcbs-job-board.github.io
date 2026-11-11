@@ -3144,9 +3144,6 @@ dialog.flipdlg {
 .capparts.captop {
   margin: 0 0 10px;
 }
-#revCapE:empty {
-  display: none;
-}
 /* screenshot tabs + Adjust areas: compact; "Read again" = round ↻ over the picture */
 #shotPane .ctrls button,
 #shotTabs button {
@@ -3748,4 +3745,287 @@ details.sothers > summary,
   margin: 0 6px 4px;
   padding: 4px 8px;
   font-size: 12.5px;
+}
+
+/* New job / Edit window (0.15.3): fixed to the screen height – capture buttons on top, picture as a thumbnail,
+   objectives + hidden side by side, parts always open, suggestions beside them, Create job / Save always visible */
+#dlgReview[open] {
+  display: flex;
+  flex-direction: column;
+  height: min(95vh, 920px);
+  width: min(1500px, 97vw);
+  max-width: none;
+}
+#dlgReview .dlg-b {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+  padding: 10px 14px;
+  position: relative;
+}
+#dlgReview .review {
+  height: 100%;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px 14px;
+}
+#dlgReview .revleft,
+#dlgReview #revForm {
+  overflow: auto;
+  min-height: 0;
+  padding-right: 6px;
+}
+#dlgReview .revtop .capparts {
+  margin: 0;
+}
+#revCapE:empty {
+  display: block;
+}
+#capRow {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+#capRow.noshot,
+#capRow.big {
+  grid-template-columns: minmax(0, 1fr);
+}
+#capRow #shotWrap {
+  cursor: zoom-in;
+}
+#capRow.big #shotWrap {
+  cursor: zoom-out;
+}
+#capRow .capside {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+#capRow .capside .hint,
+#capRow .capside .ocrnote,
+#capRow .capside .progress {
+  margin: 0;
+}
+#capRow .capside .progress {
+  margin: 2px 0;
+}
+#shotWrap .adjust {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  z-index: 3;
+  padding: 3px 8px;
+  font-size: 12px;
+  min-height: 0;
+  background: #0b1220d9;
+}
+/* job fields: dense rows */
+#revJob {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px 8px;
+  margin-top: 8px;
+}
+#revJob > * {
+  grid-column: 1 / -1;
+}
+#revJob > .grid2,
+#revJob > .grid3 {
+  display: contents;
+}
+#revJob > .jr-name > div,
+#revJob > .jr-sus > div {
+  grid-column: span 6;
+}
+#revJob > .grid3 > div:nth-child(-n + 2) {
+  grid-column: span 2;
+}
+#revJob > .grid3 > div:nth-child(3) {
+  grid-column: span 3;
+}
+#revJob > .jr-lvl > div:nth-child(1) {
+  grid-column: span 2;
+}
+#revJob > .jr-lvl > div:nth-child(2) {
+  grid-column: span 3;
+}
+#revJob label {
+  margin-top: 0;
+  font-size: 10.5px;
+}
+#revJob input,
+#revJob select {
+  padding: 5px 8px;
+  min-height: 0;
+}
+#revJob .storyrow {
+  margin-top: 4px;
+  padding: 4px 8px;
+}
+#revJob .storyrow small {
+  display: none;
+}
+.objhid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.objhid > div > label {
+  display: block;
+}
+#objList {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 6px;
+}
+.objrow {
+  align-items: center;
+  padding: 2px 0;
+}
+#revJob .objrow .objtxt {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border-color: transparent;
+  padding: 1px 4px;
+  font-size: 13px;
+}
+.objrow .objtxt:hover,
+.objrow .objtxt:focus {
+  border-color: var(--line);
+}
+.objrow.off .objtxt {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.objrow .px {
+  padding: 0 6px;
+  opacity: 0;
+}
+.objrow:hover .px,
+.objrow .px:focus-visible {
+  opacity: 1;
+}
+#objHid,
+.objhid #fHidden {
+  margin: 0;
+}
+.objhid .hidrow small {
+  display: none;
+}
+.objhid .hidnote {
+  font-size: 11.5px;
+  margin: 3px 0 0;
+}
+.emailtxt {
+  margin-top: 6px;
+}
+.ptitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+/* parts: compact, always open; a long name takes two cells so it can be read whole */
+#dlgReview #fParts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+#dlgReview .pslot {
+  padding: 4px 6px;
+  min-width: 0;
+}
+#dlgReview .pslot.plong {
+  grid-column: span 2;
+}
+#dlgReview .pslot > label {
+  margin: 0 0 3px;
+  font-size: 9.5px;
+}
+#dlgReview .prow input {
+  padding: 3px 6px;
+  min-height: 0;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+}
+#dlgReview .padd {
+  margin-top: 2px;
+  padding: 0 6px;
+}
+.revfoot {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}
+.revfoot #revSum {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.revfoot #fSave {
+  flex: 1;
+}
+#suggBubble {
+  position: absolute;
+  right: 24px;
+  bottom: 12px;
+  z-index: 5;
+  background: var(--warn);
+  color: #1a1205;
+  border: 0;
+  border-radius: 18px;
+  padding: 7px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 3px 12px #000a;
+  cursor: pointer;
+  animation: bubfloat 1.8s ease-in-out infinite;
+}
+#suggBubble[hidden] {
+  display: none;
+}
+@keyframes bubfloat {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #suggBubble {
+    animation: none;
+  }
+}
+@media (max-width: 1100px) {
+  #dlgReview #fParts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  #dlgReview[open] {
+    height: auto;
+    max-height: 96vh;
+  }
+  #dlgReview .dlg-b {
+    overflow: auto;
+  }
+  #dlgReview .review {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+  #dlgReview .revleft,
+  #dlgReview #revForm {
+    overflow: visible;
+  }
+  .objhid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

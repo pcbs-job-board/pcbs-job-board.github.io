@@ -3,6 +3,56 @@
 // rev.shots: [{url, kind: "email"|"parts", text}] – the email is read first; each
 // "Add PC parts capture" adds a frame whose PC Stats popup is read and merged into the parts list.
 let rev = null;
+// Objectives: a ticked list (untick a wrongly read one). The hidden #fObj text box stays the single source for the rest
+// of the app (suggestions, story check, saving) – it holds the ticked lines, one per line.
+const objRowHtml = (t, on = true) =>
+  `<div class="task objrow"><input type="checkbox" ${on ? "checked" : ""} aria-label="Objective applies"><input class="objtxt" value="${esc(t)}" placeholder="objective…" autocomplete="off"><button class="ghost px" data-orm type="button" title="Remove" aria-label="Remove objective">✕</button></div>`;
+const objRowsHtml = list => list.map(t => objRowHtml(t)).join("");
+function syncObjectives() {
+  const ta = $("#fObj");
+  if (!ta) return;
+  ta.value = [...document.querySelectorAll("#objList .objrow")]
+    .filter(r => r.querySelector("input[type=checkbox]").checked)
+    .map(r => r.querySelector(".objtxt").value.trim())
+    .filter(Boolean)
+    .join("\n");
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function bindObjectives() {
+  const list = $("#objList");
+  if (!list) return;
+  list.addEventListener("change", e => {
+    e.target.closest(".objrow")?.classList.toggle("off", !e.target.checked);
+    syncObjectives();
+  });
+  list.addEventListener("input", syncObjectives);
+  list.addEventListener("click", e => {
+    if (e.target.closest("[data-orm]")) {
+      e.target.closest(".objrow").remove();
+      syncObjectives();
+    }
+  });
+  list.addEventListener("keydown", e => {
+    if (e.key === "Enter" && e.target.matches(".objtxt")) {
+      e.preventDefault();
+      e.target.closest(".objrow").insertAdjacentHTML("afterend", objRowHtml(""));
+      e.target.closest(".objrow").nextElementSibling.querySelector(".objtxt").focus();
+    }
+  });
+  $("#objAdd").onclick = () => {
+    list.insertAdjacentHTML("beforeend", objRowHtml(""));
+    list.lastElementChild.querySelector(".objtxt").focus();
+  };
+}
+// footer: what the job will contain
+function renderSummary() {
+  const el = $("#revSum");
+  if (!el) return;
+  const n = (document.querySelector("#fObj")?.value || "").split("\n").filter(x => x.trim()).length,
+    h = document.querySelectorAll("#fHidden input:checked").length,
+    x = ($("#fExtra")?.value || "").split("\n").filter(l => l.trim()).length;
+  el.textContent = $("#fObj") ? `${n} objectives · ${h} hidden · ${x} extra` : "";
+}
 function openReview(dataUrl, editJob, forJob) {
   const dlg = $("#dlgReview");
   if (editJob) forJob = editJob; // 0.13.0: one Edit window for the job's details AND its parts (the old Parts window is gone)
@@ -91,6 +141,7 @@ function renderShots() {
   const dlg = $("#dlgReview");
   dlg.querySelector(".review").style.gridTemplateColumns = has || $("#revJob").innerHTML.trim() ? "" : "1fr"; // job fields left, parts right
   $("#shotPane").hidden = !has;
+  $("#capRow").classList.toggle("noshot", !has);
   $("#shotTabs").innerHTML = has
     ? rev.shots
         .map((sh, i) => {
@@ -346,7 +397,7 @@ function partFieldsHtml(comps) {
       shown = rows.length || sl.other ? rows : [{ cat: sl.k, name: "" }];
     if (sl.onlyIfUsed && !rows.length) return "";
     const row = c =>
-      `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
+      `<div class="prow"><input data-ac data-ac-cat="${sl.other ? OTHER_CATS() : esc(sl.k)}" data-slot="${esc(sl.k)}" data-cat="${esc(c.cat)}" value="${esc(c.name)}" title="${esc(c.name)}" placeholder="${sl.other ? "add a part…" : "(empty)"}" autocomplete="off">${c.name && !inPartsDb(c.name) ? `<span class="pwarn" title="Not found in the parts database – check the name (the text reader may have misread it)">!</span>` : sl.k === "RAM" && ramOdd.has(c.name) ? `<span class="pwarn" title="RAM sticks differ in size or speed – check this one (another part may have been read as RAM)">!</span>` : ""}${c.name ? `<button class="ghost px" data-prm title="Remove" aria-label="Remove ${esc(c.name)}">✕</button>` : ""}</div>`;
     const more =
       sl.other || rows.length < sl.max
         ? rows.length
@@ -355,7 +406,7 @@ function partFieldsHtml(comps) {
             ? row({ cat: "Other", name: "" })
             : ""
         : "";
-    return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
+    return `<div class="pslot${!sl.other && !sl.opt && !rows.length ? " pempty" : ""}${rows.some(c => c.name.length > 24) ? " plong" : ""}" data-slotk="${esc(sl.k)}"><label>${esc(sl.label)}${sl.hint ? ` <small>(${esc(sl.hint)})</small>` : ""}${sl.max > 1 && sl.max < 99 ? ` <small>${rows.length}/${sl.max}</small>` : ""}</label>${shown.map(row).join("")}${more}</div>`;
   }).join("")}</div>`;
 }
 // fields → hidden text box (+ "input" so the suggestions follow); text box → fields
@@ -439,23 +490,26 @@ function renderForm() {
   const d = rev.draft,
     f = $("#revForm"),
     jb = $("#revJob");
-  const parts = `<button id="btnCapParts" class="capparts captop">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>
-    <label>Parts of this PC</label>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>`;
+  $("#revCapP").innerHTML =
+    `<button id="btnCapParts" class="capparts captop">📸 Add PC parts capture <small>open PC Stats in-game first · repeat after scrolling</small><kbd class="capkey" title="Keyboard shortcut">(Alt+P)</kbd></button>`;
+  const parts = `<div class="ptitle">Parts of this PC – check the reader got everything</div>${partFieldsHtml(d.components)}<textarea id="fComps" hidden>${esc(d.components.map(c => c.cat + ": " + c.name).join("\n"))}</textarea>`;
   const emailAdder = `<button id="btnCapEmail" class="capparts capemail captop">📸 Add email capture <small>long email? scroll it in-game first – text is joined</small><kbd class="capkey" title="Keyboard shortcut">(Alt+E)</kbd></button>`;
   if (rev.forJob && !rev.editJob) {
     // (no longer opened – kept for safety)
     jb.innerHTML = "";
     $("#revCapE").innerHTML = "";
     f.innerHTML = `${parts}
-      <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); parts you typed yourself are kept.</p><div id="fSugg"></div><button class="primary big" id="fSave" style="width:100%;margin-top:10px">Save parts</button>`;
+      <p class="hint">New captures add to the parts captured before (a part type is replaced when a screenshot shows more of it); parts you typed yourself are kept.</p><div id="fSugg"></div>`;
+    $("#fSave").textContent = "Save parts";
   } else {
     const isEdit = !!rev.editJob;
+    $("#fSave").textContent = isEdit ? "Save changes" : "Create job";
     $("#revCapE").innerHTML = emailAdder;
-    jb.innerHTML = `<div class="grid2"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
+    jb.innerHTML = `<div class="grid2 jr-name"><div><label>Customer</label><input id="fSender" value="${esc(d.sender)}"></div><div><label>Subject</label><input id="fSubject" value="${esc(d.subject)}"></div></div>
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
-      <div class="grid2"><div><label>Req. level</label><input id="fLevel" type="number" min="1" max="99" value="${d.level ?? ""}"></div><div><label>Req. stars</label><select id="fStars"><option value="">—</option>${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${d.stars === n ? "selected" : ""}>${n ? "★".repeat(n) : "none"}</option>`).join("")}</select></div></div>
+      <div class="grid2 jr-lvl"><div><label>Req. level</label><input id="fLevel" type="number" min="1" max="99" value="${d.level ?? ""}"></div><div><label>Req. stars</label><select id="fStars"><option value="">—</option>${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${d.stars === n ? "selected" : ""}>${n ? "★".repeat(n) : "none"}</option>`).join("")}</select></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
-      <div class="grid2"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[
+      <div class="grid2 jr-sus"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[
         1, 2, 3,
       ]
         .map(n => {
@@ -463,20 +517,20 @@ function renderForm() {
           return `<option value="${n}" ${d.table === n ? "selected" : ""}>Table ${n}${o ? " (busy – swaps)" : ""}</option>`;
         })
         .join("")}</select></div></div>
-      <label>Objectives (one per line)</label><textarea id="fObj" rows="3">${esc((d.objectives || []).join("\n"))}</textarea>
       ${storyBanner(d)}
-      <label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>${(d.hidden || []).length ? `<div class="hint hidnote">These are guessed from the email's wording – some might not be required. Check them against the email and untick any that don't apply.</div>` : ""}
-      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2">${esc((d.extra || []).join("\n"))}</textarea>`;
+      <div class="objhid"><div><label>Objectives <small>(untick wrong ones)</small></label><div id="objList">${objRowsHtml(d.objectives || [])}</div><button class="ghost padd" id="objAdd" type="button">＋ add objective</button><textarea id="fObj" hidden>${esc((d.objectives || []).join("\n"))}</textarea></div>
+      <div><label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"${h.because && h.because.length ? ` title="because: “${esc(h.because.join("”, “"))}”"` : ""}><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>${(d.hidden || []).length ? `<div class="hint hidnote">Guessed from the email's wording – untick any that don't apply.</div>` : ""}</div></div>
+      <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2">${esc((d.extra || []).join("\n"))}</textarea>
+      ${d.body ? `<details class="emailtxt"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}`;
     f.innerHTML = `${parts}
-      <div id="fSugg"></div>
-      ${d.body ? `<details style="margin-top:8px"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}
-      <button class="primary big" id="fSave" style="width:100%;margin-top:12px">${isEdit ? "Save changes" : "Create job"}</button>`;
+      <div id="fSugg"></div>`;
   }
   if (!f.dataset.pf) {
     f.dataset.pf = "1";
     bindPartFields();
   }
   $("#fSave").onclick = saveReview;
+  bindObjectives();
   // switching "Story job" unticks / ticks the hidden objectives in one go
   $("#fStory")?.addEventListener("change", e => {
     rev.storyTouched = true;
@@ -494,13 +548,53 @@ function renderForm() {
   const later = () => {
     clearTimeout(t);
     t = setTimeout(renderSuggestions, 350);
+    renderSummary();
   };
   ["#fComps", "#fObj", "#fBudget", "#fSuspect"].forEach(id => $(id)?.addEventListener("input", later));
-  $("#fHidden")?.addEventListener("change", renderSuggestions);
+  $("#fHidden")?.addEventListener("change", () => {
+    renderSuggestions();
+    renderSummary();
+  });
+  $("#fExtra")?.addEventListener("input", renderSummary);
+  renderSummary();
   $("#fStory")?.addEventListener("change", renderSuggestions);
 
   renderSuggestions();
 }
+// bubble "Suggestions are ready": shown while the suggested swaps are not (fully) on screen – click = scroll to them
+function updateSuggBubble() {
+  const bub = $("#suggBubble"),
+    box = $("#fSugg"),
+    form = $("#revForm");
+  if (!bub) return;
+  if (!$("#dlgReview").open || !box || !box.querySelector("input[data-sg]")) {
+    bub.hidden = true;
+    return;
+  }
+  // the scrolling box: the right column (two-column window) or the whole window body (narrow screens)
+  const sc = /auto|scroll/.test(getComputedStyle(form).overflowY) ? form : $("#dlgReview .dlg-b"),
+    r = box.getBoundingClientRect(),
+    c = sc.getBoundingClientRect();
+  bub.hidden = r.bottom <= c.bottom + 4;
+}
+{
+  const form = $("#revForm"),
+    upd = () => requestAnimationFrame(updateSuggBubble);
+  form.addEventListener("scroll", upd);
+  $("#dlgReview .dlg-b").addEventListener("scroll", upd);
+  form.addEventListener("toggle", upd, true);
+  window.addEventListener("resize", upd);
+  new MutationObserver(upd).observe(form, { childList: true, subtree: true });
+  $("#suggBubble").onclick = () => {
+    $("#fSugg")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#suggBubble").hidden = true;
+  };
+  $("#dlgReview").addEventListener("close", () => ($("#suggBubble").hidden = true));
+}
+// the picture: click to enlarge / shrink
+$("#shotWrap").addEventListener("click", e => {
+  if (!e.target.closest("button")) $("#capRow").classList.toggle("big");
+});
 // crop drawing
 let mode = "email"; // which crop box the current screenshot uses
 function drawCrops() {

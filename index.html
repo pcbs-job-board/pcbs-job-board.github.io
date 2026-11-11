@@ -70,24 +70,30 @@
   <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
     <div class="review">
-      <div class="revleft"><div id="revCapE"></div><div id="shotPane">
-        <div class="ctrls">
-          <div class="seg" id="shotTabs"></div>
-          <span class="spacer"></span>
-          <button id="btnAdjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button>
+      <div class="revtop" id="revCapE"></div>
+      <div class="revtop" id="revCapP"></div>
+      <div class="revleft">
+        <div id="capRow">
+          <div id="shotPane">
+            <div id="shotWrap" title="Click to enlarge"><img id="shot" alt="capture"><button id="btnReOcr" class="reocr" title="Read this screenshot again" aria-label="Read this screenshot again">↻</button><button id="btnAdjust" class="adjust" title="Move or redraw the box the text is read from (Alt+A)">🎯 Adjust areas</button><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
+          </div>
+          <div class="capside">
+            <div class="seg" id="shotTabs"></div>
+            <p class="ocrnote">ℹ️ This app only works with the <b>English</b> version of the game. Text is read automatically and mistakes can happen – always double-check the fields and objectives against the email.</p>
+            <p class="hint" id="areaHintP"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b> on the picture.</p>
+            <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
+            <div class="progress"><div id="prog"></div></div>
+            <div class="hint" id="ocrState"></div>
+            <details><summary>Raw text read from screen</summary><div class="rawtxt" id="rawTxt"></div></details>
+          </div>
         </div>
-        <p class="hint"><span id="areaHint"></span> Box in the wrong place? Press <b>🎯 Adjust areas</b>.</p>
-        <div id="blackWarn" class="hint" hidden style="color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:8px"></div>
-        <div id="shotWrap"><img id="shot" alt="capture"><button id="btnReOcr" class="reocr" title="Read this screenshot again" aria-label="Read this screenshot again">↻</button><div class="crop email" id="cropEmail"><label>EMAIL</label></div><div class="crop stats" id="cropStats"><label>PC STATS</label></div></div>
-        <div class="progress"><div id="prog"></div></div>
-        <div class="hint" id="ocrState"></div>
-        <p class="ocrnote">ℹ️ Works with the <b>English</b> version of the game only. Text is read automatically and mistakes can happen – always double-check the fields and hidden objectives against the email.</p>
-        <details><summary>Raw text read from screen</summary><div class="rawtxt" id="rawTxt"></div></details>
+        <div class="form" id="revJob"></div>   <!-- the job's fields (email, objectives, tasks) – under the screenshot -->
       </div>
-      <div class="form" id="revJob"></div></div>   <!-- the job's fields (email, objectives, tasks) – under the screenshot -->
       <div class="form" id="revForm"></div>
     </div>
+    <button id="suggBubble" hidden>💡 Suggestions for this job are ready – click to jump</button>
   </div>
+  <div class="revfoot"><span id="revSum"></span><button class="primary big" id="fSave">Create job</button></div>
 </dialog>
 
 <!-- Settings dialog -->
