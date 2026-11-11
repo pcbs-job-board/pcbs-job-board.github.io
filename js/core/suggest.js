@@ -854,7 +854,7 @@ function suggestSwaps(job, opts = {}) {
       }
   // 22  "Diagnose and fix" with nothing else to go on: based on the budget (fallback, never part of the one set)
   if (fixJob && sec("budget") && !out.some(sg => sg.options.length)) {
-    const sg = budgetFixSuggestion(job, ctx, opts.body);
+    const sg = budgetFixSuggestion(job, ctx);
     if (sg) out.push(sg);
   }
   return out;
@@ -864,43 +864,31 @@ function suggestSwaps(job, opts = {}) {
 // drive). Rules:
 //   B1 only when no other suggestion has an option; not a step of the one set (suggestPlan never asks for "budget")
 //   B2 always the same part again (like for like), sold in the shop and unlocked – never a cheaper or other part
-//   B3 inside the budget left only – a part the budget can't replace can't be the expected fix
-//   B4 parts that can't stop a PC from working are left out: case, fans, cables, water cooling, the CPU cooler (unless
-//      the email talks about heat) and drives when there are several (one drive = it may be the boot drive)
-//   B5 a part already planned for a swap is left out (that swap is the fix); a CPU the job keeps is left out
-//   B6 order: parts that fit what the email says first (no picture → GPU, no power → PSU / board, crashes → RAM,
-//      heat → CPU cooler), then the cheapest
-const BUDGET_SKIP = new Set(["Case", "Case Fan", "Cables", "Water Cooling", "Other"]);
-const SYMPTOMS = [
-  [/no (picture|image|display|signal)|black screen|blank screen|screen stays|monitor|artifact/i, ["GPU"]],
-  [
-    /won'?t (turn|switch|power) on|doesn'?t (turn|switch|power) on|no power|completely dead|nothing happens/i,
-    ["PSU", "Motherboard"],
-  ],
-  [/crash|blue screen|bsod|freez|restart/i, ["RAM", "Storage"]],
-  [/overheat|too hot|gets? (really |very )?hot|temperature|shuts? (itself )?(down|off)/i, ["CPU Cooler"]],
-];
-function budgetFixSuggestion(job, ctx, body = "") {
+//   B3 inside the budget left only – a part the budget can't replace can't be the expected fix; cheapest first
+//   B4 parts that can't stop a PC from working are left out: case, CPU cooler, fans, cables, coolant / pipes / fittings,
+//      and drives when there are several (one drive = it may be the boot drive). Custom loop parts (CPU block,
+//      reservoir, radiator) and watercooled GPUs count.
+const BUDGET_SKIP = new Set(["Case", "CPU Cooler", "Case Fan", "Cables", "Other"]);
+function budgetFixSuggestion(job, ctx) {
   // no budget, or a story job whose budget doesn't count – nothing to go by
   if (ctx.left == null || (job.story && !budgetInObjectives(jobObjectives(job)))) return null;
   const own = plannedBuild({ ...job, swaps: [] });
   if (!own.length) return null;
-  const hinted = new Set(SYMPTOMS.filter(([re]) => re.test(body || "")).flatMap(([, cats]) => cats));
   const drives = own.filter(p => p.cat === "Storage").length;
-  const planned = p => (job.swaps || []).some(s => lowName(s.old) === lowName(p.name));
   const seen = new Set(),
-    cands = [];
+    options = [];
   for (const p of own) {
-    if (BUDGET_SKIP.has(p.cat) || !CATS.includes(p.cat) || seen.has(p.cat + "|" + lowName(p.name))) continue;
-    if (p.cat === "CPU Cooler" && !hinted.has("CPU Cooler")) continue;
+    const key = p.cat + "|" + lowName(p.name);
+    if (BUDGET_SKIP.has(p.cat) || !CATS.includes(p.cat) || seen.has(key)) continue;
     if (p.cat === "Storage" && drives > 1) continue;
-    if ((p.cat === "CPU" && cpuIsFixed(job)) || planned(p)) continue;
-    seen.add(p.cat + "|" + lowName(p.name));
-    // the same part goes back where it was: no fit check (a tight case the customer's cooler already sits in is fine)
+    if (p.cat === "Water Cooling" && !wcKind(p)) continue; // coolant, pipes, fittings
+    seen.add(key);
+    // the same part goes back where it was: no fit check (a tight case the customer's part already sits in is fine)
     const s = shopParts(p.cat).find(sameAs(p.name));
     if (!s || !priceOk(s, ctx.left)) continue;
-    const n = own.filter(x => x.cat === p.cat && lowName(x.name) === lowName(p.name)).length;
-    cands.push({
+    const n = own.filter(x => x.cat === p.cat && lowName(x.name) === lowName(p.name)).length,
+      label = wcKind(p) || p.cat;
+    options.push({
       name: s.name,
       cat: s.cat,
       price: s.price,
@@ -908,17 +896,15 @@ function budgetFixSuggestion(job, ctx, body = "") {
       lvl: s.lvl,
       pct: s.pct,
       det: s.det,
-      tag: `same ${p.cat} again${n > 1 ? ` (one of ${n})` : ""}`,
+      tag: `same ${label} again${n > 1 ? ` (one of ${n})` : ""}`,
       swaps: [{ cat: s.cat, old: p.name, new: s.name }],
       extras: [],
       total: s.price,
       over: false,
       rk: rk(s),
-      hint: hinted.has(p.cat),
     });
   }
-  cands.sort((a, b) => b.hint - a.hint || a.total - b.total);
-  const options = cands.map(({ hint, ...o }) => ({ ...o, tag: o.tag + (hint ? " · fits what the email says" : "") }));
+  options.sort((a, b) => a.total - b.total);
   return {
     key: "budget",
     reason: `Based on budget – nothing else points to the broken part: an identical replacement inside the $${ctx.left} left`,
