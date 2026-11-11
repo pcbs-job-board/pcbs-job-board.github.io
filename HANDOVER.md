@@ -2,7 +2,7 @@
 
 Read this first in every new session or thread. It replaces the long first conversation (2026-10 → 2026-11-11).
 Then read `TODO.md` (same branch) for what's open, and `CHANGELOG.md` (app) for what each version did.
-Last updated: 2026-11-11 · live version **0.15.1** · dev branch in progress: `dev-0.15.2`.
+Last updated: 2026-11-11 · live version **0.15.2** · next dev branch: none yet (start from origin/main).
 
 ## 1. Who and what
 
