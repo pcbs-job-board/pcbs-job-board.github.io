@@ -671,13 +671,22 @@ document.addEventListener("click", e => {
     const f = document.querySelector(`[data-swapform="${j.id}"]`);
     const o = f.querySelector('[data-f="old"]').value,
       nw = f.querySelector('[data-f="new"]').value.trim(),
-      cat = catData(f.querySelector('[data-f="cat"]').value);
+      cat0 = catData(f.querySelector('[data-f="cat"]').value);
     if (!nw) {
       f.querySelector('[data-f="new"]').focus();
       return;
     }
     let ed = f.dataset.edit && j.swaps.find(x => x.id === f.dataset.edit);
-    const old = ed && o === "keep" ? ed.old : j.components[o]?.name || "";
+    let old = ed && o === "keep" ? ed.old : j.components[o]?.name || "";
+    // CPU cooler ↔ CPU block (custom water cooling): picking one replaces the other, the PC has only one of the two
+    const cooling = c => c && (c.cat === "CPU Cooler" || wcKind(c) === "CPU Block");
+    let cat = cat0;
+    const nwIx = INDEX.find(x => x.name === nw);
+    if (cooling(nwIx)) {
+      cat = nwIx.cat;
+      const cur = j.components.find(cooling);
+      if (!old && cur && cur.name !== nw) old = cur.name;
+    }
     // a part that already has a planned swap: the new one takes its place (same spot in the list), never both
     const twin = old && j.swaps.find(x => x !== ed && lowName(x.old) === lowName(old));
     const before = j.swaps.map(x => ({ ...x }));
