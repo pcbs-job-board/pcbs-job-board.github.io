@@ -23,8 +23,15 @@ changed is in CHANGELOG.md – this list only has what's still to do.
 - **Version bump**: `python tools/bump_version.py X.Y.Z` (js/config.js, every `?v=`, `--css-ver`, package.json), then a
   new CHANGELOG.md section by hand.
 - Changelog: very short lines, most important change first. Versions are X.Y.Z (X major, Y features, Z fixes).
-- Tests: branch `tests` here (`node run.js --app <app checkout>`). Run it on every dev branch before
-  asking to release – 0 failed. New screenshots from Mariusz go into `fixtures/` with checked expectations.
+- **Code style (Mariusz 2026-11-11)**: every update keeps the file structure neat and the code readable, and must
+  pass GitHub's "Checks" workflow (ESLint + Prettier `format:check` + parts-db up to date). The app checkout has
+  local git hooks for it: pre-commit formats the staged JS / CSS with Prettier (never index.html), runs ESLint and
+  rebuilds parts-db.js when data changed; pre-push to `main` refuses a push that fails the Prettier check.
+- **Tests – keep them minimal (Mariusz 2026-11-11, to save his usage limit)**: unless he asks for more, run only
+  `node quick.js --app <app checkout>` in the `tests` branch – units + startup + the suites the changed files need,
+  one line each – plus a new unit test per fix. No full runs, no screenshot checks unless the change is visual,
+  short outputs only. `--all` only when he asks. New screenshots from Mariusz go into `fixtures/` with checked
+  expectations (then `run.js --only <id>` for just those).
 
 ---
 
