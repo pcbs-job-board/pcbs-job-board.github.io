@@ -232,7 +232,7 @@ function invHtml(f) {
             .join("")}</div>
     ${rows
       .map(
-        i => `<div class="fprow inv ${i.taken ? "taken" : ""}${i.at && i.at === flipShine ? " shine" : ""}"${i.at && i.at === flipShine ? ` style="animation-delay:${Math.min(i.n || 0, 8) * 150}ms"` : ""}><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.unsure ? ` <small class="warn" title="Read as: ${esc(i.read || "")}">read unclearly – check the name</small>` : ""}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+        i => `<div class="fprow inv ${i.taken ? "taken" : ""}${shineRow(i) ? " shine" : ""}"${shineRow(i) ? ` style="animation-delay:${i.n * 150}ms"` : ""}><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.unsure ? ` <small class="warn" title="Read as: ${esc(i.read || "")}">read unclearly – check the name</small>` : ""}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
       ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(i.cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
       )
@@ -243,6 +243,7 @@ function invHtml(f) {
 }
 // scan time of the capture just made: its rows shine once (cleared after the next draw)
 let flipShine = 0;
+const shineRow = i => !!i.at && i.at === flipShine && (i.n || 0) < 3; // a scan adds up to 3 parts: those shine, one after the other
 const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
 // the assistant's results, worked out again only when the build / inventory changes (or ↻)
 let flipCache = { key: "", plan: null, ups: null };
