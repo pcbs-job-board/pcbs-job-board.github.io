@@ -634,6 +634,17 @@ function flipMoves(b, avail) {
           });
     }
   }
+  // two cards of the same model from different makers (they pair) in place of the GPUs now
+  const gpuNames = [...byName(avail.filter(i => i.cat === "GPU"))],
+    gNow = cur("GPU");
+  for (let x = 0; x < gpuNames.length; x++)
+    for (let y = x + 1; y < gpuNames.length; y++)
+      if (gpuPair(gpuNames[x][0], gpuNames[y][0])) {
+        const pair = [gpuNames[x][1][0], gpuNames[y][1][0]],
+          items = pair.map((inv, n) => ({ inv, old: gNow[n] || null }));
+        for (let n = 2; n < gNow.length; n++) items.push({ inv: null, old: gNow[n] });
+        moves.push({ label: `${gNow.length ? "GPU" : "Add GPU"}: ${gpuNames[x][0]} + ${gpuNames[y][0]}`, items });
+      }
   // drives and fans: each one more adds its value (if there is room); a drive in place of a cheaper one when there isn't
   for (const cat of ["Storage", "Case Fan"])
     for (const [name, arr] of byName(avail.filter(i => i.cat === cat))) {
@@ -644,7 +655,10 @@ function flipMoves(b, avail) {
     }
   return moves;
 }
-// how good a change is: a step toward a PC that can be sold first, then the profit it adds
+// 10,000 or more: the score's price multiplier is at its maximum (×3.0) – the plan gets there first (Mariusz, 0.15.3)
+const flipTier = e => (e.score != null && e.score >= ENOUGH_TARGET ? 1 : 0);
+// how good a change is: a step toward a PC that can be sold first, then reaching 10,000 (or not falling under it),
+// then the profit it adds. A NEW part bought only to reach 10,000 still has to pay for itself
 function flipTry(b, base, m, avail) {
   let b2 = flipApplyItems(b, m.items),
     e = flipEval(b2);
@@ -664,7 +678,9 @@ function flipTry(b, base, m, avail) {
       m = { ...m, label: `${m.label} + PSU: ${best.name}` };
     }
   }
-  const gain = e.value - e.cost - (base.value - base.cost);
+  const gain = e.value - e.cost - (base.value - base.cost),
+    up = flipTier(e) - flipTier(base),
+    tier = up > 0 && gain <= 0 && e.cost > base.cost ? 0 : up;
   return {
     ...m,
     build: b2,
@@ -673,7 +689,7 @@ function flipTry(b, base, m, avail) {
     cost: e.cost,
     gain,
     check: e.check,
-    rank: (base.check.bad - e.check.bad) * 1e5 + gain,
+    rank: (base.check.bad - e.check.bad) * 1e7 + tier * 1e5 + gain,
   };
 }
 // the parts the assistant may suggest: free ones; NEW ones only when the build's "Suggest NEW parts" switch is on (off by
@@ -737,7 +753,22 @@ function flipDiff(a, b) {
       : l
   );
 }
-// the best build from the inventory: the best change, again and again, until nothing helps (most profitable PC that sells)
+// changes that only help together: another motherboard (overclocking, SLI / CrossFire, more slots) with a CPU or GPU
+// change on top – the board alone can be worth less, and the 2nd GPU / unlocked CPU alone may not work on the old one
+function flipCombos(b, avail, moves) {
+  const out = [];
+  for (const m1 of moves.filter(m => m.items.some(x => x.inv && x.inv.cat === "Motherboard"))) {
+    const b1 = flipApplyItems(b, m1.items),
+      used = new Set(m1.items.filter(x => x.inv).map(x => x.inv.id)),
+      a1 = avail.filter(i => !used.has(i.id));
+    for (const m2 of flipMoves(b1, a1))
+      if (m2.items.every(x => x.inv && (x.inv.cat === "GPU" || x.inv.cat === "CPU") && (!x.old || b.includes(x.old))))
+        out.push({ label: `${m1.label} + ${m2.label}`, items: [...m1.items, ...m2.items] });
+  }
+  return out;
+}
+// the best build from the inventory: the best change, again and again, until nothing helps – 10,000 first (when the
+// inventory can get there), then the most profitable PC that sells
 function flipPlan(f) {
   let b = flipState(f).build,
     base = flipEval(b);
@@ -746,9 +777,15 @@ function flipPlan(f) {
     steps = [];
   for (let n = 0; n < 16; n++) {
     const avail = flipAvail(f, b),
-      tries = flipMoves(b, avail)
-        .map(m => flipTry(b, base, m, avail))
-        .filter(o => o.rank > 0.5);
+      moves = flipMoves(b, avail);
+    let tries = moves.map(m => flipTry(b, base, m, avail)).filter(o => o.rank > 0.5);
+    // nothing reaches 10,000 in one step (or nothing helps): try a board with a CPU / GPU change on top
+    if (!tries.some(o => flipTier(o) > flipTier(base)))
+      tries = tries.concat(
+        flipCombos(b, avail, moves)
+          .map(m => flipTry(b, base, m, avail))
+          .filter(o => o.rank > 0.5)
+      );
     if (!tries.length) break;
     const best = tries.sort((a, c) => c.rank - a.rank)[0];
     steps.push({ label: best.label, gain: best.gain, score: best.score });
@@ -765,7 +802,7 @@ function flipPlan(f) {
       if (!back) continue;
       const b2 = b.map(x => (x === r ? back : x)),
         e2 = flipEval(b2);
-      if (e2.check.bad <= base.check.bad && prof(e2) >= prof(base)) {
+      if (e2.check.bad <= base.check.bad && flipTier(e2) >= flipTier(base) && prof(e2) >= prof(base)) {
         b = b2;
         base = e2;
         again = true;
@@ -782,6 +819,7 @@ function flipPlan(f) {
     cost: base.cost,
     gain: base.value - base.cost - (start.value - start.cost),
     check: base.check,
+    from: { score: start.score, value: start.value }, // the PC as it is now, worked out the same way
   };
 }
 // put a planned build into the real one: the parts that differ become changes (in place of a part of the same type)
