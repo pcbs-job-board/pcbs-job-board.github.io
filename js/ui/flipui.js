@@ -111,6 +111,7 @@ function flipRender() {
   nx.disabled = f.step === 3 && !ready;
   nx.classList.toggle("good", f.step === 4);
   d.querySelector(".flipconfirm").hidden = true;
+  flipShine = 0; // the shine plays once
 }
 // ---------- step 1: the parts as bought ----------
 function partRow(p, f) {
@@ -217,7 +218,6 @@ function invHtml(f) {
   const rows = invOrder(inv.filter(i => i.cat === flipInvTab));
   return `<div class="finv"><div class="fh">Your inventory for this build</div>
     <p class="hint">Open the game's <b>Inventory</b> (tick “Fits this PC” if it's there), pick a category, then <b>📸 Capture inventory</b> – one screenshot per category, scroll for more. Or type parts in. USED / NEW / BROKEN are read from the cards – check the ticks. Used parts are best: a NEW part keeps only ⅓ of its price in the sale value; BROKEN ones can't be used.</p>
-    <div class="fcap"><button data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
     ${
       cats.length
         ? `<div class="pdbtabs finvtabs" role="tablist">${cats
@@ -228,14 +228,23 @@ function invHtml(f) {
             .join("")}</div>
     ${rows
       .map(
-        i => `<div class="fprow inv ${i.taken ? "taken" : ""}"><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.unsure ? ` <small class="warn" title="Read as: ${esc(i.read || "")}">read unclearly – check the name</small>` : ""}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
+        i => `<div class="fprow inv ${i.taken ? "taken" : ""}${i.at && i.at === flipShine ? " shine" : ""}"><span class="nm">${esc(i.name)}${ocTag(i.cat, i.name)}${i.unsure ? ` <small class="warn" title="Read as: ${esc(i.read || "")}">read unclearly – check the name</small>` : ""}${i.src === "removed" ? ` <small>(taken out of this PC)</small>` : ""}${i.taken && !i.broken ? ` <small>(in use)</small>` : ""}</span>
       ${i.taken ? "" : `<button class="fuse" data-fi="use" data-k="${i.id}" title="Put it in this PC${ONE_SLOT.includes(i.cat) ? " – in place of the one in it" : ""}">＋ Use</button>`}
       ${i.src === "removed" ? `<span class="tag used">USED</span>` : i.broken ? `<span class="tag broken">BROKEN</span><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>` : `<label class="fbrk"><input type="checkbox" data-fi="used" data-k="${i.id}" ${i.used ? "checked" : ""}> used</label><button class="ghost x" data-fi="del" data-k="${i.id}" title="Remove">✕</button>`}</div>`
       )
       .join("")}`
         : `<div class="hint">Nothing yet.</div>`
     }
-    <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>`;
+    <div class="addrow"><input data-ac data-fa="invname" placeholder="Add a part you have – type to search" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fa="invused" checked> used</label><button data-fa="invadd">＋</button></div></div>${invDock(f, inv)}`;
+}
+// stays at the bottom of the window while the page is longer: the capture buttons + the parts added last (shine once after a scan)
+let flipShine = 0; // scan time of the capture just made: its parts shine once (cleared after the next draw)
+function invDock(f, inv) {
+  const last = invOrder(inv).slice(0, 4),
+    at = last[0]?.at,
+    more = at ? inv.filter(i => i.at === at).length - last.filter(i => i.at === at).length : 0;
+  return `<div class="finvdock"><div class="fcap"><button class="primary" data-fa="capinv">📸 Capture inventory</button><button data-fa="adjust-inv" title="Find / move the box around the inventory's part cards">🎯 Adjust area</button><span class="fstate"></span></div>
+    ${last.length ? `<div class="frecent"><small>Added last:</small>${last.map(i => `<span class="fchip${i.at && i.at === flipShine ? " shine" : ""}${i.broken ? " broken" : ""}" title="${esc(i.name)}"><span class="cat">${esc(CAT_LABEL[i.cat] || i.cat)}</span>${esc(i.name)}${i.broken ? ` <span class="tag broken">BROKEN</span>` : i.used ? "" : ` <span class="tag new">NEW</span>`}</span>`).join("")}${more > 0 ? `<small>+ ${more} more from that scan</small>` : ""}</div>` : ""}</div>`;
 }
 const ONE_SLOT = ["Case", "Motherboard", "CPU", "CPU Cooler", "PSU"];
 // the assistant's results, worked out again only when the build / inventory changes (or ↻)
@@ -276,6 +285,28 @@ function flipStep2(f, st) {
     })
     .join("")}${pcNowHtml(f, st)}${invHtml(f)}</div>`;
 }
+// single changes: one collapsed group per part category (best group first; the open ones stay open after a redraw)
+const flipOpenGroups = new Set();
+function singleChangesHtml(ups, chk, sc, plus) {
+  const groups = new Map();
+  ups.slice(0, 10).forEach((u, k) => {
+    const g = flipChangeCat(u);
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push({ u, k });
+  });
+  if (!groups.size) return `<div class="hint">No single change helps.</div>`;
+  return [...groups]
+    .map(([g, list]) => {
+      const best = Math.max(...list.map(x => x.u.gain));
+      return `<details class="fgroup" data-fg="${esc(g)}"${flipOpenGroups.has(g) ? " open" : ""}><summary><b>${esc(g === "Combined" ? "Several parts together" : CAT_LABEL[g] || g)}</b> <small>${list.length} change${list.length > 1 ? "s" : ""} · best profit ${plus(best)}</small></summary>${list
+        .map(
+          ({ u, k }) =>
+            `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}${u.replaced.length ? `<br><small class="instead">in place of ${esc(u.replaced.join(", "))}</small>` : ""}<br><small>3DMark ${sc(u.score)}${u.dScore != null ? ` (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()})` : ""} · sale ~${money(u.value)} · profit ${plus(u.gain)}${u.check.bad < chk.bad ? " · fills a gap" : ""}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`
+        )
+        .join("")}</details>`;
+    })
+    .join("");
+}
 // ---------- step 3: hardware – the build assistant ----------
 function flipStep3(f, st) {
   const { plan, ups } = flipAdvice(f),
@@ -294,15 +325,7 @@ function flipStep3(f, st) {
     <div class="fh">Now: 3DMark ${sc(st.best)} → sale ~${money(st.estValue)} <button class="ghost fref" data-fa="refresh" title="Work out the suggestions again">↻ Refresh</button></div>
     ${planBox}
     <div class="fh">Single changes</div>
-    ${
-      ups
-        .slice(0, 10)
-        .map(
-          (u, k) =>
-            `<div class="fup"><div><b>${esc(u.label)}</b> ${u.isNew ? `<span class="tag new">NEW – costs ${money(u.cost)}</span>` : ""}${u.replaced.length ? `<br><small class="instead">in place of ${esc(u.replaced.join(", "))}</small>` : ""}<br><small>3DMark ${sc(u.score)}${u.dScore != null ? ` (${u.dScore >= 0 ? "+" : ""}${u.dScore.toLocaleString()})` : ""} · sale ~${money(u.value)} · profit ${plus(u.gain)}${u.check.bad < chk.bad ? " · fills a gap" : ""}</small></div><button data-fx="up" data-k="${k}">Use</button></div>`
-        )
-        .join("") || `<div class="hint">No single change helps.</div>`
-    }
+    ${singleChangesHtml(ups, chk, sc, plus)}
     ${pcNowHtml(f, st)}
     ${invHtml(f)}</div>`;
 }
@@ -399,6 +422,14 @@ function flipStep4(f, st) {
 
 // ---------- events in the window ----------
 const flipDlg = $("#dlgFlip");
+flipDlg.addEventListener(
+  "toggle",
+  e => {
+    const g = e.target.dataset?.fg;
+    if (g) e.target.open ? flipOpenGroups.add(g) : flipOpenGroups.delete(g);
+  },
+  true
+);
 flipDlg.addEventListener("click", e => {
   const f = flipCur;
   if (!f) return;
@@ -693,6 +724,7 @@ async function flipImage(url, kind, again) {
         return;
       }
       const at = Date.now();
+      flipShine = at;
       items.forEach((i, n) =>
         f.inv.push({
           id: flipUid(),

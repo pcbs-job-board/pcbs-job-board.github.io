@@ -3692,3 +3692,92 @@ details.sothers > summary,
   color: #8fe3ff;
   border: 1px solid #23697f;
 }
+
+/* PC Bay: capture buttons + the parts added last stay at the bottom of the window; shine once after a scan */
+.finvdock {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: 10px -4px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #2f5e8f;
+  background: #101a28;
+  box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.45);
+}
+.finvdock .fcap {
+  margin-bottom: 0;
+}
+.frecent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+.frecent small {
+  color: var(--muted);
+}
+.fchip {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 100%;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #161b25;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fchip .cat {
+  color: var(--muted);
+}
+.shine {
+  animation: fshine 1.8s ease-out 1;
+}
+@keyframes fshine {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 210, 122, 0.9);
+    background-color: #5a4a1c;
+  }
+  60% {
+    box-shadow: 0 0 14px 3px rgba(255, 210, 122, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 210, 122, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shine {
+    animation: none;
+    outline: 1px solid #ffd27a;
+  }
+}
+.fgroup {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: #161b25;
+}
+.fgroup > summary {
+  cursor: pointer;
+  padding: 6px 10px;
+  list-style: none;
+}
+.fgroup > summary::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+.fgroup[open] > summary::before {
+  content: "▾ ";
+}
+.fgroup > summary small {
+  color: var(--muted);
+  margin-left: 6px;
+}
+.fgroup .fup {
+  margin: 0 8px 6px;
+}

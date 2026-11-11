@@ -716,6 +716,12 @@ function flipUpgrades(f) {
       isNew: o.build.some(p => p.inv && !p.inv.used),
     }));
 }
+// the group a single change is listed under: the one part category it touches, or "Combined" (board + CPU, a PSU that comes with it …)
+function flipChangeCat(u) {
+  const cats = new Set((u.items || []).map(x => (x.inv || x.old || {}).cat).filter(Boolean));
+  if (/ \+ PSU: /.test(u.label || "")) cats.add("PSU");
+  return cats.size === 1 ? [...cats][0] : "Combined";
+}
 // what changes from build a to build b, one line per slot: "GPU: GTX 970 → RTX 2060", "Add Storage: …", "Take out …";
 // the same change several times (RAM sticks) on one line ("2 × …")
 function flipDiff(a, b) {
