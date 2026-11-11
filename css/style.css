@@ -3705,7 +3705,7 @@ details.sothers > summary,
   );
   background-repeat: no-repeat;
   background-size: 40% 100%;
-  animation: fshine 1.4s ease-in-out 1;
+  animation: fshine 1.4s ease-in-out 1 backwards; /* backwards: waits off-screen while the row's delay runs (staggered rows) */
 }
 @keyframes fshine {
   from {
