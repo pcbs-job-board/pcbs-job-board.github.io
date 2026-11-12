@@ -9,6 +9,7 @@ function suggestSwaps(job, opts = {}) {
     left: job.budget != null ? job.budget - spent : null,
     brands: (opts.brands || []).filter(Boolean),
     picked: opts.picked || [],
+    pickedBuild: opts.pickedBuild || [],
     pickedLights: opts.pickedLights || [],
   };
   const objs = (opts.only || jobObjectives(job)).filter(o => !/^complete by/i.test(o));
@@ -625,6 +626,8 @@ function suggestSwaps(job, opts = {}) {
   }
   // 3DMark score of N (0.12.0): XMP, or the cheapest set of parts that reaches it – one tick adds the whole set
   if (sec("bench")) out.push(...benchSuggestions(job, ctx));
+  // 21b a PC built from nothing with no 3DMark objective: a complete PC that works (the 3DMark set builds one already)
+  if (sec("build")) out.push(...newPcSuggestions(job, ctx));
   // 20b the customer plans to overclock LATER (email body, not an objective): a PSU that carries the overclocked PC –
   //     only inside the budget (it's not something the job asks for)
   if (pc && pc.psuW != null && pc.ocLater && pc.oc > pc.psuW && !(pc.stock > pc.psuW) && sec("oclater")) {

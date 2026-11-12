@@ -8,6 +8,7 @@ const PLAN_SECTIONS = [
   ["hint", 12],
   ["water", 30],
   ["bench", 45],
+  ["build", 46],
   ["power", 50],
   ["fix", 55],
   ["rgb", 70],
@@ -72,6 +73,7 @@ function suggestPlan(job, opts = {}) {
           ...opts,
           picked: [],
           pickedLights: [],
+          pickedBuild: [],
           only: st.only,
           sections: st.sections,
           pinned: [...pinned],
@@ -84,7 +86,7 @@ function suggestPlan(job, opts = {}) {
         if (/^(brandfix|fix:oclater)/.test(sg.key)) continue; // guesses / optional: per objective only
         if (!sg.options.length) {
           if (sg.met) met.push({ reason: sg.reason, note: sg.hint });
-          else if (/^(obj:|bench|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
+          else if (/^(obj:|bench|build|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
           continue;
         }
         take(sg, sg.options.find(x => !x.over) || sg.options[0]);
@@ -99,7 +101,7 @@ function suggestPlan(job, opts = {}) {
   if (best.left.length) {
     let all = [];
     try {
-      all = suggestSwaps(job, { ...opts, picked: [], pickedLights: [] });
+      all = suggestSwaps(job, { ...opts, picked: [], pickedLights: [], pickedBuild: [] });
     } catch (e) {
       console.warn("plan seeds", e);
     }
@@ -120,7 +122,7 @@ function suggestPlan(job, opts = {}) {
       for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] < y[i];
       return false;
     };
-    for (const sg of all.filter(x => /^(obj:|bench)/.test(x.key) && x.options.length))
+    for (const sg of all.filter(x => /^(obj:|bench|build)/.test(x.key) && x.options.length))
       for (const o of sg.options.slice(0, 4)) {
         const r = run({ sg, o });
         if (better(r, best)) best = r;

@@ -319,6 +319,7 @@ async function runOcr() {
         ? `${sm.entry.sender_name || sm.entry.email} – a known story customer; this email isn't in the story list yet (📖 Report story job)`
         : sm.entry.story || sm.entry.sender_name || "known story job";
     rev.draft.storyWhy = sm ? "" : sl.why.join(" · ");
+    rev.draft.newPc = wantsNewPc(p, sm && !sm.newEmail ? sm.entry : null); // "build the computer": a complete PC is suggested
     if (!rev.storyTouched) rev.draft.story = !!sm || sl.looks;
     renderForm();
     if (keep.extra && $("#fExtra")) $("#fExtra").value = keep.extra;

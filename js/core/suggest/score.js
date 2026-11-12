@@ -345,17 +345,17 @@ function platformBench(job, ctx, target, why, set, locked) {
 // 3DMark for a PC built from nothing: the cheapest CPU + motherboard + RAM (+ GPU) that reach the score – parts already
 // planned (an objective's GPU, RAM…) stay – plus the PSU and CPU cooler it needs to run. Search: per category only the
 // parts that are the best for their price (a dearer part must score higher), then every mix of them.
-function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
+function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "bench", what = "Build for the score" } = {}) {
   const have = c => build.filter(p => p.cat === c),
     WANT = ["GPU", "CPU", "Motherboard", "RAM"];
   const wait = WANT.filter(c => !have(c).length && ctx.objCats && ctx.objCats.has(c));
   if (wait.length)
     return [
       {
-        key: "bench",
+        key,
         reason: why,
         options: [],
-        hint: `pick the ${wait.join(" and ")} for its objective first – the 3DMark set is built around it`,
+        hint: `pick the ${wait.join(" and ")} for its objective first – the ${key === "bench" ? "3DMark " : ""}set is built around it`,
       },
     ];
   const sw = p => ({ cat: p.cat, old: "", new: p.name, price: p.price, lvl: p.lvl });
@@ -376,7 +376,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
   // GPU
   const g0 = have("GPU"),
     g0b = g0.length && benchOf(g0[0].name);
-  if (g0.length && !g0b) return [{ key: "bench", reason: why, options: [], hint: `no 3DMark data for ${g0[0].name}` }];
+  if (g0.length && !g0b) return [{ key, reason: why, options: [], hint: `no 3DMark data for ${g0[0].name}` }];
   // one card, or two of the same (SLI / CrossFire) – each list cheapest first, a dearer entry always scores higher
   const gpuLists = g0.length
     ? [[{ p: null, g: (g0.length > 1 && pairBench(g0[0].name, g0[1].name)?.two) || g0b.one, k: 0, cost: 0 }]]
@@ -430,7 +430,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
           ).map(x => ({ k, mhz: x.mhz, p: x.p, cost: x.p.price * k }))
         );
   if (!gpus.length || !cpus.length || !boards.length || !rams.length)
-    return [{ key: "bench", reason: why, options: [], hint: "no unlocked parts with 3DMark data for this build" }];
+    return [{ key, reason: why, options: [], hint: "no unlocked parts with 3DMark data for this build" }];
   const cands = [];
   for (const c of cpus)
     for (const m of boards)
@@ -543,8 +543,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
       })
     );
   };
-  const label = c =>
-    "Build for the score: " + [...new Set(c.swaps.map(s => (s.cat === "Motherboard" ? "motherboard" : s.cat)))].join(" + ");
+  const label = c => what + ": " + [...new Set(c.swaps.map(s => (s.cat === "Motherboard" ? "motherboard" : s.cat)))].join(" + ");
   const picks = [];
   let checks = 0;
   const tryPick = (test, tag) => {
@@ -569,15 +568,54 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {} } = {}) {
   if (ctx.brands.length) tryPick(isBrand, `★ ${ctx.brands[0]}`);
   return [
     {
-      key: "bench",
+      key,
       reason: why,
-      cat: "3DMark",
+      cat: key === "bench" ? "3DMark" : "Build",
       options: picks.map(p => p.o),
       hint: picks.length
         ? ""
-        : !cands.length && g0.length
-          ? `The ${g0[0].name} can't reach this score with any CPU – pick a stronger GPU.`
-          : BENCH_REPORT,
+        : key !== "bench"
+          ? "No complete PC from unlocked parts fits together – add the parts yourself (check your career level)."
+          : !cands.length && g0.length
+            ? `The ${g0[0].name} can't reach this score with any CPU – pick a stronger GPU.`
+            : BENCH_REPORT,
     },
   ];
+}
+// A PC built from nothing without a 3DMark objective ("your role will be to build the navigation computer"): the
+// cheapest complete PC that works – CPU + motherboard + RAM + GPU (the new-build search above, any score will do) plus
+// the PSU, CPU cooler, drive and case it needs. Parts an objective picks (the CPU of "Install … or better") stay.
+// Only for jobs marked as a new PC (job.newPc – the email asks to build one, or the story list says so) with no parts
+// captured: a repair job before its PC Stats capture has no parts either.
+function newPcSuggestions(job, ctx) {
+  if (!job.newPc || (job.components || []).length || benchTarget(job)) return [];
+  if (jobObjectives(job).some(o => /diagnose|fix|^\W*(replace|upgrade)\s/i.test(o))) return [];
+  // ticked in the new-job window (an objective's CPU…) – not this set's own parts, or ticking it would change it
+  const picked = ctx.pickedBuild || [];
+  if (picked.length) job = { ...job, swaps: [...(job.swaps || []), ...picked.map((x, i) => ({ id: "pk" + i, ...x }))] };
+  const build = plannedBuild(job),
+    why = "Complete PC – new build";
+  const set = (label, tag, swaps, sc, extras = []) => {
+    const total = [...swaps, ...extras].reduce((t, s) => t + (s.price || 0), 0);
+    return {
+      multi: true,
+      name: label,
+      cat: "Build",
+      tag: tag === "cheapest" ? "cheapest that works" : tag,
+      swaps,
+      extras,
+      tasks: [],
+      score: null,
+      total,
+      price: total,
+      count: 1,
+      lvl: Math.max(0, ...swaps.map(s => s.lvl || 0)),
+      over: !priceOk({ price: total }, ctx.left),
+      nParts: swaps.length + extras.filter(e => e.name).length,
+    };
+  };
+  // every part already there (the objectives picked them all): nothing to add
+  if (["CPU", "Motherboard", "RAM", "GPU", "PSU", "CPU Cooler", "Storage", "Case"].every(c => build.some(p => p.cat === c)))
+    return [];
+  return newBuildBench(job, ctx, 1, build, why, set, { key: "build", what: "Complete PC" });
 }

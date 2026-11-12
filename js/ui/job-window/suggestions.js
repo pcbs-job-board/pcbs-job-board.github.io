@@ -35,9 +35,11 @@ function suggestInput() {
       tasks: [],
       hidden: hid,
       ocLater: ocLaterOf(d),
+      newPc: !!d.newPc,
     },
     opts: {
       picked: tickedForBench(),
+      pickedBuild: tickedSwaps("build"),
       pickedLights: tickedSwaps("lights"),
       brands: hid.filter(h => h.brand && !h.avoid).map(h => h.brand),
       broken: hid.filter(h => h.part).map(h => h.part),
@@ -250,6 +252,7 @@ function saveReview() {
       capNames,
       story: !!$("#fStory")?.checked,
       ocLater: ocLaterOf(d) || !!d.ocLater,
+      newPc: !!d.newPc,
     };
     const table = +$("#fTable").value;
     let target;
