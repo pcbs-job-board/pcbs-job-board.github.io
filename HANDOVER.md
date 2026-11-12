@@ -1,6 +1,6 @@
 # PCBS Job Board – handover (core, read this first)
 
-Last updated: 2026-11-11 · live **0.15.2** · work branch `dev-0.15.3` (from live 0.15.2: GPU table layout fix, PC Bay NEW parts, file-structure refactor – not released).
+Last updated: 2026-11-12 · live **0.15.3** (released 2026-11-12 from `dev-0.15.3`; backup of the previous live: `backup-0.15.2`). Next work branch: create `dev-0.15.4` from main when needed.
 Then read `TODO.md` (open items). Open the topic files below **only when your task needs them**.
 
 **What**: static web app (no build, no server) that reads PC Building Simulator 1 (PS5, base game, no DLC) screens
