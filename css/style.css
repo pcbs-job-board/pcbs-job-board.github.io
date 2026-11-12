@@ -2948,6 +2948,13 @@ dialog.flipdlg {
   opacity: 0.6;
   border-style: dashed;
 }
+.frmb {
+  flex-basis: 100%;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 .fchosen {
   display: flex;
   gap: 6px;

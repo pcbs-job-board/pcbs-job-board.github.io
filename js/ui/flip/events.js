@@ -119,6 +119,16 @@ flipDlg.addEventListener("click", e => {
       isNew: !used,
       price: used ? null : priceOf(m ? m.name : n),
     });
+  } else if (t.dataset.fx === "rmbroken") {
+    const p = f.parts.find(x => x.id === t.dataset.part);
+    if (
+      p &&
+      flipCanRemove(
+        flipBuild(f),
+        flipBuild(f).find(r => r.partId === p.id)
+      )
+    )
+      flipChange(f, { kind: "rm", old: p.id, cat: p.cat, name: p.name });
   } else if (t.dataset.fx === "undo") flipUnchange(f, t.dataset.k);
   else if (t.dataset.fx === "newopt") {
     const o = flipAdvice(f).opts[+t.dataset.k];

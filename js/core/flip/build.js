@@ -261,6 +261,15 @@ const FLIP_NEED = [
   { cat: "PSU", min: 1, max: 1 },
   { cat: "Storage", min: 1, max: 99 },
 ];
+// a broken part that may come out without a replacement (Mariusz, 0.15.4): one the PC doesn't need (case fans …), or a
+// drive / GPU / RAM stick when the PC has more than one of them – the PC still has one left after it
+const FLIP_SPARE = ["Storage", "GPU", "RAM"];
+function flipCanRemove(b, p) {
+  if (!p || !p.broken) return false;
+  if (FLIP_SPARE.includes(p.cat)) return b.filter(x => x.cat === p.cat).length > 1;
+  // water cooling stays: a loop without its pump / radiator / block doesn't work
+  return !FLIP_NEED.some(n => n.cat === p.cat) && p.cat !== "Water Cooling";
+}
 const isCooling = p => p.cat === "CPU Cooler" || (p.cat === "Water Cooling" && wcKind(p) === "CPU Block");
 const needCount = (b, n) => b.filter(p => !p.broken && (n.cat === "CPU Cooler" ? isCooling(p) : p.cat === n.cat)).length;
 // the build as a job where every part is a planned swap – so every clash is reported (a job hides the customer's own)

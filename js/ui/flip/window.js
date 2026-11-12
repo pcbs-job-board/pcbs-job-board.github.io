@@ -262,7 +262,21 @@ function flipStep2(f, st) {
   return `<div class="fstep">${broken
     .map(p => {
       const fix = f.changes.find(c => c.kind === "fix" && c.old === p.id),
+        gone = f.changes.find(c => c.kind === "rm" && c.old === p.id),
         why = brokenWhy(p);
+      const row = st.build.find(r => r.partId === p.id),
+        canRm = !fix && !gone && flipCanRemove(st.build, row);
+      // Remove broken part: what it does to the 3DMark estimate (a GPU pair or a RAM channel can be lost)
+      const est = b => flipScore(b, { xmp: true, ...softOk(null, b) }),
+        sNow = canRm ? est(st.build) : null,
+        sOut = canRm ? est(st.build.filter(r => r !== row)) : null,
+        rmNote =
+          sNow != null && sOut != null && sOut !== sNow
+            ? ` <small>3DMark ~${sNow.toLocaleString()} → ~${sOut.toLocaleString()}</small>`
+            : "";
+      const rmBtn = canRm
+        ? `<div class="frmb"><button data-fx="rmbroken" data-part="${p.id}" title="Take it out with nothing in its place – the PC doesn't need it">🗑 Remove broken part</button>${rmNote}<small class="hint">no replacement needed${FLIP_SPARE.includes(p.cat) ? ` – the PC still has another ${esc(p.cat === "Storage" ? "drive" : p.cat === "RAM" ? "RAM stick" : "GPU")}` : ""}</small></div>`
+        : "";
       const newHidden = f.allowNew ? 0 : inv.filter(i => i.cat === p.cat && !i.taken && !i.used).length;
       const cands = inv
         .filter(i => i.cat === p.cat && !i.taken && (f.allowNew || i.used))
@@ -276,10 +290,12 @@ function flipStep2(f, st) {
         .sort((a, b) => b.fits - a.fits || b.i.used - a.i.used || (usedValue(b.i.name) || 0) - (usedValue(a.i.name) || 0));
       return `<div class="ffix"><div class="fh">🔧 ${esc(p.cat)}: ${esc(p.name)}</div><small class="why">${why ? `Broken: ${esc(why)}.` : "Marked as broken."} Broken parts can't be used again.</small>
       ${
-        fix
-          ? `<div class="fchosen">Replacement: <b>${esc(fix.name)}</b> ${fix.isNew ? `<span class="tag new">NEW</span> <small class="warn">a new part loses ~66 % of its value: you pay ${money(fix.price ?? priceOf(fix.name))}, the sale value gains ${money(usedValue(fix.name))}</small>` : `<span class="tag used">USED</span>`} <button class="ghost x" data-fx="undo" data-k="${fix.id}">✕</button></div>`
-          : `<div class="fopts">${cands.map(({ i, fits }) => `<button data-fx="pick" data-part="${p.id}" data-inv="${i.id}" class="${fits ? "" : "nofit"}">${esc(i.name)} ${i.used ? `<span class="tag used">USED</span>` : `<span class="tag new">NEW</span>`}${fits ? "" : " <small>doesn't fit</small>"}</button>`).join("") || `<span class="hint">${newHidden ? `No used ${esc(p.cat)} in your inventory – ${newHidden} new one${newHidden > 1 ? "s" : ""} left out (switch on <b>Suggest NEW parts</b> below), or type one.` : `No ${esc(p.cat)} in your inventory yet – capture it or type one below.`}</span>`}${cands.length && newHidden ? `<small class="hint">${newHidden} new one${newHidden > 1 ? "s" : ""} left out – <b>Suggest NEW parts</b> below.</small>` : ""}
-          <div class="addrow"><input data-ac data-fx-name="${p.id}" placeholder="Or type the replacement" value="${esc(p.name)}" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fx-used="${p.id}"> used</label><button data-fx="typed" data-part="${p.id}">Use it</button></div></div>`
+        gone
+          ? `<div class="fchosen">Removed – no replacement <button class="ghost x" data-fx="undo" data-k="${gone.id}" title="Put it back">✕</button></div>`
+          : fix
+            ? `<div class="fchosen">Replacement: <b>${esc(fix.name)}</b> ${fix.isNew ? `<span class="tag new">NEW</span> <small class="warn">a new part loses ~66 % of its value: you pay ${money(fix.price ?? priceOf(fix.name))}, the sale value gains ${money(usedValue(fix.name))}</small>` : `<span class="tag used">USED</span>`} <button class="ghost x" data-fx="undo" data-k="${fix.id}">✕</button></div>`
+            : `<div class="fopts">${cands.map(({ i, fits }) => `<button data-fx="pick" data-part="${p.id}" data-inv="${i.id}" class="${fits ? "" : "nofit"}">${esc(i.name)} ${i.used ? `<span class="tag used">USED</span>` : `<span class="tag new">NEW</span>`}${fits ? "" : " <small>doesn't fit</small>"}</button>`).join("") || `<span class="hint">${newHidden ? `No used ${esc(p.cat)} in your inventory – ${newHidden} new one${newHidden > 1 ? "s" : ""} left out (switch on <b>Suggest NEW parts</b> below), or type one.` : `No ${esc(p.cat)} in your inventory yet – capture it or type one below.`}</span>`}${cands.length && newHidden ? `<small class="hint">${newHidden} new one${newHidden > 1 ? "s" : ""} left out – <b>Suggest NEW parts</b> below.</small>` : ""}
+          <div class="addrow"><input data-ac data-fx-name="${p.id}" placeholder="Or type the replacement" value="${esc(p.name)}" autocomplete="off"><label class="fbrk"><input type="checkbox" data-fx-used="${p.id}"> used</label><button data-fx="typed" data-part="${p.id}">Use it</button></div>${rmBtn}</div>`
       }</div>`;
     })
     .join("")}${pcNowHtml(f, st)}${invHtml(f)}</div>`;

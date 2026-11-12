@@ -84,6 +84,14 @@ function flipMoves(b, avail) {
           });
     }
   }
+  // one broken stick / card of several: a part in its place, the others stay (0.15.4)
+  for (const cat of ["RAM", "GPU"]) {
+    const now = cur(cat);
+    if (now.length > 1)
+      for (const o of now.filter(p => p.broken))
+        for (const [name, arr] of byName(avail.filter(i => i.cat === cat)))
+          moves.push({ label: `${cat}: ${name} in place of the broken ${o.name}`, items: [{ inv: arr[0], old: o }] });
+  }
   // two cards of the same model from different makers (they pair) in place of the GPUs now
   const gpuNames = [...byName(avail.filter(i => i.cat === "GPU"))],
     gNow = cur("GPU");
@@ -103,6 +111,9 @@ function flipMoves(b, avail) {
       if (cat === "Storage" && low && (low.broken || (usedValue(name) || 0) > low.value))
         moves.push({ label: `Storage: ${name} instead of ${low.name}`, items: [{ inv: arr[0], old: low }] });
     }
+  // a broken part the PC can do without: out, with nothing in its place (when nothing better is in the inventory)
+  for (const p of b.filter(x => flipCanRemove(b, x)))
+    moves.push({ label: `Remove broken ${lab(p.cat).replace(/s$/, "")}: ${p.name}`, items: [{ inv: null, old: p }] });
   return moves;
 }
 // 10,000 or more: the score's price multiplier is at its maximum (×3.0) – the plan gets there first (Mariusz, 0.15.3)
@@ -190,7 +201,13 @@ function flipDiff(a, b) {
           ? { cat, old: o.name, oldBroken: !!o.broken, name: x.name, text: `${lab(cat)}: ${o.name} → ${x.name}` }
           : x
             ? { cat, old: "", name: x.name, text: `Add ${lab(cat)}: ${x.name}` }
-            : { cat, old: o.name, oldBroken: !!o.broken, name: "", text: `Take out ${lab(cat)}: ${o.name}` }
+            : {
+                cat,
+                old: o.name,
+                oldBroken: !!o.broken,
+                name: "",
+                text: o.broken ? `Remove broken ${lab(cat).replace(/s$/, "")}: ${o.name}` : `Take out ${lab(cat)}: ${o.name}`,
+              }
       );
     }
   }
