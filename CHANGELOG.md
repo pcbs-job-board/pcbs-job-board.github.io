@@ -3,6 +3,17 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.15.3
+- PC Bay build: NEW parts that pay off, worked out from the current build, in a collapsed section; plan reaches 3DMark 10,000 first, then the highest sell price.
+- PC Bay build window: capture buttons and newest parts always visible, soft sweep on new rows, "Single changes" grouped and collapsed.
+- New job / Edit window: compact two-column layout, exactly one of CPU cooler or CPU block; a CPU block replaces the cooler in swaps.
+- "Based on budget": cheapest first, custom loop parts count, fallback for "Diagnose and fix".
+- Upgrade suggestions show the ranking of the current part and of each replacement.
+- Job card: Enter after a mouse click goes into job focus.
+- 3 OCR bugs fixed (3-line GPU names, "be quiet! Shadow Rock 3", Z370-I).
+- GPU table: shorter chipset names, header on two lines.
+- Faster part lookups; code reorganised into js/core and js/ui folders (no change in behaviour).
+
 ## 0.15.2
 - Parts database window: hidden columns with "Show hidden details", drop-down filters, stock / mid / max overclock columns, real light colours.
 - 1 new story job added.
