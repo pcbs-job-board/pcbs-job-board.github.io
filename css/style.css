@@ -2948,6 +2948,9 @@ dialog.flipdlg {
   opacity: 0.6;
   border-style: dashed;
 }
+.frmb small {
+  margin: 0;
+}
 .frmb {
   flex-basis: 100%;
   display: flex;

@@ -198,7 +198,7 @@ function checkHtml(chk) {
   const l = [
     chk.missing.length && `Missing: <b>${chk.missing.map(esc).join(", ")}</b>`,
     ...chk.extra.map(x => `Too many: ${esc(x)}`),
-    ...chk.broken.map(x => `Broken: ${esc(x)} – replace it or take it out`),
+    ...chk.broken.map(x => `Broken: ${esc(x)} – replace it${(chk.spare || []).includes(x) ? " or remove it" : ""}`),
     ...chk.issues.map(x => `Doesn't fit – ${esc(x)}`),
     chk.power && `⚡ Power: ${esc(chk.power)}`,
   ].filter(Boolean);

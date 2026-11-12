@@ -288,7 +288,8 @@ function flipCheck(b) {
     if (k < n.min) missing.push(n.label || n.cat);
     else if (k > n.max) extra.push(`${k} × ${n.label || n.cat} (at most ${n.max})`);
   }
-  const broken = b.filter(p => p.broken).map(p => p.name);
+  const broken = b.filter(p => p.broken).map(p => p.name),
+    spare = b.filter(p => flipCanRemove(b, p)).map(p => p.name); // broken ones that may come out without a replacement
   const j = flipJobOf(b),
     issues = [...new Set(compatIssues(j, compatBuild(j)).map(i => `${i.part.name}: ${i.msg}`))];
   const pc = powerCheck(j),
@@ -298,5 +299,5 @@ function flipCheck(b) {
   const power =
     need != null && need > pc.psuW ? `the PSU has ${pc.psuW} W – the PC needs ~${need} W${oc ? " overclocked" : ""}` : "";
   const bad = missing.length + extra.length + broken.length + issues.length + (power ? 1 : 0);
-  return { missing, extra, broken, issues, power, bad, ok: !bad };
+  return { missing, extra, broken, spare, issues, power, bad, ok: !bad };
 }
