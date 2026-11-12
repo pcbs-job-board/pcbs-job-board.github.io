@@ -202,12 +202,11 @@ function storyLooks(job) {
 }
 // story job with the budget written in the objectives → the budget does count
 const budgetInObjectives = objs => (objs || []).some(o => /budget|\$\s?\d/i.test(typeof o === "string" ? o : o.text));
-// a PC built from nothing (0.15.4): the email asks for a computer to be built ("your role will be to build the
-// navigation computer"), the subject asks for one ("Important: Computer required"), or the story list says so (note
-// "Build …"). "supply a personal computer" counts too (PROJECT NEPTUNE 2). "Built" isn't a sign – "the PC you built me last year" is a repair.
-const NEW_PC_BODY = /\b(build|assemble|put together|supply)\s+(?:[a-z'-]+\s+){0,3}?(computer|pc|machine|rig|workstation)\b/i,
-  NEW_PC_SUBJECT = /\b(computer|pc|machine|rig|workstation)\s+(is\s+)?(required|wanted|needed)\W*$/i;
-function wantsNewPc(job, storyEntry) {
-  if (storyEntry && /^build\b/i.test(storyEntry.note || "")) return true;
-  return NEW_PC_SUBJECT.test(job.subject || "") || NEW_PC_BODY.test(job.body || "");
+// a PC built from nothing (0.15.4): the email text asks for a computer to be built or supplied ("your role will be to
+// build the navigation computer", "they were supposed to supply a personal computer"). Only the email text counts
+// (Mariusz, 2026-11-12) – not the subject, the objectives or the story list. "Built" isn't a sign: "the PC you built me
+// last year" is a repair.
+const NEW_PC_BODY = /\b(build|assemble|put together|supply)\s+(?:[a-z'-]+\s+){0,3}?(computer|pc|machine|rig|workstation)\b/i;
+function wantsNewPc(job) {
+  return NEW_PC_BODY.test(job.body || "");
 }

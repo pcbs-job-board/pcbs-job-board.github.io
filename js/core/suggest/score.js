@@ -585,18 +585,10 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "be
 // A PC built from nothing without a 3DMark objective ("your role will be to build the navigation computer"): the
 // cheapest complete PC that works – CPU + motherboard + RAM + GPU (the new-build search above, any score will do) plus
 // the PSU, CPU cooler, drive and case it needs. Parts an objective picks (the CPU of "Install … or better") stay.
-// Only for jobs marked as a new PC (job.newPc – the email asks to build one, or the story list says so) with no parts
+// Only for jobs marked as a new PC (job.newPc – the email text asks for one to be built / supplied) with no parts
 // captured: a repair job before its PC Stats capture has no parts either.
-// A job with nothing to do on parts ("Spend less than $350" + "Complete by" only) and no parts captured can only be a
-// new PC: a repair or upgrade always names its work ("Diagnose and fix", "Install …", "Replace …").
-const NO_PART_WORK = /^\W*(spend less|complete by|finish by)/i;
-function newPcJob(job) {
-  if (job.newPc) return true;
-  const objs = jobObjectives(job);
-  return objs.length > 0 && objs.every(o => NO_PART_WORK.test(o)) && objs.some(o => /^\W*spend less/i.test(o));
-}
 function newPcSuggestions(job, ctx) {
-  if (!newPcJob(job) || (job.components || []).length || benchTarget(job)) return [];
+  if (!job.newPc || (job.components || []).length || benchTarget(job)) return [];
   if (jobObjectives(job).some(o => /diagnose|fix|^\W*(replace|upgrade)\s/i.test(o))) return [];
   // ticked in the new-job window (an objective's CPU…) – not this set's own parts, or ticking it would change it
   const picked = ctx.pickedBuild || [];
