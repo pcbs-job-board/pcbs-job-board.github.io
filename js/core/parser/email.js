@@ -204,8 +204,8 @@ function storyLooks(job) {
 const budgetInObjectives = objs => (objs || []).some(o => /budget|\$\s?\d/i.test(typeof o === "string" ? o : o.text));
 // a PC built from nothing (0.15.4): the email asks for a computer to be built ("your role will be to build the
 // navigation computer"), the subject asks for one ("Important: Computer required"), or the story list says so (note
-// "Build …"). "Built" isn't a sign – "the PC you built me last year" is a repair.
-const NEW_PC_BODY = /\b(build|assemble|put together)\s+(?:[a-z'-]+\s+){0,3}?(computer|pc|machine|rig|workstation)\b/i,
+// "Build …"). "supply a personal computer" counts too (PROJECT NEPTUNE 2). "Built" isn't a sign – "the PC you built me last year" is a repair.
+const NEW_PC_BODY = /\b(build|assemble|put together|supply)\s+(?:[a-z'-]+\s+){0,3}?(computer|pc|machine|rig|workstation)\b/i,
   NEW_PC_SUBJECT = /\b(computer|pc|machine|rig|workstation)\s+(is\s+)?(required|wanted|needed)\W*$/i;
 function wantsNewPc(job, storyEntry) {
   if (storyEntry && /^build\b/i.test(storyEntry.note || "")) return true;
