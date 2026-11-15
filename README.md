@@ -61,6 +61,7 @@ data/parts/*.csv               parts list – one file per category (source of t
 data/dlc.csv · versions.csv    DLC / part groups, game versions shown in Settings
 data/story-jobs.csv            known career story jobs (sender, email, subject)
 data/reservoir-cases.csv       which reservoirs fit which case (from the game's shop)
+data/will-it-run.csv           the Will it run? app: min / recommended / 4K spec per app or game, DLC
 data/parts-db.js               GENERATED from the CSVs – don't edit by hand
 tools/build_db.py              CSV → data/parts-db.js
 tools/import_xlsx.py           community workbook → CSVs (then reservoir_compat.py, build_db.py)
