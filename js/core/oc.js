@@ -107,7 +107,11 @@ function cpuIsFixed(j) {
 function boardIsFixed(j) {
   const objs = jobObjectives(j);
   // only a board the customer's PC has stays – a PC built from nothing gets whatever board the build needs
-  if (!(j.components || []).some(p => p.cat === "Motherboard")) return false;
+  const board = (j.components || []).filter(p => p.cat === "Motherboard").pop();
+  if (!board) return false;
+  // … and only a board that can run two cards at all (SLI or CrossFire) – a board without either has to go
+  const bi = compatOf(board.name) || {};
+  if (bi.sli !== "1" && bi.cf !== "1") return false;
   return (
     objs.some(o => /dual graphics|two graphics|2 graphics|dual gpu|sli|crossfire/i.test(o)) &&
     !objs.some(o => /\b(replace|upgrade|swap|change)\b.*\b(motherboard|mobo|mainboard|board)\b/i.test(o))
