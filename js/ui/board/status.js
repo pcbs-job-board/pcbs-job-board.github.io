@@ -94,6 +94,24 @@ function ocHtml(oc) {
     ${oc.psu ? `<div class="ocitem st-${oc.psu.bad ? "bad" : "ok"}"><b class="ocic">${oc.psu.bad ? "✗" : "✓"}</b><div><small>Overclocked power ~${oc.psu.use.toLocaleString()} W of ${oc.psu.w.toLocaleString()} W${oc.psu.bad ? " – <b>the PSU is too weak</b>" : ""}</small></div></div>` : `<small>Power: add the PSU to check the overclocked watts.</small>`}
     <small class="ocnote">Clocks are estimated at each part's full overclock potential – reaching it depends a lot on the cooling (and power for GPUs) and may not be possible. In-game results can differ. Watts are counted at the full overclock.</small></div>`;
 }
+// "PC can run X (Y Spec)": the Will it run? spec against the planned PC – one line per part kind
+const RUN_ICON = `<svg class="bicon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3.5" width="19" height="13" rx="2" fill="none" stroke="#fff" stroke-width="2" opacity=".6"/><path d="M8 21h8M12 16.5V21" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/><path d="M7.5 10l3 3 6-6" fill="none" stroke="#3ddc84" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function runHtml(rs) {
+  if (!rs.items.length) return `<div class="stoff">Will it run? – capture PC Stats or plan parts to check the spec.</div>`;
+  return `<div class="ocbox st-${rs.state}"><div class="brow"><span>Will it run?</span></div>
+    ${rs.items
+      .map(
+        i =>
+          `<div class="ocitem st-${i.ok ? "ok" : "bad"}"><b class="ocic">${i.ok ? "✓" : "✗"}</b><div><div class="octitle">${esc(i.spec.app)} (${esc(i.spec.label)})${i.spec.dlc ? ` <small>${esc(i.spec.dlc)}</small>` : ""}</div>${i.chk
+            .map(
+              c =>
+                `<small class="${c.ok ? "" : "warn"}">${c.ok ? "✓" : "✗"} ${c.cat}: ${esc(c.have || "none")} – needs ${esc(c.want)}</small>`
+            )
+            .join("")}</div></div>`
+      )
+      .join("")}
+    <small class="ocnote">CPU / GPU "or better" by the in-game part ranking; the GPU also needs the VRAM. RAM and storage: all sticks / drives together.</small></div>`;
+}
 // 💡 tips for this job (js/core/hints.js) – only shown when at least one applies; the list pops up like a Status tile's details
 function hintBtn(j) {
   const hs = jobHints(j);
@@ -105,7 +123,8 @@ function statusHtml(j, { budgetHtml, budgetState, clashes, compact = true }) {
   const ps = powerState(j),
     pw = powerHtml(j),
     bc = benchCheck(j),
-    occ = ocCheck(j);
+    occ = ocCheck(j),
+    rs = runStatus(j);
   const word = { off: "not active", ok: "fine", warn: "close to the limit", bad: "over the limit" };
   const tiles = [
     {
@@ -131,6 +150,18 @@ function statusHtml(j, { budgetHtml, budgetState, clashes, compact = true }) {
             label: "3DMark score",
             word: `${bc.off.toLocaleString()} of ${bc.target.toLocaleString()}${bc.state === "warn" ? ", enough with XMP on" : ""}`,
             body: benchHtml(bc),
+          },
+        ]
+      : []),
+    ...(rs && rs.state !== "off"
+      ? [
+          {
+            k: "run",
+            icon: RUN_ICON,
+            state: rs.state,
+            label: "Will it run?",
+            word: rs.state === "ok" ? "spec met" : "spec not met yet",
+            body: runHtml(rs),
           },
         ]
       : []),

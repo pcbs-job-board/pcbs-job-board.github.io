@@ -26,9 +26,10 @@ function objWeight(o) {
   return 50;
 }
 function suggestPlan(job, opts = {}) {
-  const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o));
+  const objs = jobObjectives(job).filter(o => !/^complete by/i.test(o)),
+    stepObjs = suggestObjectives(job, objs); // "PC can run X": a step each for CPU / GPU / RAM / storage
   const steps = [
-    ...objs.map((o, i) => ({ w: objWeight(o), i, only: [o], sections: [] })),
+    ...stepObjs.map((o, i) => ({ w: objWeight(o), i, only: [o], sections: [] })),
     ...PLAN_SECTIONS.map(([k, w], i) => ({ w, i: 100 + i, only: [], sections: [k] })),
   ].sort((a, b) => a.w - b.w || a.i - b.i);
   // one run through the steps; seed = { sg, o }: an option taken first (another option of a step, or a 3DMark set),
@@ -217,6 +218,8 @@ function suggestPlan(job, opts = {}) {
 }
 // does a planned PC meet this objective? true / false, or null when there's no check for it (counts and pairs only)
 function planMeets(o, build) {
+  const run = runSpec(o);
+  if (run) return run.cpu ? runChecks(run, build).every(c => c.ok) : null;
   const sum = cat => build.filter(p => p.cat === cat).reduce((t, p) => t + +(cInfo(p).gb || 0), 0);
   const ram = o.match(/(\d+)\s*gb\s+(of\s+)?(ram|memory)/i);
   if (ram) return sum("RAM") >= +ram[1];

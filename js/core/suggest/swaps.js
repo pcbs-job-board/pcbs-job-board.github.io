@@ -12,7 +12,8 @@ function suggestSwaps(job, opts = {}) {
     pickedBuild: opts.pickedBuild || [],
     pickedLights: opts.pickedLights || [],
   };
-  const objs = (opts.only || jobObjectives(job)).filter(o => !/^complete by/i.test(o));
+  // "PC can run X (Y Spec)" is worked out as its steps (CPU / GPU / RAM / storage – suggest/run.js)
+  const objs = suggestObjectives(job, opts.only || jobObjectives(job)).filter(o => !/^complete by/i.test(o));
   // opts.only: just these objectives (the combined set works them out one step at a time); opts.sections: which of the
   // rules that don't belong to one objective run (all when no step list is given)
   const sec = k => !opts.only || !!opts.sections?.includes(k);
@@ -42,6 +43,13 @@ function suggestSwaps(job, opts = {}) {
 
   for (const o of objs) {
     const ol = o.toLowerCase();
+    // "PC can run X" that is already met / not in the Will it run? list (else it came as its steps)
+    const ri = runInfo(o, build);
+    if (ri) {
+      out.push(ri);
+      continue;
+    }
+    const runG = RUN_SUB.get(o)?.cat === "GPU" ? RUN_SUB.get(o).spec : null; // "PC can run X": the GPU step
     // 3b  "Install Parts with Lights: 6 coloured (255,0,255)" – 6 parts with RGB lighting (colour set in the game)
     const mL = o.match(/parts with lights?\s*:?\s*(\d+)/i);
     if (mL) {
@@ -79,7 +87,10 @@ function suggestSwaps(job, opts = {}) {
       const chip = chipFromText(m[1]),
         exact = bestPartMatch(m[1]),
         named = exact && exact.score >= 0.9 && !(chip && normP(m[1]) === normP(chip)) ? ref(m[1]) : null,
-        r = named || (chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]));
+        r =
+          (runG && runG.gpuRef) ||
+          named ||
+          (chip ? INDEX.find(p => p.cat === "GPU" && cInfo(p).c === chip) || ref(m[1]) : ref(m[1]));
       // no part named – "Install an SSD", "Install a 1TB HDD", "Install M.2 storage": the cheapest drive of that kind that fits
       const sk = !r && storageKind(m[1]);
       if (sk) {
@@ -98,7 +109,8 @@ function suggestSwaps(job, opts = {}) {
         continue;
       }
       const cat = r.cat,
-        curP = cur(cat).pop(),
+        vramOk = p => !runG || vramOf(p) >= runG.vram, // "PC can run X": the GPU needs the spec's VRAM too
+        curP = runG ? [...cur(cat)].sort((a, b) => vramOk(b) - vramOk(a) || rk(b) - rk(a))[0] : cur(cat).pop(),
         better = !!m[2] && cat !== "Case"; // "or better" for a case: no way to rank cases – the one asked for
       let cands;
       const size = m[1].match(/(\d+(?:\.\d+)?)\s*(tb|gb)\b/i) || [],
@@ -109,7 +121,7 @@ function suggestSwaps(job, opts = {}) {
             rc = cInfo(r);
           return +c.gb >= gbWant && +c.k >= +(rc.k || 1);
         });
-      else if (better) cands = shopParts(cat).filter(atLeast(r, cat));
+      else if (better) cands = shopParts(cat).filter(p => atLeast(r, cat)(p) && vramOk(p));
       else if (cat === "GPU" && chipFromText(m[1]) && !named) {
         const chip = chipFromText(m[1]);
         cands = shopParts(cat).filter(p => cInfo(p).c === chip);
@@ -128,7 +140,7 @@ function suggestSwaps(job, opts = {}) {
         handled.add(cat);
         continue;
       }
-      if (curP && better && atLeast(r, cat)(curP)) {
+      if (curP && better && atLeast(r, cat)(curP) && vramOk(curP)) {
         missing(
           "obj:" + o,
           o,
@@ -688,7 +700,7 @@ function suggestSwaps(job, opts = {}) {
     const sg = budgetFixSuggestion(job, ctx);
     if (sg) out.push(sg);
   }
-  return out;
+  return runRename(out);
 }
 // "Based on budget" (Mariusz, 0.15.3): a "Diagnose and fix" job with no other suggestion – the broken part is one of the
 // customer's parts whose IDENTICAL replacement fits the budget that's left ("Just won't boot up", $80 → the PSU or the
