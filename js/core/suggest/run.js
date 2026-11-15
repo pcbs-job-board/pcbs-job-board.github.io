@@ -8,7 +8,7 @@
 // "Install <GPU chip> or better" (+ VRAM), "Upgrade to N GB of RAM", "Upgrade to N GB of Storage" – so the one set,
 // a new board for another socket and a complete PC built from nothing all work as for those objectives.
 const RUN_RE = /\bPC\s+can\s+run\s+(.+?)\s*[([{]\s*(min\w*|rec\w*(?:\s*4\s*k)?)\s*(?:spec\w*)?\s*[)\]}]?\s*$/i;
-const RUN_TIERS = { min: "Minimum Spec", rec: "Recommended Spec", rec4k: "Recommended 4K Spec" };
+const RUN_TIERS = { min: "Minimum Spec", rec: "Recommended Spec", rec4k: "Recommended 4k Spec" };
 const runNorm = s =>
   String(s || "")
     .toLowerCase()
