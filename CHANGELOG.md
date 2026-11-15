@@ -3,6 +3,13 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important.
 
+## 0.15.4
+- New "Will it run?" list of apps and games; new objective "PC can run X (Y Spec)" gets a suggestion.
+- PC Bay: "Remove broken part" – a broken part the PC doesn't need comes out without a replacement.
+- Build-from-nothing jobs (e.g. PROJECT NEPTUNE): a complete PC is suggested.
+- GPU upgrade: the one-set suggestion never picks a weaker or duplicated card; dual GPUs may swap a customer board that lacks SLI / CrossFire.
+- 2 new story jobs added.
+
 ## 0.15.3
 - PC Bay build: NEW parts that pay off, worked out from the current build, in a collapsed section; plan reaches 3DMark 10,000 first, then the highest sell price.
 - PC Bay build window: capture buttons and newest parts always visible, soft sweep on new rows, "Single changes" grouped and collapsed.
