@@ -30,10 +30,13 @@ function suggestSwaps(job, opts = {}) {
   ctx.pinned = new Set(opts.pinned || []);
   // "Upgrade Graphics Card" + "Install dual graphics cards": the upgrade is offered as a PAIR of new cards (one tick
   // adds both), and the dual-GPU rule adds nothing on top
-  const DUAL = DUAL_RE;
+  // (all the job's objectives count – the combined set works out "Upgrade" as a step of its own, opts.only, and must
+  // still pick a pair there, not a single card that is only "better" by a few 3DMark points)
+  const DUAL = DUAL_RE,
+    allObjs = jobObjectives(job);
   const pairMode =
-    objs.some(o => DUAL.test(o)) &&
-    objs.some(o => /^\W*upgrade\s+(the\s+)?(graphics|gpu|video)/i.test(o)) &&
+    allObjs.some(o => DUAL.test(o)) &&
+    allObjs.some(o => /^\W*upgrade\s+(the\s+)?(graphics|gpu|video)/i.test(o)) &&
     cur("GPU").length < 2; // categories an objective picks a part for (the 3DMark set leaves them to it)
   const newBuild = !(job.components || []).length; // "build one from nothing" jobs
 
@@ -443,8 +446,10 @@ function suggestSwaps(job, opts = {}) {
           scoreOk = p => !g0 || !benchOf(p.name) || benchOf(p.name).one >= g0.one;
         // GPUs: "better" = a higher in-game 3DMark score (Mariusz: the game counts the score, not the model year);
         // without score data the ranking decides
+        // … and never a lower part ranking either (GTX 1060 Mini: 12 points more than an RX 570 GAMING 8G, ranking 2,437 < 2,525)
         const gBetter = p => {
           const b = benchOf(p.name);
+          if (rk(hdd) > 0 && rk(p) < rk(hdd)) return false;
           return g0 && b ? b.one > g0.one : rk(p) > rk(hdd);
         };
         // the ranking of the part the PC came with and of the replacement – shown with the option
