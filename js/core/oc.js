@@ -39,7 +39,8 @@ function ocSettings(name, want) {
     v = d.ocMhz > d.mhz && d.ocV ? d.v + (Math.max(0, mhz - d.mhz) / (d.ocMhz - d.mhz)) * (d.ocV - d.v) : null;
   return { mhz, mult, volt: v != null && v > 0 ? voltStep(v) : null };
 }
-const powerLimitTxt = s => (s && s.power ? `power limit <b>+${s.power} %</b> (its maximum)` : "power limit at its maximum");
+// GPU Tuner calls it "Core Voltage" – a % slider (Mariusz 2026-11-16); the workbook calls it "GPU % Power Increase"
+const powerLimitTxt = s => (s && s.power ? `Core Voltage <b>+${s.power} %</b> (its maximum)` : "Core Voltage at its maximum");
 function throttleOf(cat, name) {
   const d = ocOf(name);
   if (d && d.thr) return { c: d.thr, known: true };
