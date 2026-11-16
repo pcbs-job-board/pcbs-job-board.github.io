@@ -10,8 +10,8 @@
 <body>
 <header>
   <h1>PCBS <span>Job Board</span></h1>
-  <button id="btnShare" title="Connect screen (Shift+C)">🖥️ Connect screen</button>
-  <div class="scrchip" id="scrChip" hidden>
+  <button id="btnShare" data-menu title="Connect screen (Shift+C)">🖥️ Connect screen</button>
+  <div class="scrchip" id="scrChip" data-menu hidden>
     <button id="btnChange" class="scrprev" title="Screen connected – click to change screen (Shift+C)" aria-label="Screen connected – change screen"><canvas id="live" width="160" height="90"></canvas><span class="dot on" id="dot"></span></button>
     <button id="btnStop" class="scrstop" title="Stop capture" aria-label="Stop capture"></button>
   </div>
@@ -19,31 +19,35 @@
     <button class="primary big" id="btnCapture" title="Capture job (C)">📸 Capture job</button>
     <button class="primary capplus" id="btnManual" title="Manual job (M)" aria-label="Manual job">＋</button>
   </div>
-  <button id="btnFlip" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>📦</button>
+  <button id="btnFlip" data-menu data-menu-label="New PC Bay build" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>📦</button>
   <div class="spacer"></div>
-  <button id="btnStory" title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
-  <div class="careerbar" id="careerBar">
+  <button id="btnStory" data-menu title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
+  <div class="careerbar" id="careerBar" data-menu>
     <span class="cbl">Career</span>
     <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level"></label>
     <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level">%</label>
   </div>
-  <button id="btnUnlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game"><span class="ulic"></span><template></template></button>
+  <button id="btnUnlocks" data-menu data-menu-label="Career unlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game"><span class="ulic"></span><template></template></button>
   <div class="notify" id="notify" hidden>
     <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
     <div class="notipanel" id="notiPanel" hidden></div>
   </div>
-  <button id="btnPartsDb" class="iconbtn pdbbtn" title="Parts database" aria-label="Parts database">📖</button>
-  <button id="btnKeys" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
-  <button id="btnSettings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
-  <button id="btnHelp" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
+  <button id="btnPartsDb" data-menu data-menu-label="Parts database" class="iconbtn pdbbtn" title="Parts database" aria-label="Parts database">📖</button>
+  <button id="btnKeys" data-menu data-menu-label="Keyboard shortcuts" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
+  <button id="btnSettings" data-menu data-menu-label="Settings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
+  <button id="btnHelp" data-menu data-menu-label="How to use it" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
+  <button id="btnMenu" class="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="hMenu">☰</button>
 </header>
+<!-- small screens: the top bar's other buttons slide in from the side (js/ui/menu.js) -->
+<div id="hMenuBg" class="hmenubg" hidden></div>
+<nav id="hMenu" class="hmenu" aria-label="Menu" hidden></nav>
 
 <main>
-  <section>
+  <section class="tablesec">
     <p class="row-title"><b>Workbenches</b> one job per table</p>
     <div id="tables"></div>
   </section>
-  <section>
+  <section class="queuesec">
     <p class="row-title"><b>Open jobs</b> soonest deadline first <span id="qCount"></span></p>
     <div id="queue"></div>
   </section>
@@ -323,5 +327,6 @@
 <script src="js/ui/story.js?v=0.15.4"></script>
 <script src="js/ui/notify.js?v=0.15.4"></script>
 <script src="js/ui/keys.js?v=0.15.4"></script>
+<script src="js/ui/menu.js?v=0.15.4"></script>
 </body>
 </html>

@@ -153,16 +153,32 @@ main {
   color: var(--text);
   font-size: 13px;
 }
+/* the 3 tables: 400 px up to 1.5 × an open job's 500 px, the section always centred; one below the other (up to
+   750 px) when 3 don't fit (0.16.0) */
+.tablesec {
+  width: 100%;
+  max-width: calc(3 * 750px + 2 * 12px);
+  margin-inline: auto;
+}
 #tables {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(400px, 1fr));
   gap: 12px;
   align-items: start;
 }
-@media (max-width: 900px) {
-  #tables {
-    grid-template-columns: 1fr;
+@media (max-width: 1268px) {
+  .tablesec {
+    max-width: 750px;
   }
+  #tables {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* open jobs: fitQueue() (board/cards.js) sets the column count and the section's width (columns × 500 px), so it's
+   centred and a row that isn't full keeps the full row's columns */
+.queuesec {
+  width: 100%;
+  margin-inline: auto;
 }
 .slot {
   background: var(--panel);
@@ -202,12 +218,16 @@ main {
 }
 #queue {
   display: grid;
-  /* cards ~370–460 px wide at any window width (min() keeps one full-width card on a narrow screen) */
-  grid-template-columns: repeat(auto-fill, minmax(min(370px, 100%), 1fr));
+  /* open jobs 400–500 px wide: the column count comes from fitQueue() (board/cards.js), this is only until it runs;
+     min() keeps one full-width card on a phone */
+  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
   gap: 12px;
   align-items: start;
   min-height: 60px;
   border-radius: 10px;
+}
+#queue.fit {
+  grid-template-columns: repeat(var(--qcols, 1), minmax(0, 1fr));
 }
 .empty {
   color: var(--muted);
@@ -4018,4 +4038,93 @@ textarea.pname {
 .fnewopts .fnewhint {
   display: block;
   margin: 2px 8px 4px;
+}
+
+/* small screens (0.16.0): a ☰ menu that slides in from the side holds the top bar's other buttons (js/ui/menu.js) */
+.menubtn {
+  display: none;
+  font-size: 18px;
+  padding: 4px 11px;
+}
+.hmenubg {
+  position: fixed;
+  inset: 0;
+  background: #0008;
+  z-index: 30;
+}
+.hmenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(300px, 85vw);
+  z-index: 31;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 24px #0006;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.2s ease-out;
+}
+.hmenu.open {
+  transform: none;
+}
+.hmenu[hidden] {
+  display: none;
+}
+.hmenu > button {
+  text-align: left;
+  padding: 9px 12px;
+}
+.hmenu .careerbar {
+  justify-content: center;
+}
+.hmenu [data-menu-label]::after {
+  content: attr(data-menu-label);
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: 400;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hmenu {
+    transition: none;
+  }
+}
+@media (max-width: 700px) {
+  .menubtn {
+    display: inline-block;
+  }
+  header {
+    padding: 8px 10px;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+  header h1 {
+    font-size: 15px;
+    margin-right: 0;
+    min-width: 0;
+    flex: 0 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  header .big {
+    font-size: 14px;
+    padding: 8px 11px;
+  }
+  header .capsplit {
+    flex: none;
+  }
+  main {
+    padding: 10px 8px;
+    gap: 14px;
+  }
+  .slot {
+    min-height: 0;
+  }
 }
