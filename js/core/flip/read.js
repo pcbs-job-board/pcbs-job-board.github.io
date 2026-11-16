@@ -185,6 +185,9 @@ function parseInventoryColumn(lines) {
     const pr = t.match(/\$\s?(\d[\d,]*)/) || (cur && t.match(/(?:auction on|sell)\D{0,3}([358S]?\d{1,4})\s*$/i));
     if (pr) {
       flush();
+      // a card always lists its specs ("• Type: SSD") between the name and the price; without them the "name" was text
+      // on the card's picture (a "Shean Mega" box, its "SSD" read as "$80") – not a card (0.16.0)
+      if (cur && !cur.specs) cur = null;
       if (cur) {
         const raw = pr[1].replace(/,/g, ""),
           u = usedValue(cur.name),
@@ -198,6 +201,7 @@ function parseInventoryColumn(lines) {
     }
     if (/^\W{0,2}(auction|pc\s?bay|sell|used|incompatible|broken)\b/i.test(t) || /:/.test(t) || /^[*«»+•·-]/.test(t)) {
       flush();
+      if (cur && (/:/.test(t) || /^[*«»+•·-]/.test(t))) cur.specs = (cur.specs || 0) + 1;
       continue;
     }
     if (conf < 60) {

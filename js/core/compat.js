@@ -234,6 +234,16 @@ const COMPAT_RULES = [
     },
   },
 ];
+// the maker of a RAM stick: its first word ("Team" for Team Group), any case
+const ramMaker = name => String(name).split(/\s+/)[0].toLowerCase();
+const ramMixOk = (a, b) => a.c.gb === b.c.gb && a.c.mhz === b.c.mhz && ramMaker(a.name) === ramMaker(b.name);
+// RAM sticks of a build that can't stay together – different sticks only with the same size, speed and maker
+// (Mariusz, 0.16.0, PC Bay builds); names, sticks without data are left out
+function ramMixed(names) {
+  const sticks = [...new Set(names)].map(name => ({ name, c: compatOf(name) || {} })).filter(p => p.c.gb);
+  return sticks.filter(a => sticks.some(b => a !== b && !ramMixOk(a, b))).map(p => p.name);
+}
+const ramMixCount = names => ramMixed(names).length;
 const loopPart = w => w.c.ri != null || !!w.c.ss || !!w.c.r; // reservoir, CPU block or radiator (not pipes, fittings, coolant)
 const wantsOC = j => /\b(overclock\w*|oc)\b/i.test(jobObjectives(j).join(" ")); // objectives only (an email-body mention is "later")
 // count rules: more parts than places → the lowest-priority ones get the warning

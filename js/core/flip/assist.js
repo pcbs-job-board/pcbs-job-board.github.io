@@ -139,6 +139,9 @@ function flipTry(b, base, m, avail) {
       m = { ...m, label: `${m.label} + PSU: ${best.name}` };
     }
   }
+  // RAM sticks that can't be mixed (size, speed, maker): never a step toward them
+  const mix = x => ramMixCount(x.filter(p => p.cat === "RAM" && !p.broken).map(p => p.name));
+  if (mix(b2) > mix(b)) return { ...m, build: b2, rank: -1 };
   const gain = e.value - e.cost - (base.value - base.cost),
     up = flipTier(e) - flipTier(base),
     tier = up > 0 && gain <= 0 && e.cost > base.cost ? 0 : up;
