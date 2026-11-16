@@ -3260,6 +3260,32 @@ dialog.pdbdlg .dlg-b {
   max-height: none;
   overflow: visible;
 }
+.pdbpages {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.pdbpage {
+  padding: 5px 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.pdbpage.on {
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.pdbtable td.wircell {
+  line-height: 1.5;
+  min-width: 220px;
+}
+.pdbtable td.wircell b {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
 .pdbtabs {
   display: flex;
   flex-wrap: wrap;

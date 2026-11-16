@@ -32,7 +32,7 @@
     <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
     <div class="notipanel" id="notiPanel" hidden></div>
   </div>
-  <button id="btnPartsDb" data-menu data-menu-label="Parts database" class="iconbtn pdbbtn" title="Parts database" aria-label="Parts database">📖</button>
+  <button id="btnPartsDb" data-menu data-menu-label="Parts database" class="iconbtn pdbbtn" title="Parts database · Will it run?" aria-label="Parts database and Will it run?">📖</button>
   <button id="btnKeys" data-menu data-menu-label="Keyboard shortcuts" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
   <button id="btnSettings" data-menu data-menu-label="Settings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
   <button id="btnHelp" data-menu data-menu-label="How to use it" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
@@ -180,14 +180,15 @@
 
 <!-- 📖 Parts database – every part of a category, filtered by name -->
 <dialog id="dlgPartsDb" class="pdbdlg">
-  <div class="dlg-h"><h3>📖 Parts database</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
+  <div class="dlg-h"><h3 id="pdbTitle">📖 Parts database</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
   <div class="dlg-b">
+    <div id="pdbPages" class="pdbpages" role="toolbar" aria-label="Pages"><button class="pdbpage on" data-pdbpage="parts" aria-pressed="true">📖 Parts database</button><button class="pdbpage" data-pdbpage="run" aria-pressed="false">🎮 Will it run?</button></div>
     <div id="pdbTabs" class="pdbtabs" role="toolbar" aria-label="Part categories"></div>
     <div class="pdbbar"><input id="pdbFilter" type="search" placeholder="Filter by name…" autocomplete="off" aria-label="Filter parts by name"><span id="pdbCount" class="hint"></span></div>
     <div id="pdbFilters" class="pdbfilters"></div>
     <p id="pdbNote" class="hint pdbnote"></p>
     <div id="pdbWrap" class="pdbwrap"><table id="pdbTable" class="pdbtable"></table></div>
-    <div class="pdbfoot"><label class="fnewsw" title="Also show the columns that are hidden by default (game version, details, ranking, …). Off every time this window opens."><input type="checkbox" id="pdbAll" role="switch"><span class="sw" aria-hidden="true"></span>Show hidden details</label></div>
+    <div id="pdbFoot" class="pdbfoot"><label class="fnewsw" title="Also show the columns that are hidden by default (game version, details, ranking, …). Off every time this window opens."><input type="checkbox" id="pdbAll" role="switch"><span class="sw" aria-hidden="true"></span>Show hidden details</label></div>
   </div>
 </dialog>
 
@@ -322,6 +323,7 @@
 <script src="js/ui/backup.js?v=0.16.0"></script>
 <script src="js/ui/start.js?v=0.16.0"></script>
 <script src="js/ui/partsdb.js?v=0.16.0"></script>
+<script src="js/ui/willrun.js?v=0.16.0"></script>
 <script src="js/ui/rules.js?v=0.16.0"></script>
 <script src="js/ui/areas.js?v=0.16.0"></script>
 <script src="js/ui/story.js?v=0.16.0"></script>

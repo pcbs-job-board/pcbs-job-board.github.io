@@ -19,7 +19,7 @@ const PDB_TABS = [
   { k: "Water Cooling", wc: /^coolant/i, label: "Coolants" },
   { k: "Cables", label: "Cables" },
 ];
-const pdb = { tab: 0, sort: null, desc: false, all: false, f: {} }; // all = "Show hidden details"; f = filter label → chosen value
+const pdb = { page: "parts", tab: 0, sort: null, desc: false, all: false, f: {} }; // page: "parts" or "run" (Will it run?); all = "Show hidden details"; f = filter label → chosen value
 
 // one row → a readable part object
 function pdbPart(r) {
@@ -351,7 +351,23 @@ function pdbCols(t, parts) {
     hide = pdb.all ? [] : PDB_HIDE[t.label] || [];
   return cols.filter((col, i) => i === 0 || (!hide.includes(col[0]) && parts.some(p => col[1](p) !== ""))); // no empty columns
 }
+// the window's two pages: the parts database (opens first) and Will it run? (js/ui/willrun.js)
+function renderPdbPage() {
+  const run = pdb.page === "run";
+  $("#pdbTitle").textContent = run ? "🎮 Will it run?" : "📖 Parts database";
+  for (const b of document.querySelectorAll("[data-pdbpage]")) {
+    const on = b.dataset.pdbpage === pdb.page;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-pressed", on);
+  }
+  $("#pdbTabs").hidden = run;
+  $("#pdbFoot").hidden = run;
+  $("#pdbFilter").placeholder = run ? "Filter by app or game…" : "Filter by name…";
+  if (run) renderWillRun();
+  else renderPartsDb();
+}
 function renderPartsDb() {
+  if (pdb.page === "run") return renderWillRun();
   const t = PDB_TABS[pdb.tab],
     all = pdbRows(t);
   // every typed word must start a word of the name ("1080 ti" → not "1080 Founders Edition")
@@ -401,6 +417,8 @@ function renderPartsDb() {
     <tbody>${rows.map(p => `<tr>${cols.map((c, i) => `<td${i === 0 ? ' class="pdbname"' : c[0] === "Details" ? ' class="pdbdet"' : ""}>${c[3] ? c[3](p) : esc(String(c[1](p))).replace(/\n/g, "<br>")}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}" class="hint">No part matches.</td></tr>`}</tbody>`;
 }
 function openPartsDb() {
+  pdb.page = "parts"; // the parts database is the page that opens
+  wir.dlc = "";
   pdb.tab = 0;
   pdb.sort = null;
   pdb.desc = false;
@@ -408,7 +426,7 @@ function openPartsDb() {
   pdb.f = {};
   $("#pdbAll").checked = false;
   $("#pdbFilter").value = "";
-  renderPartsDb();
+  renderPdbPage();
   $("#dlgPartsDb").showModal();
   $("#pdbWrap").scrollTo(0, 0);
   $("#pdbFilter").focus();
@@ -417,6 +435,15 @@ $("#btnPartsDb").onclick = openPartsDb;
 $("#pdbFilter").addEventListener("input", () => {
   renderPartsDb();
   $("#pdbWrap").scrollTo(0, 0);
+});
+$("#pdbPages").addEventListener("click", e => {
+  const b = e.target.closest("[data-pdbpage]");
+  if (!b || b.dataset.pdbpage === pdb.page) return;
+  pdb.page = b.dataset.pdbpage;
+  $("#pdbFilter").value = "";
+  renderPdbPage();
+  $("#pdbWrap").scrollTo(0, 0);
+  $("#pdbFilter").focus();
 });
 $("#pdbTabs").addEventListener("click", e => {
   const b = e.target.closest("[data-pdbtab]");
