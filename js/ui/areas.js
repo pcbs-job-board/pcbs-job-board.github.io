@@ -300,6 +300,8 @@ function levelBarAt(img, ox, oy, W, H, minRun) {
     const len = x - g.x0;
     if (len < W * 0.05 || len > W * 0.3 || x >= w - 1) continue;
     if (x - fill < 6) continue; // a bar is never 100 % full – green up to a dark edge is a sign or a logo
+    // "LEVEL 24" sits above the bar: green at the very top of the picture is a sign in the room behind the HUD (0.16.0)
+    if (oy + g.y0 < len * 0.12) continue;
     if (!best || g.rows.length > best.rows) best = { x0: g.x0, x1: x, fill, y0: g.y0, y1: g.y1, rows: g.rows.length };
   }
   if (!best) return null;

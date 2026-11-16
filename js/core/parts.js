@@ -621,6 +621,14 @@ const specOnly = t => {
     .filter(Boolean);
   return w.length > 0 && w.every(x => /^[\d.,]+([gt]b|mhz|w)?$/i.test(x) || /^([gt]b|mhz|w)$/i.test(x));
 };
+// a line that is only a CPU's model number ("1700X" – the rest of the name cut off at the top of a scrolled list):
+// that CPU when exactly one CPU has that word (0.16.0)
+function cpuByModel(t) {
+  const w = String(t).trim().toLowerCase();
+  if (/\s/.test(w) || w.length < 4 || !/\d/.test(w) || !/[a-z]/.test(w) || !/^[a-z0-9-]+$/.test(w)) return null; // a bare number ("1500") may have lost its X
+  const hits = (window.PARTS_DB?.CPU || []).filter(r => normP(r[0]).split(" ").includes(w));
+  return hits.length === 1 ? { name: hits[0][0], cat: "CPU", score: 0.9, amb: false } : null;
+}
 function resolvePCStats(items) {
   if (typeof items === "string") items = joinPCStatsLines(denoisePartLines(componentLines(items)));
   const out = [],
@@ -629,7 +637,7 @@ function resolvePCStats(items) {
   for (const it of items) {
     // only sizes / speeds left ("2400 MHz", "8 GB", "450") – the rest of a name cut off at the top of a scrolled list
     if (specOnly(it.name)) continue;
-    let m = bestPartMatch(it.name);
+    let m = cpuByModel(it.name) || bestPartMatch(it.name);
     let loose = false;
     // a lone short word nothing matches ("S35", "ion") is a crumb of a picture or of a half-cut line
     if (!m && !/\s/.test(it.name.trim()) && it.name.replace(/[^a-z0-9]/gi, "").length < 6) continue;

@@ -123,6 +123,51 @@ async function readText(canvas) {
       }
   return { text: d.text || "", lines, words };
 }
+// PC Stats: a name on two lines whose 2nd line the reader skipped ("MSI Radeon RX 580" / "GAMING X+ 8G" – the 1st line
+// alone fits 6 cards): the line under it is read on its own and put in after it, when the two together name one part (0.16.0)
+async function readStats(cv) {
+  const r = await readText(cv),
+    L = r.lines.filter(l => l[2]);
+  if (!L.length) return r;
+  const hs = L.map(l => l[2].y1 - l[2].y0).sort((a, b) => a - b),
+    lh = hs[hs.length >> 1];
+  const lines = r.text.split("\n");
+  for (let i = 0; i < L.length; i++) {
+    const [t, , b] = L[i],
+      c = cleanPartLine(t);
+    if (!c.branded) continue;
+    const m = bestPartMatch(c.text);
+    if (!m || !m.amb) continue;
+    const next = L[i + 1];
+    if (next && next[2].y0 - b.y1 < lh * 0.8) continue; // a line was read right under it
+    // from the name's first word (not the picture's crumbs on its left) to the right edge, one line high
+    // (the line's own box can reach into the 2nd line – the picture next to it is taller – so the word's box is used)
+    const first = c.text.split(" ")[0],
+      w0 = r.words.find(w => w.bbox && w.text.includes(first) && w.bbox.y0 >= b.y0 - 2 && w.bbox.y1 <= b.y1 + 2);
+    if (!w0) continue;
+    const wb = w0.bbox,
+      wh = wb.y1 - wb.y0,
+      x0 = Math.max(0, Math.round(wb.x0 - wh * 0.3)),
+      y0 = Math.round(wb.y1 + wh * 0.15),
+      y1 = Math.min(cv.height, Math.round(wb.y1 + wh * 1.6));
+    if (y1 - y0 < wh * 0.8) continue;
+    const cc = document.createElement("canvas");
+    cc.width = cv.width - x0;
+    cc.height = y1 - y0;
+    cc.getContext("2d").drawImage(cv, x0, y0, cc.width, cc.height, 0, 0, cc.width, cc.height);
+    const t2 = (await readText(cc)).lines
+      .filter(l => l[1] >= 50)
+      .map(l => cleanPartLine(String(l[0])).text.replace(/\s+[^A-Za-z0-9)+]{1,2}$/, ""))
+      .join(" ")
+      .trim();
+    const m2 = t2 && bestPartMatch(c.text + " " + t2);
+    if (!m2 || m2.amb || m2.score < m.score) continue;
+    const k = lines.findIndex(x => x.trim() === t);
+    if (k >= 0) lines.splice(k + 1, 0, t2);
+  }
+  r.text = lines.join("\n");
+  return r;
+}
 // ★ required stars of an email job: the reader can't read the star signs ("Req: rk %"), so they are counted on the
 // picture – the white shapes after the "Req:" above "Req: Level N". null = not found, 0 = no star requirement.
 function starsFrom(canvas, words) {
@@ -192,7 +237,7 @@ async function ocr(img, kind) {
   $("#ocrState").textContent = `Reading ${kind === "email" ? "email" : "PC Stats"}…`;
   $("#prog").style.width = "0";
   const cv = cropCanvas(img, crops[kind === "parts" ? "stats" : kind]),
-    r = await readText(cv);
+    r = await (kind === "email" ? readText(cv) : readStats(cv));
   lastConf = r.lines; // per-line certainty, used when joining screenshots
   lastStars = kind === "email" ? starsFrom(cv, r.words) : null;
   $("#prog").style.width = "100%";
