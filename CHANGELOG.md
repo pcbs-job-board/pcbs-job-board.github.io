@@ -1,7 +1,7 @@
 # Changelog
 
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
-Within each version, changes are listed from most to least important.
+Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
 ## 0.15.4
 - New "Will it run?" list of apps and games; new objective "PC can run X (Y Spec)" gets a suggestion.
@@ -12,13 +12,12 @@ Within each version, changes are listed from most to least important.
 
 ## 0.15.3
 - PC Bay build: NEW parts that pay off, worked out from the current build, in a collapsed section; plan reaches 3DMark 10,000 first, then the highest sell price.
-- PC Bay build window: capture buttons and newest parts always visible, soft sweep on new rows, "Single changes" grouped and collapsed.
-- New job / Edit window: compact two-column layout, exactly one of CPU cooler or CPU block; a CPU block replaces the cooler in swaps.
+- PC Bay build window: capture buttons and newest parts always visible, "Single changes" grouped and collapsed.
+- New job / Edit window: exactly one of CPU cooler or CPU block; a CPU block replaces the cooler in swaps.
 - "Based on budget": cheapest first, custom loop parts count, fallback for "Diagnose and fix".
 - Upgrade suggestions show the ranking of the current part and of each replacement.
 - Job card: Enter after a mouse click goes into job focus.
 - 3 OCR bugs fixed (3-line GPU names, "be quiet! Shadow Rock 3", Z370-I).
-- GPU table: shorter chipset names, header on two lines.
 - Faster part lookups; code reorganised into js/core and js/ui folders (no change in behaviour).
 
 ## 0.15.2
@@ -37,9 +36,8 @@ Within each version, changes are listed from most to least important.
 ## 0.15.0
 - Suggestions: one set of parts for the whole job – objectives worked out in order, one tick adds it all.
 - "X or better": the part asked for is suggested first; part rankings shown (asked for, current, new).
-- Job cards: objectives in a framed box under T1–T3, deadline included.
+- Job cards: the deadline is listed with the objectives.
 - Job cards: Budget, required level and stars shown next to Labour.
-- Hidden objectives box in calmer blue.
 - Job focus: Enter on a card dims the other jobs and shows it in full – Esc to leave.
 - Settings: compact mode switches for job status and part swaps.
 - Dual graphics cards: also suggests a cheaper card that pairs with yours.
@@ -98,7 +96,6 @@ Within each version, changes are listed from most to least important.
 
 ## 0.14.3
 - PC Bay build: "Suggest NEW parts" switch (off by default) – suggestions use only USED inventory parts unless it's on.
-- Open jobs cards keep a readable width (~370–460 px) in wide windows; a thicker, filled arrow on part swap tiles.
 - PC Bay build: inventory in category tabs (only categories you have), newest scans at the top; a capture opens its category.
 - Emails: a slow PC ("not as quick as it used to be") now always adds the virus scan, also on 3DMark jobs – as the keyword tester shows.
 
@@ -136,10 +133,9 @@ Within each version, changes are listed from most to least important.
 - 1 OCR bug fixed.
 - Code reorganised for easier work on it (logic and page parts in separate folders, automatic code checks) – no change in how it works or how fast it loads.
 - 📜 The changelog opens right in the app (Settings → version, and the "what's new" notice) instead of on GitHub.
-- Part swap tiles: tidier sizes – ✕ / ✎ and the price box match the checkbox.
 
 ## 0.13.0
-- New-job window: job details under the screenshot, parts on the right – one field per part type with autofill, "!" on parts not found in the database.
+- New-job window: one field per part type with autofill, "!" on parts not found in the database.
 - One Edit window per job (✎ Edit): details, objectives, tasks and parts in the same layout – replaces the ✎ and 📸 Parts windows.
 - Suggested swaps can be worked out again (↻ Refresh).
 - Replacement coolers and fans are never weaker than the old part (air flow from the parts workbook).
@@ -149,7 +145,7 @@ Within each version, changes are listed from most to least important.
 ## 0.12.3
 - Builds from nothing now include a drive, and "Install Parts with Lights: N coloured" suggests the RGB parts it needs.
 - "Upgrade Graphics Card" + "Install dual graphics cards" suggests pairs of cards that can run together.
-- Part swaps: new tile layout, and they can be edited (✎) instead of removed and added again.
+- Part swaps can be edited (✎) instead of removed and added again.
 - Capture buttons in the new-job window show their shortcuts (Alt+E / Alt+P).
 - Builds from nothing are worked out much faster.
 - 1 new story job added.
@@ -180,7 +176,7 @@ Within each version, changes are listed from most to least important.
 ## 0.11.0
 - Suggested part swaps in the new-job and PC Stats windows, based on objectives, hints and the PC's parts – unlocked, fitting, cheapest first within budget, with the board / PSU they need.
 - New Status row under T1–T3: 💰 budget, ⚡ power and ⚠️ fit as coloured tiles – details pop up on hover or keyboard focus.
-- Slimmer top bar: live preview = change screen, ＋ next to Capture job = manual job, ⚙️ icon only.
+- Top bar: the live preview changes the screen, ＋ next to Capture job adds a manual job.
 - Missing-part reports also ask for the unlock level %.
 - Fixed: parts named in the objectives didn't count as job requirements on saved jobs.
 
