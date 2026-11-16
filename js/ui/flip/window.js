@@ -444,6 +444,7 @@ function flipStep4(f, st) {
         ? `<div class="focbox"><b>Couldn't reach the suggested overclock?</b> <small>Enter what you set – the 3DMark, sale and profit estimates follow.</small>${ownCpu}${ownGpu}<button class="ghost" data-fa="ocreset" ${f.ocSet ? "" : "hidden"}>↺ Back to the suggestion</button></div>`
         : ""
     }
+    ${gpuMix(b) ? `<div class="fenough warn">⚠ ${esc(gpuMixText())}</div>` : ""}
     ${row("bench", "Run 3DMark", `Expected ~${(sc(base) || 0).toLocaleString()} points with the ticks above – a rough estimate, the game's score can differ slightly. Enter the score the game shows (the sale value then uses it):`)}
     <div class="addrow fscore"><input type="number" min="0" data-fa="score" placeholder="3DMark score" value="${f.score ?? ""}"><small>${f.score ? `Multiplier ×${benchMult(f.score).toFixed(2)} → resale value ${money(st.value)}` : "the multiplier goes from 1.0× at 1,000 points to 3.0× at 10,000"}</small></div>
     ${(f.score ?? sc(base) ?? 0) >= ENOUGH_TARGET ? `<p class="hint">A score above 10,000 doesn't raise the price multiplier (×3.0 is the maximum) – only more or better parts raise the price.</p>` : ""}

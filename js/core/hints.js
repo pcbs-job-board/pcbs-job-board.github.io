@@ -2,10 +2,18 @@
    reads them. To add one: a new entry with
      id   – short unique name
      when – (job, build) → true when the tip applies; build = the planned PC (customer's parts with the swaps applied)
-     text – the tip (plain text)
+     text – the tip (plain text, or a function of the job when it depends on the career level)
    Helpers: hintObjs(j) = the job's objectives, hintSwap(build, cats) = a part swap planned for one of these categories. */
 const hintObjs = j => jobObjectives(j).filter(o => !/^complete by/i.test(o));
 const hintSwap = (build, cats) => build.some(p => p.swapped && cats.includes(p.cat));
+// two different graphics cards (same model from two makers, other clocks): the game doesn't match their clocks on its
+// own – 3DMark / OCCT can end in a blue screen until GPU Tuner sets them (Mariusz 2026-11-16, Steam players report the same)
+const gpuMix = build => new Set((build || []).filter(p => p.cat === "GPU" && !p.broken).map(p => p.name)).size > 1;
+const gpuMixText = () =>
+  'Two different graphics cards – the game doesn\'t match their clocks on its own, so 3DMark or OCCT can end in a blue screen ("Attempt to reset the display driver and recover from timeout failed"). Before running them, open GPU Tuner and set the core voltage and the power limit to the maximum (no clock change needed).' +
+  (typeof hasUnlock === "function" && !hasUnlock("gpuOC")
+    ? " GPU Tuner unlocks at career level 13 – before that, two identical cards avoid it."
+    : "");
 const HINTS = [
   {
     id: "thermal-paste",
@@ -38,6 +46,11 @@ const HINTS = [
     text: "Sale price = (value of the used parts × a multiplier set by the 3DMark score) + $100 once it boots to the OS. The multiplier grows from 1× to 3× at 10,000 points – more than that adds nothing. The auction can still move the final price a little.",
   },
   {
+    id: "gpu-sync",
+    when: (j, build) => gpuMix(build),
+    text: () => gpuMixText(),
+  },
+  {
     id: "leak-test",
     when: (j, build) => hintSwap(build, ["Water Cooling"]),
     text: "Custom water cooling: fill the loop with coolant and run the leak test before you boot the PC.",
@@ -51,5 +64,5 @@ function jobHints(j) {
     } catch {
       return false;
     }
-  });
+  }).map(h => (typeof h.text === "function" ? { ...h, text: h.text(j) } : h)); // a text can depend on the career level
 }
