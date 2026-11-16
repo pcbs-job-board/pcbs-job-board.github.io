@@ -292,8 +292,6 @@ function flipCheck(b) {
     spare = b.filter(p => flipCanRemove(b, p)).map(p => p.name); // broken ones that may come out without a replacement
   const j = flipJobOf(b),
     issues = [...new Set(compatIssues(j, compatBuild(j)).map(i => `${i.part.name}: ${i.msg}`))];
-  const mixed = ramMixed(b.filter(p => p.cat === "RAM" && !p.broken).map(p => p.name));
-  if (mixed.length) issues.push(`RAM: ${mixed.join(" + ")} can't be mixed – sticks need the same size, speed and maker`);
   const pc = powerCheck(j),
     can = softOk(null, b),
     oc = can.ocCpu || can.ocGpu,

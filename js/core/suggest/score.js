@@ -95,7 +95,7 @@ function benchSuggestions(job, ctx) {
       same =
         shopParts("RAM").filter(sameAs(r0.name))[0] ||
         shopParts("RAM")
-          .filter(p => +cInfo(p).mhz === stick && +cInfo(p).gb === +cInfo(r0).gb)
+          .filter(p => +cInfo(p).mhz === stick && +cInfo(p).gb === +cInfo(r0).gb && ramMaker(p.name) === ramMaker(r0.name))
           .sort((a, b) => a.price - b.price)[0];
     if (same) ramFill = { k: (cpuB.maxCh || 1) - sticks, p: same };
   }
@@ -107,9 +107,11 @@ function benchSuggestions(job, ctx) {
       p = shopParts("RAM")
         .filter(x => brandMatch(x, favRam) && +cInfo(x).gb === +cInfo(r0).gb && +cInfo(x).mhz >= stick)
         .sort((a, b) => a.price - b.price)[0];
-    if (p) ramFav = { k: ramFill.k, p };
+    if (p) ramFav = { k: ramFill.k, p, swap: true };
   }
-  const fillSw = (f = ramFill) => (f ? Array.from({ length: f.k }, () => sw(f.p)) : []);
+  // another maker's sticks can't go next to the customer's (same size, speed and maker – 0.16.0): they replace them
+  const fillSw = (f = ramFill) =>
+    f ? [...(f.swap ? ram0.map(r => sw(f.p, r.name)) : []), ...Array.from({ length: f.k }, () => sw(f.p))] : [];
   // one search; S = null: parts at stock clocks, or { share }: every part that can overclock at that share of its
   // overclock potential (0.15.2)
   const search = S => {
