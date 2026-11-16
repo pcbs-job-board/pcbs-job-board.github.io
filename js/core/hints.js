@@ -10,7 +10,7 @@ const hintSwap = (build, cats) => build.some(p => p.swapped && cats.includes(p.c
 // own – 3DMark / OCCT can end in a blue screen until GPU Tuner sets them (Mariusz 2026-11-16, Steam players report the same)
 const gpuMix = build => new Set((build || []).filter(p => p.cat === "GPU" && !p.broken).map(p => p.name)).size > 1;
 const gpuMixText = () =>
-  'Two different graphics cards – the game doesn\'t match their clocks on its own, so 3DMark or OCCT can end in a blue screen ("Attempt to reset the display driver and recover from timeout failed"). Before running them, open GPU Tuner and set the core voltage and the power limit to the maximum (no clock change needed).' +
+  'Two different graphics cards – the game doesn\'t match their clocks on its own, so 3DMark or OCCT can end in a blue screen ("Attempt to reset the display driver and recover from timeout failed"). Before running them, open GPU Tuner and set Core Voltage to the maximum (no clock change needed).' +
   (typeof hasUnlock === "function" && !hasUnlock("gpuOC")
     ? " GPU Tuner unlocks at career level 13 – before that, two identical cards avoid it."
     : "");
