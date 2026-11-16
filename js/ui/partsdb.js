@@ -1,4 +1,4 @@
-/* 📖 Parts database window – every part of a category as a readable table, filtered by name.
+/* 📖 Game Wiki window, Parts database page – every part of a category as a readable table, filtered by name.
    Data: window.PARTS_DB rows [name, lvl, price, spec, dlc, ver, pct, never-in-jobs, details, power, compat, bench, oc]
    (see tools/build_db.py). Water Cooling is split by its spec: Reservoir, Radiator, CPU Block, Pipe, Fitting, Coolant. */
 const PDB_TABS = [
@@ -354,7 +354,6 @@ function pdbCols(t, parts) {
 // the window's two pages: the parts database (opens first) and Will it run? (js/ui/willrun.js)
 function renderPdbPage() {
   const run = pdb.page === "run";
-  $("#pdbTitle").textContent = run ? "🎮 Will it run?" : "📖 Parts database";
   for (const b of document.querySelectorAll("[data-pdbpage]")) {
     const on = b.dataset.pdbpage === pdb.page;
     b.classList.toggle("on", on);

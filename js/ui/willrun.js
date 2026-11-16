@@ -1,4 +1,4 @@
-/* 🎮 Will it run? page of the Parts database window (0.16.1) – the game's "Will it run?" app as a table:
+/* 🎮 Will it run? page of the 📖 Game Wiki window (0.16.1) – the game's "Will it run?" app as a table:
    minimum / recommended / recommended 4K spec of each app and game (window.WILL_IT_RUN from data/will-it-run.csv,
    taken from the game wiki). The same rules as the "PC can run X (Y Spec)" objective (js/core/suggest/run.js). */
 const WIR_TIERS = [

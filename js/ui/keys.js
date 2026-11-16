@@ -7,7 +7,7 @@ const KEYMAP = [
       ["C", "Capture job (reads the email)"],
       ["M", "New manual job"],
       ["Shift + C", "Connect / change screen"],
-      ["B", "📖 Parts database"],
+      ["B", "📖 Game Wiki – parts database, Will it run?"],
       ["U", "Career unlocks"],
       ["L", "📜 Changelog – what's new"],
       ["S", "Settings"],

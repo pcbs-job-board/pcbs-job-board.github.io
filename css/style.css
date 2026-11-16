@@ -3275,6 +3275,9 @@ dialog.pdbdlg .dlg-b {
   font-size: 14px;
   color: var(--muted);
 }
+.pdbpage .cpuic {
+  vertical-align: -3px;
+}
 .pdbpage.on {
   border-color: var(--accent);
   color: var(--text);

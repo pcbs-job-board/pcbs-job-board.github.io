@@ -4,7 +4,7 @@ Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
 ## 0.16.1
-- 📖 Parts database window: new "Will it run?" page – every app and game with its minimum, recommended and 4K spec, DLC ones marked.
+- 📖 The parts database window is now the "Game Wiki", with a new "Will it run?" page – every app and game with its minimum, recommended and 4K spec, DLC ones marked.
 - Settings: switches for automatic part swaps and hidden objective detection (keyword rules only with detection on).
 - One Help window behind "?": How to use it and the keyboard shortcuts (the ? key opens the shortcuts).
 - The top bar always stays on one line; buttons that don't fit go into the ☰ menu.
