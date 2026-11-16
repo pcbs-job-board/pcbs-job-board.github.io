@@ -71,11 +71,12 @@ function flipMoves(b, avail) {
         const l = k > 1 ? `${k} × ${name}` : name;
         moves.push({ label: now.length ? `${cat}: ${l}` : `Add ${cat}: ${l}`, items: items.slice(0, Math.max(k, now.length)) });
       }
-      // more of the same – a 2nd GPU of the same model from any maker pairs too (gpuPair)
+      // more of the same – a 2nd GPU of the same model from any maker pairs too (gpuPair); a RAM stick of the same size,
+      // speed and maker goes with the ones in it (another colour / model: Patriot Viper LED + Viper RGB 8 GB 3000, 0.16.0)
       const more =
         cat === "GPU"
           ? now.length === 1 && !now[0].broken && gpuPair(now[0].name, name)
-          : now.every(p => p.name === name && !p.broken);
+          : now.every(p => !p.broken && (p.name === name || !ramMixed([p.name, name]).length));
       if (now.length && now.length < max && more)
         for (let k = 1; k <= Math.min(arr.length, max - now.length); k++)
           moves.push({
