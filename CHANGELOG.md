@@ -6,7 +6,7 @@ Within each version, changes are listed from most to least important. Small visu
 ## 0.16.1
 - 📖 The parts database window is now the "Game Wiki", with a new "Will it run?" page – every app and game with its minimum, recommended and 4K spec, DLC ones marked.
 - Settings: switches for automatic part swaps and hidden objective detection (keyword rules only with detection on).
-- One Help window behind "?": How to use it and the keyboard shortcuts (the ? key opens the shortcuts).
+- One Help window behind "?" (button and key): keyboard shortcuts first, then How to use it.
 - The top bar always stays on one line; buttons that don't fit go into the ☰ menu.
 - "Report story job" left the top bar (still there in the job capture).
 

@@ -107,7 +107,7 @@ $("#btnSettings").onclick = () => {
   $("#dlgSettings").showModal();
 };
 // ❓ Help window: "How to use it" + keyboard shortcuts (0.16.1), one page per <section data-hsec> – opened by the
-// ? button (How to use it) and the ? key (keyboard shortcuts). Pictures are only downloaded the first time a page shows.
+// ? button and the ? key, both on the keyboard shortcuts page. Pictures are only downloaded the first time a page shows.
 function showHelpPage(k) {
   const secs = [...document.querySelectorAll("#dlgHelp [data-hsec]")];
   if (!secs.some(x => x.dataset.hsec === k)) k = secs[0].dataset.hsec;
@@ -132,7 +132,7 @@ function openHelp(k) {
   showHelpPage(k);
   if (!$("#dlgHelp").open) $("#dlgHelp").showModal();
 }
-$("#btnHelp").onclick = () => openHelp("use");
+$("#btnHelp").onclick = () => openHelp("keys"); // keyboard shortcuts: the page that opens (Mariusz 2026-11-16)
 $("#helpPages").addEventListener("click", e => {
   const b = e.target.closest("[data-hpage]");
   if (b) showHelpPage(b.dataset.hpage);
