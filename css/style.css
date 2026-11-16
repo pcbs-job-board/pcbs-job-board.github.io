@@ -96,7 +96,7 @@ textarea:focus {
 }
 header {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* never on two lines: what doesn't fit goes into the ☰ menu (js/ui/menu.js) */
   gap: 10px;
   align-items: center;
   padding: 12px 16px;
@@ -839,6 +839,12 @@ h4.sub:first-child {
   font-size: 12.5px;
 }
 header button {
+  white-space: nowrap;
+}
+header > *:not(.spacer) {
+  flex-shrink: 0;
+}
+header h1 {
   white-space: nowrap;
 }
 @media (max-width: 1500px) {
@@ -4070,6 +4076,13 @@ textarea.pname {
   font-size: 18px;
   padding: 4px 11px;
 }
+body.hmenu-on .menubtn {
+  display: inline-block;
+}
+.careerbar .ulbtn {
+  padding: 2px 4px;
+  margin-left: 2px;
+}
 .hmenubg {
   position: fixed;
   inset: 0;
@@ -4120,9 +4133,6 @@ textarea.pname {
   }
 }
 @media (max-width: 700px) {
-  .menubtn {
-    display: inline-block;
-  }
   header {
     padding: 8px 10px;
     gap: 6px;

@@ -111,7 +111,6 @@ $("#sCopy").onclick = async () => {
     prompt("Copy this report:", storyReportText(r));
   }
 };
-$("#btnStory").onclick = () => openStoryReport();
 
 // ---- sending a report to the developer's report inbox (Google Apps Script, see tools/report-endpoint.gs) ----
 // No account needed and no address shown. The answer carries the report number.

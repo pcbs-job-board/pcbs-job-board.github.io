@@ -21,20 +21,19 @@
   </div>
   <button id="btnFlip" data-menu data-menu-label="New PC Bay build" class="flipbtn" title="New PC Bay build – fix a broken PC and sell it (career level 9+)" aria-label="New PC Bay build" hidden>📦</button>
   <div class="spacer"></div>
-  <button id="btnStory" data-menu title="Tell us about a story job the board doesn't recognise">📖 Report story job</button>
   <div class="careerbar" id="careerBar" data-menu>
     <span class="cbl">Career</span>
     <label>Lv<input type="number" id="careerLevel" min="1" max="99" placeholder="–" aria-label="Career level"></label>
     <label><input type="number" id="careerPct" min="0" max="100" placeholder="0" aria-label="Percent through the career level">%</label>
+    <button id="btnUnlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game"><span class="ulic"></span><template></template></button>
   </div>
-  <button id="btnUnlocks" data-menu data-menu-label="Career unlocks" class="ulbtn" aria-label="Career unlocks – what each level unlocks in the game"><span class="ulic"></span><template></template></button>
   <div class="notify" id="notify" hidden>
     <button id="btnNotify" class="ghost bell" title="Notifications" aria-label="Notifications" aria-haspopup="true">🔔<i class="badge"></i></button>
     <div class="notipanel" id="notiPanel" hidden></div>
   </div>
   <button id="btnPartsDb" data-menu data-menu-label="Parts database" class="iconbtn pdbbtn" title="Parts database · Will it run?" aria-label="Parts database and Will it run?">📖</button>
   <button id="btnSettings" data-menu data-menu-label="Settings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
-  <button id="btnHelp" data-menu data-menu-label="How to use it" class="helpbtn" title="How to use it · keyboard shortcuts (?)" aria-label="How to use it and keyboard shortcuts">?</button>
+  <button id="btnHelp" data-menu data-menu-label="Help" class="helpbtn" title="How to use it · keyboard shortcuts (?)" aria-label="How to use it and keyboard shortcuts">?</button>
   <button id="btnMenu" class="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="hMenu">☰</button>
 </header>
 <!-- small screens: the top bar's other buttons slide in from the side (js/ui/menu.js) -->

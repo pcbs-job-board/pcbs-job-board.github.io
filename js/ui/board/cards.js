@@ -281,7 +281,8 @@ function animSwaps(jobId, change) {
 // full keeps the full row's columns (cards don't drift to the middle); the section is at most columns × 500 px wide
 // and centred in the window. The tables use its width too (at most 1.5 × an open job).
 const QUEUE_MIN = 400,
-  QUEUE_MAX = 500;
+  QUEUE_MAX = 500,
+  QUEUE_ONE = 750; // keep in step with .tablesec max-width (css, narrow windows)
 let queueW = 0;
 function fitQueue() {
   const sec = $(".queuesec"),
@@ -293,7 +294,8 @@ function fitQueue() {
   const gap = parseFloat(getComputedStyle(q).columnGap) || 0,
     n = Math.max(1, Math.floor((room + gap) / (QUEUE_MIN + gap)));
   q.style.setProperty("--qcols", n);
-  sec.style.maxWidth = n * QUEUE_MAX + (n - 1) * gap + "px";
+  // one column (phones, narrow windows): as wide as the tables, which are one below the other up to 750 px (0.16.1)
+  sec.style.maxWidth = n === 1 ? QUEUE_ONE + "px" : n * QUEUE_MAX + (n - 1) * gap + "px";
   // an open job's real width – a table job is at most 1.5 × that (css: .tablesec)
   sec.parentElement.style.setProperty("--jobw", Math.min(QUEUE_MAX, (room - (n - 1) * gap) / n) + "px");
   q.classList.add("fit");
