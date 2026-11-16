@@ -153,20 +153,20 @@ main {
   color: var(--text);
   font-size: 13px;
 }
-/* the 3 tables: 400 px up to 1.5 × an open job's 500 px, the section always centred; one below the other (up to
-   750 px) when 3 don't fit (0.16.0) */
+/* the 3 tables in one row, each at most 1.5 × an open job's width (--jobw, set by fitQueue() in board/cards.js), the
+   section always centred; one below the other (up to 750 px) only on narrow windows (0.16.0) */
 .tablesec {
   width: 100%;
-  max-width: calc(3 * 750px + 2 * 12px);
+  max-width: calc(3 * 1.5 * var(--jobw, 500px) + 2 * 12px);
   margin-inline: auto;
 }
 #tables {
   display: grid;
-  grid-template-columns: repeat(3, minmax(400px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   align-items: start;
 }
-@media (max-width: 1268px) {
+@media (max-width: 1039px) {
   .tablesec {
     max-width: 750px;
   }
