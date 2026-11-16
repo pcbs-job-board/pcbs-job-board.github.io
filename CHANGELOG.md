@@ -3,6 +3,14 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.16.0
+- Phones and small screens: the top bar's buttons are in a ☰ menu that slides in from the side.
+- PC Bay build: RAM sticks only go together with the same size, speed and maker; a 2nd stick like that is now suggested (another model or colour of the same maker counts too). Customer jobs follow the same rule.
+- Two different graphics cards: a tip (job card and PC Bay build) to set Core Voltage to the maximum in GPU Tuner – without it 3DMark / OCCT can end in a blue screen.
+- GPU overclock suggestions name the GPU Tuner setting "Core Voltage" (was "power limit").
+- PC Bay inventory capture: text on a card's picture is no longer added as an extra part.
+- 3 OCR bugs fixed (career level under a green sign, a CPU line cut off to "1700X", the 2nd line of a GPU name).
+
 ## 0.15.4
 - New "Will it run?" list of apps and games; new objective "PC can run X (Y Spec)" gets a suggestion.
 - PC Bay: "Remove broken part" – a broken part the PC doesn't need comes out without a replacement.
