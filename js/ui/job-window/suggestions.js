@@ -68,6 +68,13 @@ let suggRun = 0;
 function renderSuggestions(force) {
   const box = $("#fSugg");
   if (!box || !rev) return;
+  if (!autoSwaps) {
+    // Settings → Automatic part swaps off: nothing is worked out
+    rev.sugg = [];
+    rev.suggKey = null;
+    box.innerHTML = `<p class="hint">💡 Automatic part swaps are off (Settings).</p>`;
+    return;
+  }
   let input = null;
   try {
     input = suggestInput();

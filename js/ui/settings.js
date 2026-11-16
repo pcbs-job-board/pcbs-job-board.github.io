@@ -1,4 +1,11 @@
 /* PCBS Job Board – Settings window: DLC / content packs, game version, career level, keyboard on/off, changelog window, help, reset. */
+// ================= settings: New Job / Edit Job window switches (0.16.1, both on by default) =================
+let autoSwaps = LS.get("pcbs.autoSwaps", true), // suggested part swaps in the New / Edit Job window
+  hiddenDetect = LS.get("pcbs.hiddenDetect", true); // hidden objectives from the email's keywords
+function setJobWindowSwitch(id, on) {
+  if (id === "autoSwaps") LS.set("pcbs.autoSwaps", (autoSwaps = !!on));
+  else LS.set("pcbs.hiddenDetect", (hiddenDetect = !!on));
+}
 // ================= settings: content packs (DLC) + rules =================
 // DLC that only add workshops, modes or music – listed for information, no parts to filter
 const DLC_NO_PARTS = [
@@ -87,6 +94,10 @@ function renderSettings() {
   if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
   $("#compactStatus").checked = compactStatus;
   $("#compactSwaps").checked = compactSwaps;
+  $("#autoSwaps").checked = autoSwaps;
+  $("#hiddenDetect").checked = hiddenDetect;
+  $("#btnRules").disabled = !hiddenDetect;
+  $("#btnRules").title = hiddenDetect ? "" : "Turn on hidden objective detection to edit the keyword rules";
   $("#dbInfo").textContent = m.counts
     ? `${Object.values(m.counts).reduce((a, b) => a + b, 0)} parts in the database (built ${m.built}). ${INDEX.filter(p => !p.hist).length} shown with your current settings.`
     : "Parts database not loaded.";
@@ -95,18 +106,40 @@ $("#btnSettings").onclick = () => {
   renderSettings();
   $("#dlgSettings").showModal();
 };
-// ❓ How to use it – the pictures are only downloaded the first time the window is opened
-$("#btnHelp").onclick = () => {
-  document.querySelectorAll("#dlgHelp img[data-src]").forEach(i => {
-    i.src = i.dataset.src;
-    i.removeAttribute("data-src");
-  });
-  $("#dlgHelp").showModal();
+// ❓ Help window: "How to use it" + keyboard shortcuts (0.16.1), one page per <section data-hsec> – opened by the
+// ? button (How to use it) and the ? key (keyboard shortcuts). Pictures are only downloaded the first time a page shows.
+function showHelpPage(k) {
+  const secs = [...document.querySelectorAll("#dlgHelp [data-hsec]")];
+  if (!secs.some(x => x.dataset.hsec === k)) k = secs[0].dataset.hsec;
+  $("#helpPages").innerHTML = secs
+    .map(
+      x =>
+        `<button class="pdbpage${x.dataset.hsec === k ? " on" : ""}" data-hpage="${esc(x.dataset.hsec)}" aria-pressed="${x.dataset.hsec === k}">${esc(x.dataset.htitle)}</button>`
+    )
+    .join("");
+  for (const x of secs) {
+    x.hidden = x.dataset.hsec !== k;
+    if (!x.hidden)
+      x.querySelectorAll("img[data-src]").forEach(i => {
+        i.src = i.dataset.src;
+        i.removeAttribute("data-src");
+      });
+  }
+  if (k === "keys") $("#keysBody").innerHTML = keysHelpHtml();
   $("#dlgHelp .dlg-b").scrollTop = 0;
-};
+}
+function openHelp(k) {
+  showHelpPage(k);
+  if (!$("#dlgHelp").open) $("#dlgHelp").showModal();
+}
+$("#btnHelp").onclick = () => openHelp("use");
+$("#helpPages").addEventListener("click", e => {
+  const b = e.target.closest("[data-hpage]");
+  if (b) showHelpPage(b.dataset.hpage);
+});
 $("#btnKeysFromSettings").onclick = () => {
   $("#dlgSettings").close();
-  openKeysHelp();
+  openHelp("keys");
 };
 // career level + % in the top bar; the tooltip says what it does and how many parts are unlocked
 function careerInfo() {
@@ -166,6 +199,11 @@ $("#resetGo").onclick = () => {
 $("#dlgSettings").addEventListener("change", e => {
   if (e.target.id === "keysToggle") {
     setKeys(e.target.checked);
+    return;
+  }
+  if (e.target.id === "autoSwaps" || e.target.id === "hiddenDetect") {
+    setJobWindowSwitch(e.target.id, e.target.checked);
+    renderSettings();
     return;
   }
   if (e.target.id === "compactStatus" || e.target.id === "compactSwaps") {

@@ -11,7 +11,7 @@ const KEYMAP = [
       ["U", "Career unlocks"],
       ["L", "📜 Changelog – what's new"],
       ["S", "Settings"],
-      ["?", "Show this list"],
+      ["?", "Help – How to use it and this list"],
       ["Esc", "Close window · close a popup · leave a text field"],
     ],
   },
@@ -524,10 +524,8 @@ document.addEventListener("mousedown", e => {
   }
 });
 
-function openKeysHelp() {
-  $("#keysBody").innerHTML = keysHelpHtml();
-  $("#dlgKeys").showModal();
-}
+// the ? key: the Help window on its keyboard shortcuts page (js/ui/settings.js)
+const openKeysHelp = () => openHelp("keys");
 function setKeys(v) {
   keysOn = v;
   LS.set("pcbs.keys", v);
@@ -546,5 +544,4 @@ render = function () {
   markSel();
   restoreFocus();
 };
-$("#btnKeys").onclick = openKeysHelp;
 setKeys(keysOn);

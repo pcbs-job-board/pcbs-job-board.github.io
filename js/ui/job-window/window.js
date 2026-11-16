@@ -264,6 +264,7 @@ async function runOcr() {
     const emails = rev.shots.filter(s => s.kind === "email" && s.text).map(s => ({ text: s.text, conf: s.conf }));
     const keep = { extra: $("#fExtra")?.value, table: $("#fTable")?.value };
     const p = parseEmail(emails.length > 1 ? mergeTexts(emails) : text, rules, smart);
+    if (!hiddenDetect) p.hidden = []; // Settings → Hidden objective detection off
     p.hidden.forEach(h => {
       if (h.brand && !h.avoid) {
         const c = brandCategories(h.brand);
@@ -541,7 +542,7 @@ function renderForm() {
         .join("")}</select></div></div>
       ${storyBanner(d)}
       <div class="objhid"><div><label>Objectives <small>(untick wrong ones)</small></label><div id="objList">${objRowsHtml(d.objectives || [])}</div><button class="ghost padd" id="objAdd" type="button">＋ add objective</button><textarea id="fObj" hidden>${esc((d.objectives || []).join("\n"))}</textarea></div>
-      <div><label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"${h.because && h.because.length ? ` title="because: “${esc(h.because.join("”, “"))}”"` : ""}><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : "None detected."}</div>`}</div>${(d.hidden || []).length ? `<div class="hint hidnote">Guessed from the email's wording – untick any that don't apply.</div>` : ""}</div></div>
+      <div><label>${isEdit ? "Hidden objectives (untick to remove)" : "Hidden objectives found in email"}${d.story && !isEdit ? " <small>(story job – not ticked)</small>" : ""}</label><div id="fHidden">${(d.hidden || []).length ? d.hidden.map((h, i) => `<div class="hidrow"${h.because && h.because.length ? ` title="because: “${esc(h.because.join("”, “"))}”"` : ""}><input type="checkbox" ${h.keep || !d.story ? "checked" : ""} data-h="${i}"><div>${esc(h.task)}${h.because && h.because.length ? `<br><small>because: “${esc(h.because.join("”, “"))}”</small>` : ""}</div></div>`).join("") : `<div class="hint">${isEdit ? "None." : hiddenDetect ? "None detected." : "Detection is off (Settings)."}</div>`}</div>${(d.hidden || []).length ? `<div class="hint hidnote">Guessed from the email's wording – untick any that don't apply.</div>` : ""}</div></div>
       <label>Extra tasks (one per line)</label><textarea id="fExtra" rows="2">${esc((d.extra || []).join("\n"))}</textarea>
       ${d.body ? `<details class="emailtxt"><summary>Email text</summary><div class="rawtxt">${esc(d.body)}</div></details>` : ""}`;
     f.innerHTML = `${parts}

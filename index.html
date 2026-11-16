@@ -33,9 +33,8 @@
     <div class="notipanel" id="notiPanel" hidden></div>
   </div>
   <button id="btnPartsDb" data-menu data-menu-label="Parts database" class="iconbtn pdbbtn" title="Parts database · Will it run?" aria-label="Parts database and Will it run?">📖</button>
-  <button id="btnKeys" data-menu data-menu-label="Keyboard shortcuts" class="keysbtn" title="Keyboard shortcuts (?)">⌨</button>
   <button id="btnSettings" data-menu data-menu-label="Settings" class="iconbtn" title="Settings (S)" aria-label="Settings">⚙️</button>
-  <button id="btnHelp" data-menu data-menu-label="How to use it" class="helpbtn" title="How to use it" aria-label="How to use it">?</button>
+  <button id="btnHelp" data-menu data-menu-label="How to use it" class="helpbtn" title="How to use it · keyboard shortcuts (?)" aria-label="How to use it and keyboard shortcuts">?</button>
   <button id="btnMenu" class="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="hMenu">☰</button>
 </header>
 <!-- small screens: the top bar's other buttons slide in from the side (js/ui/menu.js) -->
@@ -104,15 +103,16 @@
 <dialog id="dlgSettings" style="max-width:660px">
   <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
-    <h4 class="sub">Hidden objectives</h4>
-    <p class="hint">Keywords in customer emails that add hidden tasks (dusty → compressed air, slow → antivirus…).</p>
-    <button id="btnRules">Edit keyword rules…</button>
     <h4 class="sub">Screen areas</h4>
     <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
     <div id="areaStatus" class="areastatus"></div>
     <h4 class="sub">Keyboard</h4>
     <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
     <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+    <h4 class="sub">New Job and Edit Job windows</h4>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="autoSwaps"><span><b>Automatic part swaps</b><br><small>Suggested part swaps for the objectives, worked out as soon as a job is read. Off: you add every swap yourself.</small></span></label>
+    <label class="dlcrow"><input type="checkbox" class="switch" id="hiddenDetect"><span><b>Hidden objective detection</b><br><small>Keywords in customer emails add hidden tasks (dusty → compressed air, slow → antivirus…). Off: no hidden objectives are added.</small></span></label>
+    <button id="btnRules">Edit keyword rules…</button>
     <h4 class="sub">Job cards</h4>
     <label class="dlcrow"><input type="checkbox" class="switch" id="compactStatus"><span><b>Compact mode for job status</b><br><small>On: one row of small icons – details when you point at one. Off: every status on its own line with its values.</small></span></label>
     <label class="dlcrow"><input type="checkbox" class="switch" id="compactSwaps"><span><b>Compact mode for part swaps</b><br><small>On: up to 3 swaps still to do, the rest behind "show more". Off: every part swap, all the time.</small></span></label>
@@ -172,11 +172,6 @@
   </div>
 </dialog>
 
-<!-- Keyboard shortcuts dialog -->
-<dialog id="dlgKeys" style="max-width:560px">
-  <div class="dlg-h"><h3>⌨ Keyboard shortcuts</h3><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b" id="keysBody"></div>
-</dialog>
 
 <!-- 📖 Parts database – every part of a category, filtered by name -->
 <dialog id="dlgPartsDb" class="pdbdlg">
@@ -200,8 +195,11 @@
 
 <!-- How to use it (pictures load only when the window is opened) -->
 <dialog id="dlgHelp" class="helpdlg">
-  <div class="dlg-h"><h3>❓ How to use it</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
+  <div class="dlg-h"><h3>❓ Help</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
+  <!-- one <section data-hsec> per page; the page buttons are made from them (js/ui/settings.js) – a new feature page is just a new section -->
+  <div id="helpPages" class="pdbpages helppages" role="toolbar" aria-label="Help pages"></div>
   <div class="dlg-b help">
+    <section class="hsec" data-hsec="use" data-htitle="❓ How to use it">
     <img class="hbanner" data-src="img/help/banner.webp" width="1100" height="385" alt="PCBS Job Board – reads job emails, spots hidden objectives, plans the parts and helps you flip PC Bay builds for profit">
 
     <h4>1. Set your career level</h4>
@@ -233,6 +231,8 @@
     <h4>7. Finish</h4>
     <p>Press <b>✔ Job completed</b> when the job is done.</p>
 
+    </section>
+    <section class="hsec" data-hsec="pcbay" data-htitle="📦 PC Bay builds" hidden>
     <h4>📦 PC Bay builds (career level 9+)</h4>
     <p>Bought a broken PC on PC Bay? Click <b>📦</b> in the top bar. The build gets its own tile and can be saved and minimised at any time.</p>
     <p><b>1. Parts</b> – look at the PC in the game, open its <b>Resale Value</b> window and capture it. The parts and their values are read, and a part worth far less than it should be is marked as broken.</p>
@@ -244,12 +244,18 @@
     <p><b>4. Profit</b> – a short checklist in the right order: boot to the OS, XMP, overclocking, 3DMark – with the expected score and sale price. Press <b>✔ Finish build</b> once it's sold.</p>
     <div class="hpair"><img data-src="img/help/pcbay-profit.webp" width="1100" height="624" alt="Step 4: the profit checklist"><img data-src="img/help/pcbay-tile.webp" width="512" height="321" alt="A PC Bay build tile"></div>
 
+    </section>
+    <section class="hsec" data-hsec="tweak" data-htitle="⚙️ Settings" hidden>
     <h4>Tweak it</h4>
-    <p>In <b>⚙️ Settings</b> you'll find the hidden objective rules, screen areas, keyboard shortcuts, DLC &amp; promo parts, game version, backup and reset.</p>
+    <p>In <b>⚙️ Settings</b> you'll find the screen areas, keyboard shortcuts, automatic part swaps, hidden objective detection and its keyword rules, DLC &amp; promo parts, game version, backup and reset.</p>
     <p>Prefer the keyboard? Pick a job with the arrow keys, act on it with single keys (1 2 3, E, P, R, N, D…) or press <b>Enter</b> to go into the card; <b>B</b> opens the 📖 parts database. Press <b>?</b> for the full list.</p>
     <div class="hpair"><img data-src="img/help/rules.webp" width="1100" height="784" alt="The hidden objective rules table"><img data-src="img/help/settings.webp" width="992" height="1134" alt="The Settings window"></div>
     <img data-src="img/help/unlocks.webp" width="840" height="903" alt="The career unlocks list" style="max-width:420px">
 
+    </section>
+    <section class="hsec" data-hsec="keys" data-htitle="⌨ Keyboard shortcuts" hidden>
+      <div id="keysBody"></div>
+    </section>
     <p class="htip">💡 Text reading is never 100% perfect – always give the new job a quick look before adding it.</p>
   </div>
 </dialog>

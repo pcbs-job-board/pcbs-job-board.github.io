@@ -1110,13 +1110,6 @@ ul.mainobj li:hover .x {
     0 0 0 6px #33b5f022,
     0 0 22px #33b5f055;
 }
-.keysbtn {
-  font-size: 16px;
-  padding: 4px 10px;
-}
-body.keys-off .keysbtn {
-  opacity: 0.4;
-}
 table.keys {
   width: 100%;
   border-collapse: collapse;
@@ -1870,6 +1863,11 @@ header .capsplit .capplus {
 dialog.helpdlg {
   width: min(860px, 96vw);
   max-width: none;
+}
+.helppages {
+  flex-wrap: wrap;
+  padding: 10px 16px 8px;
+  margin: 0;
 }
 .help h4 {
   margin: 20px 0 6px;
