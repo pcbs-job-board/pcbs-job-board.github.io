@@ -20,6 +20,7 @@ const KEYMAP = [
     keys: [
       ["← → ↑ ↓", "Move between job cards (tables and open jobs)"],
       ["Home / End", "First / last job"],
+      ["Tab / Shift + Tab", "Next / previous job card (never into a card – Enter goes in)"],
     ],
   },
   {
@@ -44,6 +45,7 @@ const KEYMAP = [
     keys: [
       ["↑ ↓", "Previous / next line (objective, task, swap, Status tiles, button…)"],
       ["← →", "Previous / next item on the line · change a dropdown that is alone on its line"],
+      ["Tab / Shift + Tab", "Next / previous item in the card, top to bottom – after the last one back to the first"],
       [
         "Space / Enter",
         "Tick the box · press the button · show a Status tile's details (Enter first goes into the card after a mouse click)",
@@ -329,6 +331,39 @@ function inCardKey(e) {
   return false;
 }
 
+// Tab (Mariusz 2026-11-18): outside job focus it moves between job cards and never into one – only Enter goes in;
+// in job focus it goes through every control of the card (top to bottom, left to right) and wraps round at the end.
+// Handled here instead of by the browser, which also makes Safari stop on buttons (Edit, Job completed)
+function cardCtrls(card) {
+  return cardRows(card).flat();
+}
+function tabKey(e) {
+  const t = e.target,
+    back = e.shiftKey,
+    fc = focusJob && document.querySelector(`.job[data-job="${focusJob}"]`);
+  if (fc && !fc.classList.contains("flip")) {
+    const list = cardCtrls(fc);
+    if (!list.length) return;
+    const i = list.indexOf(t);
+    let n;
+    if (i >= 0) n = i + (back ? -1 : 1);
+    else {
+      // not one of the card's lines (✕ button, nothing focused…): the control after / before it, else the first / last
+      const after = fc.contains(t) ? list.findIndex(x => t.compareDocumentPosition(x) & 4 /* following */) : -1;
+      n = after < 0 ? (back ? -1 : 0) : back ? after - 1 : after;
+    }
+    focusCtrl(list[(n + list.length) % list.length]);
+    return;
+  }
+  const list = cards();
+  if (!list.length) return;
+  if (t.closest?.(".job") || t.closest?.("#stip")) t.blur();
+  document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow"));
+  const i = list.findIndex(c => c.dataset.job === selJob);
+  selectCard(i < 0 ? list[back ? list.length - 1 : 0] : list[(i + (back ? -1 : 1) + list.length) % list.length]);
+}
+let tabbing = false; // the browser's own Tab move (from the top bar) – see the focusin handler below
+
 document.addEventListener("keydown", e => {
   if (!keysOn || e.defaultPrevented) return;
   const t = e.target,
@@ -367,6 +402,17 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (anyDlg) return;
+  if (e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    // the top bar keeps the browser's Tab; job cards and the empty page use the job Tab (tabKey)
+    if (t.closest?.("header, #toast") && !focusJob) {
+      tabbing = true;
+      setTimeout(() => (tabbing = false), 0);
+      return;
+    }
+    e.preventDefault();
+    tabKey(e);
+    return;
+  }
   // Alt + ↑ / ↓ on a part swap: change its place in the list (its compatibility priority)
   if (e.altKey && !e.ctrlKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
     const sw = t.closest?.(".swap"),
@@ -514,6 +560,13 @@ document.addEventListener(
 document.addEventListener("focusin", e => {
   const c = e.target.closest?.(".job");
   if (!c || !keysOn) return;
+  if (tabbing && focusJob !== c.dataset.job) {
+    // Tab from the last top-bar button: the card is selected, its controls stay out of reach until Enter
+    tabbing = false;
+    e.target.blur();
+    selectCard(c);
+    return;
+  }
   if (selJob !== c.dataset.job) {
     selJob = c.dataset.job;
     markSel();
