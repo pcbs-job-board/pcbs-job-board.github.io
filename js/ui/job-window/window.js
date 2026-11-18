@@ -534,7 +534,7 @@ function renderForm() {
       <div class="grid3"><div><label>Labour $</label><input id="fLabour" type="number" value="${d.labour ?? ""}"></div><div><label>Budget $</label><input id="fBudget" type="number" value="${d.budget ?? ""}"></div><div><label>Deadline</label><input id="fDeadline" value="${esc(d.deadline)}"></div></div>
       <div class="grid2 jr-lvl"><div><label>Req. level</label><input id="fLevel" type="number" min="1" max="99" value="${d.level ?? ""}"></div><div><label>Req. stars</label><select id="fStars"><option value="">—</option>${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}" ${d.stars === n ? "selected" : ""}>${n ? "★".repeat(n) : "none"}</option>`).join("")}</select></div></div>
       <label class="dlcrow storyrow"><input type="checkbox" class="switch" id="fStory" ${d.story ? "checked" : ""}><span><b>📖 Story job</b><br><small>Career story customer: no hidden objectives, and the budget doesn't count unless an objective mentions it.</small></span></label>
-      <div class="grid2 jr-sus"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[
+      <div class="${benches ? "grid2 " : ""}jr-sus"><div><label>Customer suspects</label><input id="fSuspect" value="${esc(d.suspect)}" placeholder="(often wrong – verify)"></div><div ${benches ? "" : "hidden"}><label>Put on</label><select id="fTable"><option value="0">Open jobs</option>${[
         1, 2, 3,
       ]
         .map(n => {

@@ -45,7 +45,8 @@ function render() {
   }
 }
 function renderBoard() {
-  $("#tables").innerHTML = [1, 2, 3]
+  document.body.classList.toggle("nobench", !benches);
+  $("#tables").innerHTML = (benches ? [1, 2, 3] : [])
     .map(n => {
       const j = jobs.find(j => j.table === n);
       return `<section class="slot" style="--c:${TCOL[n]}" data-table="${n}"><h2>Table ${n}<small>${j ? "in progress" : "free"}</small></h2>
@@ -54,7 +55,7 @@ function renderBoard() {
     .join("");
   // soonest in-game deadline first; jobs without a deadline keep their order at the end
   const q = jobs
-    .filter(j => !j.table)
+    .filter(j => !j.table || !benches)
     .map((j, i) => ({ j, i, d: deadlineValue(j.deadline) }))
     .sort((a, b) => a.d - b.d || a.i - b.i)
     .map(x => x.j);
@@ -65,7 +66,6 @@ function renderBoard() {
 }
 function jobCard(j) {
   if (isFlip(j)) return flipCard(j); // 📦 PC Bay build – own tile (js/ui/flip/)
-  const busy = n => jobs.some(o => o.table === n && o !== j);
   const hid = j.tasks.filter(k => k.src === "hid"),
     main = j.tasks.filter(k => k.src === "obj"),
     found = j.tasks.filter(k => k.src === "add");
@@ -145,7 +145,7 @@ function jobCard(j) {
     ${focused ? `<div class="focusnote" aria-live="polite">Job focus · <kbd>Esc</kbd> to leave</div>` : ""}
     <div class="top"><div class="who"><b>${esc(j.sender || "Unknown customer")}</b><small>${esc(j.subject)}</small></div><div class="topbtns">${hintBtn(j)}</div></div>
     <div class="chips">${j.labour != null ? `<span class="chip">Labour $${j.labour.toLocaleString()}</span>` : ""}${j.budget != null ? `<span class="chip">Budget $${j.budget.toLocaleString()}</span>` : ""}${j.level != null ? `<span class="chip">Lv ${j.level}</span>` : ""}${j.stars ? `<span class="chip stars" role="img" aria-label="Requires ${j.stars} star${j.stars === 1 ? "" : "s"}" title="Requires ${j.stars} star${j.stars === 1 ? "" : "s"}">${"★".repeat(Math.min(5, j.stars))}</span>` : ""}</div>
-    <div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
+    ${tableBtns(j)}
     ${mainHtml}
     ${statusHtml(j, { budgetHtml, budgetState, clashes, compact: statusCompact })}
     ${hidHtml}
@@ -170,6 +170,26 @@ const SWAP_SHOW = 3;
 // Settings (0.15.0): compact Status (icon tiles) and compact Part swaps (up to SWAP_SHOW open ones) – both on by default
 let compactStatus = LS.get("pcbs.compactStatus", true),
   compactSwaps = LS.get("pcbs.compactSwaps", true);
+// Settings (0.17.0): Workbenches – the three tables at the top + T1 T2 T3 on the cards (and the 1 2 3 0 keys).
+// Turned off, every job on a table goes back to Open jobs, so nothing is hidden.
+let benches = LS.get("pcbs.workbenches", true);
+function setBenches(on) {
+  LS.set("pcbs.workbenches", (benches = !!on));
+  let moved = 0;
+  if (!benches)
+    jobs.forEach(j => {
+      if (j.table) ((j.table = 0), moved++);
+    });
+  save();
+  render();
+  if (moved) toast(`Workbenches off – ${moved} job${moved > 1 ? "s" : ""} moved back to Open jobs`);
+}
+// the T1 T2 T3 buttons of a job card / PC Bay build card (none while Workbenches are off)
+function tableBtns(j) {
+  if (!benches) return "";
+  const busy = n => jobs.some(o => o.table === n && o !== j);
+  return `<div class="tables">${[1, 2, 3].map(n => `<button class="${j.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${j.id}" data-n="${n}" title="${j.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>`;
+}
 function setCompact(k, v) {
   if (k === "status") LS.set("pcbs.compactStatus", (compactStatus = !!v));
   else LS.set("pcbs.compactSwaps", (compactSwaps = !!v));

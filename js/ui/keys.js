@@ -78,6 +78,8 @@ function keysHelpHtml() {
   return KEYMAP.map(
     g =>
       `<h4 class="sub">${esc(g.group)}</h4><table class="keys">${g.keys
+        .filter(([k]) => benches || !["1 / 2 / 3", "0"].includes(k)) // Workbenches off: no table keys
+        .map(([k, d]) => [k, benches ? d : d.replace("1 2 3 0, ", "")])
         .map(([k, d]) =>
           !k
             ? `<tr><td colspan="2" class="hint">${esc(d)}</td></tr>`
@@ -435,6 +437,8 @@ document.addEventListener("keydown", e => {
   }
   if (!j) return;
   switch (true) {
+    case !benches && ["1", "2", "3", "0"].includes(k):
+      return; // Workbenches off (Settings): no tables to put a job on
     case ["1", "2", "3"].includes(k):
       return act(() => {
         moveToTable(j, +k);

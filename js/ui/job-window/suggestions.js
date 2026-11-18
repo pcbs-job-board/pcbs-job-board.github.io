@@ -261,7 +261,7 @@ function saveReview() {
       ocLater: ocLaterOf(d) || !!d.ocLater,
       newPc: !!d.newPc,
     };
-    const table = +$("#fTable").value;
+    const table = benches ? +$("#fTable").value || 0 : 0; // Workbenches off (Settings): always Open jobs
     let target;
     if (rev.editJob) {
       target = job(rev.editJob.id);

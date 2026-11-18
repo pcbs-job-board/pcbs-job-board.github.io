@@ -21,13 +21,12 @@ $("#btnFlip").onclick = () => {
 };
 // ---------- tile ----------
 function flipCard(f) {
-  const st = flipState(f),
-    busy = n => jobs.some(o => o.table === n && o !== f);
+  const st = flipState(f);
   return `<article class="job flip" draggable="true" data-job="${f.id}" style="--c:${TCOL[f.table || 0]}">
     <div class="fliptag">📦 PC Bay build</div>
     <div class="top"><div class="who"><b>${esc(flipName(f))}</b><small>Step ${f.step} of 4: ${FLIP_STEPS[f.step - 1]}${st.unfixed.length ? ` · ${st.unfixed.length} broken part${st.unfixed.length > 1 ? "s" : ""} to fix` : ""}</small></div><div class="topbtns">${hintBtn(f)}</div></div>
     <div class="chips"><span class="chip">Bought ${money(st.start)}</span><span class="chip">Now ${money(st.value)}</span>${st.estValue != null && !st.scored ? `<span class="chip" title="${EST_NOTE}">Sale ~${money(st.estValue)}</span>` : ""}${st.profit != null ? `<span class="chip ${st.profit >= 0 ? "profit" : "loss"}">${st.scored ? "Profit" : "Profit ~"} ${st.profit >= 0 ? "+" : ""}${money(st.profit)}</span>` : ""}</div>
-    <div class="tables">${[1, 2, 3].map(n => `<button class="${f.table === n ? "sel" : ""} ${busy(n) ? "busy" : ""}" style="--c:${TCOL[n]}" data-act="table" data-id="${f.id}" data-n="${n}" title="${f.table === n ? "Back to open jobs" : busy(n) ? "Table " + n + " is busy – swap jobs" : "Move to table " + n}">T${n}</button>`).join("")}</div>
+    ${tableBtns(f)}
     <div class="foot"><button class="primary" data-flip="open" data-id="${f.id}">📦 Open build</button><button data-flip="finish" data-id="${f.id}" title="Remove this build and its saved inventory">✔ Finish</button></div>
   </article>`;
 }

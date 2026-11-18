@@ -92,6 +92,7 @@ function renderSettings() {
   $("#appVersion").href = changelogUrl();
   $("#appVersion").onclick = openChangelog;
   if (typeof keysOn !== "undefined") $("#keysToggle").checked = keysOn;
+  $("#benchToggle").checked = benches;
   $("#compactStatus").checked = compactStatus;
   $("#compactSwaps").checked = compactSwaps;
   $("#autoSwaps").checked = autoSwaps;
@@ -206,6 +207,10 @@ $("#dlgSettings").addEventListener("change", e => {
   if (e.target.id === "autoSwaps" || e.target.id === "hiddenDetect") {
     setJobWindowSwitch(e.target.id, e.target.checked);
     renderSettings();
+    return;
+  }
+  if (e.target.id === "benchToggle") {
+    setBenches(e.target.checked);
     return;
   }
   if (e.target.id === "compactStatus" || e.target.id === "compactSwaps") {

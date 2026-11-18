@@ -155,6 +155,9 @@ main {
 }
 /* the 3 tables in one row, each at most 1.5 × an open job's width (--jobw, set by fitQueue() in board/cards.js), the
    section always centred; one below the other (up to 750 px) only on narrow windows (0.16.0) */
+body.nobench .tablesec {
+  display: none; /* Settings → Workbenches off */
+}
 .tablesec {
   width: 100%;
   max-width: calc(3 * 1.5 * var(--jobw, 500px) + 2 * 12px);
