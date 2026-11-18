@@ -562,7 +562,9 @@ function suggestSwaps(job, opts = {}) {
       return ix && ctx.brands.some(b => brandMatch(ix, b));
     };
     const fanParts = CATS.flatMap(cat =>
-      cat === "Case" || broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : own.filter(p => p.cat === cat)
+      cat === "Case" || broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job))
+        ? []
+        : own.filter(p => p.cat === cat)
     ).filter(isFan); // never the case – it can't be replaced
     const mine = fanParts.filter(p => !planned(p));
     for (const p of fanParts.filter(planned))
