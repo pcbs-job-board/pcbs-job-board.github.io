@@ -3,6 +3,16 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.17.0
+- Story jobs: a new list of 128 career story emails (from research), with a "📨 Story jobs" page in the Game Wiki (details behind a spoiler warning).
+- PC Bay build card shows what its step needs: parts as bought, broken parts and repair options, the PC now with the suggested changes, the finished PC with the steps to do in the game.
+- Settings: "Workbenches" switch – off hides the three tables and the T1 T2 T3 buttons, every job stays in Open jobs.
+- A CPU, CPU cooler, CPU block or motherboard swap adds "Apply thermal paste on the CPU" to Found while working.
+- New Job, Edit Job, PC Bay build, Game Wiki, Settings and Help windows all have the same size (full screen on phones).
+- Story job report sends every field of the email (sender, subject, level, labour, budget, text, objectives).
+- The customer's case is never suggested as a swap.
+- 1 OCR bug fixed (PC Stats part name on two lines).
+
 ## 0.16.1
 - 📖 The parts database window is now the "Game Wiki", with a new "Will it run?" page – every app and game with its minimum, recommended and 4K spec, DLC ones marked.
 - Settings: switches for automatic part swaps and hidden objective detection (keyword rules only with detection on).
