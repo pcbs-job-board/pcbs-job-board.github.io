@@ -3,6 +3,10 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.17.1
+- Tab key: outside a card it moves from job card to job card (never into one – Enter goes in); inside a card it goes through every item, top to bottom, and wraps round from the last to the first.
+- Tab now reaches the Edit and Job completed buttons in Safari too.
+
 ## 0.17.0
 - Story jobs: a new list of 128 career story emails (from research), with a "📨 Story jobs" page in the Game Wiki (details behind a spoiler warning).
 - PC Bay build card shows what its step needs: parts as bought, broken parts and repair options, the PC now with the suggested changes, the finished PC with the steps to do in the game.
