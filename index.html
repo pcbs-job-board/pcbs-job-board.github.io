@@ -57,7 +57,7 @@
 <div class="ac" id="ac" hidden></div>
 
 <!-- 📦 PC Bay build -->
-<dialog id="dlgFlip" class="flipdlg">
+<dialog id="dlgFlip" class="flipdlg bigwin">
   <div class="dlg-h"><h3 style="flex:none">📦 PC Bay build</h3><div class="flipsteps"></div><button class="ghost flipmin" title="Save and minimize">✕</button></div>
   <div class="dlg-b flipwrap">
   <div class="flipsum"></div>
@@ -68,7 +68,7 @@
 </dialog>
 
 <!-- Review dialog -->
-<dialog id="dlgReview">
+<dialog id="dlgReview" class="bigwin">
   <div class="dlg-h"><h3 id="revTitle">New job from capture</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b">
     <div class="review">
@@ -99,40 +99,56 @@
 </dialog>
 
 <!-- Settings dialog -->
-<dialog id="dlgSettings" style="max-width:660px">
+<dialog id="dlgSettings" class="bigwin setdlg">
   <div class="dlg-h"><h3>Settings</h3><a id="appVersion" class="verlink" target="_blank" rel="noopener" title="What's new – changelog"></a><button class="ghost" data-close>✕</button></div>
-  <div class="dlg-b">
-    <h4 class="sub">Screen areas</h4>
-    <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
-    <div id="areaStatus" class="areastatus"></div>
-    <h4 class="sub">Keyboard</h4>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
-    <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
-    <h4 class="sub">New Job and Edit Job windows</h4>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="autoSwaps"><span><b>Automatic part swaps</b><br><small>Suggested part swaps for the objectives, worked out as soon as a job is read. Off: you add every swap yourself.</small></span></label>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="hiddenDetect"><span><b>Hidden objective detection</b><br><small>Keywords in customer emails add hidden tasks (dusty → compressed air, slow → antivirus…). Off: no hidden objectives are added.</small></span></label>
-    <button id="btnRules">Edit keyword rules…</button>
-    <h4 class="sub">Job cards</h4>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="benchToggle"><span><b>Workbenches</b><br><small>On: three tables at the top of the board – put a job on one with T1 T2 T3 on its card (or the 1 2 3 keys). Off: no tables, every job stays in Open jobs.</small></span></label>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="compactStatus"><span><b>Compact mode for job status</b><br><small>On: one row of small icons – details when you point at one. Off: every status on its own line with its values.</small></span></label>
-    <label class="dlcrow"><input type="checkbox" class="switch" id="compactSwaps"><span><b>Compact mode for part swaps</b><br><small>On: up to 3 swaps still to do, the rest behind "show more". Off: every part swap, all the time.</small></span></label>
-    <p class="hint">Going into a job with the keyboard (Enter) always shows both in full – Esc goes back.</p>
-    <h4 class="sub">DLC &amp; promo parts</h4>
-    <div id="dlcList"></div>
-    <p class="hint" id="dlcOther"></p>
-    <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
-    <h4 class="sub">Game version</h4>
-    <select id="gameVersion" style="width:100%"></select>
-    <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
-    <p class="hint" id="dbInfo"></p>
-    <h4 class="sub">Backup</h4>
-    <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
-    <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
-    <input type="file" id="importFile" accept=".json" hidden>
-    <h4 class="sub danger">Reset</h4>
-    <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
-    <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
-  </div>
+  <div class="dlg-b"><div class="setcols">
+    <section class="sgrp">
+      <h4 class="sub">Screen areas</h4>
+      <p class="hint">Where the text is read from. Set up automatically on your first email capture and your first PC parts capture.</p>
+      <div id="areaStatus" class="areastatus"></div>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">Keyboard</h4>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="keysToggle"><span><b>Keyboard shortcuts</b><br><small>Pick a job with the arrow keys and act on it with single keys. Never active while you type in a field.</small></span></label>
+      <button id="btnKeysFromSettings">⌨ Show all shortcuts</button>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">New Job and Edit Job windows</h4>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="autoSwaps"><span><b>Automatic part swaps</b><br><small>Suggested part swaps for the objectives, worked out as soon as a job is read. Off: you add every swap yourself.</small></span></label>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="hiddenDetect"><span><b>Hidden objective detection</b><br><small>Keywords in customer emails add hidden tasks (dusty → compressed air, slow → antivirus…). Off: no hidden objectives are added.</small></span></label>
+      <button id="btnRules">Edit keyword rules…</button>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">Job cards</h4>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="benchToggle"><span><b>Workbenches</b><br><small>On: three tables at the top of the board – put a job on one with T1 T2 T3 on its card (or the 1 2 3 keys). Off: no tables, every job stays in Open jobs.</small></span></label>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="compactStatus"><span><b>Compact mode for job status</b><br><small>On: one row of small icons – details when you point at one. Off: every status on its own line with its values.</small></span></label>
+      <label class="dlcrow"><input type="checkbox" class="switch" id="compactSwaps"><span><b>Compact mode for part swaps</b><br><small>On: up to 3 swaps still to do, the rest behind "show more". Off: every part swap, all the time.</small></span></label>
+      <p class="hint">Going into a job with the keyboard (Enter) always shows both in full – Esc goes back.</p>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">DLC &amp; promo parts</h4>
+      <div id="dlcList"></div>
+      <p class="hint" id="dlcOther"></p>
+      <p class="hint note-console">ℹ️ Console editions (PS4/PS5, Xbox, Switch) don't have every part from the PC version – some parts in the suggestions may not exist in your game.</p>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">Game version</h4>
+      <select id="gameVersion" style="width:100%"></select>
+      <p class="hint">Parts added in later updates are hidden from suggestions. Numbering follows the PC (Steam) updates – console editions use their own version numbers, so if you play on console, keep the latest version.</p>
+      <p class="hint" id="dbInfo"></p>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub">Backup</h4>
+      <p class="hint">Everything is stored only in this browser. Save a backup file to keep your jobs and settings safe or move them to another browser.</p>
+      <div class="btnrow"><button id="btnExport">⬇ Export backup</button><button id="btnImport">⬆ Import backup</button></div>
+      <input type="file" id="importFile" accept=".json" hidden>
+    </section>
+    <section class="sgrp">
+      <h4 class="sub danger">Reset</h4>
+      <p class="hint">Deletes all jobs, puts every setting back to the default, forgets the screen areas and disconnects the screen – as if you opened the tool for the first time.</p>
+      <button id="btnResetAll" class="danger">🗑 Reset all data…</button>
+    </section>
+  </div></div>
 </dialog>
 
 <!-- Story job report -->
@@ -176,7 +192,7 @@
 
 
 <!-- 📖 Game Wiki – parts database (every part of a category, filtered by name) + Will it run? + Story jobs -->
-<dialog id="dlgPartsDb" class="pdbdlg">
+<dialog id="dlgPartsDb" class="pdbdlg bigwin">
   <div class="dlg-h"><h3>📖 Game Wiki</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
   <div class="dlg-b">
     <div id="pdbPages" class="pdbpages" role="toolbar" aria-label="Pages"><button class="pdbpage on" data-pdbpage="parts" aria-pressed="true"><svg class="cpuic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor" stroke="none"/><path d="M9 2.5v3M12 2.5v3M15 2.5v3M9 18.5v3M12 18.5v3M15 18.5v3M2.5 9h3M2.5 12h3M2.5 15h3M18.5 9h3M18.5 12h3M18.5 15h3"/></svg> Parts database</button><button class="pdbpage" data-pdbpage="run" aria-pressed="false">🎮 Will it run?</button><button class="pdbpage" data-pdbpage="story" aria-pressed="false">📨 Story jobs</button></div>
@@ -196,7 +212,7 @@
 </dialog>
 
 <!-- How to use it (pictures load only when the window is opened) -->
-<dialog id="dlgHelp" class="helpdlg">
+<dialog id="dlgHelp" class="helpdlg bigwin">
   <div class="dlg-h"><h3>❓ Help</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
   <!-- one <section data-hsec> per page; the page buttons are made from them (js/ui/settings.js) – a new feature page is just a new section -->
   <div id="helpPages" class="pdbpages helppages" role="toolbar" aria-label="Help pages"></div>
@@ -317,6 +333,7 @@
 <script src="js/ui/flip/window.js?v=0.16.1"></script>   <!-- before the board: saved PC Bay builds are drawn at start-up -->
 <script src="js/ui/flip/events.js?v=0.16.1"></script>
 <script src="js/ui/flip/capture.js?v=0.16.1"></script>
+<script src="js/ui/flip/card.js?v=0.16.1"></script>
 <script src="js/ui/state.js?v=0.16.1"></script>
 <script src="js/ui/board/status.js?v=0.16.1"></script>
 <script src="js/ui/board/tooltip.js?v=0.16.1"></script>

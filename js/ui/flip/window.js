@@ -1,5 +1,5 @@
 /* 📦 PC Bay build – the step window, the tile and the top-bar button (logic in js/core/flip/).
-   Files (js/ui/flip/): window.js tile, button and the steps, events.js clicks / inputs, capture.js screenshots. */
+   Files (js/ui/flip/): window.js button and the steps, card.js the card on the board, events.js clicks / inputs, capture.js screenshots. */
 // shown on every estimated (~) 3DMark / sale figure
 const EST_NOTE = "~ = a rough estimate – the 3DMark score and sale price in the game can differ slightly";
 let flipCur = null; // the build shown in the window
@@ -19,17 +19,7 @@ $("#btnFlip").onclick = () => {
   render();
   openFlip(f.id);
 };
-// ---------- tile ----------
-function flipCard(f) {
-  const st = flipState(f);
-  return `<article class="job flip" draggable="true" data-job="${f.id}" style="--c:${TCOL[f.table || 0]}">
-    <div class="fliptag">📦 PC Bay build</div>
-    <div class="top"><div class="who"><b>${esc(flipName(f))}</b><small>Step ${f.step} of 4: ${FLIP_STEPS[f.step - 1]}${st.unfixed.length ? ` · ${st.unfixed.length} broken part${st.unfixed.length > 1 ? "s" : ""} to fix` : ""}</small></div><div class="topbtns">${hintBtn(f)}</div></div>
-    <div class="chips"><span class="chip">Bought ${money(st.start)}</span><span class="chip">Now ${money(st.value)}</span>${st.estValue != null && !st.scored ? `<span class="chip" title="${EST_NOTE}">Sale ~${money(st.estValue)}</span>` : ""}${st.profit != null ? `<span class="chip ${st.profit >= 0 ? "profit" : "loss"}">${st.scored ? "Profit" : "Profit ~"} ${st.profit >= 0 ? "+" : ""}${money(st.profit)}</span>` : ""}</div>
-    ${tableBtns(f)}
-    <div class="foot"><button class="primary" data-flip="open" data-id="${f.id}">📦 Open build</button><button data-flip="finish" data-id="${f.id}" title="Remove this build and its saved inventory">✔ Finish</button></div>
-  </article>`;
-}
+// ---------- tile: js/ui/flip/card.js ----------
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-flip]");
   if (!b) return;

@@ -578,6 +578,54 @@ dialog {
 dialog::backdrop {
   background: #000a;
 }
+/* the main windows share one size (0.17.0, Mariusz): New Job / Edit Job, PC Bay build, Game Wiki, Settings, Help –
+   the same width and height on every screen, the content scrolls inside; full screen on phones */
+:root {
+  --win-w: min(1440px, 96vw);
+  --win-h: min(92vh, 900px);
+}
+dialog.bigwin {
+  width: var(--win-w);
+  height: var(--win-h);
+  max-width: none;
+  max-height: none;
+}
+dialog.bigwin[open] {
+  display: flex;
+  flex-direction: column;
+}
+dialog.bigwin > .dlg-h {
+  flex: none;
+}
+dialog.bigwin > .dlg-b {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+@media (max-width: 700px) {
+  :root {
+    --win-w: 100vw;
+    --win-h: 100dvh;
+  }
+  dialog.bigwin {
+    border-radius: 0;
+    border: 0;
+    margin: 0;
+  }
+}
+/* Settings: the groups side by side as wide as the window allows */
+.setcols {
+  column-width: 380px;
+  column-gap: 28px;
+}
+.setcols .sgrp {
+  break-inside: avoid;
+  padding-bottom: 14px;
+}
+.setcols .sgrp > h4.sub {
+  margin-top: 0;
+}
 .dlg-h {
   display: flex;
   align-items: center;
@@ -1869,9 +1917,10 @@ header .capsplit .capplus {
 .capsplit button:hover {
   filter: brightness(1.1);
 }
-dialog.helpdlg {
-  width: min(860px, 96vw);
-  max-width: none;
+/* Help: the text in a readable column in the middle of the window */
+.help > .hsec {
+  max-width: 960px;
+  margin-inline: auto;
 }
 .helppages {
   flex-wrap: wrap;
@@ -2615,6 +2664,219 @@ dialog.helpdlg {
   padding: 2px 7px;
   margin-bottom: 6px;
 }
+/* the build card (0.17.0, js/ui/flip/card.js): a 4-step bar, then what the current step needs */
+.fcbar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+  margin: 8px 0 6px;
+}
+.fcbar span {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fcbar i {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  margin-bottom: 3px;
+}
+.fcbar .done i {
+  background: #8a6a2a;
+  border-color: #8a6a2a;
+}
+.fcbar .cur {
+  color: #f3c46e;
+  font-weight: 700;
+}
+.fcbar .cur i {
+  background: #e0a63a;
+  border-color: #e0a63a;
+  box-shadow: 0 0 6px rgba(224, 166, 58, 0.55);
+}
+.fcbody {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.fch {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.fch ~ .fch {
+  margin-top: 8px;
+}
+.fch small {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.fcparts {
+  display: grid;
+  gap: 1px;
+}
+.fcrow {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: baseline;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+.fcrow:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.025);
+}
+.fcrow .cat,
+.fcfixrow .cat {
+  color: var(--muted);
+  font-size: 11px;
+}
+.fcrow .nm {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+}
+.fcrow .nm .n {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fcrow .nm .tag {
+  flex: none;
+}
+.fcrow .v {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.fcrow.broken {
+  background: rgba(239, 83, 80, 0.12);
+}
+.fcrow.broken .nm {
+  color: #ffb0ae;
+}
+.fcrow.put .nm {
+  color: #9fdcb6;
+}
+.fcmore {
+  color: var(--muted);
+  font-size: 11px;
+  padding: 2px 4px;
+}
+.fcfix {
+  display: grid;
+  gap: 5px;
+}
+.fcfixrow {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 4px;
+  line-height: 1.35;
+}
+.fcfixrow s {
+  color: #ffb0ae;
+}
+.fcfixrow.done s {
+  color: var(--muted);
+}
+.fcfixrow svg {
+  width: 9px;
+  height: 10px;
+  fill: currentColor;
+  transform: rotate(-90deg);
+  vertical-align: -1px;
+}
+.fcbody .good {
+  color: var(--good);
+}
+.fcbody .warn {
+  color: var(--warn);
+}
+.fcbody .bad {
+  color: #ff8a87;
+}
+.fcok,
+.fcwarn,
+.fcempty {
+  color: var(--good);
+  padding: 2px;
+}
+.fcwarn {
+  color: var(--warn);
+  margin: 5px 0 0;
+  list-style: none;
+  font-size: 11.5px;
+}
+ul.fcwarn {
+  padding: 0 2px;
+}
+.fcempty {
+  color: var(--muted);
+}
+.fcgain {
+  margin-top: 7px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(60, 207, 122, 0.08);
+  border: 1px solid rgba(60, 207, 122, 0.3);
+}
+.fcgain ul {
+  margin: 3px 0 4px;
+  padding-left: 18px;
+}
+.fcgain li.more {
+  list-style: none;
+  color: var(--muted);
+  margin-left: -18px;
+}
+.fcgain small {
+  color: var(--muted);
+}
+.fcsoft {
+  display: grid;
+  gap: 2px;
+}
+.fcs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.fcs:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.fcs input {
+  margin: 0;
+}
+.fcs span {
+  flex: 1;
+}
+.fcs small {
+  color: var(--muted);
+}
+.fcs.done span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
 .chip.profit {
   border-color: #2e8a54;
   color: #9fdcb6;
@@ -2623,10 +2885,7 @@ dialog.helpdlg {
   border-color: var(--bad);
   color: #ffb0ae;
 }
-dialog.flipdlg {
-  width: min(1000px, 97vw);
-  max-width: none;
-}
+
 .flipdlg .dlg-h {
   display: flex;
   align-items: center;
@@ -2655,8 +2914,17 @@ dialog.flipdlg {
   border-color: #2e8a54;
 }
 .flipwrap {
-  max-height: none;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+.flipwrap > .flipbody {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.flipwrap > :not(.flipbody) {
+  flex: none;
 }
 .flipsum {
   display: flex;
@@ -2683,8 +2951,6 @@ dialog.flipdlg {
   color: var(--warn);
 }
 .flipbody {
-  max-height: calc(100vh - 260px);
-  overflow: auto;
   padding-right: 4px;
 }
 .flipfoot {
@@ -2692,6 +2958,23 @@ dialog.flipdlg {
   gap: 8px;
   align-items: center;
   margin-top: 10px;
+}
+@media (max-width: 700px) {
+  .flipfoot {
+    flex-wrap: wrap;
+  }
+  .flipfoot .flipmin,
+  .flipfoot .fnewsw {
+    font-size: 12.5px;
+    padding-inline: 8px;
+  }
+  .flipwrap .flipfoot .spacer {
+    flex: 0 0 100%; /* Save + NEW parts on one line, Back + Next below */
+    height: 0;
+  }
+  .flipfoot .flipnext {
+    flex: 1;
+  }
 }
 /* "Suggest NEW parts" switch: visible, quiet – a pill that lights up when on */
 .flipsum .estnote {
@@ -3256,16 +3539,18 @@ dialog.cldlg {
   line-height: 1.45;
 }
 /* 📖 parts database window */
-dialog.pdbdlg {
-  width: min(1400px, 97vw);
-  max-width: none;
-}
 dialog.pdbdlg .dlg-b {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: none;
-  overflow: visible;
+  overflow: hidden;
+}
+dialog.pdbdlg .dlg-b > * {
+  flex: none;
+}
+dialog.pdbdlg .dlg-b > .pdbwrap {
+  flex: 1;
+  min-height: 0;
 }
 .pdbpages {
   display: flex;
@@ -3323,7 +3608,6 @@ dialog.pdbdlg .dlg-b {
   max-width: 420px;
 }
 .pdbwrap {
-  height: min(64vh, 760px);
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -3784,17 +4068,7 @@ details.sothers > summary {
 
 /* New job / Edit window (0.15.3): fixed to the screen height – capture buttons on top, picture as a thumbnail,
    objectives + hidden side by side, parts always open, suggestions beside them, Create job / Save always visible */
-#dlgReview[open] {
-  display: flex;
-  flex-direction: column;
-  height: min(95vh, 920px);
-  width: min(1500px, 97vw);
-  max-width: none;
-}
 #dlgReview .dlg-b {
-  flex: 1;
-  min-height: 0;
-  max-height: none;
   overflow: hidden;
   padding: 10px 14px;
   position: relative;
@@ -4036,10 +4310,6 @@ details.sothers > summary {
   }
 }
 @media (max-width: 900px) {
-  #dlgReview[open] {
-    height: auto;
-    max-height: 96vh;
-  }
   #dlgReview .dlg-b {
     overflow: auto;
   }
