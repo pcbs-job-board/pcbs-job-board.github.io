@@ -23,7 +23,7 @@ function storyJobHtml(st, i) {
   return `<li class="swjob">
     <div class="swhead"><span class="swnum">${i + 1}.</span><span class="swsubj">${esc(st.subject || "(no subject)")}</span><span class="swlv">Req: Level ${st.level ?? "?"}</span></div>
     <div class="swfrom">${esc(st.email)}${st.signed ? ` · signed ${esc(st.signed)}` : ""}</div>
-    <details class="swspoil"><summary>⇊ <b>[Spoiler!]</b> ⇊ Click to see more info ⇊ <b>[Spoiler!]</b> ⇊</summary>
+    <details class="swspoil"><summary><span class="swwarn"><span class="swicon" aria-hidden="true">⚠️</span>Spoiler warning</span><span class="swclick swshow">⇊ Click to see more info ⇊</span><span class="swclick swhide">⇈ Click to hide ⇈</span></summary>
       <div class="swdet">${
         empty
           ? `<p class="swempty">The email text and stats of this job aren't known yet – report them if you see it.</p>`
