@@ -14,12 +14,27 @@ const gpuMixText = () =>
   (typeof hasUnlock === "function" && !hasUnlock("gpuOC")
     ? " GPU Tuner unlocks at career level 13 – before that, two identical cards avoid it."
     : "");
+// "Apply thermal paste on the CPU" (0.17.0, Mariusz): added to "Found while working" as soon as a CPU, CPU cooler,
+// custom-loop CPU block or motherboard swap is planned. j.paste remembers it was added, so a task the player
+// removed by hand doesn't come back; it goes away again (unless ticked) when no such swap is left.
+const PASTE_TASK = "Apply thermal paste on the CPU";
+const pasteSwap = j =>
+  plannedBuild(j).some(
+    p => p.swapped && (["Motherboard", "CPU", "CPU Cooler"].includes(p.cat) || wcKind({ name: p.name }) === "CPU Block")
+  );
+function syncPasteTask(j) {
+  if (!j || !Array.isArray(j.tasks) || (typeof isFlip === "function" && isFlip(j))) return;
+  const i = j.tasks.findIndex(t => t.auto === "paste");
+  if (pasteSwap(j)) {
+    if (j.paste || j.tasks.some(t => /thermal paste/i.test(t.text))) return;
+    j.tasks.push({ id: uid(), text: PASTE_TASK, src: "add", done: false, auto: "paste" });
+    j.paste = true;
+  } else if (j.paste && (i < 0 || !j.tasks[i].done)) {
+    if (i >= 0) j.tasks.splice(i, 1);
+    delete j.paste;
+  }
+}
 const HINTS = [
-  {
-    id: "thermal-paste",
-    when: (j, build) => hintSwap(build, ["Motherboard", "CPU", "CPU Cooler"]),
-    text: "Motherboard, CPU or CPU cooler replaced – don't forget to apply thermal paste on the CPU before fitting the cooler.",
-  },
   {
     id: "xmp-ram",
     when: j => hintObjs(j).some(o => /3\s?d\s?mark|\b(overclock\w*|oc)\b/i.test(o)),
