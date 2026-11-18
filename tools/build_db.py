@@ -107,16 +107,23 @@ def main():
             print("ERROR:", e)
         sys.exit(1)
 
-    # story jobs (career story customers) – any of sender name, email or subject marks a job as a story job
+    # story jobs (career story customers, 0.17.0: every email from the story-job research – tools/import_story_research.py).
+    # Text is kept exactly: body with its paragraphs (blank lines), objectives one per line. chain = "" → standalone job.
     story = []
     if STORY_FILE.exists():
         with open(STORY_FILE, newline="", encoding="utf-8") as fh:
             for i, r in enumerate(csv.DictReader(fh), start=2):
-                row = {k: (r.get(k) or "").strip() for k in ("sender_name", "email", "subject", "story", "note")}
-                if not (row["sender_name"] or row["email"] or row["subject"]):
-                    warnings.append(f"story-jobs.csv:{i} has no sender, email or subject – skipped")
+                g = lambda k: (r.get(k) or "").strip()
+                if not (g("email") or g("subject")):
+                    warnings.append(f"story-jobs.csv:{i} has no sender email or subject – skipped")
                     continue
-                story.append(row)
+                story.append({
+                    "id": int(g("id") or 0), "chain": g("chain"), "order": int(g("chain_order") or 0),
+                    "email": g("email"), "signed": g("signed"), "subject": g("subject"),
+                    "level": num(g("level")), "labour": num(g("labour")), "budget": num(g("budget")),
+                    "objectives": [o.strip() for o in (r.get("objectives") or "").split("\n") if o.strip()],
+                    "body": (r.get("body") or "").replace("\r", "").strip("\n"),
+                })
 
     # "Will it run?" (the in-game app): min / recommended / recommended 4K spec of each app or game – objective
     # "PC can run X (Y Spec)". Each spec = [CPU name, GPU (chip as the app writes it), RAM GB, VRAM GB, storage GB].

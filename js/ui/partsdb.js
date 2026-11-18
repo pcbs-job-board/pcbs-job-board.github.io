@@ -351,22 +351,25 @@ function pdbCols(t, parts) {
     hide = pdb.all ? [] : PDB_HIDE[t.label] || [];
   return cols.filter((col, i) => i === 0 || (!hide.includes(col[0]) && parts.some(p => col[1](p) !== ""))); // no empty columns
 }
-// the window's two pages: the parts database (opens first) and Will it run? (js/ui/willrun.js)
+// the window's pages: the parts database (opens first), Will it run? (js/ui/willrun.js), Story jobs (js/ui/storywiki.js)
 function renderPdbPage() {
-  const run = pdb.page === "run";
+  const page = pdb.page;
   for (const b of document.querySelectorAll("[data-pdbpage]")) {
-    const on = b.dataset.pdbpage === pdb.page;
+    const on = b.dataset.pdbpage === page;
     b.classList.toggle("on", on);
     b.setAttribute("aria-pressed", on);
   }
-  $("#pdbTabs").hidden = run;
-  $("#pdbFoot").hidden = run;
-  $("#pdbFilter").placeholder = run ? "Filter by app or game…" : "Filter by name…";
-  if (run) renderWillRun();
-  else renderPartsDb();
+  $("#pdbTabs").hidden = page !== "parts";
+  $("#pdbFoot").hidden = page !== "parts";
+  $("#pdbTable").hidden = page === "story";
+  $("#pdbStory").hidden = page !== "story";
+  $("#pdbFilter").placeholder =
+    page === "run" ? "Filter by app or game…" : page === "story" ? "Filter by sender, subject or story…" : "Filter by name…";
+  renderPartsDb();
 }
 function renderPartsDb() {
   if (pdb.page === "run") return renderWillRun();
+  if (pdb.page === "story") return renderStoryWiki();
   const t = PDB_TABS[pdb.tab],
     all = pdbRows(t);
   // every typed word must start a word of the name ("1080 ti" → not "1080 Founders Edition")

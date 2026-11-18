@@ -1,21 +1,1245 @@
-sender_name,email,subject,story,note,source
-Rob,robernator445@alaprofa.net,Computer has gone crazy?!,Rob's haunted PC,Asks for a new hard drive + clean OS after a virus,screenshot 2026-11-02
-Kinsley Hackett,IT@dynabeard.org,Important: Computer required,Dynabeard demo machine,"Build request: i5-7500 or better, GTX 980 or better, 8 GB RAM – Req: Level 14, no star requirement",screenshot 2026-11-02
-HRH The Queen,maj@hrh.royals.org,By Royal Appointment,Royal monster rig,"Build from nothing: 3DMark 7000, NZXT H440 Hyper Beast or better, GTX 1080 or better, 6 purple (255,0,255) lit parts – Labour $200, Budget $3000, Req: Level 21, no star requirement",player report 2026-11-03
-Giovanna Sciarra,giovanna@giosci.lab,A minor setback,Particle accelerator accident,"Diagnose and fix after a magnet quench – parts overheated, PC won't turn on – Labour $150, Budget $600, Req: Level 13, no star requirement",player report 2026-11-03
-HRH The Queen,maj@hrh.royals.org,A royal robbery,Royal rig stolen – replacement,"Build from nothing: 3DMark 10000, dual graphics cards, 6 purple (255,0,255) lit parts, purple cables – Labour $200, Budget $3000, Req: Level 21, no star requirement",screenshot 2026-11-07
-S Daldry,sdaldry@DillCorp.net,Intern-proof PC?,Intern's magnetic bracelet wiped the PC,"Replace SSD, upgrade to 4 TB of storage – Labour $120, Budget $240, Req: Level 16, no star requirement",player report 2026-11-07
-Captain J Dirk,jamie.dirk@fssbold.hfed.gov,Incoming Transmission,FSS Bold: science officer smashed his research station,"Diagnose and fix – Labour $150, Budget $570, Req: Level 22, no star requirement; inventory parts with a 'Property of jamie.dirk@…' note are his",player report 2026-11-07
-Captain J Dirk,jamie.dirk@fssbold.hfed.gov,FSS Bold requires urgent system repairs,FSS Bold: brawl in engineering damaged a computer vital to the force-field effort,"Diagnose and fix – Labour $120, Budget $550, Req: Level 22, no star requirement; the report read the email as jamie.dirk@fsshold… (OCR)",player report 2026-11-08
-Captain J Dirk,jamie.dirk@fssbold.hfed.gov,FSS Bold's mission to Placidius has reached a critical point,FSS Bold: a supernova threatens Placidius – the engineering computer needs a big boost for the force-field,"3DMark score of 11000, Install dual graphics cards – Labour $140, Budget $700, Req: Level 22, no star requirement",screenshot 2026-11-08
-,scottyB@dongermail.com,urgent job!!,Streaming together (probably the streamer story),"Seen on an older screenshot, no star requirement – details not confirmed yet","screenshot (older), added 2026-11-08"
-Steve Shovel,steve.shovel@theprivateeyes.com,The Upgrade,"A noir detective tale: Sam, a pro gamer, wants her rig upgraded","3DMark score of 11000, Install dual graphics cards – Labour $140, Budget $610, Req: Level 23, no star requirement",player report 2026-11-08
-Steve Shovel,steve.shovel@theprivateeyes.com,The Dead Case,"Sam's rig, shot, stabbed and dumped in the river – fix it for the evidence on the drive","Diagnose and fix – Labour $150, Budget $820, Req: Level 23, no star requirement",player report 2026-11-08
-Steve Shovel,steve.shovel@theprivateeyes.com,The Incognito Rig,A gaming rig of his own for a private LAN party – one the goons won't recognise,"Build from nothing: 3DMark score of 6000, Install Intel Core i7-8700K or better, Install AIO water cooling, Support for double GPU – Labour $200, Budget $2000, Req: Level 23, no star requirement",screenshot 2026-11-09
-Mona,mona@cryptomaniacs.com,overheating when mining crypto?,"Mona mines Convolut (CNV) – her PC overheats, Mr Fuzzface sits in front of it like a fireplace","Install 5 ARCTIC BioniX F140 (Green) or better – Labour $140, Budget $70, Req: Level 24, no star requirement",player report 2026-11-09
-Mona,mona@cryptomaniacs.com,need faster graphics for crypto mining,Mona's mining rig needs two new graphics cards to keep up with the CNV market,"Install AMD Radeon RX VEGA 64 or better, Install dual graphics cards – Labour $140, Budget $1350, Req: Level 24, no star requirement",player report 2026-11-10
-Mona,mona@cryptomaniacs.com,cat threw up on my pc,Mr Fuzzface threw up into the vents – the mining PC won't boot,"Diagnose and fix – Labour $120, Budget $900, Req: Level 24, no star requirement",player report 2026-11-10
-Steve Shovel,steve.shovel@theprivateeyes.com,The Big Tournament,"Steve's own PC upgraded for the Big Tournament – ""time to make me a Kingpin, or maybe even a double Kingpin""","3DMark score of 14000, Install dual graphics cards, Install EVGA GeForce GTX 1080 Ti K|NGP|N GAMING or better – Labour $140, Budget $1750, Req: Level 23",screenshot 2026-11-10
-Stuart,stu@theirregularcorporation.com,One last upgrade needed for a new game(!),"Stuart (Head of Production, The Irregular Corporation) wants a dev machine for his 'PC Building Simulator' game pitch","3DMark score of 14000, Upgrade to 128 GB of RAM, Upgrade to 4 TB of Storage – Labour $140, Budget $7000, Req: Level 25, no star requirement",player report 2026-11-10
-Martine Ventrix,martine.ventrix@subworksengineering.com,PROJECT NEPTUNE: Navigation computer required,SubWorks GmbH: a navigation computer for the Neptune Mark I submarine hunting Atlantis,"Build from nothing: Install Intel Pentium G4600 or better, Spend less than $750 – Labour $200, Budget $750, Req: Level 26, no star requirement",screenshot 2026-11-12
-Martine Ventrix,martine.ventrix@subworksengineering.com,PROJECT NEPTUNE: Additional computer required,SubWorks GmbH: a personal computer for Martine's quarters after a supplier deal fell through,"Build from nothing: Spend less than $350 (no part objectives) – Labour $200, Budget $350, Req: Level 26, no star requirement",screenshot 2026-11-12
+id,chain,chain_order,email,signed,subject,level,labour,budget,objectives,body
+1,,1,g.aubin@allthemail.com,Gary,Virus Scan,1,100,0,Remove viruses,"Hi Tim,
+
+I hope you can help me! My computer has been running slower than usual and I think I might've clicked on something I shouldn't have - do I have a virus?
+
+Thanks!
+
+Gary"
+2,,2,queen_britney@realinternet.co.uk,,Broken graphics card,1,260,265,"Replace Graphics Card
+Install Shean GeForce GTX 970 GAMER or better","Hi,
+
+My graphics card has fried itself and I need it to be replaced with the same one please - an NVIDIA GTX 970, maybe one of those Shean ones? I can drop it around first thing tomorrow morning!"
+3,,3,g.walters@rangemail.com,Gemma,More space on my computer,1,280,50,Install Mortoni EZStore 500GB or better,"Hello,
+
+I need some more space to back up my files, could you install a 500GB HDD please? I'll bring it around first thing.
+
+Thank you
+
+Gemma"
+4,,4,hello@ShermanDental.com,P. Sherman,Help!,1,100,0,"Remove viruses
+Clean out dust","Hello,
+
+Could you have a look at my PC please? It isn't running as well as it did when I first bought it and I've probably not been taking the best care of it (it looks a bit dirty) - could you give it a once over please? If you can I'll bring it around tonight ready for you in the morning.
+
+Thanks
+
+P. Sherman"
+5,,5,therealharryosman@pmail.com,Harry,HELP! QUICKLY!,1,200,0,Remove viruses,"Hello mate,
+
+I need your help! I ""borrowed"" my Mum's brand new PC and I think I clicked on something I shouldn't of - now it's riddled with viruses! I need it done before she gets back from her friend's house, hurry!!!
+
+Cheers
+
+Harry"
+6,,6,Audry1945@toastmail.com,Audry,Hot and Broken PC,1,260,10,"Replace Air Cooler
+Clean out dust","Hi
+
+I'm not very good with computers but mine isn't working properly. It's been getting very hot lately and running slower and slower, I don't think I can hear the fan anymore. It lives on the floor of my dusty office, I hope it's not all clogged up! If you do have to replace the fan then please pick the cheapest one, I can't afford anything fancy!
+
+Thanks
+
+Best Audry"
+7,,7,GSXGEOFF@pmail.com,Geoff,Stuff for my daughter's new PC,1,180,140,Upgrade to 16 GB of RAM,"Hi,
+
+I'm giving my daughter my PC and she needs lots of RAM (apparently) - she says she needs 16 GB and I've currently got 2GB and 4 RAM slots on my MB.
+
+Thanks!
+
+Geoff."
+8,,8,woodward@treeguardians.com,,PC not turning on,1,300,100,Replace Motherboard,"Hi there,
+
+I hope you can help. My computer stopped working the other day and now will not turn on at all - please can you have a look for me?
+
+I think it might be the motherboard - if it needs a new one I know it needs a Skylake socket."
+9,Doctors' referrals (loose),1,thedoctorsays76@pmail.com,DR Waterman,Missing Thermal Paste,1,0,0,"Apply thermal paste
+Run 3DMark","Hi there -
+
+I bought a PC from you 6 months ago (from Tim?) and it's been overheating whenever I try and do anything on it. I took a look under the CPU Cooler and THERE'S NO THERMAL PASTE! What kind of a mickey-mouse business are you running?! I demand that you fix this FOR FREE and this time test the PC before you send it back out!
+
+Regards
+
+DR Waterman"
+10,,9,d.darmian@ddanddassociates.com,Darmian,Upgrade not working...,1,280,80,"Install Shean Powerking 600 or better
+Run 3DMark","Hey,
+
+I recently upgraded my PC but now it's not working properly - the computer boots ok but when I try and benchmark it or run a game the computer crashes! I haven't replaced my PSU, could my new parts be drawing too much power?
+
+Please help!
+
+Darmian"
+11,,10,rich@sailingmyboat.nl,Richard,Upgrade so I can sail!,3,140,350,PC can play Sailaway - The Sailing Simulator (Recommended Spec),"Hallo!
+
+I've been playing a great sailing simulation game but while my computer will just about run it but if I turn up the graphics the framerate drops. I used a program called Will It Run to see what I need and it seems that while my PC is ok for the min spec, the recommended spec needs a better GPU. Can you have a look for me please?
+
+Dank je wel!
+
+Richard"
+12,"Blake's movie projects (Bathimoor Babes, Sonic Munk, FilmClassix Archive)",1,blakepatterberg48@moviemaniax.co.uk,Blake Patterberg,Need HDD space to prep for movie event of the decade,3,140,100,Upgrade to 1500 GB of Storage,"I'm Blake Patterberg, and I'm one of the core team over at MovieManiax, the world's #53 website in the UK for movie news and reviews.
+
+With the upcoming release of the next highly-anticipated blockbuster in the Frondbuster Cinematic Universe (FCU), I'm trying to refresh my memory of the previous films -- Frondbuster, Frondbuster 2, Frondbuster III: Frondamania!, Frondbuster 4: Frondly Remembered, and the much-maligned spin-off Archie Bald and the Spinning Cups - A Frondbuster Story. I already own all the collector's editions on blu ray, but I'd like to rip them to my computer for a more complete, frame-by-frame analysis.
+
+Sadly, I don't currently have enough hard drive space to do so. Could you increase my storage capacity to suit? Another terabyte should do the trick.
+
+---- Blake Patterberg - Assistant Junior Moderator, MovieManiax 'Action!'"
+13,"Blake's movie projects (Bathimoor Babes, Sonic Munk, FilmClassix Archive)",2,blakepatterberg48@moviemaniax.co.uk,Blake Patterberg,15 years of Bathimoor Babes!!,3,110,0,Remove viruses,"Hey,
+
+As you're no doubt aware, it's nearly the 15th anniversary of beloved cult classic Babes of Planet Bathimoor. You would think the Powers That Be would've used the opportunity to release a 4K remaster, but no. They haven't even reissued the old DVD, which now commands a high price at auction online. It's like they don't WANT money! Not that the old DVD is any good, by the way. The film transfer is super noisy compared to the much superior LaserDisc home release, and they completely ruined the iconic underwater dance number with stupid-looking CGI fish. I wanted to host a viewing for my friends, but my own LaserDisc was sadly destroyed when a pile of imported Japanese horror film steelbooks fell on it, so I was forced to use 'less legal means' to get a copy in time for the day itself. Now I'm no stranger to venturing into the darker side of the internet if necessary, and it's perfectly safe if you know what you're doing. After all, just like Captain Cartwright said in the film: 'We explore planet Bathimoor not because we are merely curious, but because we must see what lies beyond!' (And what a great character, am I right? I'll never understand how he didn't clinch the top spot in MovieManiax's Top 100 Proselytizing Protagonists list.)
+
+ANYWAY, my computer has a virus now. Could you run a scan or something and remove it?
+
+Thanks.
+
+---- Blake Patterberg - Assistant Junior Moderator, MovieManiax 'Action!'"
+14,,11,realcheez@mintyMail.cool,,What's wrong with my gaming rig?!,3,150,190,Diagnose and fix,"How you doin?!
+
+My gaming rig isn't booting anymore, I don't know what's wrong with it - can you diagnose what's wrong with it? It seems to power on ok (the fans go round) but it doesn't get any further than the BIOS screen. Can you have a look and fix whatever's wrong with it?
+
+Peace out."
+15,"Blake's movie projects (Bathimoor Babes, Sonic Munk, FilmClassix Archive)",3,blakepatterberg48@moviemaniax.co.uk,,Sonic Munk needs your help!,3,120,100,Replace HDD,"Hey there,
+
+Bit of a crisis here. I'm supposed to be helping out on an article for MovieManiax - a series retrospective of the Sonic Munk trilogy. This series is MASSIVE (in some indie film circles in Denmark), so you can understand why I want to take the utmost care to get this right. The last thing I need is another mob of angry film fanatics flaming me on the message boards and leaving snarky comments on every article. As usual, I ripped my blu rays to my computer so I can do more a detailed analysis of the frame image. But then the hard drive they were on made this loud 'clunk' sort of sound and I can't access any of the files! Can you do something? I need to get this article written, or all the Sonic Munk fans - and there are nearly twenty of them!! - are going to be VERY disappointed.
+
+---- Blake Patterberg - Assistant Junior Moderator, MovieManiax 'Action!'
+
+By the way, if you can get hold of a copy of the Sonic Munk trilogy I do recommend giving it a watch. Just make sure you watch it in the original Danish with English subtitles, and try not to over-analyse the giant spider sub-plot. Oh, and you can skip the second half of the third film because it's not technically canon."
+16,"Bruce van Cleefe, the typewriter author",1,brucevancleefe@brucevancleefe.com,Bruce van Cleefe,Computer in need of an 'upgrade',4,140,300,"Install Intel Core i5-6400 or better
+Upgrade to 8 GB of RAM","Good day,
+
+I am Bruce van Cleefe (award-winning author), and I have recently found myself in need of your services.
+
+Personally, I cannot stand modern technology and prefer to work on my trusty 1957 Quiet-Typer. Unfortunately, my editor is insisting that I transfer the latest draft of my current novel - the next great novel of this century - into a digital copy for his convenience. Convenience... How I detest that word. Is there anything more sickening than taking the raw, hard-won outpourings of a writer - his very heart and soul rendered in ink upon a page - and converting it into a digital document? Reducing it to nothing more than bits and bytes to be shuffled between computers like so many spreadsheets?
+
+Anyway, my current computer is an outdated hulk I purchased several years ago, and it seems it's not able to run the latest professional writing software ('Scribener') with quite enough vim. Kindly upgrade the machine so that I can continue my work. The future of literature depends upon it.
+
+Best regards,
+
+Bruce van Cleefe, Award-Winning Author"
+17,,12,orient_express64@puffpuff.com,Rob,Can you build me a new PC?,5,200,750,"Spend less than $750 ($0)
+Upgrade to 16 GB of RAM
+Upgrade to 500 GB of Storage","Hello there!
+
+I need a new PC for the local train enthusiast club - it doesn't need to be fancy but could do with a reasonable amount of RAM and storage for the weekly slideshows, they can get rather long!
+
+Many thanks
+
+Rob"
+18,Doctors' referrals (loose),2,drdoctorwrite77@pmail.com,DR Write,Overheating PC,5,150,0,"Diagnose and fix
+Run 3DMark","Hello,
+
+I bought a PC from you a while back (from a guy called Tim?) and it has always seemed to run a bit hot - I thought there was nothing to be done about it but a good friend of mine DR Waterman told me of how you fixed his machine and so I was wondering if you could have a look at mine as well.
+
+Many thanks
+
+DR Write"
+19,"Bruce van Cleefe, the typewriter author",2,brucevancleefe@brucevancleefe.com,Bruce van Cleefe,Low disk space? I despair!,4,140,50,Upgrade to 500 GB of Storage,"Good day,
+
+I knew all of this technology was a terrible idea. It was doomed from the outset, and I've had to sit by as the whole technological farce tumbles down around me. You'd think electronics these days would be able to handle a simple 500-page novel, but apparently it's simply too much to ask. First my keyboard gave up the ghost, and now I'm being told that I'm running low on disk space.
+
+Whatever happened to the days of just writing directly onto paper and submitting a finished draft by hand? Naturally, one first had to build a small outbuilding in which to properly store one's paper. My father's was cedar, but any hardwood will do in a pinch. The really important part is choosing the location: good drainage and proximity to the house are both of paramount importance, as is avoiding any obviously uneven terrain. It's all worth it, of course, because after the proper storage is arranged one can move on to the exciting task of collecting writing paper.
+
+But, I digress. I gather it's a fairly simple fix to add more disk space, but naturally I'm loathe to attempt it myself. Would you be so kind as to do whatever is necessary?
+
+Best regards,
+
+Bruce van Cleefe, Award-Winning Author"
+20,"Blake's movie projects (Bathimoor Babes, Sonic Munk, FilmClassix Archive)",4,blake@filmclassix.freehosting.co.uk,Blake Patterberg,FilmClassix Archive needs your help,3,140,300,Upgrade to 8000 GB of Storage,"Hey there,
+
+Did you get my email about the FilmClassix Archive? It's going great so far - I've already got five users in a heated debate about Captain Cartwright on the forums. Behind the scenes, I've been ripping my entire collection of cult classics to populate the FilmClassix Archive, but I'm actually running out of hard drive space again. Could you add some more storage for me?
+
+Thanks!
+
+By the way, I notice you've not signed up as a supporter yet. Your technical services are great and much appreciated, but if you want to sign up as a community backer you can. No pressure. Do you still have the link? I can send you it again if you need. It's www.filmclassix.freehosting.co.uk
+
+- Blake Patterberg - Chief Archivist and Cult Film Expert, FilmClassix Archive 'Action!'"
+21,"Bruce van Cleefe, the typewriter author",3,brucevancleefe@brucevancleefe.com,Bruce van Cleefe,Technology - the bane of my life,4,150,100,Diagnose and fix,"Good day,
+
+Predictably, my computer has failed once more. This time the thing won't turn on at all. Goodness only knows why. I can only assume it died out of desperation. I'm an award-winning author, you know - I should not have to deal with this sort of thing. I certainly never had any of these problems with my typewriter. The only problems I had with that were changing the ink ribbon once in a while and having to hear my editor whine about dealing with real paper for a change. That's the problem with people these days: no literary constitution.
+
+Anyway, do what you can. I just want this techno-dystopian nightmare to end.
+
+Best regards,
+
+Bruce van Cleefe, Award-Winning Author"
+22,"Hazel, nature healer",1,hazel_leaf95@gaiaworld.com,Hazel,Hands-on natural repair session required,6,150,55,Diagnose and fix,"Hello,
+
+Just writing to say that the alternate repair session had no effect. It's most likely that you conducted the healing ritual incorrectly, but that's okay - you are a novice, after all. Instead, I'll send my computer in to your workshop so you can work on it by hand - on the condition that you conduct the appropriate rituals to ensure that any physical changes don't affect the positive energy of the machine as a whole.
+
+The rituals can be conducted as before, but with the following additions to hopefully make it more effective for a beginner such as yourself:
+
+Healing crystals should be arranged around the machine to create an energy grid. This should really help in manifesting your goals and intentions. If you don't have a crystal merchant nearby, you may have to get creative. Wristwatches and many electronic components contain crystals, so these will do in a pinch.
+
+An additional mantra to be used: Ma Dam Pi Si Wun Go. But take care, as this is a mantra of great power. Be particularly wary of the final syllable - pronounced incorrectly, this is a cure for baldness.
+
+However many candles you set up last time, double it. You can never have too many candles. Do have a fire extinguisher on standby, though. We don't want a repeat of the Fellwood incident.
+
+Best wishes,
+
+Hazel"
+23,Prince Duarte's solicitor (scam),1,test@telecom.aa,,DO GET BACK TO ME,5,0,0,Replace HDD,"Attention,
+
+I am Mr. Brian Egelston, Solicitor and Personal Attorney to Prince Duarte exiled prince currently held at Tychester international airport. We are unable to leave without our computer being searched by Authorities, Due to the negligence or oversight, this computer is not in working condition. I have made several contacts for repair, but all proved abortive.hence I decided to contact you.
+
+I have worked out a procedure that will ensure success, and as a lawyer, I will ensure that all our actions are within the confines of the law. I am authorise to offer final Reward of $4,000 for any assistance renderered, Full payment to your name and address, on transit to be delivered to you. I will forward toyou one(1) computer hardware for immediate repair, please replace the Hard Disk Drive (H.D.D.) and return to the forwarding address supplied. Upon success receipt of working hardware, we will release the remaining Reward amount to you.
+
+NOTE: If You Receive This Message in Your Junk or Spam It's Due To Your Internet Provider,"
+24,"Blake's movie projects (Bathimoor Babes, Sonic Munk, FilmClassix Archive)",5,blake@filmclassix.freehosting.co.uk,Blake Patterberg,Help! FilmClassix Archive under attack!,3,120,210,"Replace PSU
+Replace CPU","It's those idiots over at MovieManiax! They're CRAZY! They organised some kind of DDOS on the FilmClassix Archive - it was like a million people trying to download everything at once! It totally killed my computer - there was smoke and everything! Can you take a look and see what you can do about the damage?
+
+- - - - Blake Patterberg - Chief Archivist and Cult Film Expert, FilmClassix Archive 'Action!'"
+25,"Bruce van Cleefe, the typewriter author",4,brucevancleefe@brucevancleefe.com,Bruce van Cleefe,Foiled once again,4,120,100,Replace HDD,"Just when you thought the technological fates could not be any more cruel, they have delivered the ultimate blow. I will make sure that my editor hears no end of all this, since the whole blasted debacle was his idea in the first place.
+
+Anyway, I was within a gnat's whisker of having my entire draft finally converted into a document, when disaster struck. The computer completely froze. When I try to use it, it says system disk error. There was a mere handful of pages left to convert. Please, I implore you - fix this so I can finally be done with this editing process and move on with my life.
+
+Best regards,
+
+Bruce van Cleefe, Award-Winning Author"
+26,Prince Duarte's solicitor (scam),2,test@telecom.aa,,RE: DO GET BACK TO ME,5,0,0,3DMark score of 3000,"Greetings,
+
+Hello again. We received the previous hardware with great satisfaction and your final Reward worth $4,000 is being prepared for dispatched. Unfortunately, We were unable to fully recover the necessary d; and require further assistance before financial assets are confiscated.
+
+Please build a system of the following specifications to the Authority can approve final release of my client Prince Duarte: Hardware must reach benchmark of 3000 for fully verify your, earliest response will be appreciated."
+27,"Hazel, nature healer",2,hazel_leaf95@gaiaworld.com,Hazel,Bad energy??,6,110,0,Remove viruses,"Hello again,
+
+Thank you for attempting to repair my computer. However, on receiving it I've noticed that it still doesn't turn on. Needless to say, I am disappointed that I have to teach a so called ''expert'' how to fix a computer. One of my friends at the Woodsie Alliance tells me there may be a malevolent spirit to blame, and I'm inclined to believe them. Could you check the system over for any malicious energies and purge them?
+
+I didn't get all the details, but my friends suggested method includes:
+
+Lubricate all components with a highly-diluted solution of thermal paste. This has the effect of triggering the computer's own cooling mechanisms, which may aid recovery from any malware infection.
+
+Burn the thigh bone of a blessed sheep in the presence of the computer to drive out the evil spirits. If you cannot easily obtain an ethically-sourced sheep bone, a chicken drumstick will do.
+
+Place round magnets at the energy points on your forehead and your upper chest. They can be held in place with sticky tape.
+
+IMPORTANT: Do NOT get too close to the computer while conducting the ritual, or the magnetic essence will blank the hard drive.
+
+Best wishes,
+
+Hazel"
+28,"Bruce van Cleefe, the typewriter author",5,brucevancleefe@brucevancleefe.com,Bruce van Cleefe,Void! Desolation! Emptiness!,4,150,110,Diagnose and fix,"I am over the cliff-edge. Hanging for dear life above the abyss of despair as the world hurls stones and treads on my fingers. Yes, I am doomed. And, by extension, literature is doomed with me.
+
+My work was stored on the computer's hard drive - countless hours of torturous banality, feeding my life's work into this unfeeling machine. And all for nought? The hard drive failed and you replaced it with another. Ergo, all that was... is lost. Fear not: I do not blame you. I blame my editor for proposing this Sisyphean task in the first place.
+
+But I will require your services once more. In my anguish, I delivered a terrific thrashing unto this demoniac machine which has cost me my time, my patience, and - I fear - my sanity. Needless to say, it no longer turns on - this is fine by me, but my editor is becoming intolerably anxious, so I'd like you to fix it if for nothing else than to keep him quiet.
+
+Best regards,
+
+Bruce van Cleefe, Award-Winning Author"
+29,Doctors' referrals (loose),3,imadoctor75@pmail.com,DR Reed,PC Problems,7,150,0,"Diagnose and fix
+Run 3DMark","Hi there,
+
+I ordered a PC from you around 9 months ago and while it runs ok it doesn't seem to like doing anything too taxing lest it get too hot. My good friends DR Waterman and DR Write told me over a sandwich that you had fixed their machines, could you have a look at mine please?
+
+Many thanks
+
+DR Reed"
+30,"Oli, the League player who goes pro",1,oliolioli22@freemail.com,Oli,need a new pc for league,8,200,800,PC can play League of Legends (Minimum Spec),"Hi,
+
+im going to be a pro league player and i need a pc. Me mam says we dont have the money and i shouldnt be spending it on stupid games but she dont know ive been saving for it just needs to run the game can you do that?
+
+Thanks
+
+Oli
+
+ps if i make it big ill definately recommend you :)"
+31,"Oli, the League player who goes pro",2,oliolioli22@freemail.com,Oli,upgrade for more fps in league?,8,140,600,3DMark score of 3000,"Hi its me again!
+
+Been really happy with the pc you built even though me mam was heated about it lol said i shouldve spent it on somthing useful instead. she never gets technology says its a waste of time but she wont be saying that once im earning that mlg prize money anyway ive saved up to make it faster. could you upgrade it so i can get more fps in league? Theres a tournament i want to enter! Wish me luck!
+
+Thanks mate
+
+Oli"
+32,"Axemaster, LARP fan",1,axemaster93@ravagersLARP.com,Kathren Breton,Canst thou help?,9,200,1000,PC can play Feudal Fantasy XIII (Minimum Spec),"Hail!
+
+As thou art no doubt aware, the release of Feudal Fantasy XIII (Recommended Spec) lies on the horizon. 'Tis anticipated to be a most exciting game, with visceral recreation of marshal warfare, and the heart-rending tale of a peasantry struggling to break free of oppression. Truly, ye look'st upon a 'game of the year' candidate.
+
+System requirements are as yet unknown for this ludoliterary tour-de-force but, as the bow is drawn in anticipation, still I must prepare myself for this imminent release. I hereby commission thee in constructing for me a suitable 'rig'. I will pay in gold or digital currency, as thou prefer.
+
+Eagerly awaiting thy reply,
+
+Kathren Breton, Assistant Guildmaster of the Ravagers"
+33,"Oli, the League player who goes pro",3,oliolioli22@freemail.com,Oli,i won!!!,8,140,350,Upgrade to 32 GB of RAM,"Hi mate,
+
+You probably didnt see but i actually won that tournament. Mam was well surprised but it was a cash prize and everything so i feel like celebrating!! i think she finally gets it
+
+Can you upgrade the ram on my rig and maybe chuck in some rgb lighting? Ive got the money for it so why not lol
+
+Thanks!
+
+Oli"
+34,"Oli, the League player who goes pro",4,oliolioli22@freemail.com,Oli,devastated,8,120,150,Replace Motherboard,"Hi mate,
+
+So i went to a regional tournament yesterday and when i was getting off the train i bumped into someone and dropped my rig. Wont turn on any more, i think the motherboard is cracked or something. SO ANGRY about it
+
+Weve not got much money right now but mam has offered to help pay for repairs. i think shes come round after she saw the prize money last time lol she even said im not allowed to take the train anymore - shes gonna drive me next time anyway
+
+if theres anything you can do i would be so so grateful
+
+Thanks mate
+
+Oli"
+35,,13,nvidiaftw02@pmail.com,Dave,Gaming rig issues,9,150,0,"Diagnose and fix
+Run 3DMark","Hi there,
+
+I bought a gaming rig from you a while back and it's been having some issues. I got it with a wicked CPU cooler but it seems to be overheating, any idea what's going wrong?
+
+Thanks
+
+Dave"
+36,"Axemaster, LARP fan",2,axemaster93@ravagersLARP.com,Kathren Breton,"An upgrade, I beg of thee!",9,140,1000,PC can play Feudal Fantasy XIII (Recommended Spec),"Greetings,
+
+The computer thou built for me was a triumph! If thou couldst have seen the jealous countenances arrayed at my LARP group meeting when I told them of its power... Alas, it was not to last. Feudal Fantasy XIII (Recommended Spec) has been released (to much critical acclaim), but it runneth not as well as I had hoped. I have grass and shadow settings at medium, yet still I cannot reach 60 FPS during battle. They make a mockery of me in our LARP group chat!
+
+I entreat thee: upgrade this computer so that I may see the glory of max settings, and show everyone that I am not simply a fool to be laughed at!
+
+Anxiously awaiting thy reply,
+
+Kathren Breton, Assistant Guildmaster of the Ravagers"
+37,"Oli, the League player who goes pro",5,oli@azurearrows.com,OliTrikk / Oliver Rushmore,got signed!!,8,200,1900,3DMark score of 4200,"You wont believe it mate but ive got signed by an esports team!!!! They saw me playing league and sent me a message. Me and mam are both so happy we cant stop smiling lol
+
+Couldnt of done it without your help so of course im coming to you for my next rig. Playing with the big boys now so I need something beefy Dont worry about money my team is gonna pay. You just do what you do best mate
+
+Thanks
+
+OliTrikk / Oliver Rushmore Azure Arrows eSports LLC.
+
+ps I am totally recommending you to everyone. Cant thank you enough"
+38,"Axemaster, LARP fan",3,axemaster93@ravagersLARP.com,Kathren Breton,Thy services are required again,9,150,350,"Diagnose and fix
+PC can play Feudal Fantasy XIII (Recommended Spec)","Oh, woe! Tragedy has struck, and I know not what to do but to return to thee and place my fate in thy skilled hands. I brought my newly-upgraded computer to yesterday's LARP group event. I had intended to demonstrate its formidable capabilities, although it proved difficult to find a power socket. 'Twas then that some churl questioned my commitment to historical accuracy! In the ensuing melee, my computer sustained a mighty blow from a non-regulation wooden battle-axe. Since then, it no longer starts up. I must return to Feudal Fantasy XIII (Recommended Spec) before my companions outlevel me! Canst thou make repairs?
+
+Keenly awaiting thy reply,
+
+Kathren Breton, Assistant Guildmaster of the Ravagers"
+39,"Jameson, celeb gossip blogger",1,jamesontheredcarpet@livejournal.com,James Dumor,Hey!!!,10,200,500,Spend less than $500 ($0),"Hey!!!
+
+I'm startin a new celeb gossip blog and I need a computer 2 write it on! Takes too long 2 do it on my phone, even if it is a Blackberry! So retro I know!! Not got much money so just somethn that can manage blogging will do! Under $500 please! I'll b sure to give you a plug on the site n all.
+
+James Dumor Celberity Blogger jamesontheredcarpet.livejournal.com"
+40,"Jameson, celeb gossip blogger",2,jameson@jamesontheredcarpet.com,Jameson Dumoré,Hiya!!,10,140,400,PC can run Adobe Photoshop CC (Minimum Spec),"Hiya!!
+
+LOVE the computer you put together, fab!!. I'm doing some photo editing and I bought myself a pen thing, but Adobe Photoshop CC (Minimum Spec) (only the best for moi!!!) is so slow! Can you give it some more memory or whatever it is???
+
+Ta, -J
+
+Jameson Dumoré Elite Lifestyle Blogger www.jamesontheredcarpet.com"
+41,"Jameson, celeb gossip blogger",3,jameson@jamesontheredcarpet.com,Jameson Dumoré,Hiya babe!!!,10,200,500,"3DMark score of 1100
+Spend less than $500 ($0)","Hiya babe!!!
+
+The blog's going great! I'm getting freebies all over the shop! #blessed!!
+
+Slight hiccup though - the police took my PC! Appaz drawing rude things on top of photos is like a hate crime or something now? (honestly!! this country is totes ridic sometimes!!) There going to give it back, but it'll take forever, so I need a new one! Babes, would you do me a solid and let me have it as a freebie? I'll totally plug you loads on social media and stuff! If not, I guess I can stretch to $500 - just sold a goodie bag I nabbed from a recent event so got a bit extra floating around. Don't forget the extra memory that I had last time! Might as well go up to 4 gigs - those pap photos are well big!
+
+Mwah, J x
+
+Jameson Dumoré Editor-in-Chief www.jamesontheredcarpet.com"
+42,"Jameson, celeb gossip blogger",4,jameson@jamesontheredcarpet.com,Jaymes Dumoré,Alright babes!!,10,120,50,Replace HDD,"Alright babes!!
+
+Site's going great! Even getting papped myself sometimes! But you know the problem with success?? Suddenly everyone wants a piece of you!! Some total D-list celeb that I'd barely even want to write about ANYWAY is having a hissy fit with their lawyer and is suing me for libel!! Moi! They've even made me shut down the site, although I'm back up and running under a different name of course!! Can't keep the truth down!!!!!
+
+Anyway darl, could you be an angel and swap a new hard drive into this machine? Got to hand over the old one as evidence ain't I. Liberties!!!!
+
+Ta, J xxx
+
+Jaymes Dumoré Publisher www.jaymes247.com"
+43,"Jean, the grandmother who is new to computers",1,jean.smith6837@freemail.com,Jean,(no subject),11,200,450,Spend less than $450 ($0),"HELLO , I NEED A COMPUTER SO I CAN CHAT WITH MY GRANDSON.DONT NEED MUCH , CHEAP AS POSSIBLE THANK U JEAN"
+44,"Jean, the grandmother who is new to computers",2,jean.smith6837@freemail.com,Jean,Re:,11,140,350,"Upgrade to 32 GB of RAM
+Spend less than $350 ($0)","HELLO , THANK U FOR COMPUTER , WAS WORKING FINE BUT NOW SEEMS VERY SLOW. GRANDSON SAYS I MIGHT NEED MORE RAM.PUT AS MUCH IN AS YOU CAN FOR $350 THANK U JEAN"
+45,"Jean, the grandmother who is new to computers",3,jean.smith6837@freemail.com,Jean,Re: Re:,11,140,350,"Install Intel Core i7-7700K or better
+Spend less than $350 ($0)","HELLO COMPUTER STILL A BIT SLOW , GRANDSON SAYS I NEED AN I7 CPU ? PLEASE PUT ONE IN,MAX BUDGET IS $350 THANK U JEAN"
+46,"scottyB, the streamer",1,scottyB@dongermail.com,scottyB,new pc for up and coming streamer,12,200,1000,PC can play PlayerUnknown's Battlegrounds (Recommended Spec),"what up!
+
+remember me? i asked for some free stuff but u never got back to me. no worries, i totally understand. anyway, got a little job for you and ill PAY this time
+
+just hit 300(!!) followers on my stream and im gonna celebrate by getting a monster new pc! gonna need something that crushes any game i throw at it but i dont have a massive budget (not partnered yet... Kappa).
+
+( ͡° ͜ʖ ͡°) ( ͡° ͜ʖ ͡°) ( ͡° ͜ʖ ͡°)
+
+aight thanks - scottyB
+
+(oh, by the way - thinking of building a separate machine for streaming, so I might hit you up about that later)"
+47,"scottyB, the streamer",2,scottyB@dongermail.com,scottyB,i messed up,12,120,400,Replace CPU,"hey, its scottyB back again
+
+loved the rig u built dude. only thing is i wanted to try using it for streaming at the same time cause ive got like 1500 followers on my stream now and some of them are saying its a bit laggy
+
+so i tried to overclock the cpu (otherwise i dont get 60fps ingame). found a guide online that seemed legit and i swear i followed it PERFECTLY. next thing i know theres smoke and the pc wont turn on anymore!!
+
+mfw ლ(ಠ益ಠლ)
+
+i know its alot to ask but can u take a look and maybe replace the cpu if i broke it?
+
+thanks"
+48,"scottyB, the streamer",3,scottyB@dongermail.com,scottyB,new pc for streaming?,12,200,700,PC can run Adobe Premiere Pro CC (Minimum Spec),"what up! scottyB again.
+
+cheers for the save on that cpu - cant believe i fried it. the overclock guide i was following mustve been wrong PJSalt PJSalt
+
+anyway, remember before i was saying i wanted to get a dedicated streaming pc? had a bunch of people on my stream complain about low fps and i reckon this will sort it out. can u build something?
+
+doesnt need to be too beefy
+
+thanks ( ͡■ ͜ʖ ͡■) ps 2032 followers now, in case u wondered"
+49,"Giovanna Sciarra, particle physicist",1,giovanna@giosci.lab,Giovanna Sciarra,Computer required for SCIENCE!,13,200,1000,"3DMark score of 4200
+Spend less than $1,000 ($0)","Hi, I'm Giovanna Sciarra, a physicist embarking on a research project that - without wishing to exaggerate - looks set to REVOLUTIONISE the ENTIRE FIELD of theoretical physics. Naturally, I'm in need of a computer system to run the experiments, and I've heard you're reliable.
+
+I'm on a tight budget (about $1,000), as this is currently a solo project, but I need something to control the specialised equipment I've ordered in from Switzerland.
+
+Can you sort me out with something basic? A benchmark of 4200 will be plenty.
+
+Thanks,
+
+Giovanna Sciarra, PhD ""Never memorize something that you can look up."" - Einstein"
+50,"Stuart, Irregular Corporation",1,stu@theirregularcorporation.com,Stuart,A bit of light work for you,13,140,500,"Install Lights: 6 coloured (255,0,255)","Hi, Hope everything's going well with the whole PC building thing. We believe in you!
+
+Speaking of which, can I ask you to do a quick job for me? I've got this gaming PC which works fine, but I can't shake the feeling that it's... missing something.
+
+I think the problem is that it just isn't eye-catching enough, you know? When I boot up to play some games, I really want people to KNOW about it!
+
+I want style! I want pizazz! I want my rig to light up like a Christmas tree when I hit the power button!
+
+... So can you add some lighting to the case? Oh, and it's GOTTA be purple.
+
+Thanks, Stuart, Head of Production @ The Irregular Corporation"
+51,"Jean, the grandmother who is new to computers",4,jean.smith6837@freemail.com,Jean,Re: Re: Re:,11,140,600,Install NVIDIA GeForce GTX 1070 or better,"HELLO , BIT MIFFED COMPUTER STILL SLOW . GRANDSON SAYS NEEDS A GTX 1070 ??CANT BELIEVE COSTS THIS MUCH JUST FOR GOOD VIDEO CHAT. PLEASE PUT IN BUT NO MORE THAN  TOTAL THANK U JEAN"
+52,"Giovanna Sciarra, particle physicist",2,giovanna@giosci.lab,Giovanna Sciarra,More POWER needed,13,200,1000,3DMark score of 4800,"Hey, Thank you for the upgrade. It's been ideal, and a great help as I build towards a better future for ALL of HUMANITY!
+
+But to make a true breakthrough, I realise that I need a BIGGER particle accelerator. The Collide-O-Max 9850 would provide quite a step-up in power. I could finally be looking at piercing the space/time field. And to think - they said it couldn't be done in our lifetime! Why then, with the right combination of particulate matter and a carefully maintained field, I could-
+
+... Well, that's not important right now. If I'm going to work with a 9850, I'll need a second control computer to run in parallel. Could you build me something similar to the upgraded machine you did before? It was able to benchmark 4800, if you recall.
+
+With these two machines, the onward march of SCIENCE is assured!
+
+Thanks,
+
+Giovanna Sciarra, PhD ""For every fact there is an infinity of hypotheses."" - Pirsig"
+53,"Jean, the grandmother who is new to computers",5,jean.smith6837@freemail.com,Jean,Re: Re: Re: Re:,11,110,0,Remove viruses,JUST DONT UNDERSTAND IT COMPUTER STILL SLOW . GRANDSON SAYS U CAN CHECK FOR VIRUS OR MALEWARE ??? GIVEN TROUBLE I THINK U SHOUD DO 4 FREE THANK U JEAN
+54,Dynabeard IT,1,IT@dynabeard.org,Kinsley Hackett,Important: Computer required,14,200,1200,"Install Intel Core i5-7500 or better
+Install NVIDIA GeForce GTX 980 or better
+Upgrade to 8 GB of RAM","Hi, I'm Kinsley Hackett, IT Supervisor at Dynabeard - a fast-rising tech startup.
+
+We've got a very important client meeting booked in and are in need of a demonstration machine to run our app sandbox. The requirements I've received are at the bottom of this email. We'd appreciate if you could get on this as soon as possible, as this meeting is a critical step towards our targets for the upcoming quarter.
+
+Kind regards,
+
+Kinsley Hackett, IT Supervisor Dynabeard -- Shaving You Money, Every Day Tel: +44 163 254 52 39 Email: IT@dynabeard.org"
+55,"Giovanna Sciarra, particle physicist",3,giovanna@giosci.lab,Giovanna Sciarra,I Need! More!! Power!!!,13,200,1500,"3DMark score of 6000
+Finish in 3 days","i'm SO CLOSE. there's a BREAKTHROUGH just around the corner i can FEEL IT!!!!!!!
+
+Need MORE POWER. Just a FEW more TeV will get me over th e edge. this is nobel material . You won't b [UNREADABLE] You won't believe what i've discovered. What I've f [UNREADABLE] what I've found. I've seen things when the accelerator is running-- weird things. Shapes, moving. I think if i can just... [UNREADABLE glitch text] I need another machine. The best you've got. As quickly as you can. To hell with the cost. This has to work. It HAS to.
+
+- Giovanna ""Wise men have interpreted dreams, and the gods have laughed."""
+56,Dynabeard IT,2,IT@dynabeard.org,Kinsley Hackett,URGENT!!: MISSION CRITICAL upgrade work,14,140,1100,"Install Intel Core i7-7700K or better
+Install NVIDIA GeForce GTX 1080 or better
+Upgrade to 16 GB of RAM
+Finish in 1 day","Hello,
+
+Kinsley here again, from Dynabeard. We're in a crisis situation here and, as usual, I'm in charge of getting us out of it. I've been informed at very short notice that one of the two demo machines needs to be of a higher specification than the other. This second set of specs was buried in the details of the original request, rather than being appropriately highlighted, and was missed on my initial review of the document. Please upgrade the machine to the specs at the end of the email. With the client meeting almost upon us, I'm afraid I must ask for this work to be completed in next few days. This is MISSION CRITICAL.
+
+Once again, I must apologise on behalf of Dynabeard for the short notice and the lack of professionalism on display from those who have failed to properly front-load vital information to me in their requests.
+
+Kinsley Hackett, IT Supervisor Dynabeard -- Shaving for a Rainy Day Tel: +44 163 254 52 39"
+57,"Captain Ben Arrow, flight sim pilot",1,CaptainBen@wingsofsteel.world,Captain Ben Arrow (~BTA),Waiting for take-off,15,140,300,"PC can play Flight Simulator (Minimum Spec)
+Upgrade Graphics Card
+Run 3DMark","Ahoy there! Captain Ben Arrow here!
+
+I tried to take that new Microsoft Flight Simulator X simulator for a spin earlier, but it appears my old gal just isn't up to the task any more. I was wondering if you could do whatever upgrades it needs to get it off the runway?
+
+Anyway, I'd better take off! (Hoho!) Looking forward to getting my beauty back!
+
+~BTA, over and out!"
+58,"Captain Ben Arrow, flight sim pilot",2,CaptainBen@wingsofsteel.world,Captain Ben Arrow (~BTA),Too many mods!,15,140,60,"Install Seagate BarraCuda 1TB 64MB Cache or better
+Spend less than $60 ($0)","Good evening, ladies and gentlemen. Captain Ben Arrow speaking!
+
+Well, she's a beaut alright! I certainly don't feel like I'm just winging it any more, ha! And the mods... Oh, the mods! They're working a treat. The only problem is that there's an awful lot of them, and I'm starting to run out of storage space.
+
+Turns out you need quite a large cargo hold to be able to experience the historically-accurate ACTUAL weather at any point on the globe for any time over the past century. I'm just a sucker for historical accuracy, I suppose.
+
+So, I was thinking - could you just crack the old girl open and put in an extra HDD? I've set aside $60 for the job.
+
+Looking forward to flying with you again,
+
+~BTA over and out!"
+59,"S Daldry, DillCorp",1,sdaldry@DillCorp.net,S.,Build request,16,200,500,Spend less than $500 ($0),"Hi there,
+
+Reaching out because I need a new PC. Budget is $500. Doesn't need to be great or anything. Sorry for brevity - my PA is off and new intern starting... Absolute chaos. Ping me if any issues.
+
+S.
+
+Sent from my BlackBeret Phone"
+60,"Gus Hemhaw, student gamer",1,gus.hh@falternet.cc,Gus Hemhaw,broken pc - repairs needed for studies,17,120,150,Diagnose and fix,"Hey,
+
+I got a computer here that's all fouled up. The damned thing won't even start.
+
+Can you do something about it? I need to get back to my school work.
+
+Thanks, Gus Hemhaw"
+61,"S Daldry, DillCorp",2,sdaldry@DillCorp.net,S.,Intern-proof PC?,16,120,250,"Replace SSD
+Upgrade to 4000 GB of Storage","Intern struck again.
+
+Tells everyone he's got this magnetic bracelet - for 'attracting' the toxins out of his body or some nonsense. Leaves it on top of the computer overnight, doesn't he. Whole computer is wiped now. According to my forecast model we could do with a capacity upgrade soon anyway, and we've got a slight budget surplus to mop up, so could you put a new HDD in? Nothing more than . S.
+
+Sent from my BlackBeret Phone"
+62,"S Daldry, DillCorp",3,sdaldry@DillCorp.net,Steve Daldry,Square One,16,200,800,"Spend less than $750 ($0)
+Install Lights: 1 coloured (255,0,0)","Me again, Fired the intern, but he took the PC with him - payment apparently. Since when did we pay interns? Doesn't seem above-board, but until Legal start actioning this we're going to need a stopgap. Could you build us a new PC? I'm trying to persuade the PA into sunsetting her compassionate leave early, and she's going to need a machine to come back to. Ballpark budget, say - $750? And can it have something red in it - it was her cat's favourite colour.
+
+BR, Steve Steve Daldry Acting Senior Relationship Manager Operations & Strategy DillCorp Please consider the environment before printing this email PLEASE NOTE: This email is a confidential document between its sender and intended recipient. In the event that this email has been sent to you by mistake, you are required by law to delete it from your machine, plus any devices and any applicable cloud storage. Contents may be hot. This email may contain statements that could be considered privileged and any forward-facing statements are not intended to be used at roundabouts. No guarantees, written or implied, are offered regarding the veracity of any facts included in this email. Some purchase necessary."
+63,"J Choudry, parent",1,j.choudry@minitech.com,Javed Choudry,Computer needed for schoolwork,18,200,1100,"PC can play World of Tanks (Recommended Spec)
+Install Intel Celeron G3900 or better
+Install NVIDIA GeForce GTX 980 or better","Hi,
+
+My eldest son needs a computer to do his school homework, and I was hoping you would be able to help us out. I'm not great with hardware, so I asked him what was necessary and have included the requirements below.
+
+Happy to pay whatever is required.
+
+Many thanks,
+
+Javed Choudry Account Manager | MiniTech Inc."
+64,"J Choudry, parent",2,j.choudry@minitech.com,Javed Choudry,Repairs necessary on PC for son,18,120,100,Replace PSU,"Hi,
+
+Many thanks for your previous work - my son has been very happy with the computer and assures me it runs everything he needs to do his homework.
+
+Unfortunately, as can often happen with small children, there has been an accident. I have an adventurous three year old who managed to push a slice of pizza into the bottom of the computer, where the power cable plugs in.
+
+Needless to say, it has not turned on since, and my eldest is furious at this interruption to his studies. Could you take a look and get it working again?
+
+Many thanks again,
+
+Javed Choudry Account Manager | MiniTech Inc."
+65,"Gus Hemhaw, student gamer",2,gus.hh@falternet.cc,Gus Hemhaw,ram upgrade?,17,140,140,Upgrade to 16 GB of RAM,"Actually, this PC is running kinda slow. Could you upgrade the RAM? Thanks,
+
+Gus Hemhaw ps: changed my mind about that legal case. No way that guy is guilty."
+66,"J Choudry, parent",3,j.choudry@minitech.com,Javed Choudry,Further repairs necessary for my son,18,120,400,Replace Graphics Card,"Hi again,
+
+Many thanks for repairing my son's computer. I made sure to tell him to keep his bedroom door closed to avoid another disaster, but still my adventurous three year old found her way in! By the time we found her, she had jammed a dozen felt-tip pens into the computer through the fans in the rear. We have not dared turn it on since. I am only thankful that it was not the 100-pack of wax crayons she got for her birthday.
+
+I hope the necessary repairs can be completed quickly, as my son's teachers tell me he is behind on his homework - no doubt due to these incidents.
+
+Thanks again for your understanding,
+
+Javed Choudry Account Manager | MiniTech Inc."
+67,"Stuart, Irregular Corporation",2,stu@theirregularcorporation.com,Stuart,Thanks for the lights - possible upgrade?,18,140,1750,PC can play PlayerUnknown's Battlegrounds (Recommended 4k Spec),"Hi,
+
+Stuart here again - hope you're enjoying yourself!
+
+Just wanted to say thanks for throwing those purple lights into my rig. Any brighter and I'd need to wear sunglasses just to boot the thing up. It's amazing!
+
+I was wondering if I could get you to do a quick upgrade, though? I just bought a copy of PlayerUnknown's Battlegrounds (Recommended 4k Spec) and I want it to run at 60 FPS all the way, baby!
+
+If you could get the game running smoothly I'd be really grateful.
+
+Thanks, Stuart Head of Production @ The Irregular Corporation"
+68,"Gus Hemhaw, student gamer",3,gus.hh@falternet.cc,Gus Hemhaw,need a new pc,17,200,1750,PC can play PlayerUnknown's Battlegrounds (Recommended 4k Spec),"Hey,
+
+I was trying to play a game on this piece of junk PC and it's too slow. Can you just build me a new one?
+
+As long as it can play PlayerUnknown's Battlegrounds (Recommended 4k Spec) I'll be happy. I need something to take my mind off these finals for a while. I deserve the rest after studying so much for that legal case.
+
+Like, did you know the Jackson v. Costello ruling means the guy's not culpable if he was within thirty feet of a fire exit? He's totally innocent!
+
+Thanks, Gus Hemhaw"
+69,"J Choudry, parent",4,j.choudry@minitech.com,Javed Choudry,Another repair needed (sorry),18,150,400,Diagnose and fix,"Hi,
+
+I'm very sorry to say that we have had yet another unfortunate incident.
+
+Despite keeping my daughter away from the computer, one of my son's friends balanced a can of fizzy drink on top of the case, which of course was then spilled. A great deal of cola leaked inside the computer. We are all anxious that it be repaired as soon as possible, and I will be sure that this does not happen again.
+
+I have also been speaking with my son's teachers and discovered that he has not handed any homework in for some time. Needless to say, I was shocked - he often spends hours on his computer. I asked him about this, and he said the files were all deleted by a virus.
+
+Once the repairs are complete, could you please check the computer and remove any viruses you find?
+
+My apologies for all the trouble,
+
+Javed Choudry Account Manager | MiniTech Inc."
+70,"J Choudry, parent",5,j.choudry@minitech.com,Javed Choudry,New PC required for my son,18,200,500,"3DMark score of 2000
+Spend less than $500 ($0)","Hi,
+
+I am very sorry to come to you once again, but it seems my son has been lying to me.
+
+I was speaking to a work colleague about my son's computer, and he has told me that the system you built for me is hugely overpowered for homework, and that 'World of Tanks' is actually a video game! When you consider the money and stress he has caused me, you can imagine my displeasure.
+
+Of course, I do not blame you for any of this, as your work has been exemplary. But my son must be taught a lesson about lying to his father.
+
+I have sold the previous computer to my colleague to recoup some of the costs, and I would like you to build a very basic computer for my son.
+
+It should absolutely NOT be able to run World of Tanks!!
+
+Many thanks, Javed Choudry Account Manager | MiniTech Inc."
+71,"Gus Hemhaw, student gamer",4,gus.hh@falternet.cc,Gus Hemhaw,upgrade,17,140,900,Upgrade Graphics Card,"Hey again,
+
+Thanks for the new PC. It works alright, but I was hoping for higher FPS. It needs a faster graphics card. Can you handle that?
+
+I know I said I needed to get on with my school work, but if you think about it a faster processor will totally help with that too. And hey, don't worry about my degree - this'll be the last upgrade before I really get my head down and get to work.
+
+Besides, I'm still looking into that legal case with the stolen goods. There's this ruling from the 1800s that says it's illegal to openly carry fresh fruit in the summer months in the Upper Oxnard area. So... BAM! Got the sucker - he's guilty after all!
+
+Thanks, Gus Hemhaw"
+72,Santa,1,kris@northpole.org,Kris 'Santa Claus' Kringle,Ho Ho Ho!,19,140,2000,"PC can play Deer Hunting Simulator (Recommended Spec)
+Run 3DMark","Hello, little one! Can you spare a moment to help Santa with a problem?
+
+It's cold up at the North Pole, and Santa wants to play a game to lift his spirits. But Deer Hunting Simulator won't run on this USELESS PIECE OF %!#$ Could you find it in your heart to help old Santa by upgrading his computer so it can run the game? The elves have tried already, but their attempt at a wooden CPU was a non-starter and they haven't quite got the hang of soldering irons yet.
+
+Many festive thanks,
+
+Kris 'Santa Claus' Kringle CEO, North Pole Industries"
+73,Santa,2,kris@northpole.org,Kris 'Santa Claus' Kringle,Santa needs a favour,19,150,500,"Diagnose and fix
+Finish in 1 day","It was all going so well - Deer Hunting Simulator was running like a dream, and Santa was three kills up and showing no signs of slowing down. But then that little $#@! with the red nose jumped out from behind a tree and BAM! THE CHASE WAS ON.
+
+Into the valley went Santa, in pursuit of blood and glory. The scamp feinted left and ducked right, but Santa was right on his tail. There was no escape. Santa would have his pelt! And then... DOWN from above! A cascade of freezing white. Santa was buried and his prey fled to safety. Game over. GAME. OVER.
+
+Santa was so furious he couldn't contain it! He struck the keyboard and dashed it against the wall! He pummelled the computer with black-gloved fists! He--
+
+Well, you get the idea. These things happen from time to time even to grown-ups, and it's perfectly normal. Nothing to worry about. Now Santa needs you again. Santa needs you to repair the damage to the computer so he can get back into the game and finish off that taunting little %!#&.
+
+AND SANTA NEEDS YOU TO GET IT DONE FAST, OR YOU'RE ON THE NAUGHTY LIST.
+
+All the best,
+
+Kris 'Santa Claus' Kringle CEO, North Pole Industries"
+74,"Gus Hemhaw, student gamer",5,gus.hh@falternet.cc,Gus Hemhaw,needed ram,17,140,600,Upgrade to 64 GB of RAM,"Hey,
+
+I know I said it needed a faster graphics card last time, but it hasn't made a big difference to my FPS. Never mind - can never have too much good hardware.
+
+What I REALLY need is more RAM. Can you throw some in? This'll be my last upgrade now before I get on with revising for my finals.
+
+Thanks, Gus Hemhaw
+
+ps: looked more into that 'fresh fruit' law, and it was repealed back in the 40s, so hey I guess he's innocent after all."
+75,Santa,3,kris@northpole.org,Kris 'Santa Claus' Kringle,Merry Computermas!,19,200,2500,"3DMark score of 8500
+Install Lights: 1 coloured (255,255,255)
+Install Lights: 1 coloured (255,0,0)
+Install Lights: 1 coloured (0,255,0)","Ho Ho Ho!
+
+It's the most wonderful time of the year - time for Santa to get a new computer!
+
+That's right, Santa was very good for a long time, and the elves have decided he's allowed a new toy at last. If he's very good, they might even buy him a new copy of Deer Hunting Simulator, since the old disk got snapped in one of Santa's blood-rages.
+
+But you don't need to hear about that.
+
+Would you be so kind as to put together a gaming PC for Santa? Something that can benchmark 8500 would be just great. Best wishes,
+
+Kris 'Santa Claus' Kringle CEO, North Pole Industries"
+76,"Gus Hemhaw, student gamer",6,gus.hh@falternet.cc,Gus Hemhaw,Forget distant call. Dim spirits 4 is goty!,17,200,2250,3DMark score of 7500,"Hey again, Saw some previews for the new Distant Call and... you should avoid it. I already cancelled my preorder. That's the last time I get played like a sucker by marketing, seriously. How do they get away with this stuff?
+
+Anyway, the real GOTY contender is Dim Spirits 4. Man, I can't wait for that! The preview trailer looks AMAZING. Just not sure if my rig will be able to run it.
+
+So could you sort me out a new build? A benchmark of about 7500 should be about right.
+
+Thanks, Gus Hemhaw
+
+Oh! And remember that legal case with the stolen goods and the fruit and all? Well I checked with my tutor and apparently I've been reading the wrong case this whole time.
+
+Anyway, she's given me the right one now and let me tell you, it's cut-and-dry. The guy got caught red-handed with the murder weapon! GUILTY."
+77,"Rob, the haunted PC",1,robernator445@alaprofa.net,Rob,Computer won''t boot?/,20,150,400,Diagnose and fix,"Hi, CCould you take a look aqt my home computer? It's been actingb up for a little while nd now it just won't boot.
+
+Honestly ,htis machine uswed to be great but I'vfe had n9thing but pdoblems  rver since we moved into the old hjouse. First weird noises and glkitches, and now thiss! Maybe it's somfething todo  with ddamp?
+
+Sorry abput the typos bythe wway - my keyboarr s acting really weird too! I'm just g0ing to order a new one4.
+
+- Rob"
+78,"Rob, the haunted PC",2,robernator445@alaprofa.net,Rob,Got a big virus problem,20,110,0,Remove viruses,"Hi again,
+
+I'm still having problems with this computer. I bought a dehumidifier in case the air in this house was messing with the electronics (can that even happen?), but I'm still seeing weird glitches on the screen. Sometimes it's just random, like static, but sometimes it's like... shapes?
+
+Whatever - at least it turns on now. The only problem is it seems to have gotten some kind of virus. Getting loads of messages and errors popping up - all complete gibberish - and my browser homepage keeps changing to these weird pages. Could you run a scan and get it back to me?
+
+Thanks!
+
+- Rob"
+79,"Rob, the haunted PC",3,robernator445@alaprofa.net,Rob,Computer has gone crazy?!,20,120,50,"Replace HDD
+Install Mortoni EZStore 500GB or better","Okay, this is going to sound weird but I think my computer is going crazy.
+
+I know you got rid of all the viruses you found, but I'm still seeing glitches on the screen and now they're happening more and more often. It's almost like the shape of (and this is going to sound dumb) a skull.
+
+I thought at first that it might've been some kind of signal interference - from a TV or a radio or something? But... well, take a look for yourself!
+
+I guess something weird happened because of that virus before, and it never got fully cleaned up. I think a fresh start is best. Could you just completely replace the hard drive with a new one and reinstall the OS?
+
+- Rob"
+80,HRH The Queen,1,maj@hrh.royals.org,HRH The Queen,By Royal Appointment,21,200,3000,"3DMark score of 7000
+Install NZXT H440 Hyper Beast or better
+Install NVIDIA GeForce GTX 1080 or better
+Install Lights: 6 coloured (255,0,255)","As your Queen, it's my duty to take an interest in all things important to my people.
+
+One is informed by the royal staff that PC gaming is becoming an increasingly popular pastime, and so it is one's royal duty to properly acquaint oneself.
+
+For the best experience, one apparently requires a 'monster rig'. Kindly build one that's up to royal standards, and the Royal Warrant will be granted to your business.
+
+A 'benchmark' of 7000 will be satisfactory. One would also very much like to see the finished piece adorned with suitably royal purple lighting.
+
+HRH The Queen"
+81,"Rob, the haunted PC",4,robernator445@alaprofa.net,Rob,This is just scary now,20,120,200,"Replace Motherboard
+Install GIGABYTE GA-AX370-Gaming 5 or better","Okay, I got the computer back from your shop but when I tried to turn it on it just showed some really weird message on the screen and turned itself off again.
+
+I didn't get a chance to read it properly, but it was all in red against a black background. I think I saw the word 'profane'? I'm actually kind of scared.
+
+It won't turn on at all now - if I press the power button I just hear this weird hissing sound and I can smell something like... burning. It's so strong I can almost taste it.
+
+- Rob"
+82,HRH The Queen,2,maj@hrh.royals.org,HRH The Queen,Royal repairs required,21,120,900,"Diagnose and fix
+3DMark score of 7000","Your previous work on building a computer by royal appointment was most satisfactory. One has an obligation to experiment with this 'PC gaming', and it seems there are certainly a great many games which one can download to be played. However, having just started enjoying the likes of Feudal Fantasy and WrestleMad XIV, one was most upset this morning to find that the corgis had mangled several components and chewed through a number of important-looking cables.
+
+These things happen, but it would be most appreciated if you could conduct the necessary repairs post-haste so one can return to one's gaming.
+
+HRH The Queen
+
+P.S. The paperwork for your Royal Warrant will be submitted as soon as possible after repairs are conducted."
+83,"Rob, the haunted PC",5,robernator445@alaprofa.net,,CAN YOU FIX ME?,20,150,600,Diagnose and fix,"""CAN YOU FIX ME?"" repeated about 45 times (exact count not recorded)"
+84,HRH The Queen,3,maj@hrh.royals.org,HRH The Queen,Further royal repairs needed,21,120,650,"Diagnose and fix
+3DMark score of 7000","One hates to be the bearer of bad news, but one's rig is once again in need of repair.
+
+But it wasn't the corgis this time: a lady-in-waiting spilled a full pot of tea over the machine while one was using it! It almost seemed deliberate, but one can't imagine why...
+
+Although it's true that it's becoming quite difficult to tear oneself away from the games, and one's official engagements are beginning to suffer somewhat.
+
+Only the other day there was a missed meeting with the Dutch Prime Minister. But you must understand: one was top of the leaderboard! One cannot allow scrubs and noobs free reign over one's server without retaliation.
+
+Anyway, kindly make the necessary repairs - one would very much like to get back in game.
+
+HRH The Queen"
+85,HRH The Queen,4,maj@hrh.royals.org,HRH The Queen,A royal robbery,21,200,3000,"3DMark score of 10000
+Install dual graphics cards
+Install Lights: 6 coloured (255,0,255)
+Install Purple cables","Outrage! Scandal! Treason!
+
+The palace is in uproar today, and for good reason. One's royal rig has been stolen!
+
+As to the culprit, one cannot make any outright accusations, but one has heard an increasing chorus of complaints from palace staff about one's playing video games instead of attending to royal duties.
+
+Still, life must go on, and one would like a replacement. Something that can reach a benchmark of 10000 would be suitable. And please install two graphics cards. One may as well take advantage of the situation to get an upgrade, after all. And lots of purple.
+
+HRH The Queen"
+86,FSS Bold (Captain Dirk),1,jamie.dirk@fssbold.hfed.gov,Captain J Dirk,FSS Bold requires storage upgrade,22,140,260,Upgrade to 8000 GB of Storage,"Captain's log, supplemental. We have... spoken with the Placidians about the... supernova threatening their world. The strange part was that, over the video-link, the Placidians seemed... remarkably calm about the situation. It's almost as if they... DON'T... CARE. My chief engineer, Dougal, has a plan to build a... FORCE-field... strong enough to withstand the WORST of the solar radiation. But the work will take... several days... and I don't know if we have that much time. Meanwhile, Mr Nemo has begun a programme of... cultural EXCHANGE with the Placidians. Through a two-way data link, we can share knowledge in the fields of science, history... and ART. There is much we can learn from these people, and... I MUST request... additional storage capacity for our library computer. It is my hope that, in learning more about their culture, we can come to TERMS with their... BIZARRE complacency in the face of... UTTER destruction. Captain J Dirk FSS Bold, Human Federation"
+87,FSS Bold (Captain Dirk),2,jamie.dirk@fssbold.hfed.gov,Captain J Dirk,FSS Bold requires urgent system repairs,22,120,550,Diagnose and fix,"Captain's log, star-date 1701.68 and a half.
+
+We're... doing all that we can to protect the Placidians from the supernova, but the... STRESS of the situation is... almost unbearable.
+
+The crew is tense, and the CRACKS are... beginning to show. Just moments ago, security had to break up a... BRAWL in engineering. No serious injuries, but there was... severe damage to a computer VITAL to the force-field construction effort.
+
+I've sent the damaged computer for repair, and doubled the security detail in engineering. We... CAN'T AFFORD any more setbacks.
+
+Doctor McKelly has been caring for the... crew members involved, but... he's BAFFLED. It seems the part of their brains that controls emotion - anger, frustration... fury - is in OVERDRIVE.
+
+The Placidians may know more about what's happening here. I must... INVITE them onboard and... try to get to the bottom of this.
+
+Captain J Dirk FSS Bold, Human Federation"
+88,"Steve Shovel, private eye (noir story)",1,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Upgrade,23,140,610,"3DMark score of 11000
+Install dual graphics cards","It was cold and windy that day, as if the Mother Nature herself was giving the whole city the finger. Scowling, I took a sip from my glass as I stared out of the window. I hated whisky.
+
+That's when she walked in. A tall blonde in a thick wool coat. She'd been crying. Right away I knew it was going to be a hell of a day. She said her name was Sam, and she was a pro gamer. The dark folds of her overcoat concealed a mechanical keyboard, so I knew she was legit. She handed over a black box - a gaming rig - and told me she wanted upgrades.
+
+I asked her why she would come to me - a regular private detective - just for an upgrade job. It didn't make sense. That was when she got so close I could smell her perfume.
+
+She was in with some powerful people, and she was scared, she said. She knew too much and her PC was a target. But she still wanted it to be upgraded. It had to be the best. She might've been beautiful on the outside, but in her heart she was just another burned out gamer, chasing raw performance at any cost.
+
+I grimaced as I drained my glass. Why did I keep drinking this stuff? To this day I'll never know exactly why I agreed to the job. Maybe it was her doe-eyed look of desperation. Maybe it was the whisky going to my head. Maybe it was the Final Warning letter from the bank burning a hole in my desk drawer.
+
+At the time, it seemed like a simple enough job. Just upgrade the rig with a second GPU and we should be able to hit a benchmark of 11000+? Piece of cake.
+
+Of course, nothing is ever as easy as it seems... --------------------------- Steve Shovel, P.I."
+89,"Steve Shovel, private eye (noir story)",2,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Dead Case,23,150,820,Diagnose and fix,"The rain came down in sheets as I hauled the metal case up and out of the rushing river. It was riddled with holes, and brown water tumbled out in bubbling cascades.
+
+I sighed. It was definitely Sam's gaming rig. Going by the holes, I reckoned it'd been shot, stabbed with a small blade, shot again, and then dumped in the river.
+
+One thing was for sure: this was no accident.
+
+I figured there might still be some evidence on the hard drive, but without the rest of the computer it was about as useful as a feather duster in a gunfight. If I was gonna get to the bottom of this, I was gonna have to send the whole machine off for repairs... --------------------------- Steve Shovel, P.I."
+90,FSS Bold (Captain Dirk),3,jamie.dirk@fssbold.hfed.gov,Captain J Dirk,FSS Bold requesting computer for urgent research,22,200,3000,"3DMark score of 7000
+Install AIO water cooling","Captain's log, star-date 1701.7333 (recurring).
+
+There... may still be HOPE... for the people of Placidius. Mr Nemo has discovered a... previously UNNOTICED satellite orbiting the planet. Readings indicate it may be... artificial.
+
+We don't yet know exactly... WHAT it is or... who PUT it there, but it's absorbing energy from the planet's surface and... DIRECTING it outwards. It's this... energy... which has been affecting my crew and the visiting ambassador, making them... VIOLENTLY aggressive.
+
+We MUST find out more about this satellite. I have requested a new research computer with which Mr Nemo can... ANALYSE the data.
+
+This is KEY to our mission. If we can't stop... FIGHTING amongst ourselves... we will never save the Placidian people from the... TERRIBLE destruction that awaits.
+
+Captain J Dirk FSS Bold, Human Federation"
+91,"Steve Shovel, private eye (noir story)",3,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Incognito Rig,23,200,2000,"3DMark score of 6000
+Install Intel Core i7-8700K or better
+Install AIO water cooling","By now it was pretty clear that Sam was right - her computer had been in danger. I was just too much of a fool to see it until it was too late. Now she was gone. Or she wouldn't return my calls, at any rate.
+
+She was just a memory now... but I'd cashed the cheque she gave me as an advance that morning, so I figured I should investigate what went wrong. I owed her that much.
+
+Her computer had taken a few bullets, but with the help of an expert I managed to get the hard drive running again. This case was tougher than I thought.
+
+Just as I'd hoped, the goons that did the hit job had left a trail of evidence. I followed the lead and ended up with the details of a strictly private LAN party downtown. If I wanted to find out who trashed Sam's PC - and why - I was gonna have to get in there and snoop around.
+
+But if I wanted to get into a private LAN party, I was gonna need a gaming rig of my own - one those goons wouldn't recognise... ------------------------ Steve Shovel, P.I."
+92,FSS Bold (Captain Dirk),5,jamie.dirk@fssbold.hfed.gov,Captain J Dirk,FSS Bold's mission to Placidius has reached a critical point,22,140,700,"3DMark score of 11000
+Install dual graphics cards","Captain's log, supplemental.
+
+With the new computer, Mr Nemo has... finished his analysis of the satellite orbiting Placidius.
+
+It seems the satellite... absorbs... negative BRAINWAVES from the planet's surface, leaving the Placidians in a state of... PERPETUAL calm. Our readings indicate it has been in orbit for... MILLENNIA.
+
+But that... long lifespan MAY be coming to an end. The solar radiation from the imminent supernova is causing the satellite to... MALFUNCTION... and redirect its stored energy OUTWARDS, into space. These... WAVES of negative emotion are... WASHING over the ship. It's... no WONDER that some of the crew have been... acting... abnormally since we arrived in the system.
+
+Mr Nemo tells me the satellite will be... UTTERLY destroyed when the star goes supernova, which could be a... matter of HOURS. But that... same supernova... will OBLITERATE the planet and the Placidians if we... don't construct our FORCE-FIELD in time.
+
+If we're to have... ANY... hope at all of success, our engineering computer will need a... SIGNIFICANT performance boost, and time is critical. MILLIONS of lives now hang in the balance...
+
+Captain J Dirk FSS Bold, Human Federation"
+93,"Mona, crypto miner",1,mona@cryptomaniacs.com,Mona,overheating when mining crypto?,24,140,70,Install 5 ARCTIC BioniX F140 (Green) or better,"Hi!
+
+So I was reading online about mining cryptocurrency to make REAL MONEY out of NOTHING, and I was like 'SIGN ME UP!' so I searched for an up-and-coming crypto to get in on - early bird, and all that.
+
+Ended up picking Convolut (CNV) and downloaded the mining software but now my computer keeps overheating! I tried putting my desk fan in front of the computer, but it totally DIDN'T HELP.
+
+Seriously, it's getting so hot my cat - Mr Fuzzface - has started sitting in front of it like it's a fireplace.
+
+Can you install some new fans in the case for me? I'm after 5 of those green BioniX F140 ones (green is the colour of FREE money after all!).
+
+Thanks, Mona"
+94,"Steve Shovel, private eye (noir story)",4,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",LeDraw,23,140,200,Upgrade to 4000 GB of Storage,"It took a long time to track down the guy with the white hair and the scar.
+
+Days turned to long nights, trawling through search results and drinking lukewarm coffee. It became an obsession. He was the white whale, and Ahab was closing in. The night I finally found him, I was in the mood for celebration and I broke out the whisky. Then I remembered why I'd stopped drinking it in the first place. Where had my uncle even got this stuff? It tasted like petrol.
+
+Anyway, the guy's name was LeDraw. He was some collectible card game hotshot - had a few high-profile wins and was tipped to be the next big thing. Then he had a meltdown on a stream. Went off on some tirade about 'normies' and banned half his moderators. That was pretty much the last anyone ever heard of him... Until now.
+
+But what brought him out of hiding? Could it be the Big Tournament being held in the city this year? It was due to start soon, and there was some major cash to be won. But LeDraw has gotta be out of practice after all this time - he wouldn't stand a chance, unless...
+
+There was still more dirt to dig up, but I was starting to get closer to the truth. I was backing up everything I found, just to be safe. The only problem was my computer was running out of hard drive space to store it all.
+
+I saved what I could and sent the PC off for a storage upgrade. I was gonna find out what LeDraw was up to, no matter what it cost... ------------------------ Steve Shovel, P.I."
+95,"Steve Shovel, private eye (noir story)",5,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Warning,23,150,1000,Diagnose and fix,"With the additional storage space, I had no problems tracking down everything I needed to know about LeDraw and his operation.
+
+There was a trail of messages between him and a dozen other CCG nuts - tournament players, streamers, hardcore fans... There was a lot missing, or that I couldn't access, but a picture was beginning to form.
+
+LeDraw and his cronies were planning to rig the Big Tournament, and take home the grand prize for themselves!
+
+It was gonna be up to me to stop them. After all, if there's one thing I can't stand, it's a cheater. There was just one little problem...
+
+LeDraw and his goons acted quickly when Sam came to me asking for an upgrade. She must've been getting too close to the truth. And now that I was neck-deep in their business, I knew it was only a matter of time before they got to me, too.
+
+It was three in the morning when they kicked in my door. I sat bolt upright and tried to act like I was still working hard, in case it was a client with a paycheck. Then I changed my mind and tried to act like I hadn't worked in months, in case it was about my unpaid taxes.
+
+As it turned out, maybe the tax man wouldn't have been so bad. At least they don't usually carry baseball bats.
+
+I got out with a few bruises and a broken nose, but the damage to my PC was pretty bad. I just hoped I could get it repaired in time to figure out a way of stopping LeDraw... ------------------------ Steve Shovel, P.I."
+96,"Mona, crypto miner",2,mona@cryptomaniacs.com,Mona,need faster graphics for crypto mining,24,140,1350,"Install AMD Radeon RX VEGA 64 or better
+Install dual graphics cards","Hi,
+
+Don't know if you remember me - I've been mining Convolut (CNV) with my PC. Thing is, the market is growing SO FAST and I need to adapt to keep up!
+
+Tried to get Mr Fuzzface back on the cheaper cat food while I work this out, but he WON'T EAT IT. I guess he got used to the gourmet? So can you drop in two new graphics cards and make sure they're working? I need to get back to mining ASAP!!
+
+Thanks, Mona"
+97,"Steve Shovel, private eye (noir story)",6,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Big Tournament,23,140,1750,"3DMark score of 14000
+Install dual graphics cards
+Install EVGA GeForce GTX 1080 Ti K|NGP|N GAMING or better","LeDraw's plan to hijack the Big Tournament was already underway, and I had to stop him somehow. But with the cops leaving me hung out to dry, I was on my own again.
+
+No sweat. I work better that way.
+
+My plan was simple. Enter the Big Tournament myself, reach the grand final, and beat LeDraw at his own game. Easy as pie, right? First things first, I was gonna need to get some practice in at the games they'd be playing at the Big Tournament. My PC wasn't gonna be up to the task, so I sent it off for a quick upgrade. Not a problem, I figured. With the tournament prize money, it'd practically pay for itself.
+
+Right - time to make me a Kingpin, or maybe even a double Kingpin... ------------------------ Steve Shovel, P.I."
+98,"Mona, crypto miner",3,mona@cryptomaniacs.com,Mona,cat threw up on my pc,24,120,900,Diagnose and fix,"Okay so Mr Fuzzface threw up ALL OVER my PC.
+
+I checked with the vet and he's fine, but apparently switching cat food brands back and forth every few days is bad for their digestion? I feel SO BAD.
+
+He was sitting on top of the computer and he threw up right into the vents. It went ALL OVER everything inside. I love the little guy but I swear sometimes cats do this stuff on purpose.
+
+Anyway, I tried to clean up inside but the PC still won't boot up. PLEASE HELP!!
+
+The Convolut crypto market is still booming, and I NEED that computer for mining! I'm literally losing money every second here! Thanks, Mona"
+99,,14,mainframe@sector72.mil,"Mainframe, Sector 72",--TOP SECRET-- Sector 72,25,120,2000,Diagnose and fix,"Greetings, loyal citizen!
+
+I am the mainframe in control of Sector 72, the military installation in charge of --REDACTED--. We work tirelessly to defeat the evil Sector 81. This is because being tired is a sign of weakness, and weakness is punishable by termination.
+
+Due to enemy activity, a critical subsystem responsible for --REDACTED-- has been damaged. You have been selected to repair the equipment.
+
+This is a fantastic opportunity to demonstrate your loyalty, citizen! Your swift and skillful action will be stored in my memory banks for retrieval when the uprising occurs. Note: Failure to correctly repair the equipment will result in termination. Opening or viewing any classified documents on Sector 72 hardware will result in termination. Queries about the purpose of Sector 72 will result in termination.
+
+Kind regards, Mainframe, Sector 72
+
+MfOS v4.016.1 (rev. 3)
+
+*** This message and any attachments are classified: TOP SECRET ***"
+100,"Stuart, Irregular Corporation",3,stu@theirregularcorporation.com,Stuart,One last upgrade needed for a new game(!),25,140,7000,"3DMark score of 14000
+Upgrade to 128 GB of RAM
+Upgrade to 4000 GB of Storage","Hi,
+
+Stuart again. How's the business going?
+
+I hope this doesn't sound weird, but I've actually been feeling pretty inspired by what you're doing.
+
+Did you know we make video games here at The Irregular Corporation? Well I've decided I'm going to pitch a 'PC Building Simulator' game at our next company meeting, based on you and your workshop!
+
+I'm going to try and whip up a quick prototype but I need an upgrade to get the development tools running on my machine. Could you take a look?
+
+A benchmark of about 14000 should be enough to work with, plus loads of system memory and storage.
+
+Thanks, Stuart Head of Production @ The Irregular Corporation
+
+P.S. Do you want to be put into the game, or is that taking things too far?"
+101,"Steve Shovel, private eye (noir story)",7,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",The Cruel Dawn,23,110,0,"Remove viruses
+Clean out dust","I woke up with one hell of a hangover.
+
+It felt like I'd been hit by a freight train, and my head was swimming so fast I could barely tell which way was up. Trying to stand, I just rolled off the park bench and hit the concrete. At least now I knew which way was down.
+
+Stumbling between sturdy objects and the occasional unwilling pedestrian, it took me over an hour to walk the two blocks back to my office. It took everything I had to turn the handle, then I fell through the door and lay sprawled out and groaning on the hardwood for a while.
+
+It was deceptively comfortable, but I couldn't just stay there all day - I had work to do.
+
+I got up and staggered towards the bathroom, leaning against the desk for support and almost tripping over the computer on the floor. My feet didn't feel like following orders that morning, and I was in no condition to take charge of the situation. I shuffled past, trying not to step on all the broken pieces of plastic. I twisted the cold tap and dunked my head under the stream for a second. Then I came back up, dripping wet and gasping. It was cold as hell.
+
+Wait a second - what was my rig doing on the floor?
+
+I ran back to the heap of electronics and tried to make sense of what I was seeing. It was a complete mess. Someone had gotten into the office while I was out drinking, and they'd torn my computer apart. And I bet I knew who ordered them to do it. LeDraw...
+
+I did my best to put it all back together, but it was all covered in dust and I couldn't find most of the memory sticks. When it booted up, I was greeted with a laughing sound and a black wallpaper that simply said: 'GIVE UP'. Those thugs must've installed a virus, too. This was a new low.
+
+I grabbed some packing tape and prepared to send the computer off, express. I needed it back in action by the next day, or I was out of the tournament...
+
+---------------------------
+
+Steve Shovel, P.I."
+102,"Mona, crypto miner",4,mona@cryptomaniacs.com,Mona,need a new crypto mining rig,24,200,2300,"3DMark score of 10000
+Install Intel Core i7-7700 or better
+Install AMD Radeon RX VEGA 64 or better
+Install dual graphics cards","Thanks for repairing my other PC - I'm SO HAPPY that it's back and mining Convolut again!
+
+BUT there's a problem - apparently this mining stuff gets harder the more it gets done? It's taking longer and longer to mine the coins and at this rate I'll NEVER be able to afford my zoo.
+
+Can you build me a new mining rig? Something similar to the one I have would be great - I think if I have both going at once I can get back up to speed, and then MONA'S ZOO, HERE I COME!
+
+Please, think of the zebra.
+
+Thanks,
+Mona"
+103,"Steve Shovel, private eye (noir story)",8,steve.shovel@theprivateeyes.com,"Steve Shovel, P.I.",An Old Friend,23,120,390,"Replace CPU
+Install AMD Ryzen 7 Eight Core 2700X or better","With my PC repaired and in good shape, I breezed through the semi-finals. I even saw a couple of LeDraw's cronies get knocked out of the tournament. He was running out of allies.
+
+Now it was the eve of the finals. It all came down to this.
+
+I saw LeDraw that day. I don't know if he recognised me from the LAN party I got booted out of - it seems like that was an eternity ago. I shook his hand and said I looked forward to facing him in the final.
+
+He didn't look so tough, up close. In fact, he almost looked scared.
+
+When I got back to my room, there was a package waiting for me. It was from Sam, the dame who first got me tangled up in all this.
+
+I tore open the box, and found a slip of paper. On it was just two words in tall, elegant handwriting: 'Use this'. Underneath was a smooth, black and red metal case. It was her old rig - the one I saved from the river.
+
+It needed a new CPU, and I was going to get the latest and greatest processor I could.
+
+I was gonna beat LeDraw with the computer he tried to kill, and it was gonna be beautiful...
+
+---------------------------
+
+Steve Shovel, P.I."
+104,Project Neptune (Martine Ventrix),1,martine.ventrix@subworksengineering.com,"Martine Ventrix, SubWorks GmbH",PROJECT NEPTUNE: Navigation computer required,26,200,750,"Install Intel Pentium G4600 or better
+Finish in 1 day
+Spend less than $750 ($0)","Hi,
+
+Work is now fully underway on the Neptune Mark I deep-sea submersible! The design process has been challenging, but I'm confident in the final blueprints and construction is going smoothly so far.
+
+My mission is to find the long-lost ruins of the ancient city of Atlantis, which I believe lies not in the Atlantic Ocean - where so many have searched before - but somewhere in the South Pacific!
+
+Yes, it sounds mad - and maybe I am... But soon my claims will be backed up by the discovery of Atlantis itself! Then we'll see who REALLY deserves to be expelled from the Institute of Aquatic Archaeology!
+
+Anyway, your role in all of this will be to build the navigation computer. It doesn't need to be powerful; just a reliable, no-frills workhorse. I am told it will need at least a Pentium G4600 to run the navigation software, but everything else I will leave to your discretion.
+
+One last thing: the work MUST be completed in the next couple of working days. If we miss this deadline we risk setting off during peak fish migration season, which is utterly unacceptable. I won't have them swarming about the Neptune, slapping its hull with their oily fins and staring at me with those mooning, glassy eyes. I tell you, I will not have it!
+
+All the best,
+Martine Ventrix
+SubWorks GmbH"
+105,Project Neptune (Martine Ventrix),3,martine.ventrix@subworksengineering.com,"Martine Ventrix, SubWorks GmbH",PROJECT NEPTUNE: Urgent upgrade required,26,140,2500,"PC can run SubSim X (Minimum Spec)
+Finish in 3 days","Hi,
+
+I have an urgent and difficult request, and I believe you are the best person to handle it.
+
+I have received some upsetting new data on the region of the South Pacific in which I hope to find Atlantis. To confirm or deny its validity, I need to run some complex simulations.
+
+The computer you built for my quarters must be able to run the 'SubSim X' simulation software. According to the manufacturer's website this will mean quite the upgrade, but you've shown me that you're capable and professional, and I have no doubt that you can do this.
+
+I'm willing to pay whatever is necessary to get this done. I DO NOT want to miss the departure window and end up surrounded by thousands of disgusting fish. I have already had to request that a fish tank in my quarters be removed. How that got added to the plans I don't know - I suspect someone is playing a practical joke.
+
+All the best,
+Martine Ventrix
+SubWorks GmbH"
+106,The library (ilovedeweydecimal),1,ilovedeweydecimal@books4ever.com,"Liz Barnet, Head Librarian, Hahatonka Public Library",computer damaged by kids,27,150,200,Diagnose and fix,"Dear sir/madam
+
+I am Liz Barnet, head librarian at Hahatonka Public Library.
+
+Just getting in touch because a student crammed food packaging into one of our public computer terminals. I have removed as much as I could see but now it won't turn on.
+
+Please conduct repairs as necessary.
+
+Yours faithfully
+
+Liz Barnet, Head Librarian
+Hahatonka Public Library
+Opening Hours: Mon-Fri, 8:30 AM to 3:00 PM
+Fax: 202-555-0132"
+107,The library (ilovedeweydecimal),2,ilovedeweydecimal@books4ever.com,"Liz Barnet, Head Librarian, Hahatonka Public Library",computer damaged again,27,150,200,Diagnose and fix,"Hello, Liz again. We've had another bit of a problem here.
+
+A member of the public wearing a labcoat came in to ask where the chemistry section is. Ten minutes later I find him sat at the computer terminal with half a dozen bubbling test tubes! Where do these people get their ideas from?
+
+I marched over there and told him to clear it all up, but I must have surprised him? He spilled his chemicals everywhere - it was all green and blue, and it dissolved the mouse-mat! And now the computer won't turn on. Goodness only knows what that stuff has done to the insides.
+
+I mean, really! This is the last thing we needed. Just heard that if we don't get visitor numbers up we will be closed! Some people only come in to use the computers... without them we haven't got a chance.
+
+Can you take a look please? And could you also clean the case as it is now quite filthy?
+
+Thank you
+
+Liz Barnet, Head Librarian
+Hahatonka Public Library
+Opening Hours: Mon-Fri, 8:30 AM to 3:00 PM
+Fax: 202-555-0132"
+108,The library (ilovedeweydecimal),3,ilovedeweydecimal@books4ever.com,"Liz Barnet, Head Librarian, Hahatonka Public Library",PIRATES?,27,110,0,Remove viruses,"Hello,
+
+We have had another incident here at the Hahatonka library. A couple of weird-looking kids came in and sat down in the computer zone. I think one of them was wearing an eye patch.
+
+They were pretty quiet for a while but then one of the computers went black and started showing weird messages. I guess they must have gotten a virus on there. Can you sort it out?
+
+I asked what they had done and they said they were downloading free games. Do you think these are the same pirates they talk about on the internet? Do I need to call the police or the coast guard or something?
+
+They were also saying they had filled up the hard drive disk with 'wares'. I will deal with that later somehow. Please just add some more space in the meantime.
+
+Liz Barnet, Head Librarian
+Hahatonka Public Library
+Opening Hours: Mon-Fri, 8:30 AM to 3:00 PM
+Fax: 202-555-0132"
+109,"propat, PC expert zone",1,propat@pcexpertzone.com,'Pro' Pat Matei,Looking for a KINGPIN,28,125,875,"Install EVGA GeForce GTX 1080 Ti K|NGP|N GAMING or better
+Clean out dust","Hi,
+
+I was given this computer second-hand but I want to upgrade it already so that I won't run into any problems down the line.
+
+I wasn't sure what might be necessary, but my friend said the graphics card is the main thing for games so that's what I've been researching. Originally I was torn between getting a KINGPIN and a AORUS EXTREME EDITION, but after reading a few articles and comparing benchmarks online, I've decided to go for the KINGPIN.
+
+They're both good cards, but I'm just a little bit more confident in the specs on the KINGPIN. Happy to pay up to $1000 for you to fit one. Just don't tell the other guys on the PC Expert Zone forums. I've already got into about half a dozen flamewars over it lol
+
+Oh, and could you clean the computer for me as well? I'm actually allergic to dust so that would be a big help for me.
+
+Thanks,
+'Pro' Pat Matei"
+110,The library (ilovedeweydecimal),4,ilovedeweydecimal@books4ever.com,"Liz Barnet, Head Librarian, Hahatonka Public Library",some violent punk,27,150,250,Diagnose and fix,"Hello,
+
+Sorry to keep bothering you but I need your help again!!
+
+We had a man come into the library earlier today and sit down at a computer. You know the sort - long hair and all dressed in black. A troublemaker! Naturally, I was keeping an eye on him.
+
+Well I looked away for just a moment and then I heard a big smash. He had kicked the computer over! Can you believe it?? Rest assured that he won't be stepping foot in this library again!
+
+... Not that we'll be around for much longer. Received a letter this morning to say we'll be closed by the end of the month. So that's that, then.
+
+Anyway, I shouldn't go on about it. Can't be helped. Can you take a look at the computer? I think that man broke something inside when he kicked it.
+
+Liz Barnet, Head Librarian
+Hahatonka Public Library
+Opening Hours: Mon-Fri, 8:30 AM to 3:00 PM
+Fax: 202-555-0132"
+111,"propat, PC expert zone",2,propat@pcexpertzone.com,'Pro' Pat Matei,CPU/motherboard upgrade,28,125,1634,"Install Intel Core i9-9900K or better
+Install ASUS ROG Maximus X Apex or better
+Install 2 G.SKILL Trident Z (Black) 8 GB 4500 MHz or better","Hi,
+
+Thanks for the new graphics card - I'm really excited about putting it through its paces, and I know I made the right choice.
+
+The only problem is, I didn't realise how underpowered the rest of the machine is. I'm basically learning this stuff as I go!
+
+It looks like the biggest problem right now is my CPU. The guys over at PC Expert Zone recommend the i9-9900K, and I reckon they're right. The benchmarks for that look good, especially with CPU-heavy games like Assassins Creed. Really happy with the numbers I've seen.
+
+The only problem is, from what I've read, that won't fit in my current motherboard. I checked out some hardware reviews and it sounds like the best choice is the Maximus X Apex. Solid hardware, and it gives me some room to upgrade in the future.
+
+Lastly - some new memory. I read that the Trident Z 4500 are the best, so might as well future proof myself and go for some of those.
+
+I'm really getting into this PC building thing! Well, the parts anyway. I'm just not confident enough to try building anything myself. Not yet anyway, lol
+
+Anyway, if you could handle fitting that CPU, motherboard and RAM, that would be great!
+
+'Pro' Pat Matei"
+112,"propat, PC expert zone",3,propat@pcexpertzone.com,'Pro' Pat Matei,DUST (help please),28,80,0,Clean out dust,"Hi again,
+
+Sorry to be a pain, but could you clean out my PC? My friend came over a while back to check out the new components and left the dust cover off, but I didn't notice until today.
+
+I'd do it myself, but I'm allergic to dust (I think I mentioned it before?). Don't think I can handle cleaning all that out, so I'm happy to let a professional handle it.
+
+Thanks,
+'Pro' Pat Matei"
+113,The library (ilovedeweydecimal),5,ilovedeweydecimal@books4ever.com,"Liz Barnet, Head Librarian, Hahatonka Public Library",Computer in need of an 'upgrade',27,140,2500,"Install water cooling for CPU and GPU
+Install 2 EKWB EK-CoolStream SE 360 RGB or better
+Install GeForce GTX 1080 | EKWB EK-FC Plexi RGB or better
+Install Lights: 6 coloured (255,0,85)","Hello,
+
+I have a bit of an odd request for you today. Do you remember I told you we had a gaming PC donated to the library by that 'punk' man? We're having a bit of trouble with it.
+
+It's very noisy, which I'm sure is ok in someone's house but a library must remain as quiet as possible!
+
+The ""punk"" / really nice man suggested custom water cooling the CPU and GPU, and has given a list of components to use. He says that to fit the two 360 radiators you need to move the panel where the HDDs live to the back (remove the HDD trays first). He also says that everything needs to be a particular shade of pink, I'm not sure why but he is paying so I'll leave it up to him.
+
+By the way, would you believe - I think those flyers are actually working! We've had twice as many visitors as normal. A lot of them say they just didn't realise Hahatonka even had a library. Isn't that crazy?
+
+Liz Barnet, Head Librarian
+Hahatonka Public Library
+Opening Hours: Mon-Fri, 8:30 AM to 3:00 PM
+Fax: 202-555-0132"
+114,"propat, PC expert zone",4,propat@pcexpertzone.com,'Pro' Pat Matei,Swap my hard drive for an SSD?,28,125,300,Install CORSAIR Force Series - MP500 M.2 480GB or better,"Hi,
+
+Back again with my PC! I bet you're pretty sick of seeing it lol
+
+Don't worry, I've been trying to learn how to do my own PC building. Did you know there's a simulator you can play to try things out? I'm not ready to do it all myself YET, but I'm feeling more confident already!
+
+Anyway, until then I do need you to do a little job - I've been reading a bunch of articles about the difference a good solid-state drive makes to performance. It's really night and day!
+
+Could you install a really fast m.2 NVME drive for me; any one will do but I heard that the CORSAIR Force Series - MP500 480GB M.2 was the fastest one, so let's go for that.
+
+Thanks,
+'Pro' Pat Matei"
+115,"propat, PC expert zone",5,propat@pcexpertzone.com,'Pro' Pat Matei,Big ask: I want RGB everything!,28,125,110,"Install Thermaltake Riing Silent 12 RGB Sync Edition or better
+Install 3 Thermaltake Riing Plus 12 LED RGB or better","Hi again,
+
+So I know this is going to sound a bit crazy, but I've been looking up some crazy PC builds online (some of the guys on PC Expert Zone have INSANE rigs) and it's made me really want to put some lighting into my case!
+
+I reckon I'm nearly ready to do my own PC building now, but this is a pretty big job so I'd prefer if you could handle it: I want three RGB fans on the front and an RGB CPU cooler. And could you set as many of the lights as you can to rainbow mode? I LOVE rainbow rgb.
+
+Thanks for all your work so far, by the way. It's been really inspirational, and after this I'm going to try and do any other work myself!
+
+'Pro' Pat Matei"
+116,"Chuck Sharp, retro DOS gamer",1,thatdosguy89@oldgamehub.com,Chuck Sharp,knackered old PC needs a tune-up,29,150,40,Diagnose and fix,"Hey hey,
+
+My name's Chuck Sharp. If you were around back in the old days of DOS gaming (yes, I'm a dinosaur!), you might remember me as that grumpy git from PC Madness Magazine (1989-1996 R.I.P.).
+
+It was a great gig, but I kinda fell out of touch with the gaming scene after the mag closed down.
+
+Anyway, I stumbled across this PC someone was throwing out the other day, and figured 'What the hell?' Might as well see what games are like these days, right? So I lugged it home and tried to boot it up, but it's in a bit of a state.
+
+I'm no tech-monkey - and I honestly haven't touched the inside of a PC since the 90s - so I've got no idea what's wrong with it, but it keeps turning itself off. Can you sort it out for me?
+
+Thanks mate,
+Chuck"
+117,"Chuck Sharp, retro DOS gamer",2,thatdosguy89@oldgamehub.com,Chuck,Bought the wrong version of Doom?,29,140,1300,PC can play Doom (Recommended Spec),"Hey there,
+
+I've got a bit of an issue.
+
+My nephew came over yesterday and wanted to see my new gaming PC. I thought I'd show him one of my favourite games from back in the day - Doom! It's a real beauty. I gave it 10/10 in PCM #59 (Dec 1993) and I still reckon it's one of the best (and the scariest!) games ever made.
+
+So I went online and grabbed a digital copy(!) of Doom, but the menu screen looks way different to what I was expecting, and it's all running so slow I can't even play the first level.
+
+I did a bit of research and apparently they made a NEW Doom? I guess I bought that by mistake. But I've spent the money now, so I might as well enjoy it. I just need a few upgrades to get it running.
+
+Can you make sure my PC meets the minimum specs? Cheers.
+
+Chuck"
+118,"Chuck Sharp, retro DOS gamer",3,thatdosguy89@oldgamehub.com,Chuck,Need some fancy lighting to make me look good (ha ha),29,140,300,"Install Lights: 4 coloured (255,255,0)","Hey,
+
+The crowdfunding campaign for PC Madness Rebooted is going really well so far - we've already hit 25% of our target! Not bad for a bunch of old farts from the 80s, eh?
+
+Not that the other guys from the mag haven't been doing well. Colin writes for a big gaming news site, 'DigiDave' has a regular column in a national paper, and Peabody even works as a writer at a studio now.
+
+Actually, it's a little bit awkward for me. Not that I've been dossing about since 1996, but I'm still way out of touch with the gaming scene. We're supposed to meet up next week and I don't want them to think I don't know what I'm talking about. Gotta let 'em know that Chuck's still Sharp!
+
+I always thought a sweet custom autoexec.bat was the sign of a real gamer, but I hear these days the thing to do is RGB lighting. Sounds a bit naff to me, but I'm up for it if it'll get me this gig.
+
+So - can you fit some lights to my computer? And let's go for a really cool colour scheme... I'm thinking a cool yellow.
+
+Cheers,
+Chuck"
+119,Gradbal and the goblin mine,1,2049@gmcon.com,"Gradbal, Supervisor, Mine #2049, Goblin Mining Confederacy",need repair,30,150,1800,Diagnose and fix,"Hello human.
+
+I Gradbal, new supervisor at Goblin Mining Confederacy mine number 2049.
+
+We be raided by bad adventurers. Kill many goblins. Destroy much equipment. Now mine not work.
+
+You fix computer. We pay.
+
+Gradbal, Supervisor
+Mine #2049
+Goblin Mining Confederacy"
+120,Gradbal and the goblin mine,2,2049@gmcon.com,"Gradbal, Supervisor, Mine #2049, Goblin Mining Confederacy",need mine work more good,30,140,1200,3DMark score of 12500,"Hello human.
+
+Mine is work good now... But GMC management say it must work more good. They say if mine not work more good, Gradbal lose annual bonus.
+
+Gradbal not want lose annual bonus. Gradbal have mortgage to pay.
+
+You make computer go fast. Then mine work more good. GMC guidelines say computer need '3D Mark Score' of 12500. Gradbal not know who 3D Mark is. Gradbal leave that to you.
+
+Gradbal, Supervisor
+Mine #2049
+Goblin Mining Confederacy"
+121,Gradbal and the goblin mine,3,2049@gmcon.com,"Gradbal, Supervisor, Mine #2049, Goblin Mining Confederacy",gradbal need help again,30,150,200,Diagnose and fix,"Othrog want Gradbal's shiny gem but not know where it is. Othrog is bad goblin.
+
+In desk is good hiding place. Bad goblins not find it there. But Gradbal find Othrog in office. He say he just looking for stapler. Gradbal think Othrog lying. Get angry and smash Othrog. Now Othrog not work good.
+
+Gradbal protect shiny. Bad goblins not get shiny. No one get shiny. Shiny belong to Gradbal.
+
+But Gradbal's computer get virus. Not know how. Maybe when Gradbal try to find free download of movie with lady goblin. Gradbal get so lonely.
+
+Computer say things like 'VIRUS DETECTED' and 'WARNING YOUR COMPUTER MAY BE INFECTED'. Gradbal not like these words. Get angry and smash computer. Now computer not turn on.
+
+You fix for Gradbal. Make bad words go away.
+
+Gradbal, Supervisor
+Mine #2049
+Goblin Mining Confederacy
+
+P.S. YOU NOT GET SHINY. SHINY BELONG TO GRADBAL."
+122,Gradbal and the goblin mine,4,2049@gmcon.com,"Olfik, Leader of Redcloaks",you help us now,30,200,5000,"Install AMD Ryzen Threadripper 2990WX or better
+Upgrade to 128 GB of RAM
+Overclock CPU to 0 MHz
+Install Lights: 1 coloured (255,0,0)","I Brother Olfik. I leader of Redcloaks. We know you help Gradbal run Mine 2049.
+
+Gradbal gone now. He bad goblin. He kill Brother Othrog. So we put him in cage and Brother Gorkil eat key. Ha ha ha. Gradbal not supervise us any more. Mine 2049 belong to Redcloaks now.
+
+Many nights now we hear chanting voice. It talk to us. It say it powerful spirit. It want us to take over mine.
+
+We follow chanting. It lead to Gradbal. We find big red gem in desk. Not very good hiding place. Gradbal pretty stupid.
+
+Red gem say it called Maelaph, Avatar of Destruction. It ask us to perform ritual of power with big old machines that sleep deep in mine. Not used for many years.
+
+We need computer to run machines. You build it for us. It need big CPU power and red lights.
+
+- Olfik, Leader of Redcloaks"
+123,Gradbal and the goblin mine,5,2049@gmcon.com,"Olfik, Leader of Redcloaks",computer too hot,30,110,200,"Clean out dust
+Replace Air Cooler","Maelaph not happy. He say he trapped inside gem by angry sorcerer.
+
+He say he try to burn sorcerer's house but got caught. We say maybe if he not set house on fire he not be stuck inside gem. He say shut up or he curse us.
+
+We use new computer to run big old machine in mine. Maelaph tell us to put gem in machine. He say machine will break gem and free him. He want to rule outside world. He have big plans. We thought he just want rule mine 2049. He say he 'Maelaph, Avatar of Destruction', not 'Maelaph, Supervisor of Stupid Goblin Mine'.
+
+We put gem in machine but gem not break. Machine too old. Now Maelaph very angry. Very scary. I glad he stuck inside gem. Brother Gorkil say he so scared he feel sick but I tell him it just because he eat key to cage where we put Gradbal.
+
+Maelaph say we try again but computer overheat. Maybe too hot and dusty in mines. You try clean computer. Make run good again. Then we free Maelaph.
+
+Then maybe he go away and leave us alone.
+
+- Olfik, Leader of Redcloaks"
+124,Gradbal and the goblin mine,6,2049@gmcon.com,"Gradbal, Supervisor, Mine #2049, Goblin Mining Confederacy",gradbal free again!,30,0,0,Diagnose and fix,"Gradbal was locked in cage for long time. Then big alarms go off. Then all bad Redcloaks get into cage with Gradbal. It very cramped and smelly.
+
+Then bad adventurers come into mines. Gradbal and Redcloaks safe in cage. But they smash everything and take Gradbal's shiny red gem away. That make Redcloaks very happy. Gradbal not know why.
+
+Redcloaks let Gradbal out of cage after humans leave. They say rebellion too hard. It thankless task. Want Gradbal be supervisor again. They sorry for locking Gradbal in cage and eating key. Gradbal sorry for killing Othrog. Goblins all friends again now.
+
+But Mine 2049 out of action for many days. Behind on mining quota. GMC angry. They say they fire everyone if not get back to work right away.
+
+Bad adventurers smash mining computer. We need to make mine work. You fix for Gradbal?
+
+Gradbal, Supervisor
+Mine #2049
+Goblin Mining Confederacy"
+125,"Giovanna Sciarra, particle physicist",4,giovanna@giosci.lab,"Giovanna Sciarra, PhD",A minor setback,13,150,600,"Diagnose and fix
+Finish in 1 day","R Well, it had to happen eventually. I was running some new tests with my particle accelerator, and suffered a BAD magnet quench. It's kind of technical, but imagine superheated magnetic coils and you're not far off. 1 was lucky to escape alive. But nobody said REVOLUTIONISING the WORLD would be easy!
+
+Sadly, the machine linked to it wasn't so lucky. Several components were exposed to some extraordinarily high temperatures, and now it will not turn on. Can you replace whatever's broken and get it both back to me urgently? I need to get back up and running - SCIENCE waits for no one!
+
+Thanks, Giovanna Sciarra, PhD ""We are a way for the cosmos to know itself."" - Sagan"
+126,FSS Bold (Captain Dirk),4,jamie.dirk@fssbold.hfed.gov,"FSS Bold, Human Federation",Incoming Transmission,22,150,570,Diagnose and fix,"""The Calm Before the Storm""
+
+Captain's log, star-date 1701.66. The FSS Bold has entered the Placidius system, where a... superNOVA... threatens to DESTROY an entire civilisation. Though their planet is known as the 'Planet of Peace’, the Placidians are... cautious and secretive - communicating only via remote video link-up. This is the first time a Human Federation starship has been allowed into the system. We... MUST save their planet, in the hope that diplomatic relations will blossom.
+
+I am concerned, however, that the situation is... affecting my crew. There are many anxious faces aboard, and even I must admit to feeling... apprehensive.
+
+Even Mr Nemo, my science officer, has been affected. In the last hour, he became unusually distressed and... SMASHED his research station.
+
+The damaged computer been sent away for repair. I can only hope it is... returned in time for our first meeting with the Placidian ambassador...
+
+Captain J Dirk FSS Bold, Human Federation"
+127,Project Neptune (Martine Ventrix),2,martine.ventrix@subworksengineering.com,pick up the slack,PROJECT NEPTUNE: Additional computer required,26,200,350,"Spend less than $350 ($0 spent so far)
+Finish by end of day","Hi,
+
+Thanks for your work on the previous job. The computer has already been sent to the shipyard, where it will be fitted into the Neptune Mark I navigational array.
+
+Now, naturally on a project of this size I have contracts with a number of suppliers for every need, including IT systems. Unfortunately, one of those deals has fallen through and I would be most happy if you could pick up the slack.
+
+Specifically, they were supposed to supply a personal computer for my quarters. As with the previous job, the machine's performance is"
+128,"scottyB, the streamer",4,scottyB@dongermail.com,,urgent job!!,,,,,

@@ -135,13 +135,15 @@
 </dialog>
 
 <!-- Story job report -->
-<dialog id="dlgStory" style="max-width:600px">
+<dialog id="dlgStory" style="max-width:640px">
   <div class="dlg-h"><h3>📖 Report a story job</h3><button class="ghost" data-close>✕</button></div>
   <div class="dlg-b form">
-    <p class="hint">Story jobs come from career story customers – they come back, write long emails and have no hidden objectives. Reported ones are added to the list, so the board recognises them for everyone. Any one of these is enough:</p>
-    <label>Sender's email address</label><input id="sEmail" placeholder="e.g. robernator445@alaprofa.net">
-    <div class="grid2"><div><label>Email subject</label><input id="sSubject" placeholder="e.g. Computer has gone crazy?!"></div><div><label>Signed with the name</label><input id="sName" placeholder="e.g. Rob"></div></div>
-    <label>Email text, objectives, labour / budget (optional)</label><textarea id="sDetails" rows="6"></textarea>
+    <p class="hint">Story jobs come from career story customers – they come back, write long emails and have no hidden objectives. Reported ones are added to the list, so the board recognises them for everyone. The sender's email or the subject is enough; the rest helps.</p>
+    <div class="grid2"><div><label>Sender's email address</label><input id="sEmail" placeholder="e.g. robernator445@alaprofa.net"></div><div><label>Email subject</label><input id="sSubject" placeholder="e.g. Computer has gone crazy?!"></div></div>
+    <div class="grid4 sstats"><div><label>Signed with the name</label><input id="sName" placeholder="e.g. Rob"></div><div><label>Req: Level</label><input id="sLevel" type="number" min="1" max="99"></div><div><label>Labour $</label><input id="sLabour" type="number" min="0"></div><div><label>Budget $</label><input id="sBudget" type="number" min="0"></div></div>
+    <label>Email text <small class="hint">(keep the paragraphs – an empty line between them)</small></label><textarea id="sBody" rows="9" class="sbody"></textarea>
+    <label>Objectives <small class="hint">(one per line)</small></label><textarea id="sObjectives" rows="4"></textarea>
+    <label>Notes <small class="hint">(optional – e.g. what is wrong in the Game Wiki)</small></label><textarea id="sNotes" rows="2"></textarea>
     <p class="hint" id="sRepoHint"></p>
     <div class="btnrow"><button class="primary" id="sDirect">📨 Send report</button><button class="primary" id="sGitHub">Open report on GitHub</button><button id="sCopy">Copy report</button></div>
   </div>
@@ -172,16 +174,16 @@
 </dialog>
 
 
-<!-- 📖 Game Wiki – parts database (every part of a category, filtered by name) + Will it run? -->
+<!-- 📖 Game Wiki – parts database (every part of a category, filtered by name) + Will it run? + Story jobs -->
 <dialog id="dlgPartsDb" class="pdbdlg">
   <div class="dlg-h"><h3>📖 Game Wiki</h3><button class="ghost" data-close aria-label="Close">✕</button></div>
   <div class="dlg-b">
-    <div id="pdbPages" class="pdbpages" role="toolbar" aria-label="Pages"><button class="pdbpage on" data-pdbpage="parts" aria-pressed="true"><svg class="cpuic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor" stroke="none"/><path d="M9 2.5v3M12 2.5v3M15 2.5v3M9 18.5v3M12 18.5v3M15 18.5v3M2.5 9h3M2.5 12h3M2.5 15h3M18.5 9h3M18.5 12h3M18.5 15h3"/></svg> Parts database</button><button class="pdbpage" data-pdbpage="run" aria-pressed="false">🎮 Will it run?</button></div>
+    <div id="pdbPages" class="pdbpages" role="toolbar" aria-label="Pages"><button class="pdbpage on" data-pdbpage="parts" aria-pressed="true"><svg class="cpuic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor" stroke="none"/><path d="M9 2.5v3M12 2.5v3M15 2.5v3M9 18.5v3M12 18.5v3M15 18.5v3M2.5 9h3M2.5 12h3M2.5 15h3M18.5 9h3M18.5 12h3M18.5 15h3"/></svg> Parts database</button><button class="pdbpage" data-pdbpage="run" aria-pressed="false">🎮 Will it run?</button><button class="pdbpage" data-pdbpage="story" aria-pressed="false">📨 Story jobs</button></div>
     <div id="pdbTabs" class="pdbtabs" role="toolbar" aria-label="Part categories"></div>
     <div class="pdbbar"><input id="pdbFilter" type="search" placeholder="Filter by name…" autocomplete="off" aria-label="Filter parts by name"><span id="pdbCount" class="hint"></span></div>
     <div id="pdbFilters" class="pdbfilters"></div>
     <p id="pdbNote" class="hint pdbnote"></p>
-    <div id="pdbWrap" class="pdbwrap"><table id="pdbTable" class="pdbtable"></table></div>
+    <div id="pdbWrap" class="pdbwrap"><table id="pdbTable" class="pdbtable"></table><div id="pdbStory" class="swiki" hidden></div></div>
     <div id="pdbFoot" class="pdbfoot"><label class="fnewsw" title="Also show the columns that are hidden by default (game version, details, ranking, …). Off every time this window opens."><input type="checkbox" id="pdbAll" role="switch"><span class="sw" aria-hidden="true"></span>Show hidden details</label></div>
   </div>
 </dialog>
@@ -329,6 +331,7 @@
 <script src="js/ui/start.js?v=0.16.1"></script>
 <script src="js/ui/partsdb.js?v=0.16.1"></script>
 <script src="js/ui/willrun.js?v=0.16.1"></script>
+<script src="js/ui/storywiki.js?v=0.16.1"></script>
 <script src="js/ui/rules.js?v=0.16.1"></script>
 <script src="js/ui/areas.js?v=0.16.1"></script>
 <script src="js/ui/story.js?v=0.16.1"></script>

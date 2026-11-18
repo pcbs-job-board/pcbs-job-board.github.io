@@ -45,13 +45,20 @@ function lineQuality(e) {
 function shotLines(s) {
   const text = typeof s === "string" ? s : s.text;
   const conf = typeof s === "string" ? null : s.conf; // [[line text, confidence]] from the OCR, if known
-  const ls = text
-    .split("\n")
-    .map(l => l.trim())
-    .filter(Boolean);
-  return ls.map((t, i) => {
+  // pb: an empty line before it (a new paragraph of the email body, 0.17.0)
+  const ls = [];
+  let gap = false;
+  for (const raw of text.split("\n")) {
+    const t = raw.trim();
+    if (!t) gap = ls.length > 0;
+    else {
+      ls.push({ t, pb: gap });
+      gap = false;
+    }
+  }
+  return ls.map(({ t, pb }, i) => {
     const c = conf && conf.find(([ct]) => ct.trim() === t);
-    return { t, edge: i === 0 || i === ls.length - 1, conf: c ? c[1] : null };
+    return { t, pb, edge: i === 0 || i === ls.length - 1, conf: c ? c[1] : null };
   });
 }
 function mergeTexts(shots) {
@@ -114,12 +121,14 @@ function mergeTexts(shots) {
       gap(acc.slice(pi, i), ls.slice(pj, j), out.length ? "mid" : "start");
       const a = acc[i],
         b = ls[j];
-      out.push(lineQuality(b) > lineQuality(a) ? { ...b, edge: a.edge && b.edge } : { ...a, edge: a.edge && b.edge });
+      // a paragraph break counts when either screenshot saw it (a screenshot's first line never has one)
+      const pb = (a.pb || b.pb) && out.length > 0;
+      out.push(lineQuality(b) > lineQuality(a) ? { ...b, pb, edge: a.edge && b.edge } : { ...a, pb, edge: a.edge && b.edge });
       pi = i + 1;
       pj = j + 1;
     }
     gap(acc.slice(pi), ls.slice(pj), "end");
     acc = out;
   }
-  return (acc || []).map(e => e.t).join("\n");
+  return (acc || []).map((e, i) => (e.pb && i ? "\n" : "") + e.t).join("\n");
 }

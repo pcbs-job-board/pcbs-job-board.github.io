@@ -21,10 +21,30 @@ body:
     attributes:
       label: Name the email is signed with
       placeholder: e.g. Rob
-  - type: textarea
-    id: details
+  - type: input
+    id: level
     attributes:
-      label: Email text, objectives, labour / budget / level
+      label: "Req: Level"
+  - type: input
+    id: labour
+    attributes:
+      label: Labour $
+  - type: input
+    id: budget
+    attributes:
+      label: Budget $
+  - type: textarea
+    id: body
+    attributes:
+      label: Email text (keep the paragraphs – an empty line between them)
+  - type: textarea
+    id: objectives
+    attributes:
+      label: Objectives (one per line)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
   - type: input
     id: app_version
     attributes:

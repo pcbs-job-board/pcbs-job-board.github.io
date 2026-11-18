@@ -4165,3 +4165,153 @@ body.hmenu-on .menubtn {
     min-height: 0;
   }
 }
+/* 📖 Report a story job (0.17.0): name + level / labour / budget in one row, the email text keeps its paragraphs */
+.grid4.sstats {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 560px) {
+  .grid4.sstats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+textarea.sbody {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+/* 📨 Story jobs page of the Game Wiki (0.17.0): one collapsed group per chain, each mission's details behind a spoiler */
+.swiki {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.swgroup {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.swgroup > summary {
+  cursor: pointer;
+  padding: 9px 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-weight: 600;
+  list-style: none;
+}
+.swgroup > summary::-webkit-details-marker {
+  display: none;
+}
+.swgroup > summary::before {
+  content: "▸";
+  color: var(--accent);
+  width: 12px;
+}
+.swgroup[open] > summary::before {
+  content: "▾";
+}
+.swgroup > summary small {
+  font-weight: 400;
+  color: var(--muted);
+}
+.swgroup[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.swlist {
+  margin: 0;
+  padding: 4px 12px 10px;
+  list-style: none;
+}
+.swjob {
+  padding: 8px 0;
+  border-bottom: 1px solid #2a3142;
+}
+.swjob:last-child {
+  border-bottom: 0;
+}
+.swhead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.swnum {
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 22px;
+}
+.swsubj {
+  font-weight: 600;
+}
+.swlv {
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.swfrom {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.swspoil {
+  margin-top: 6px;
+}
+.swspoil > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px dashed #c98a2b;
+  border-radius: 6px;
+  color: #e3a64a;
+  font-size: 12px;
+  user-select: none;
+}
+.swspoil > summary::-webkit-details-marker {
+  display: none;
+}
+.swspoil > summary b {
+  color: #ff8a65;
+}
+.swspoil[open] > summary {
+  border-style: solid;
+}
+.swdet {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--card2);
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+}
+.swbody {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.swmoney {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.swmoney b,
+.swobjh {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+.swdet ul {
+  margin: 2px 0 0;
+  padding-left: 20px;
+}
+.swempty {
+  color: var(--muted);
+  font-style: italic;
+}

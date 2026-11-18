@@ -24,7 +24,9 @@
  */
 const MAX_PER_HOUR = 40;               // simple flood protection for the public form
 const KINDS = {
-  story: { sheet: "Story jobs", title: "Story Quest Report", cols: ["Report #", "Received", "Sender email", "Subject", "Signed name", "Details", "App version"] },
+  // 0.17.0: level, labour, budget, objectives, email text (with its paragraphs) and notes in their own columns, at the
+  // end so older sheets keep theirs; "Details" still has all of it as one text
+  story: { sheet: "Story jobs", title: "Story Quest Report", cols: ["Report #", "Received", "Sender email", "Subject", "Signed name", "Details", "App version", "Level", "Labour", "Budget", "Objectives", "Email text", "Notes"] },
   part: { sheet: "Missing parts", title: "Missing Part Report", cols: ["Report #", "Received", "Part name", "Category", "Content", "Level", "Price", "Notes", "App version", "Level %"] },
 };
 
@@ -50,7 +52,7 @@ function doPost(e) {
       else if (sh.getLastColumn() < kind.cols.length) sh.getRange(1, 1, 1, kind.cols.length).setValues([kind.cols]);
       const cut = v => String(v == null ? "" : v).slice(0, 5000);
       const row = d.kind === "story"
-        ? [number, new Date(), cut(d.email), cut(d.subject), cut(d.name), cut(d.details), cut(d.version)]
+        ? [number, new Date(), cut(d.email), cut(d.subject), cut(d.name), cut(d.details), cut(d.version), cut(d.level), cut(d.labour), cut(d.budget), cut(d.objectives), cut(d.body), cut(d.notes)]
         : [number, new Date(), cut(d.name), cut(d.cat), cut(d.dlc), cut(d.level), cut(d.price), cut(d.notes), cut(d.version), cut(d.pct)];   // Level % last – older sheets keep their columns
       sh.appendRow(row);
     } finally { lock.releaseLock(); }

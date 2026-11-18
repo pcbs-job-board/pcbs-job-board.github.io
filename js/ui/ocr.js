@@ -230,6 +230,19 @@ function starsFrom(canvas, words) {
   }
   return Math.min(5, n);
 }
+// email text with its paragraphs (0.17.0): a blank line where the gap between two lines is bigger than a line –
+// the game leaves an empty line between paragraphs. Only when the lines are the same as the plain text.
+function withParagraphs(r) {
+  const L = (r.lines || []).filter(l => l[0] && l[2]),
+    plain = r.text
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean);
+  if (L.length < 2 || L.length !== plain.length || L.some((l, i) => l[0] !== plain[i])) return r.text;
+  const hs = L.map(l => l[2].y1 - l[2].y0).sort((a, b) => a - b),
+    h = hs[hs.length >> 1];
+  return L.map((l, i) => (i && l[2].y0 - L[i - 1][2].y1 > h * 0.8 ? "\n" : "") + l[0]).join("\n");
+}
 let lastConf = null,
   lastStars = null; // ★ counted on the last email screenshot (null = not on it)
 async function ocr(img, kind) {
@@ -241,5 +254,5 @@ async function ocr(img, kind) {
   lastConf = r.lines; // per-line certainty, used when joining screenshots
   lastStars = kind === "email" ? starsFrom(cv, r.words) : null;
   $("#prog").style.width = "100%";
-  return r.text;
+  return kind === "email" ? withParagraphs(r) : r.text;
 }

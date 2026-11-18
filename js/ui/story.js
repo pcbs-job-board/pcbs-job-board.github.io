@@ -1,5 +1,6 @@
-/* Story jobs: the banner in the new-job window and "Report story job" (GitHub issue or email).
-   Known story jobs come from data/story-jobs.csv (built into data/parts-db.js as window.STORY_JOBS). */
+/* Story jobs: the banner in the new-job window and "Report story job" (report inbox, GitHub issue or copy).
+   Known story jobs come from data/story-jobs.csv (built into data/parts-db.js as window.STORY_JOBS); the Game Wiki
+   lists them (js/ui/storywiki.js). */
 
 // banner above the hidden objectives: known story job / looks like one / nothing
 function storyBanner(d) {
@@ -23,27 +24,27 @@ function storyDraftFromForm() {
     email: $("#fSender")?.value.trim() || d.sender || "",
     subject: $("#fSubject")?.value.trim() || d.subject || "",
     name: (d.signature || []).slice(-1)[0] || "",
-    labour: $("#fLabour")?.value || "",
-    budget: $("#fBudget")?.value || "",
+    labour: $("#fLabour")?.value || d.labour || "",
+    budget: $("#fBudget")?.value || d.budget || "",
     level: d.level ?? "",
     objectives: ($("#fObj")?.value || (d.objectives || []).join("\n")).trim(),
-    body: d.body || "",
-    noStars: d.noStars,
-    words: d.words,
+    body: d.bodyText || d.body || "", // with its paragraphs (0.17.0)
   };
 }
+// the report: every field of a story job (as data/story-jobs.csv keeps it), the email text with its paragraphs
+const STORY_FIELDS = [
+  ["email", "#sEmail"],
+  ["subject", "#sSubject"],
+  ["name", "#sName"],
+  ["level", "#sLevel"],
+  ["labour", "#sLabour"],
+  ["budget", "#sBudget"],
+  ["body", "#sBody"],
+  ["objectives", "#sObjectives"],
+  ["notes", "#sNotes"],
+];
 function openStoryReport(pre = {}) {
-  $("#sEmail").value = pre.email || "";
-  $("#sSubject").value = pre.subject || "";
-  $("#sName").value = pre.name || "";
-  $("#sDetails").value = [
-    pre.body && "Email text:\n" + pre.body,
-    pre.objectives && "Objectives:\n" + pre.objectives,
-    (pre.labour || pre.budget || pre.level) &&
-      `Labour: $${pre.labour || "?"} · Budget: $${pre.budget || "?"} · Req: Level ${pre.level || "?"}${pre.noStars ? " · no star requirement" : ""}`,
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  for (const [k, sel] of STORY_FIELDS) $(sel).value = pre[k] ?? "";
   const direct = !!(window.PCBS_CONFIG || {}).reportEndpoint;
   // with the report inbox there is just one button; GitHub / copy are only the fallback without it
   $("#sDirect").hidden = !direct;
@@ -55,23 +56,38 @@ function openStoryReport(pre = {}) {
       ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).`
       : "";
   $("#dlgStory").showModal();
-  (pre.email ? $("#sDetails") : $("#sEmail")).focus();
+  (pre.email ? $("#sBody") : $("#sEmail")).focus();
 }
 function storyReportData() {
-  return {
-    email: $("#sEmail").value.trim(),
-    subject: $("#sSubject").value.trim(),
-    name: $("#sName").value.trim(),
-    details: $("#sDetails").value.trim(),
-  };
+  const r = {};
+  // trim the ends only – the paragraphs (empty lines) inside the email text stay
+  for (const [k, sel] of STORY_FIELDS) r[k] = $(sel).value.replace(/\r/g, "").trim();
+  r.objectives = r.objectives
+    .split("\n")
+    .map(l => l.replace(/^\s*[-•*]\s*/, "").trim())
+    .filter(Boolean)
+    .join("\n");
+  r.details = storyDetails(r);
+  return r;
+}
+// everything after sender / subject / name as one text (the report inbox and GitHub keep it in one field too)
+function storyDetails(r) {
+  return [
+    `Req: Level ${r.level || "?"}\nLabour: $${r.labour || "?"}\nBudget: $${r.budget || "?"}`,
+    "Objectives:\n" + (r.objectives ? r.objectives.replace(/^/gm, "- ") : "?"),
+    "Email text:\n" + (r.body || "?"),
+    r.notes && "Notes:\n" + r.notes,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 }
 function storyReportText(r) {
-  return `Sender's email: ${r.email || "?"}\nSubject: ${r.subject || "?"}\nSigned: ${r.name || "?"}\n\n${r.details || ""}\n\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""})`;
+  return `Sender's email: ${r.email || "?"}\nSubject: ${r.subject || "?"}\nSigned: ${r.name || "?"}\n\n${r.details}\n\n(PCBS Job Board ${(window.PCBS_CONFIG || {}).version || ""})`;
 }
 function storyValid(r) {
-  if (r.email || r.subject || r.name) return true;
+  if (r.email || r.subject) return true;
   $("#sEmail").focus();
-  toast("Fill in at least the sender's email, the subject or the name");
+  toast("Fill in at least the sender's email or the subject");
   return false;
 }
 $("#sGitHub").onclick = () => {
@@ -88,7 +104,12 @@ $("#sGitHub").onclick = () => {
     email: r.email,
     subject: r.subject,
     sender_name: r.name,
-    details: r.details.slice(0, 5000),
+    level: r.level,
+    labour: r.labour,
+    budget: r.budget,
+    objectives: r.objectives,
+    body: r.body.slice(0, 5000),
+    notes: r.notes,
     app_version: (window.PCBS_CONFIG || {}).version || "",
   });
   window.open(`https://github.com/${repo}/issues/new?${q}`, "_blank", "noopener");
@@ -98,8 +119,7 @@ $("#sGitHub").onclick = () => {
 $("#sDirect").onclick = async () => {
   const r = storyReportData();
   if (!storyValid(r)) return;
-  if (await sendReport("story", { email: r.email, subject: r.subject, name: r.name, details: r.details }, "#sDirect"))
-    $("#dlgStory").close();
+  if (await sendReport("story", r, "#sDirect")) $("#dlgStory").close();
 };
 $("#sCopy").onclick = async () => {
   const r = storyReportData();

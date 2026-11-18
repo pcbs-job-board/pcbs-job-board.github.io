@@ -307,6 +307,7 @@ async function runOcr() {
       objectives: p.objectives,
       hidden: p.hidden,
       body: p.body,
+      bodyText: p.bodyText,
       signature: p.signature,
       noStars: p.noStars,
       words: p.words,
@@ -314,12 +315,13 @@ async function runOcr() {
     // story job? known from the list (sender email / subject / name) or looks like one (no star requirement, long text)
     const sm = storyMatch(p, window.STORY_JOBS || []),
       sl = storyLooks(p);
-    rev.draft.storyKnown = !sm
-      ? ""
+    // a known story customer with an email that isn't in the list yet → the report banner, with the reason
+    rev.draft.storyKnown = !sm || sm.newEmail ? "" : storyLabel(sm.entry, window.STORY_JOBS);
+    rev.draft.storyWhy = !sm
+      ? sl.why.join(" · ")
       : sm.newEmail
-        ? `${sm.entry.sender_name || sm.entry.email} – a known story customer; this email isn't in the story list yet (📖 Report story job)`
-        : sm.entry.story || sm.entry.sender_name || "known story job";
-    rev.draft.storyWhy = sm ? "" : sl.why.join(" · ");
+        ? `known story customer${sm.entry.chain ? ` – ${sm.entry.chain}` : ""}, but not this email`
+        : "";
     rev.draft.newPc = wantsNewPc(p); // "build the computer": a complete PC is suggested
     if (!rev.storyTouched) rev.draft.story = !!sm || sl.looks;
     renderForm();

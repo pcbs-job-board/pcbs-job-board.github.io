@@ -1,4 +1,5 @@
-// Email screenshot text → job (parseEmail), plus story jobs (known senders / subjects from data/story-jobs.csv).
+// Email screenshot text → job (parseEmail), plus story jobs (known senders / subjects from data/story-jobs.csv,
+// window.STORY_JOBS: id, chain, order, email, signed, subject, level, labour, budget, objectives[], body).
 // strip OCR crumbs at the end of a line: "Diagnose and fix ls", "Diagnose and fix ‘S", "help plz G"
 function trimJunk(s) {
   const w = String(s).trim().split(/\s+/);
@@ -36,6 +37,8 @@ function parseEmail(text, rules, smart) {
   const raw = text.replace(/\r/g, "");
   // a box wider than the email also catches the inbox's date column: "6/12/2018 I hate using…"
   // stray picture crumbs glued to the "@" of an address: "TinyAunt@]JulieBrewing.ly" → "TinyAunt@JulieBrewing.ly"
+  // paraAt: index of each line that starts a new paragraph (an empty line before it) – the body keeps them (0.17.0)
+  const paraAt = new Set();
   const lines = raw
     .split("\n")
     .map(s =>
@@ -47,7 +50,13 @@ function parseEmail(text, rules, smart) {
         .replace(/^[|=]\s*/, "")
         .trim()
     )
-    .filter(Boolean);
+    .reduce((out, l, i, all) => {
+      if (l) {
+        if (out.length && i && !all[i - 1]) paraAt.add(out.length);
+        out.push(l);
+      }
+      return out;
+    }, []);
   const job = {
     sender: "",
     subject: "",
@@ -59,6 +68,7 @@ function parseEmail(text, rules, smart) {
     hidden: [],
     suspect: "",
     body: "",
+    bodyText: "",
     components: [],
   };
   // sender = the last address above the greeting (inbox entries come first when the box is too big)
@@ -134,6 +144,13 @@ function parseEmail(text, rules, smart) {
   const endB = lines.findIndex(l => /labou?r|budget/i.test(l));
   const bodyLines = lines.slice(startB >= 0 ? startB : emailLineIdx + 2, endB > 0 ? endB : undefined);
   job.body = bodyLines.join(" ").replace(/\s+/g, " ").trim();
+  // the same text with its paragraphs (blank line between them) – for the story job report
+  const b0 = startB >= 0 ? startB : emailLineIdx + 2;
+  job.bodyText = bodyLines
+    .map((l, i) => (i && paraAt.has(b0 + i) ? "\n\n" : " ") + l)
+    .join("")
+    .replace(/[ \t]+/g, " ")
+    .trim();
   // story-job signals: the name the email is signed with, no star requirement in the blue band, a long text
   job.signature = bodyLines
     .slice(-3)
@@ -182,15 +199,25 @@ function storyMatch(job, list) {
   if (both) return { entry: both, by: "email" };
   // a known story customer, but this email isn't in the list yet: don't show another of their jobs' story
   if (mine.length && sub && mine.every(st => st.subject))
-    return { entry: { sender_name: mine[0].sender_name, email: mine[0].email, story: "" }, by: "sender", newEmail: true };
+    return {
+      entry: { signed: mine[0].signed, email: mine[0].email, chain: mine[0].chain, story: "" },
+      by: "sender",
+      newEmail: true,
+    };
   for (const st of list || []) {
     if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
     if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
   }
   const looks = storyLooks(job).looks;
-  for (const st of list || [])
-    if (looks && st.sender_name && sig.includes(normStory(st.sender_name))) return { entry: st, by: "name" };
+  for (const st of list || []) if (looks && st.signed && sig.includes(normStory(st.signed))) return { entry: st, by: "name" };
   return null;
+}
+// what the banner says about a known story job: its subject and where it is in its chain (0.17.0)
+function storyLabel(st, list) {
+  if (!st) return "";
+  if (!st.chain) return `“${st.subject}” – standalone story job`;
+  const n = (list || []).filter(x => x.chain === st.chain).length;
+  return `“${st.subject}” – ${st.chain}, quest ${st.order} of ${n}`;
 }
 // unknown story job? no star requirement (random jobs always have one) or a very long email without a deadline
 function storyLooks(job) {
