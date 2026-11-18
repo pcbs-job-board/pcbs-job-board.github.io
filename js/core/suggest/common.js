@@ -31,6 +31,22 @@ const catOfText = t => (CAT_WORDS.find(([, re]) => re.test(t)) || [])[0] || null
 const cInfo = p => compatOf(p.name) || {};
 const rk = p => +(cInfo(p).rk || 0);
 const priceOk = (p, left) => left == null || p.price == null || p.price <= left;
+// "never cheaper" (Mariusz, 0.17.2): the game calls a replacement that costs less than the part it replaces an
+// "Inferior part installed" (motherboards and coolers go by the shop price), so a replacement for any part other than
+// the CPU and GPU (those go by the part ranking) costs at least as much as the customer's part it replaces. A part
+// planned in place of the customer's counts as that customer's part (the game only sees the old one leave).
+// Nothing at that price or above inside the budget: the cheapest one at that price or above, marked over budget.
+function minPrice(job, cat, oldName) {
+  if (!oldName || RATED.has(cat)) return 0;
+  const sw = (job.swaps || []).find(s => s.old && lowName(s.new) === lowName(oldName));
+  return priceOf(sw ? sw.old : oldName) || 0;
+}
+const notCheaper = (job, cat, oldName) => {
+  const min = minPrice(job, cat, oldName);
+  return p => (p.price || 0) >= min;
+};
+const notCheaperHint = (job, cat, oldName) =>
+  `No unlocked ${cat} like it costs $${minPrice(job, cat, oldName)} or more – a cheaper one is an "Inferior part" in the game`;
 // parts the player can buy now (G1), by category
 function shopParts(cat) {
   return INDEX.filter(p => !p.hist && !p.noShop && p.cat === cat && p.price != null && unlocked(p)); // menu cases etc. can't be bought
@@ -61,6 +77,7 @@ function psuFor(job, extraSwaps, oc = false) {
     .filter(c => c.cat === "PSU")
     .pop();
   const ok = shopParts("PSU")
+    .filter(notCheaper(j2, "PSU", cur?.name))
     .filter(p => (powerOf(p.name)?.w || 0) >= need && fitsBuild(j2, p, cur?.name))
     .sort((a, b) => a.price - b.price);
   return ok[0]
@@ -68,10 +85,12 @@ function psuFor(job, extraSwaps, oc = false) {
     : { cat: "PSU", old: cur?.name || "", name: null, why: `needs a PSU of ~${need} W – none unlocked` };
 }
 // turn a list of candidate parts into the options of one suggestion (G2–G4, brand)
-function pickOptions(job, ctx, cands, { replace = "", count = 1, upgrade = false, base = null } = {}) {
+function pickOptions(job, ctx, cands, { replace = "", count = 1, upgrade = false, base = null, anyPrice = false } = {}) {
   // a part already planned for this slot is not bought any more: its price is back in the budget
   const left = ctx.left == null ? null : ctx.left + (replace && count === 1 ? refundFor(job, [replace]) : 0);
-  const ok = cands.filter(p => fitsBuild(job, p, replace)).sort((a, b) => a.price - b.price || rk(b) - rk(a));
+  // never cheaper than the part it replaces (anyPrice: the objective names this exact part)
+  const cheapOk = anyPrice || !cands.length ? () => true : notCheaper(job, cands[0].cat, replace);
+  const ok = cands.filter(p => cheapOk(p) && fitsBuild(job, p, replace)).sort((a, b) => a.price - b.price || rk(b) - rk(a));
   if (!ok.length) return [];
   const opt = (p, tag) => {
     const swaps = Array.from({ length: count }, () => ({ cat: p.cat, old: replace && count === 1 ? replace : "", new: p.name }));
@@ -158,6 +177,7 @@ function pairExtras(job, card, swaps, board) {
           const c = cInfo(p);
           return c.s === bc.s && (mc === "SLI" ? c.sli === "1" : c.cf === "1") && (!c.ds || +c.ds >= +(cInfo(card).sl || 0));
         })
+        .filter(notCheaper(job, "Motherboard", board.name))
         .filter(p => fitsBuild(withSwaps(job, swaps), p, board.name))
         .sort((a, b) => a.price - b.price)[0];
     extra.push(
@@ -247,6 +267,7 @@ function cpuWithBoard(job, ctx, cands, curP, cur, boardOk0 = () => true) {
     const sw = [{ cat: "CPU", old: curP?.name || "", new: cpu.name }];
     const nb = shopParts("Motherboard")
       .filter(p => cInfo(p).s === sock && boardOk(p))
+      .filter(notCheaper(job, "Motherboard", board?.name))
       .filter(p => fitsBuild(withSwaps(job, sw), p, board?.name))
       .sort((a, b) => a.price - b.price)[0];
     if (nb) pairs.push({ cpu, nb, total: cpu.price + nb.price });

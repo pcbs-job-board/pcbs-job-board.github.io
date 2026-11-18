@@ -40,7 +40,7 @@ function lightsSuggestion(job, ctx, want, reason) {
     const free = +(cc["r" + z] || 0) - fans.filter(f => cInfo(f).z === z).length;
     for (let i = 0; i < free; i++)
       items.push({ n: 1, cost: fan.price, swaps: [{ cat: "Case Fan", old: "", new: fan.name, price: fan.price, lvl: fan.lvl }] });
-    for (const f of fans.filter(f => cInfo(f).z === z && !isRGB(f)))
+    for (const f of fans.filter(f => cInfo(f).z === z && !isRGB(f) && notCheaper(job, "Case Fan", f.name)(fan)))
       items.push({
         n: 1,
         cost: fan.price,
@@ -50,7 +50,9 @@ function lightsSuggestion(job, ctx, want, reason) {
   const ram = build.filter(p => p.cat === "RAM" && !isRGB(p));
   if (ram.length) {
     const r0 = cInfo(ram[0]),
-      st = rgbShop("RAM").find(p => +cInfo(p).gb >= +(r0.gb || 0) && +cInfo(p).mhz >= +(r0.mhz || 0));
+      st = rgbShop("RAM").find(
+        p => +cInfo(p).gb >= +(r0.gb || 0) && +cInfo(p).mhz >= +(r0.mhz || 0) && ram.every(r => notCheaper(job, "RAM", r.name)(p)) // never cheaper than the sticks it replaces (0.17.2)
+      );
     if (st)
       items.push({
         n: ram.length,
@@ -61,7 +63,7 @@ function lightsSuggestion(job, ctx, want, reason) {
   for (const cat of ["CPU Cooler", "Storage", "GPU"])
     for (const p of build.filter(x => x.cat === cat && !isRGB(x) && !x.req)) {
       const better = atLeast(ixByName(p.name) || p, cat),
-        c = rgbShop(cat).find(x => better(x) && fitsBuild(job, x, p.name));
+        c = rgbShop(cat).find(x => better(x) && notCheaper(job, cat, p.name)(x) && fitsBuild(job, x, p.name));
       if (c) items.push({ n: 1, cost: c.price, swaps: [{ cat, old: p.name, new: c.name, price: c.price, lvl: c.lvl }] });
     }
   items.sort((a, b) => a.cost / a.n - b.cost / b.n || a.cost - b.cost);

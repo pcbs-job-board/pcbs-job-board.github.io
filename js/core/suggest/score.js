@@ -106,6 +106,7 @@ function benchSuggestions(job, ctx) {
     const r0 = ram0[0],
       p = shopParts("RAM")
         .filter(x => brandMatch(x, favRam) && +cInfo(x).gb === +cInfo(r0).gb && +cInfo(x).mhz >= stick)
+        .filter(x => ram0.every(r => notCheaper(job, "RAM", r.name)(x))) // replaces the customer's sticks: never cheaper
         .sort((a, b) => a.price - b.price)[0];
     if (p) ramFav = { k: ramFill.k, p, swap: true };
   }
@@ -187,7 +188,9 @@ function benchSuggestions(job, ctx) {
           );
       }
     if (!locked.has("CPU") && !locked.has("Motherboard"))
-      for (const { p: m, b: mbN } of withB("Motherboard").filter(x => !needMulti(job) || multiOk(x.p)))
+      for (const { p: m, b: mbN } of withB("Motherboard", notCheaper(job, "Motherboard", mb0.name)).filter(
+        x => !needMulti(job) || multiOk(x.p)
+      ))
         for (const { p: c, b } of cpus)
           if (sockOk(cInfo(m).s, cInfo(c).s))
             both("Motherboard + CPU", [sw(m, mb0.name), sw(c, cpu0.name)], cpuF(b, c.name, m.name), mbN.steps, gNow);
@@ -307,7 +310,9 @@ function platformBench(job, ctx, target, why, set, locked) {
       swaps: (job.swaps || []).filter(s => !free.includes(s.cat)),
     };
     const keep = Object.fromEntries(["PSU", "CPU Cooler"].filter(c => free.includes(c)).map(c => [c, olds(c)[0]]));
-    const res = newBuildBench(bare, { ...ctx, objCats: new Set() }, target, plannedBuild(bare), why, set, { keep });
+    // never cheaper than the customer's parts they replace (0.17.2 – CPU and GPU go by the part ranking)
+    const floor = Object.fromEntries(free.map(c => [c, Math.max(0, ...olds(c).map(n => minPrice(job, c, n)))]));
+    const res = newBuildBench(bare, { ...ctx, objCats: new Set() }, target, plannedBuild(bare), why, set, { keep, floor });
     const out = [];
     for (const o of res[0]?.options || []) {
       const q = Object.fromEntries(free.map(c => [c, olds(c)])),
@@ -347,7 +352,15 @@ function platformBench(job, ctx, target, why, set, locked) {
 // 3DMark for a PC built from nothing: the cheapest CPU + motherboard + RAM (+ GPU) that reach the score – parts already
 // planned (an objective's GPU, RAM…) stay – plus the PSU and CPU cooler it needs to run. Search: per category only the
 // parts that are the best for their price (a dearer part must score higher), then every mix of them.
-function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "bench", what = "Build for the score" } = {}) {
+function newBuildBench(
+  job,
+  ctx,
+  target,
+  build,
+  why,
+  set,
+  { keep = {}, floor = {}, key = "bench", what = "Build for the score" } = {}
+) {
   const have = c => build.filter(p => p.cat === c),
     WANT = ["GPU", "CPU", "Motherboard", "RAM"];
   const wait = WANT.filter(c => !have(c).length && ctx.objCats && ctx.objCats.has(c));
@@ -361,8 +374,10 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "be
       },
     ];
   const sw = p => ({ cat: p.cat, old: "", new: p.name, price: p.price, lvl: p.lvl });
+  // floor: the lowest price per category (a new platform never puts in a cheaper part than the one it replaces)
+  const shop = cat => shopParts(cat).filter(p => p.price >= (floor[cat] || 0));
   const withB = cat =>
-    shopParts(cat)
+    shop(cat)
       .map(p => ({ p, b: benchOf(p.name) }))
       .filter(x => x.b);
   const pareto = (list, val) => {
@@ -425,7 +440,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "be
       ? [{ k: r0.length, mhz: Math.min(...r0.map(r => +(cInfo(r).mhz || 0))), p: null, cost: 0 }]
       : [1, 2, 4].flatMap(k =>
           pareto(
-            shopParts("RAM")
+            shop("RAM")
               .map(p => ({ p, mhz: +cInfo(p).mhz }))
               .filter(x => x.mhz),
             x => x.mhz
@@ -466,7 +481,7 @@ function newBuildBench(job, ctx, target, build, why, set, { keep = {}, key = "be
   cands.sort((a, b) => a.cost - b.cost || b.sc.on - a.sc.on);
   // what it still needs to run: a PSU that carries it and a CPU cooler that fits (cheapest)
   const cheap = {},
-    cheapFirst = cat => cheap[cat] || (cheap[cat] = shopParts(cat).sort((a, b) => a.price - b.price)); // fit checks are slow: cheapest first, stop at the first that fits
+    cheapFirst = cat => cheap[cat] || (cheap[cat] = shop(cat).sort((a, b) => a.price - b.price)); // fit checks are slow: cheapest first, stop at the first that fits
   const runParts = swaps => {
     const extras = [],
       j2 = withSwaps(job, swaps),

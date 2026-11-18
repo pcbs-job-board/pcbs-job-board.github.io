@@ -154,11 +154,16 @@ function suggestSwaps(job, opts = {}) {
         handled.add(cat);
         continue;
       }
-      let found = pickOptions(job, ctx, cands, { replace: curP?.name || "", base: curP || r });
+      // the exact part the objective names: whatever it costs; "or better": never cheaper than the part it replaces
+      let found = pickOptions(job, ctx, cands, { replace: curP?.name || "", base: curP || r, anyPrice: !better });
       if (!found.length && cat === "CPU") found = cpuWithBoard(job, ctx, cands, curP, cur);
       // the part asked for comes first (when it can be bought and fits) – the others also count
       if (better && named) {
-        const own = pickOptions(job, ctx, shopParts(cat).filter(sameAs(r.name)), { replace: curP?.name || "", base: curP || r });
+        const own = pickOptions(job, ctx, shopParts(cat).filter(sameAs(r.name)), {
+          replace: curP?.name || "",
+          base: curP || r,
+          anyPrice: true,
+        });
         if (own.length) found = [{ ...own[0], tag: "asked for" }, ...found.filter(x => x.name !== own[0].name)].slice(0, 3);
       }
       found.forEach(x => (x.rank = rankOf(x)));
@@ -542,13 +547,13 @@ function suggestSwaps(job, opts = {}) {
         missing("hint:" + cat, `Customer hints the ${cat} is broken`, `capture PC Stats to get a ${cat} suggestion`);
         continue;
       }
-      const eq = sameOrBrand(cat, p0, ctx);
-      add(
-        "hint:" + cat,
-        `Customer hints the ${cat} is broken – same part again${cur(cat).length > 1 ? " (one of " + cur(cat).length + "; which one shows in the game)" : ""}`,
-        pickOptions(job, ctx, eq, { replace: p0.name, base: p0 }),
-        { cat, old: p0.name }
-      );
+      const eq = sameOrBrand(cat, p0, ctx),
+        why = `Customer hints the ${cat} is broken – same part again${cur(cat).length > 1 ? " (one of " + cur(cat).length + "; which one shows in the game)" : ""}`,
+        o = pickOptions(job, ctx, eq, { replace: p0.name, base: p0 });
+      // nothing at the old part's price or above (a cheaper one is an "Inferior part" in the game): say so
+      if (!o.length && eq.length)
+        missing("hint:" + cat, why, notCheaperHint(job, cat, p0.name), { cat, old: p0.name, noCheaper: true });
+      else add("hint:" + cat, why, o, { cat, old: p0.name });
     }
   // 15b Diagnose and fix + favourite brand ("I'm a total Intel fanboy"): the broken part is the one made by that
   //     brand – the same part again, once per customer's part of that brand (which one is broken shows in the game)
@@ -602,6 +607,14 @@ function suggestSwaps(job, opts = {}) {
         })(),
         { cat: p0.cat, old: p0.name }
       );
+      // nothing at the old part's price or above (a cheaper one is an "Inferior part" in the game): say so
+      if (!out.some(s => s.key === "brandfix:" + p0.cat + ":" + p0.name) && sameOrBrand(p0.cat, p0, ctx).length)
+        missing(
+          "brandfix:" + p0.cat + ":" + p0.name,
+          `${b} fan + "diagnose and fix" – the broken part is likely their ${b} ${p0.cat}`,
+          notCheaperHint(job, p0.cat, p0.name),
+          { cat: p0.cat, old: p0.name, noCheaper: true }
+        );
     }
   }
   // 19  water cooling requested (hidden) – AIO only
@@ -700,7 +713,8 @@ function suggestSwaps(job, opts = {}) {
         if (back) o.over = (o.total ?? (o.price || 0) * (o.count || 1)) > ctx.left + back;
       }
   // 22  "Diagnose and fix" with nothing else to go on: based on the budget (fallback, never part of the one set)
-  if (fixJob && sec("budget") && !out.some(sg => sg.options.length)) {
+  //     (nor when the broken part is known and only cheaper parts like it are unlocked – the line says so)
+  if (fixJob && sec("budget") && !out.some(sg => sg.options.length || sg.noCheaper)) {
     const sg = budgetFixSuggestion(job, ctx);
     if (sg) out.push(sg);
   }
