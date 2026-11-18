@@ -476,7 +476,11 @@ function joinPCStatsLines(lines) {
     }
     // a database name that is the name above + this line, the line read with a slip or two ("DFL Radeon R9 290" /
     // "GRBTOR" = …R9 290 GR8TOR – the name above alone already looks like the R9 290 GR8)
-    const ext = extendName(cur, l.text);
+    // …also with a crumb of the picture in front that looks like a model number ("E24 Gaming 7" = GIGABYTE X399 AORUS
+    // + "Gaming 7"; 0.17.0) – only a word no part name has
+    const toks = l.text.split(/\s+/),
+      crumb = toks.length > 1 && !partVocab().has(normP(toks[0]).replace(/ /g, ""));
+    const ext = extendName(cur, l.text) || (crumb && extendName(cur, toks.slice(1).join(" ")));
     if (ext) {
       cur = ext;
       continue;
@@ -659,6 +663,15 @@ function resolvePCStats(items) {
       if (m2) {
         name = m2.name;
         loose = true;
+      }
+    }
+    // a recognised part where only a guess sits ("E24 Gaming 7" guessed as the CPU from its place, then the real
+    // Threadripper read) takes the guess's place instead of being dropped (0.17.0)
+    if (m && full(cat)) {
+      const g = out.findIndex(o => o.cat === cat && !o.sure);
+      if (g >= 0) {
+        out[g] = { name, cat, sure: true };
+        continue;
       }
     }
     if (full(cat)) continue;

@@ -148,6 +148,8 @@ function careerInfo() {
   $("#careerBar").title =
     "Your career level and % through it (in-game, top right under the stars). Part-swap suggestions only show parts you have unlocked.\n" +
     (career.level == null ? "Not set – every part is suggested." : `${ok} of ${n} parts unlocked.`);
+  // the unlocks button has its own big tooltip – an empty title stops the bar's native one covering it (0.17.0)
+  $("#btnUnlocks").title = "";
   $("#careerBar").classList.toggle("set", career.level != null);
   if (typeof flipBtnUpdate === "function") flipBtnUpdate();
 }

@@ -225,9 +225,13 @@ function ctrlId(el) {
   return null;
 }
 let restore = null;
+// a box ticked / a button pressed with the mouse outside job focus: the card stays selected but nothing in it keeps
+// the keyboard – arrows go on moving between jobs, Enter is the only way into the card (Mariusz 2026-11-18)
+const mouseOnly = el => !!el && !typing(el) && fromMouse(el) && focusJob !== el.closest?.(".job")?.dataset.job;
 function rememberFocus() {
-  const p = posOf(document.activeElement);
-  restore = p ? { job: p.card.dataset.job, id: ctrlId(document.activeElement), r: p.r, c: p.c } : null;
+  const a = document.activeElement,
+    p = posOf(a);
+  restore = p && !mouseOnly(a) ? { job: p.card.dataset.job, id: ctrlId(a), r: p.r, c: p.c } : null;
 }
 function restoreFocus() {
   if (!restore) return;
@@ -372,8 +376,12 @@ document.addEventListener("keydown", e => {
       return;
     }
   }
-  if (!e.ctrlKey && !e.metaKey && !e.altKey && inCardKey(e)) return;
-  if (posOf(t) && !typing(t)) return; // inside a card: no single-key job shortcuts (a stray "1" would move the job) – Esc first
+  // still focused from a mouse click outside job focus: only Enter (into the card) and Space (the box) stay in it
+  if (posOf(t) && mouseOnly(t) && e.key !== "Enter" && e.key !== " " && !/^(Shift|Control|Alt|Meta)$/.test(e.key)) {
+    t.blur();
+    document.querySelectorAll(".kbrow").forEach(x => x.classList.remove("kbrow"));
+  } else if (!e.ctrlKey && !e.metaKey && !e.altKey && inCardKey(e)) return;
+  if (posOf(t) && !typing(t) && document.activeElement === t) return; // inside a card: no single-key job shortcuts (a stray "1" would move the job) – Esc first
   if (typing(t)) {
     if (e.key === "Escape" && !document.querySelector("#ac:not([hidden])")) {
       const card = t.closest(".job");

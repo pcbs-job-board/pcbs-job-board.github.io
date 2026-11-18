@@ -18,6 +18,8 @@ function suggestSwaps(job, opts = {}) {
   // rules that don't belong to one objective run (all when no step list is given)
   const sec = k => !opts.only || !!opts.sections?.includes(k);
   const add = (key, reason, items, extra = {}) => {
+    // the customer's case is never swapped – it can't be replaced in the game (Mariusz 2026-11-17)
+    if (extra.cat === "Case" && extra.old && !key.startsWith("obj:")) return;
     // an objective with no options → the window says why (hint or the general reason); optional extras just drop out
     if (items.length || key.startsWith("obj:")) out.push({ key, reason, options: items, ...extra });
   };
@@ -534,7 +536,7 @@ function suggestSwaps(job, opts = {}) {
   const fixJob = jobObjectives(job).some(o => /diagnose|fix/i.test(o));
   if (fixJob && sec("hint"))
     for (const cat of broken) {
-      if (handled.has(cat) || (cat === "CPU" && cpuIsFixed(job))) continue;
+      if (cat === "Case" || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job))) continue; // a case is never swapped
       const p0 = cur(cat)[0];
       if (!p0) {
         missing("hint:" + cat, `Customer hints the ${cat} is broken`, `capture PC Stats to get a ${cat} suggestion`);
@@ -560,8 +562,8 @@ function suggestSwaps(job, opts = {}) {
       return ix && ctx.brands.some(b => brandMatch(ix, b));
     };
     const fanParts = CATS.flatMap(cat =>
-      broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : own.filter(p => p.cat === cat)
-    ).filter(isFan);
+      cat === "Case" || broken.has(cat) || handled.has(cat) || (cat === "CPU" && cpuIsFixed(job)) ? [] : own.filter(p => p.cat === cat)
+    ).filter(isFan); // never the case – it can't be replaced
     const mine = fanParts.filter(p => !planned(p));
     for (const p of fanParts.filter(planned))
       missing(
