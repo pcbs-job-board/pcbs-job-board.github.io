@@ -3,6 +3,10 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.17.2
+- Suggested replacements for every part except the CPU and GPU now cost the same as the old part or more, never less – the game calls a cheaper motherboard or cooler an "Inferior part". The CPU and GPU still go by the part ranking.
+- When nothing at that price or more fits the budget, the cheapest one is shown marked over budget; when none is unlocked, a line says so.
+
 ## 0.17.1
 - Tab key: outside a card it moves from job card to job card (never into one – Enter goes in); inside a card it goes through every item, top to bottom, and wraps round from the last to the first.
 - Tab now reaches the Edit and Job completed buttons in Safari too.
