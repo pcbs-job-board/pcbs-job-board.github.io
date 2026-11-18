@@ -56,7 +56,10 @@ function openStoryReport(pre = {}) {
       ? `Opens a pre-filled report on github.com/${reportRepo()} (needs a free GitHub account).`
       : "";
   $("#dlgStory").showModal();
-  (pre.email ? $("#sBody") : $("#sEmail")).focus();
+  const f = pre.email ? $("#sBody") : $("#sEmail");
+  f.focus();
+  f.setSelectionRange?.(0, 0); // the email text from its start, not scrolled to the end
+  f.scrollTop = 0;
 }
 function storyReportData() {
   const r = {};

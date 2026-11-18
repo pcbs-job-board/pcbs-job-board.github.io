@@ -204,11 +204,14 @@ function storyMatch(job, list) {
       by: "sender",
       newEmail: true,
     };
+  // the subject alone: a short one ("upgrade", "Help!", "Virus Scan") only when the email also looks like a story job –
+  // random customers use those subjects too (0.17.0, the list now has every story email)
+  const looks = storyLooks(job).looks,
+    subOk = looks || sub.split(" ").length >= 4;
   for (const st of list || []) {
     if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
-    if (st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
+    if (subOk && st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
   }
-  const looks = storyLooks(job).looks;
   for (const st of list || []) if (looks && st.signed && sig.includes(normStory(st.signed))) return { entry: st, by: "name" };
   return null;
 }
