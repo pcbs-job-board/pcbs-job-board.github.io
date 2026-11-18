@@ -22,8 +22,12 @@ def parse_emails(text):
         if not m:
             sys.exit(f"entry {n}: unexpected layout")
         frm, body, level, labour, budget, objs = m.groups()
-        # the body is quoted; a few entries describe it instead ("…" repeated about 45 times) – kept as written
-        if len(body) >= 2 and body[0] == '"' and body[-1] == '"':
+        # the body is quoted; #83 describes it instead: '"CAN YOU FIX ME?" repeated about 45 times (…)' – written out as
+        # one continuous text, no paragraphs (Mariusz, 2026-11-18)
+        rep = re.match(r'"(.+)" repeated about (\d+) times', body)
+        if rep:
+            body = " ".join([rep.group(1)] * int(rep.group(2)))
+        elif len(body) >= 2 and body[0] == '"' and body[-1] == '"':
             body = body[1:-1]
         fm = re.match(r"(\S+)(?: \(signed (.*)\))?$", frm.strip())
         objectives = [re.sub(r"^  - ", "", l) for l in objs.rstrip().split("\n") if l.strip()]

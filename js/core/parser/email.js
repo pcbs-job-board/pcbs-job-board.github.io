@@ -204,10 +204,11 @@ function storyMatch(job, list) {
       by: "sender",
       newEmail: true,
     };
-  // the subject alone: a short one ("upgrade", "Help!", "Virus Scan") only when the email also looks like a story job –
-  // random customers use those subjects too (0.17.0, the list now has every story email)
+  // a story job is told by the sender's email or by no star requirement – never by the subject alone (Mariusz,
+  // 2026-11-18: random customers use "upgrade", "Help!" too). The subject only picks which known job it is when the
+  // email already looks like a story job (sender address misread).
   const looks = storyLooks(job).looks,
-    subOk = looks || sub.split(" ").length >= 4;
+    subOk = looks;
   for (const st of list || []) {
     if (st.email && e && normStory(st.email) === e) return { entry: st, by: "email" };
     if (subOk && st.subject && sub && normStory(st.subject) === sub) return { entry: st, by: "subject" };
