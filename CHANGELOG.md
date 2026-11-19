@@ -3,6 +3,11 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.17.4
+- "Install 2 <RAM> or better": the new sticks now take the place of the customer's old ones – before, nothing was suggested when the old sticks were a different kind.
+- "<motherboard> or better" now needs a board that costs at least as much as the one asked for – any board counted before.
+- Edit window: a known story job is now found in the story job list (it said "isn't in the list yet" for every story job).
+
 ## 0.17.3
 - Custom water cooling objectives are worked out together: the watercooled GPU and the radiators the customer names, a CPU block and a reservoir that fits the case (RGB ones when the job asks for lights), and RGB case fans only if the lights are still short.
 - Objectives that name a part with "RGB" in its name are now read as that part.
