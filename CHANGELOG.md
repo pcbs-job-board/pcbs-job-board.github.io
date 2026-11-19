@@ -3,6 +3,13 @@
 Versions follow X.Y.Z – X: major, Y: minor (new features), Z: small fixes.
 Within each version, changes are listed from most to least important. Small visual changes (a colour, a position or a size) aren't listed – only visual changes that change how the app works.
 
+## 0.17.3
+- Custom water cooling objectives are worked out together: the watercooled GPU and the radiators the customer names, a CPU block and a reservoir that fits the case (RGB ones when the job asks for lights), and RGB case fans only if the lights are still short.
+- Objectives that name a part with "RGB" in its name are now read as that part.
+- An air-cooled card no longer counts as "<watercooled card> or better".
+- Custom loop parts in the suggestions say what they are: Radiator, CPU Block or Reservoir (Water Cooling).
+- 1 OCR bug fixed ("cooling" in objectives).
+
 ## 0.17.2
 - Suggested replacements for every part except the CPU and GPU now cost the same as the old part or more, never less – the game calls a cheaper motherboard or cooler an "Inferior part". The CPU and GPU still go by the part ranking.
 - When nothing at that price or more fits the budget, the cheapest one is shown marked over budget; when none is unlocked, a line says so.
