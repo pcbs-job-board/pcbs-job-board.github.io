@@ -163,6 +163,24 @@ function atLeast(ref, cat) {
   return () => true;
 }
 const sameAs = name => p => p.name.toLowerCase() === String(name).toLowerCase();
+// "or better" stays the same kind of part: a watercooled GPU → watercooled GPUs, a radiator → radiators (0.17.3)
+const sameKind = ref => {
+  if (ref.cat === "GPU" && isWaterGPU(ref)) return isWaterGPU;
+  const k = ref.cat === "Water Cooling" && wcKind(ref);
+  return k ? p => wcKind(p) === k : () => true;
+};
+// the text names one part in full ("EKWB EK-CoolStream SE 360 RGB") – not a kind of part ("RGB fans")
+const namesPart = t => (bestPartMatch(t)?.score || 0) >= 0.9;
+// the option of the part asked for first, then the others (up to 3 in all)
+const askedFirst = (found, own, tag) =>
+  own.length ? [{ ...own[0], tag }, ...found.filter(x => x.name !== own[0].name)].slice(0, 3) : found;
+// the parts the job's objectives name in full ("Install [N] <part> [or better]") – database entries
+const askedParts = objs =>
+  objs
+    .map(o => (o.match(/^\W*install\s+(?:[2-9]\s+)?(.+?)(?:\s+or better)?\s*$/i) || [])[1])
+    .filter(t => t && namesPart(t))
+    .map(t => ixByName(bestPartMatch(t).name))
+    .filter(Boolean);
 // two of the same card: the board must have SLI / CrossFire (the card's kind), the PSU must carry both – extras for a pair
 function pairExtras(job, card, swaps, board) {
   const extra = [],

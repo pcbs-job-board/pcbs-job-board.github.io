@@ -1,5 +1,7 @@
 // Suggestions for cooling objectives: custom water cooling loop, AIO, and overclock objectives.
-function customLoopSuggestion(job, ctx, reason, cur) {
+// opts.asked: parts the job's objectives name (a radiator named elsewhere is the one used); opts.rgb: the job asks for
+// lights → an RGB block / reservoir / radiator where one fits (cheapest RGB first), else the cheapest (0.17.3)
+function customLoopSuggestion(job, ctx, reason, cur, { asked = [], rgb = false } = {}) {
   const key = "obj:customloop";
   if (!hasUnlock("customWC")) return [{ key, reason, options: [], hint: gateMsg("customWC").replace(/<\/?b>/g, "") + "." }];
   const have = k => cur("Water Cooling").find(p => wcKind(p) === k);
@@ -11,9 +13,10 @@ function customLoopSuggestion(job, ctx, reason, cur) {
   for (const k of kinds) {
     // the CPU block takes the place of the old CPU cooler
     const replace = k === "CPU Block" && cooler ? cooler.name : "";
+    const named = new Set(asked.filter(a => wcKind(a) === k).map(a => a.name));
     const p = shopParts("Water Cooling")
       .filter(x => wcKind(x) === k)
-      .sort((a, b) => a.price - b.price)
+      .sort((a, b) => named.has(b.name) - named.has(a.name) || (rgb ? isRGB(b) - isRGB(a) : 0) || a.price - b.price)
       .find(x => fitsBuild(plan, x, replace));
     if (!p) {
       const why =
@@ -43,7 +46,7 @@ function customLoopSuggestion(job, ctx, reason, cur) {
           count: 1,
           lvl: Math.max(...picked.map(x => x.p.lvl || 0)) || first.p.lvl,
           det: first.p.det,
-          tag: `custom loop: ${picked.map(x => wcKind(x.p)).join(" + ")} · then pipes, fittings and coolant (looks only)`,
+          tag: `custom loop: ${picked.map(x => wcKind(x.p) + (rgb && isRGB(x.p) ? " (RGB)" : "")).join(" + ")} · then pipes, fittings and coolant (looks only)`,
           swaps: [{ cat: "Water Cooling", old: first.replace, new: first.p.name }],
           extras: rest.map(x => ({ cat: "Water Cooling", old: "", name: x.p.name, price: x.p.price, why: wcKind(x.p) })),
           total,

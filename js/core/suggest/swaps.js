@@ -80,11 +80,12 @@ function suggestSwaps(job, opts = {}) {
     // "Install 5 ARCTIC BioniX F140 (Green) or better": a number of parts (not a size – "2 TB")
     let nWant = 1;
     const cm = m && m[1].match(/^([2-9])\s+(?!(?:tb|gb|mb)\b)(\S.+)$/i);
-    if (cm && !/water cooling|dual|two|\brgb\b|gpus?\b|graphics/i.test(cm[2])) {
+    // a part named in full counts even with "RGB" in its name ("Install 2 EKWB EK-CoolStream SE 360 RGB or better", 0.17.3)
+    if (cm && (namesPart(cm[2]) || !/water cooling|dual|two|\brgb\b|gpus?\b|graphics/i.test(cm[2]))) {
       nWant = +cm[1];
       m = [m[0], cm[2], m[2]];
     }
-    if (m && !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1])) {
+    if (m && (namesPart(m[1]) || !/water cooling|dual|two|2 (gpu|graphics)|\brgb\b/i.test(m[1]))) {
       // a named model ("EVGA GeForce GTX 1080 Ti K|NGP|N GAMING") is that card; a bare chip ("GTX 1080") any card of it
       const chip = chipFromText(m[1]),
         exact = bestPartMatch(m[1]),
@@ -111,8 +112,13 @@ function suggestSwaps(job, opts = {}) {
         continue;
       }
       const cat = r.cat,
-        vramOk = p => !runG || vramOf(p) >= runG.vram, // "PC can run X": the GPU needs the spec's VRAM too
-        curP = runG ? [...cur(cat)].sort((a, b) => vramOk(b) - vramOk(a) || rk(b) - rk(a))[0] : cur(cat).pop(),
+        // "PC can run X": the GPU needs the spec's VRAM too; a watercooled card named → watercooled ones only, a radiator
+        // → radiators only (0.17.3: "GTX 1080 | EKWB EK-FC Plexi RGB or better" isn't met by an air-cooled GTX 1080)
+        kindOk = sameKind(r),
+        vramOk = p => (!runG || vramOf(p) >= runG.vram) && kindOk(p),
+        curP = runG
+          ? [...cur(cat)].sort((a, b) => vramOk(b) - vramOk(a) || rk(b) - rk(a))[0]
+          : cur(cat).filter(kindOk).pop() || (cat === "Water Cooling" ? null : cur(cat).pop()),
         better = !!m[2] && cat !== "Case"; // "or better" for a case: no way to rank cases – the one asked for
       let cands;
       const size = m[1].match(/(\d+(?:\.\d+)?)\s*(tb|gb)\b/i) || [],
@@ -129,7 +135,7 @@ function suggestSwaps(job, opts = {}) {
         cands = shopParts(cat).filter(p => cInfo(p).c === chip);
       } else cands = shopParts(cat).filter(sameAs(r.name));
       if (nWant > 1) {
-        out.push(countSuggestion(job, ctx, o, r, cands, nWant, better, cur));
+        out.push(countSuggestion(job, ctx, o, r, cands, nWant, better, cur, !!named));
         handled.add(cat);
         continue;
       }
@@ -164,7 +170,7 @@ function suggestSwaps(job, opts = {}) {
           base: curP || r,
           anyPrice: true,
         });
-        if (own.length) found = [{ ...own[0], tag: "asked for" }, ...found.filter(x => x.name !== own[0].name)].slice(0, 3);
+        found = askedFirst(found, own, "asked for");
       }
       found.forEach(x => (x.rank = rankOf(x)));
       add("obj:" + o, o, found, { cat, old: curP?.name || "" });
@@ -404,32 +410,45 @@ function suggestSwaps(job, opts = {}) {
       handled.add("GPU");
       continue;
     }
-    // 10b "watercooled GPU" / "custom water cooling for the GPU": a watercooled version (Custom Water Cooling Shop), never worse
+    // 10b "watercooled GPU" / "custom water cooling for the GPU": a watercooled version (Custom Water Cooling Shop), never
+    //     worse – the one another objective names first ("Install NVIDIA GeForce GTX 1080 | EKWB EK-FC Plexi RGB or better")
+    //     "for CPU and GPU" (0.17.3): the GPU here, then the CPU's loop below (10c) – one objective, two suggestions
+    const loopToo = /custom/i.test(o) && /\bcpu\b/i.test(o);
     if (/\b(gpu|graphics)\b/i.test(o) && /water ?cool/i.test(o)) {
-      const g = cur("GPU")[0];
-      if (g && isWaterGPU(g)) {
-        handled.add("GPU");
-        continue;
+      const g = cur("GPU")[0],
+        gk = loopToo ? `obj:${o} (GPU)` : "obj:" + o,
+        gr = loopToo ? `${o} – the GPU` : o;
+      if (!(g && isWaterGPU(g))) {
+        const asked = new Set(
+            askedParts(allObjs)
+              .filter(isWaterGPU)
+              .map(p => p.name)
+          ),
+          c = shopParts("GPU").filter(p => isWaterGPU(p) && (!g || rk(p) >= rk(g))),
+          pick = (list, anyPrice) => pickOptions(job, ctx, list, { replace: g?.name || "", base: g || null, anyPrice }),
+          own = asked.size
+            ? pick(
+                shopParts("GPU").filter(p => asked.has(p.name)),
+                true
+              )
+            : [],
+          found = askedFirst(c.length ? pick(c, false) : [], own, "asked for in another objective");
+        if (!found.length && !c.length)
+          missing(
+            gk,
+            gr,
+            hasUnlock("customWC") ? "No watercooled GPU unlocked yet." : gateMsg("customWC").replace(/<\/?b>/g, "") + "."
+          );
+        else add(gk, gr, found, { cat: "GPU", old: g?.name || "" });
       }
-      const c = shopParts("GPU").filter(p => isWaterGPU(p) && (!g || rk(p) >= rk(g)));
-      if (!c.length)
-        missing(
-          "obj:" + o,
-          o,
-          hasUnlock("customWC") ? "No watercooled GPU unlocked yet." : gateMsg("customWC").replace(/<\/?b>/g, "") + "."
-        );
-      else
-        add("obj:" + o, o, pickOptions(job, ctx, c, { replace: g?.name || "", base: g || null }), {
-          cat: "GPU",
-          old: g?.name || "",
-        });
       handled.add("GPU");
-      continue;
+      if (!loopToo) continue;
     }
     // 10c "Install custom water cooling for CPU": a CPU block for the socket, a radiator with room in the case and a
-    //     reservoir (pump combo) on the case's list – cheapest set that fits; pipes, fittings and coolant are looks only
+    //     reservoir (pump combo) on the case's list – cheapest set that fits; pipes, fittings and coolant are looks only.
+    //     Parts another objective names come first; a job that asks for lights gets RGB ones where they fit (0.17.3)
     if (/custom/i.test(o) && /water ?cool/i.test(o)) {
-      out.push(...customLoopSuggestion(job, ctx, o, cur));
+      out.push(...customLoopSuggestion(job, ctx, o, cur, { asked: askedParts(allObjs), rgb: lightsWanted(job) > 0 }));
       handled.add("Water Cooling");
       continue;
     }
@@ -777,10 +796,10 @@ function budgetFixSuggestion(job, ctx) {
 }
 // "Install N <part> [or better]": N of them – parts already in the PC that count are kept; case fans go into free fan
 // places of their size first, then in place of the weaker fans of that size
-function countSuggestion(job, ctx, o, r, cands, n, better, cur) {
+function countSuggestion(job, ctx, o, r, cands, n, better, cur, named = false) {
   const cat = r.cat,
     counts = p => (better ? atLeast(r, cat)(p) : sameAs(r.name)(p)),
-    mine = cur(cat),
+    mine = cur(cat).filter(sameKind(r)),
     have = mine.filter(counts).length,
     need = n - have;
   if (need <= 0) return { key: "obj:" + o, reason: o, options: [], hint: `Already met – ${have} in the PC`, met: true, cat };
@@ -806,7 +825,13 @@ function countSuggestion(job, ctx, o, r, cands, n, better, cur) {
   const jFit = roomNote
     ? { ...job, components: (job.components || []).filter(p => !(p.cat === "Case Fan" && cInfo(p).z === cInfo(r).z)) }
     : job;
-  const opts = pickOptions(jFit, ctx, cands, { count: need }).map(op => {
+  let found = pickOptions(jFit, ctx, cands, { count: need });
+  // "or better" with a part named: the part asked for comes first (0.17.3 – the cheapest equal one may lack its RGB)
+  if (better && named) {
+    const own = pickOptions(jFit, ctx, shopParts(cat).filter(sameAs(r.name)), { count: need, anyPrice: true });
+    found = askedFirst(found, own, "asked for");
+  }
+  const opts = found.map(op => {
     const olds = Array.from({ length: need }, (_, i) => (i < free ? "" : weaker[i - free]?.name || ""));
     return {
       ...op,

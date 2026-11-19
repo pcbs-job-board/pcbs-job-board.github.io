@@ -86,8 +86,10 @@ function suggestPlan(job, opts = {}) {
       for (const sg of res) {
         if (/^(brandfix|fix:oclater)/.test(sg.key)) continue; // guesses / optional: per objective only
         if (!sg.options.length) {
-          if (sg.met) met.push({ reason: sg.reason, note: sg.hint });
-          else if (/^(obj:|bench|build|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
+          if (sg.met) {
+            met.push({ reason: sg.reason, note: sg.hint });
+            (sg.tasks || []).forEach(t => tasks.includes(t) || tasks.push(t)); // lights already met: still set their colour
+          } else if (/^(obj:|bench|build|hint:)/.test(sg.key)) left.push({ reason: sg.reason, why: sg.hint || "" });
           continue;
         }
         take(sg, sg.options.find(x => !x.over) || sg.options[0]);

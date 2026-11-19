@@ -14,8 +14,20 @@ function lightsSuggestion(job, ctx, want, reason) {
     job = { ...job, swaps: [...(job.swaps || []), ...ctx.pickedLights.map((x, i) => ({ id: "pl" + i, ...x }))] };
   const build = plannedBuild(job),
     lit = build.filter(isRGB).length,
-    need = want - lit;
-  if (need <= 0) return null;
+    need = want - lit,
+    colour = (reason.match(/\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/) || [])[0],
+    task = `Set the lighting of ${want} parts to ${colour ? "colour " + colour : "the colour asked for"}`;
+  // enough RGB parts planned (a custom loop's RGB block / reservoir / radiators, 0.17.3): nothing to add – say so, and
+  // the lighting still has to be set in the game
+  if (need <= 0)
+    return {
+      key: "lights",
+      reason,
+      options: [],
+      met: true,
+      tasks: [task],
+      hint: `Already met – ${lit} RGB part${lit === 1 ? "" : "s"} in the planned PC; set their lighting in the game`,
+    };
   const rgbShop = cat =>
       shopParts(cat)
         .filter(isRGB)
@@ -83,8 +95,7 @@ function lightsSuggestion(job, ctx, want, reason) {
       hint: `Only ${got} more RGB part${got === 1 ? "" : "s"} found for this PC – pick a case with more fan places or RGB parts yourself.`,
     };
   const swaps = take.flatMap(t => t.swaps),
-    total = swaps.reduce((t, x) => t + x.price, 0),
-    colour = (reason.match(/\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/) || [])[0];
+    total = swaps.reduce((t, x) => t + x.price, 0);
   return {
     key: "lights",
     reason: lead,
@@ -97,7 +108,7 @@ function lightsSuggestion(job, ctx, want, reason) {
         tag: "cheapest",
         swaps,
         extras: [],
-        tasks: [`Set the lighting of ${want} parts to ${colour ? "colour " + colour : "the colour asked for"}`],
+        tasks: [task],
         score: null,
         total,
         price: total,

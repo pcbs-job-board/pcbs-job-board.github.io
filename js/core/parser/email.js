@@ -133,7 +133,7 @@ function parseEmail(text, rules, smart) {
       else if (lineQuality({ t: o }) > lineQuality({ t: objs[k] })) objs[k] = o;
     }
     // the reader sometimes drops the "or" of "… or better" ("…K| NGP|N GAMING better")
-    job.objectives = objs.map(o => o.replace(/^(\W*install\s+.+?)(?<!\bor)\s+better\s*$/i, "$1 or better"));
+    job.objectives = objs.map(o => fixObjSlips(o.replace(/^(\W*install\s+.+?)(?<!\bor)\s+better\s*$/i, "$1 or better")));
   }
   const dl =
     raw.match(/Complete by[^\n]*?(\d{1,2}\/\d{1,2}\/\d{4})/i) || raw.match(/(\d{1,2}\/\d{1,2}\/\d{4})\s*\(?(Tomorrow|Today)/i);
@@ -174,6 +174,13 @@ function parseEmail(text, rules, smart) {
   }
   return job;
 }
+// objective words the reader gets wrong ("Install custom water cdpling for CPU and GPU", 0.17.3): a word starting with
+// "c" and ending in "ng" (or "nq"), up to two letters off "cooling" → "cooling" ("coolant" ends otherwise; real words kept)
+const SLIP_KEEP = new Set(["cooling", "ceiling", "cooking", "calling", "coiling", "curling", "cycling"]);
+const fixObjSlips = o =>
+  o.replace(/\b[cC][a-z]{3,6}n[gq9]\b/g, w =>
+    !SLIP_KEEP.has(w.toLowerCase()) && editDist(w.toLowerCase(), "cooling") <= 2 ? "cooling" : w
+  );
 // ---- story jobs (career story customers): known ones from data/story-jobs.csv, others by their look ----
 const normStory = s =>
   String(s || "")
