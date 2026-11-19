@@ -53,6 +53,13 @@ function renderSummary() {
     x = ($("#fExtra")?.value || "").split("\n").filter(l => l.trim()).length;
   el.textContent = $("#fObj") ? `${n} objectives · ${h} hidden · ${x} extra` : "";
 }
+// the story job list entry for a draft (saved job / typed-in fields): what the banner says about it
+function storyLookup(d, sender = d.sender, subject = d.subject) {
+  const sm = storyMatch({ ...d, sender, subject }, window.STORY_JOBS || []);
+  if (!sm) return;
+  d.storyKnown = sm.newEmail ? "" : storyLabel(sm.entry, window.STORY_JOBS);
+  d.storyWhy = sm.newEmail ? `known story customer${sm.entry.chain ? ` – ${sm.entry.chain}` : ""}, but not this email` : "";
+}
 function openReview(dataUrl, editJob, forJob) {
   const dlg = $("#dlgReview");
   if (editJob) forJob = editJob; // 0.13.0: one Edit window for the job's details AND its parts (the old Parts window is gone)
@@ -63,6 +70,9 @@ function openReview(dataUrl, editJob, forJob) {
     rev.draft.objectives = t.filter(x => x.src === "obj").map(x => x.text);
     rev.draft.hidden = t.filter(x => x.src === "hid").map(x => ({ task: x.text, because: [], keep: true }));
     rev.draft.extra = t.filter(x => x.src !== "obj" && x.src !== "hid").map(x => x.text);
+    // a saved story job: look it up in the list again – the banner said "isn't in the list yet" for every story job
+    // opened with Edit (0.17.4, propat "CPU/motherboard upgrade")
+    if (editJob.story) storyLookup(rev.draft);
   }
   if (forJob) rev.draft.components = structuredClone(forJob.components || []);
   // parts that came from a PC Stats capture are replaced by a new capture (typed ones are kept);
@@ -561,6 +571,9 @@ function renderForm() {
   $("#fStory")?.addEventListener("change", e => {
     rev.storyTouched = true;
     rev.draft.story = e.target.checked;
+    // sender / subject as typed now (a job typed in by hand never went through the reader's story check)
+    if (e.target.checked)
+      storyLookup(rev.draft, $("#fSender")?.value.trim() || rev.draft.sender, $("#fSubject")?.value.trim() || rev.draft.subject);
     document.querySelectorAll("#fHidden input").forEach(c => (c.checked = !e.target.checked));
     const b = $("#storyBanner");
     if (b) b.outerHTML = storyBanner(rev.draft);

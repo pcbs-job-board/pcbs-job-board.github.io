@@ -154,6 +154,9 @@ function atLeast(ref, cat) {
       return +c.gb >= +r.gb && +c.mhz >= +r.mhz;
     };
   if (cat === "PSU") return p => (powerOf(p.name)?.w || 0) >= (powerOf(ref.name)?.w || 0);
+  // boards have no part ranking: the game goes by price (a cheaper board is an "Inferior part installed", 0.17.2), so
+  // "ASUS ROG Maximus X Apex or better" ($400) isn't met by a $110 GIGABYTE GA-AB350-Gaming 3 (0.17.4)
+  if (cat === "Motherboard" && ref.price) return p => +(p.price || ixByName(p.name)?.price || 0) >= +ref.price;
   // coolers and fans: never less air flow (the game calls a weaker one a "worse part" and won't finish the job)
   if ((cat === "CPU Cooler" || cat === "Case Fan" || cat === "Water Cooling") && r.af)
     return p => {

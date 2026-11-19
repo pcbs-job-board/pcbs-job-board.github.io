@@ -173,7 +173,16 @@ function suggestSwaps(job, opts = {}) {
         found = askedFirst(found, own, "asked for");
       }
       found.forEach(x => (x.rank = rankOf(x)));
-      add("obj:" + o, o, found, { cat, old: curP?.name || "" });
+      add("obj:" + o, o, found, {
+        cat,
+        old: curP?.name || "",
+        // a board asked for with another socket than the customer's CPU: only the one set changes both (0.17.4)
+        ...(!found.length && cat === "Motherboard" && cands.length
+          ? {
+              hint: "No board like this fits the CPU in the PC – it needs a new CPU too (the one set picks both when the job asks for a CPU).",
+            }
+          : {}),
+      });
       handled.add(cat);
       continue;
     }
@@ -821,10 +830,22 @@ function countSuggestion(job, ctx, o, r, cands, n, better, cur, named = false) {
       }
     }
   }
-  // room unsure: the fit check leaves the fans of that size out (it would only repeat the places warning)
+  // RAM (0.17.4, propat "CPU/motherboard upgrade"): the sticks asked for take the place of the customer's sticks that
+  // don't count – sticks of another size / speed / maker can't stay next to them, and the board's slots are few
+  let ramOut = [];
+  if (cat === "RAM") {
+    weaker = mine.filter(s => !counts(s));
+    free = Math.max(0, need - weaker.length);
+    ramOut = weaker.slice(need).map(s => s.name);
+  }
+  // room unsure: the fit check leaves the fans of that size out (it would only repeat the places warning); RAM: the
+  // customer's sticks that are swapped out are left out too
+  const out = new Set(weaker.map(s => s.name.toLowerCase()));
   const jFit = roomNote
     ? { ...job, components: (job.components || []).filter(p => !(p.cat === "Case Fan" && cInfo(p).z === cInfo(r).z)) }
-    : job;
+    : cat === "RAM" && weaker.length
+      ? { ...job, components: (job.components || []).filter(p => !(p.cat === "RAM" && out.has(p.name.toLowerCase()))) }
+      : job;
   let found = pickOptions(jFit, ctx, cands, { count: need });
   // "or better" with a part named: the part asked for comes first (0.17.3 – the cheapest equal one may lack its RGB)
   if (better && named) {
@@ -836,10 +857,14 @@ function countSuggestion(job, ctx, o, r, cands, n, better, cur, named = false) {
     return {
       ...op,
       swaps: olds.map(old => ({ cat, old, new: op.name })),
+      ...(ramOut.length ? { removeOld: ramOut } : {}),
       tag: [
         op.tag,
         have ? `${have} already in the PC` : "",
-        olds.some(Boolean) ? `${olds.filter(Boolean).length} in place of weaker fans` : "",
+        olds.some(Boolean)
+          ? `${olds.filter(Boolean).length} in place of ${cat === "RAM" ? "the old sticks" : "weaker fans"}`
+          : "",
+        ramOut.length ? `take out ${ramOut.length} more` : "",
         roomNote,
       ]
         .filter(Boolean)
