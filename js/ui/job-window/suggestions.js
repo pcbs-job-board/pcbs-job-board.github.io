@@ -1,5 +1,10 @@
 /* PCBS Job Board – Suggested swaps in the job window: worked out from the form (with a "working on it" line, reused when nothing changed) and ticked into the job. */
 // ================= suggested swaps (new-job window and "Add parts from PC Stats") =================
+// a custom loop part says what it is: "Radiator (Water Cooling)", not just "Water Cooling" (0.17.3)
+const partCat = (cat, name) => {
+  const k = cat === "Water Cooling" && wcKind({ name });
+  return k ? `${k} (Water Cooling)` : cat;
+};
 // what the suggestions are worked out from: the form as it is now (or the job the parts are for)
 function suggestInput() {
   const d = rev.draft,
@@ -137,7 +142,7 @@ function drawSuggestions(box, input, key) {
       <span><span class="sname">${sg.old && o.swaps[0]?.old ? `<span class="old">${esc(sg.old)}</span> → ` : o.swaps[0]?.old === "" && o.cat !== "RAM" ? '<span class="old">(empty slot)</span> → ' : ""}<span class="new">${o.count > 1 ? o.count + " × " : ""}${esc(o.name)}</span></span>
       <small class="stag">${esc(o.tag)}${o.lvl != null ? ` · Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
       ${o.det ? `<small class="sdet">${esc(o.det)}</small>` : ""}
-      ${(o.extras || []).map(e => `<small class="sextra">+ ${esc(e.cat)}: ${e.name ? esc(e.name) + (e.price != null ? " ($" + e.price + ")" : "") : '<span class="warn">' + esc(e.why) + "</span>"}${e.name && e.why ? " – " + esc(e.why) : ""}</small>`).join("")}
+      ${(o.extras || []).map(e => `<small class="sextra">+ ${esc(partCat(e.cat, e.name))}: ${e.name ? esc(e.name) + (e.price != null ? " ($" + e.price + ")" : "") : '<span class="warn">' + esc(e.why) + "</span>"}${e.name && e.why && e.why !== wcKind({ name: e.name }) ? " – " + esc(e.why) : ""}</small>`).join("")}
       ${rankHtml(o.rank)}
       ${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${money(o)}</b></label>`;
             })
@@ -179,7 +184,7 @@ function benchOptHtml(o, i, k, pick, keep) {
   return `<label class="sopt multi ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
     <span><span class="sname"><b>${esc(o.name)}</b>${o.score != null ? ` → score <b class="bscore">${o.score.toLocaleString()}</b>` : ""}</span>
     <small class="stag">${n > 1 ? `one tick adds <b>all ${n} parts</b> below` : n ? "one tick adds the part below" : "no parts needed"}${o.tag ? " · " + esc(o.tag) : ""}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
-    ${n ? `<ul class="sset">${all.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.name)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.why ? ` <small>– ${esc(x.why)}</small>` : ""}</li>`).join("")}</ul>` : ""}
+    ${n ? `<ul class="sset">${all.map(x => `<li><span class="scat">${esc(partCat(x.cat, x.name))}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.name)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.why ? ` <small>– ${esc(x.why)}</small>` : ""}</li>`).join("")}</ul>` : ""}
     ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
 }
 // "X or better": the in-game part ranking of the part asked for, the customer's and the suggested one
@@ -193,7 +198,7 @@ function planOptHtml(o, i, k, pick, keep) {
   return `<label class="sopt multi plan ${o.over ? "over" : ""}"><input type="checkbox" data-sg="${i}" data-so="${k}" data-pick="${esc(pick)}" ${keep.has(pick) ? "checked" : ""}>
     <span><span class="sname"><b>${esc(o.name)}</b>${o.score != null ? ` → score <b class="bscore">${o.score.toLocaleString()}</b>` : ""}</span>
     <small class="stag">${o.nParts > 1 ? `one tick adds <b>all ${o.nParts} parts</b> below` : o.nParts ? "one tick adds the part below" : "no parts needed"}${o.lvl ? ` · up to Lv ${o.lvl}` : ""}${o.over ? ` · <b class="overtag">over budget</b>` : ""}</small>
-    <ul class="sset">${o.parts.map(x => `<li><span class="scat">${esc(x.cat)}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.new)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.for.length ? `<small class="sfor">for: ${esc(x.for.join(" · "))}${x.note ? ` <i>(${esc(x.note)})</i>` : ""}</small>` : ""}${rankHtml(x.rank)}</li>`).join("")}</ul>
+    <ul class="sset">${o.parts.map(x => `<li><span class="scat">${esc(partCat(x.cat, x.new))}</span> ${x.old ? `<span class="old">${esc(x.old)}</span> → ` : `<span class="old">(add)</span> `}<span class="new">${esc(x.new)}</span>${x.price != null ? ` <small>$${x.price}</small>` : ""}${x.for.length ? `<small class="sfor">for: ${esc(x.for.join(" · "))}${x.note ? ` <i>(${esc(x.note)})</i>` : ""}</small>` : ""}${rankHtml(x.rank)}</li>`).join("")}</ul>
     ${(o.tasks || []).map(t => `<small class="sextra">+ task: ${esc(t)}</small>`).join("")}${o.removeOld?.length ? `<small class="sextra">+ take out ${o.removeOld.length} old stick${o.removeOld.length > 1 ? "s" : ""}</small>` : ""}</span><b class="sprice">${o.total ? "$" + o.total.toLocaleString() : "free"}</b></label>`;
 }
 // the ticked suggestions → part swaps (+ tasks for sticks to take out)
